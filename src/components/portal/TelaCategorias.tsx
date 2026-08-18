@@ -1,7 +1,7 @@
 "use client";
 
 import { IconeCategoria } from "@/components/ui/icones";
-import { plural, primeiroNome } from "@/lib/texto";
+import { plural } from "@/lib/texto";
 import type { Categoria } from "@/lib/tipos";
 
 /**
@@ -9,35 +9,48 @@ import type { Categoria } from "@/lib/tipos";
  *
  * Categorias sem unidade livre continuam na tela, desabilitadas e com o motivo
  * escrito. Sumir com a categoria faria o aluno procurar o que não está lá.
+ *
+ * O `titulo` é opcional porque a seção só ganha cabeçalho quando divide a tela
+ * com "Meus equipamentos" (Fluxo 2). Sozinha, o h1 da tela já diz o que ela é —
+ * e um h2 repetindo logo abaixo só ocuparia altura útil no tablet.
+ *
+ * `colunas` existe pelo mesmo motivo: dividindo a tela, a grade recebe pouco
+ * mais da metade da largura e três ladrilhos ficariam estreitos demais para o
+ * rótulo. Quem decide é a tela que compõe, porque as media queries do Tailwind
+ * medem a janela, não a coluna.
  */
 
 type Props = {
-  nome: string;
   categorias: Categoria[];
   selecionadosPorTipo: Record<string, number>;
   onEscolher: (tipo: string) => void;
   tipoCarregando: string | null;
+  titulo?: string;
+  colunas?: 2 | 3;
 };
 
 export function TelaCategorias({
-  nome,
   categorias,
   selecionadosPorTipo,
   onEscolher,
   tipoCarregando,
+  titulo,
+  colunas = 3,
 }: Props) {
   return (
-    <div className="animate-surgir flex flex-col gap-8">
-      <div>
-        <p className="text-lg text-tinta-suave">
-          Olá, <span className="font-semibold text-tinta">{primeiroNome(nome)}</span>.
-        </p>
-        <h1 className="mt-1 text-4xl font-semibold tracking-tight text-balance text-marca-azul">
-          O que você vai levar?
-        </h1>
-      </div>
+    <section className="flex flex-col gap-4">
+      {titulo ? (
+        <h2 className="text-2xl font-semibold tracking-tight text-tinta">{titulo}</h2>
+      ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div
+        className={[
+          "grid gap-4 sm:grid-cols-2",
+          colunas === 3 ? "lg:grid-cols-3" : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
         {categorias.map((categoria) => (
           <Ladrilho
             key={categoria.tipo}
@@ -48,7 +61,7 @@ export function TelaCategorias({
           />
         ))}
       </div>
-    </div>
+    </section>
   );
 }
 

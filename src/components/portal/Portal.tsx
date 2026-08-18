@@ -3,39 +3,45 @@
 import { useCallback, useEffect, useState } from "react";
 
 import {
+  confirmarDevolucao,
   confirmarRetirada,
   identificarUsuario,
   listarDisponiveis,
+  listarEmprestimosAtivos,
 } from "@/app/actions";
 import { BarraSelecao } from "@/components/portal/BarraSelecao";
 import { CabecalhoPortal } from "@/components/portal/CabecalhoPortal";
-import { TelaCategorias } from "@/components/portal/TelaCategorias";
+import { ModalDevolucao } from "@/components/portal/ModalDevolucao";
 import { TelaEquipamentos } from "@/components/portal/TelaEquipamentos";
+import { TelaInicio } from "@/components/portal/TelaInicio";
 import { TelaMatricula } from "@/components/portal/TelaMatricula";
 import { TelaSucesso } from "@/components/portal/TelaSucesso";
+import { Notificacao } from "@/components/ui/Notificacao";
 import type {
   Categoria,
+  EmprestimoAtivo,
   EquipamentoDisponivel,
   RetiradaConfirmada,
   UsuarioIdentificado,
 } from "@/lib/tipos";
 
 /**
- * Fluxo 1 da spec — Retirada de Equipamento.
+ * Portal do tablet — Fluxos 1 (retirada) e 2 (devolução) da spec.
  *
- * Todo o fluxo mora em uma rota só. Trocar de tela aqui é trocar de estado, não
- * navegar: o aluno está de pé na bancada, e voltar uma etapa não pode custar um
- * carregamento de página nem correr o risco de o botão "voltar" do navegador
+ * Os dois fluxos moram em uma rota só. Trocar de tela aqui é trocar de estado,
+ * não navegar: o aluno está de pé na bancada, e voltar uma etapa não pode custar
+ * um carregamento de página nem correr o risco de o botão "voltar" do navegador
  * ressuscitar uma seleção antiga.
  *
  * Os dados nunca vêm do render da página — vêm de Server Actions, chamadas no
- * momento do toque. Isso mantém a lista de equipamentos disponíveis sempre
- * fresca, mesmo que a página fique aberta a tarde inteira.
+ * momento do toque. Isso mantém a lista de equipamentos disponíveis e a de
+ * itens emprestados sempre frescas, mesmo que a página fique aberta a tarde
+ * inteira.
  */
 
 type Etapa =
   | { nome: "matricula" }
-  | { nome: "categorias" }
+  | { nome: "inicio" }
   | { nome: "equipamentos"; tipo: string }
   | { nome: "sucesso"; retirada: RetiradaConfirmada };
 
@@ -48,13 +54,18 @@ type Falha = { mensagem: string; detalhe?: string };
  */
 const INATIVIDADE_MS = 120_000;
 
-export function PortalRetirada() {
+export function Portal() {
   const [etapa, setEtapa] = useState<Etapa>({ nome: "matricula" });
   const [matricula, setMatricula] = useState("");
   const [usuario, setUsuario] = useState<UsuarioIdentificado | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [equipamentos, setEquipamentos] = useState<EquipamentoDisponivel[]>([]);
   const [selecionados, setSelecionados] = useState<EquipamentoDisponivel[]>([]);
+
+  // Fluxo 2: o que está com a pessoa e o item que ela pediu para devolver.
+  const [emprestimos, setEmprestimos] = useState<EmprestimoAtivo[]>([]);
+  const [paraDevolver, setParaDevolver] = useState<EmprestimoAtivo | null>(null);
+  const [devolvendoId, setDevolvendoId] = useState<number | null>(null);
 
   const [entrando, setEntrando] = useState(false);
   const [confirmando, setConfirmando] = useState(false);
@@ -63,6 +74,13 @@ export function PortalRetirada() {
   const [erroLogin, setErroLogin] = useState<Falha | null>(null);
   const [erroLista, setErroLista] = useState<Falha | null>(null);
   const [erroConfirmacao, setErroConfirmacao] = useState<Falha | null>(null);
+  // Dois lugares para o erro da devolução: dentro do modal, enquanto ele está
+  // aberto e dá para tentar de novo; na lista, quando o modal já se fechou
+  // porque o item saiu de baixo dos pés.
+  const [erroModal, setErroModal] = useState<Falha | null>(null);
+  const [erroDevolucao, setErroDevolucao] = useState<Falha | null>(null);
+
+  const [aviso, setAviso] = useState<string | null>(null);
 
   const reiniciar = useCallback(() => {
     setEtapa({ nome: "matricula" });
@@ -71,14 +89,25 @@ export function PortalRetirada() {
     setCategorias([]);
     setEquipamentos([]);
     setSelecionados([]);
+    setEmprestimos([]);
+    setParaDevolver(null);
+    setDevolvendoId(null);
     setErroLogin(null);
     setErroLista(null);
     setErroConfirmacao(null);
+    setErroModal(null);
+    setErroDevolucao(null);
+    setAviso(null);
   }, []);
 
+  const fecharAviso = useCallback(() => setAviso(null), []);
+
   // Zera a sessão depois de um tempo sem nenhum toque (ver INATIVIDADE_MS).
+  // Uma devolução em voo segura o relógio: apagar a sessão no meio da escrita
+  // deixaria a pessoa sem saber se o item foi devolvido ou não.
   useEffect(() => {
     if (etapa.nome === "matricula" || etapa.nome === "sucesso") return;
+    if (devolvendoId !== null) return;
 
     let temporizador = window.setTimeout(reiniciar, INATIVIDADE_MS);
 
@@ -95,7 +124,7 @@ export function PortalRetirada() {
       window.removeEventListener("pointerdown", renovar);
       window.removeEventListener("keydown", renovar);
     };
-  }, [etapa.nome, reiniciar]);
+  }, [etapa.nome, devolvendoId, reiniciar]);
 
   async function entrar() {
     if (entrando) return;
@@ -114,7 +143,8 @@ export function PortalRetirada() {
 
     setUsuario(resultado.dados.usuario);
     setCategorias(resultado.dados.categorias);
-    setEtapa({ nome: "categorias" });
+    setEmprestimos(resultado.dados.emprestimos);
+    setEtapa({ nome: "inicio" });
   }
 
   async function abrirCategoria(tipo: string) {
@@ -191,6 +221,78 @@ export function PortalRetirada() {
     setEtapa({ nome: "sucesso", retirada: resultado.dados });
   }
 
+  /* ----------------------------------------------------------------------- *
+   * Fluxo 2 — devolução
+   * ----------------------------------------------------------------------- */
+
+  /** Passo 2: o toque em "Devolver" só abre o modal. Nada vai para o banco. */
+  function pedirDevolucao(emprestimo: EmprestimoAtivo) {
+    if (devolvendoId !== null) return;
+
+    setErroModal(null);
+    setErroDevolucao(null);
+    setAviso(null);
+    setParaDevolver(emprestimo);
+  }
+
+  function cancelarDevolucao() {
+    if (devolvendoId !== null) return;
+
+    setParaDevolver(null);
+    setErroModal(null);
+  }
+
+  /**
+   * Passo 4: a confirmação do modal.
+   *
+   * O equipamento continua `EMPRESTADO` de propósito — quem devolve para o
+   * inventário é a secretaria, no /admin. Por isso as categorias não são
+   * relidas aqui: a contagem de disponíveis não mudou.
+   */
+  async function efetivarDevolucao() {
+    if (!paraDevolver || devolvendoId !== null) return;
+
+    const alvo = paraDevolver;
+
+    setDevolvendoId(alvo.id);
+    setErroModal(null);
+
+    const resultado = await confirmarDevolucao(matricula, alvo.id);
+
+    setDevolvendoId(null);
+
+    if (!resultado.ok) {
+      if (resultado.motivo === "MATRICULA_VAZIA") {
+        reiniciar();
+        return;
+      }
+
+      // O empréstimo não está mais ativo (duplo-toque, ou a secretaria deu
+      // baixa antes). Insistir no modal não leva a lugar nenhum: fecha, relê a
+      // lista e explica na tela de onde o item sumiu.
+      if (resultado.motivo === "EMPRESTIMO_NAO_ENCONTRADO") {
+        setParaDevolver(null);
+        setErroDevolucao({
+          mensagem: resultado.mensagem,
+          detalhe: resultado.detalhe,
+        });
+
+        const atualizada = await listarEmprestimosAtivos(matricula);
+        if (atualizada.ok) setEmprestimos(atualizada.dados);
+        return;
+      }
+
+      // Falha passageira (banco fora do ar): o modal fica aberto para tentar
+      // de novo sem ter de procurar o item na lista outra vez.
+      setErroModal({ mensagem: resultado.mensagem, detalhe: resultado.detalhe });
+      return;
+    }
+
+    setParaDevolver(null);
+    setEmprestimos(resultado.dados.restantes);
+    setAviso(`${resultado.dados.devolvido.equip_id} devolvido. Deixe na bancada.`);
+  }
+
   const selecionadosPorTipo = selecionados.reduce<Record<string, number>>(
     (contagem, item) => {
       contagem[item.tipo] = (contagem[item.tipo] ?? 0) + 1;
@@ -199,7 +301,7 @@ export function PortalRetirada() {
     {},
   );
 
-  const mostrarBarra = etapa.nome === "categorias" || etapa.nome === "equipamentos";
+  const mostrarBarra = etapa.nome === "inicio" || etapa.nome === "equipamentos";
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
@@ -219,13 +321,16 @@ export function PortalRetirada() {
           />
         ) : null}
 
-        {etapa.nome === "categorias" && usuario ? (
-          <TelaCategorias
+        {etapa.nome === "inicio" && usuario ? (
+          <TelaInicio
             nome={usuario.nome}
             categorias={categorias}
             selecionadosPorTipo={selecionadosPorTipo}
             onEscolher={abrirCategoria}
             tipoCarregando={tipoCarregando}
+            emprestimos={emprestimos}
+            onDevolver={pedirDevolucao}
+            erroDevolucao={erroDevolucao}
           />
         ) : null}
 
@@ -237,7 +342,7 @@ export function PortalRetirada() {
             onAlternar={alternarItem}
             onVoltar={() => {
               setErroConfirmacao(null);
-              setEtapa({ nome: "categorias" });
+              setEtapa({ nome: "inicio" });
             }}
             carregando={tipoCarregando !== null}
             erro={erroLista}
@@ -262,6 +367,16 @@ export function PortalRetirada() {
           erro={erroConfirmacao}
         />
       ) : null}
+
+      <ModalDevolucao
+        emprestimo={paraDevolver}
+        onConfirmar={efetivarDevolucao}
+        onCancelar={cancelarDevolucao}
+        confirmando={devolvendoId !== null}
+        erro={erroModal}
+      />
+
+      <Notificacao mensagem={aviso} onFechar={fecharAviso} />
     </div>
   );
 }
