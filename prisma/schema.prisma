@@ -1,0 +1,57 @@
+// Sistema de Empréstimo de Equipamentos — Unoesc
+// Schema conforme especificação em spec.md (seção 3. Modelagem de Dados)
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  // A URL é resolvida em prisma.config.ts (Prisma 7) a partir de DATABASE_URL
+}
+
+/// Estudantes e professores (importados inicialmente via planilha da coordenação).
+model Usuario {
+  /// Chave primária. String para preservar zeros à esquerda.
+  matricula String @id
+  /// Nome completo.
+  nome      String
+  /// "ALUNO" ou "PROFESSOR".
+  perfil    String
+  /// Cursos vinculados (ex: "Sistemas de Informação, Ciência da Computação").
+  cursos    String
+
+  emprestimos Emprestimo[]
+}
+
+/// Inventário físico de equipamentos.
+model Equipamento {
+  /// Identificador único da etiqueta (ex: "NOTE-01", "EXT-05").
+  id     String @id
+  /// Categoria (ex: "Notebook", "Tablet", "Extensão").
+  tipo   String
+  /// "DISPONIVEL", "EMPRESTADO" ou "MANUTENCAO".
+  status String @default("DISPONIVEL")
+
+  emprestimos Emprestimo[]
+}
+
+/// Logs de movimentação — um registro isolado por item emprestado.
+model Emprestimo {
+  id             Int       @id @default(autoincrement())
+  /// FK para Usuario.matricula.
+  usuario_id     String
+  /// FK para Equipamento.id.
+  equip_id       String
+  /// Preenchido na criação.
+  data_retirada  DateTime  @default(now())
+  /// Preenchido quando o ciclo é concluído.
+  data_devolucao DateTime?
+  /// "ATIVO" | "AGUARDANDO_BAIXA" | "CONCLUIDO".
+  status         String    @default("ATIVO")
+
+  usuario     Usuario     @relation(fields: [usuario_id], references: [matricula])
+  equipamento Equipamento @relation(fields: [equip_id], references: [id])
+}
