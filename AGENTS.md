@@ -81,13 +81,35 @@ os três modelos da spec, migration inicial aplicada e seed idempotente. `tsc`,
 `lint` e `build` em 0; a página inicial foi requisitada e devolveu dados reais do
 banco.
 
-**`src/app/page.tsx` é uma página provisória de status** — existe só para provar
-que a stack está ligada. A Tarefa 2 a substitui.
+**Tarefa 2 — Fluxo 1 (concluída):** Portal do Aluno/Professor em `/` com a
+retirada completa (matrícula → categorias → itens → confirmação). A página de
+status provisória foi substituída. `tsc`, `lint` e `build` em 0; o fluxo inteiro
+foi exercitado no navegador e as actions foram testadas contra o `dev.db`,
+inclusive o rollback da transação.
 
-**Tarefa 2 (próxima):** Portal do Aluno/Professor em `/` — Fluxos 1 e 2 da spec.
-Nenhuma decisão de design foi tomada ainda: paleta e gradiente devem ser
-extraídos de `src/assets/brand/logo-unoesc-colorido.png`, e a tipografia
-institucional está pendente (`globals.css` hoje usa a fonte que veio do scaffold).
+**Decisões de design já tomadas** (não refazer sem motivo):
+
+- Paleta extraída da logo por leitura dos pixels: azul `#023770`, verde
+  `#3aaa35`. Os tokens vivem em `@theme` no [globals.css](src/app/globals.css).
+- **Existem dois verdes.** O verde da logo dá 3,0:1 sobre branco — serve para
+  borda, ícone grande e realce de seleção, **nunca** para texto ou fundo de
+  botão. Para isso existe `marca-verde-forte` (5,4:1). Todos os pares de cor da
+  interface foram conferidos com cálculo de contraste, não a olho.
+- Tema claro, sem variante escura: o tablet fica sob luz forte e tela escura
+  vira espelho. `color-scheme` está fixado em `light`.
+- Tipografia: Geist Sans para tudo; a monoespaçada só nas etiquetas
+  (`NOTE-01`), que precisam bater caractere a caractere com o adesivo do
+  aparelho — por isso a etiqueta aparece inteira na tela, nunca "embelezada".
+- Alvo de toque mínimo de 64px (`min-h-16` no [Botao](src/components/ui/Botao.tsx)).
+  Variantes de tamanho são propriedades do componente, não classes soltas: no
+  Tailwind 4 duas utilidades concorrentes se resolvem pela ordem no CSS gerado,
+  então "sobrescrever" por `className` sai aleatório (e o `!` de importante virou
+  sufixo: `px-0!`, não `!px-0`).
+
+**Tarefa 3 (próxima):** Fluxo 2 — devolução pelo usuário, na mesma rota `/`.
+Encaixa depois da identificação, ao lado das categorias: a matrícula já traz o
+usuário, falta listar os empréstimos `ATIVO` dele e o modal de confirmação com o
+aviso da bancada.
 
 ### Ambiente
 

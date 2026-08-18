@@ -87,8 +87,14 @@ prisma/
   data/usuarios.example.csv  formato esperado da planilha
 src/
   app/                       rotas (App Router)
+  app/actions.ts             Server Actions do portal do tablet
+  app/globals.css            paleta institucional e estilos base
   assets/brand/              identidade visual (logo da Unoesc)
+  components/portal/         telas do portal (matrícula, categorias, itens)
+  components/ui/             primitivas reutilizadas (Botao, Alerta, ícones)
   lib/prisma.ts              instância única do Prisma Client
+  lib/tipos.ts               tipos compartilhados entre actions e telas
+  lib/texto.ts               ajustes de texto em português
   generated/prisma/          Prisma Client gerado (não versionado)
 public/                      assets de URL fixa (ver "Imagens e assets")
 prisma.config.ts             configuração da CLI do Prisma
