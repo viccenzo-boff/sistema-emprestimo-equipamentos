@@ -46,6 +46,20 @@ export type EquipamentoDisponivel = {
 };
 
 /**
+ * Um item que está com o usuário agora (empréstimo `ATIVO`).
+ *
+ * `id` é o do empréstimo, não o da etiqueta: como cada item vira um registro
+ * separado em `Emprestimo`, é o número do registro que a devolução precisa
+ * endereçar. A etiqueta vem junto porque é o que a pessoa lê no aparelho.
+ */
+export type EmprestimoAtivo = {
+  id: number;
+  equip_id: string;
+  tipo: string;
+  data_retirada: Date;
+};
+
+/**
  * Retorno padrão das actions.
  *
  * Erros esperados (matrícula inexistente, equipamento tomado no meio do
@@ -69,10 +83,19 @@ export type MotivoDeFalha =
   | "SELECAO_VAZIA"
   | "SELECAO_EXCEDIDA"
   | "EQUIPAMENTO_INDISPONIVEL"
+  | "EMPRESTIMO_NAO_ENCONTRADO"
   | "FALHA_INTERNA";
 
 export type RetiradaConfirmada = {
   usuario: UsuarioIdentificado;
   itens: EquipamentoDisponivel[];
   registrados: number;
+};
+
+/** Resultado da devolução de um item: o que sumiu da lista e o que sobrou nela. */
+export type DevolucaoConfirmada = {
+  /** O empréstimo que acabou de ir para `AGUARDANDO_BAIXA`. */
+  devolvido: EmprestimoAtivo;
+  /** Lista relida do banco — a tela adota esta, em vez de remover item na mão. */
+  restantes: EmprestimoAtivo[];
 };

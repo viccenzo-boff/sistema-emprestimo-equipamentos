@@ -6,6 +6,8 @@ import {
   STATUS_EMPRESTIMO,
   STATUS_EQUIPAMENTO,
   type Categoria,
+  type DevolucaoConfirmada,
+  type EmprestimoAtivo,
   type EquipamentoDisponivel,
   type MotivoDeFalha,
   type Resultado,
@@ -14,13 +16,15 @@ import {
 } from "@/lib/tipos";
 
 /**
- * Server Actions do Fluxo 1 — Retirada de Equipamento (spec, seção 4).
+ * Server Actions do portal do tablet — Fluxos 1 e 2 da spec (seção 4).
  *
  * Toda action é um endpoint POST público: qualquer um na rede local pode
  * chamá-la sem passar pela interface. Por isso nenhuma delas confia no que
- * chega do cliente — matrícula e etiquetas são sempre reconferidas no banco
- * antes de virar escrita. O MVP não tem autenticação no tablet (decisão da
- * spec: a barreira é física, o tablet fica na bancada da secretaria).
+ * chega do cliente — matrícula, etiquetas e número de empréstimo são sempre
+ * reconferidos no banco antes de virar escrita. O MVP não tem autenticação no
+ * tablet (decisão da spec: a barreira é física, o tablet fica na bancada da
+ * secretaria), então a matrícula é a única identidade que existe: toda escrita
+ * filtra por ela, e nunca só pelo id que veio da tela.
  */
 
 /** Ordem em que as categorias aparecem no tablet. O resto vem depois, alfabético. */
@@ -50,13 +54,19 @@ function ordenarCategorias(a: Categoria, b: Categoria): number {
 }
 
 /**
- * Passo 1 do fluxo: identifica o usuário pela matrícula e já devolve o
- * inventário agrupado por categoria, para a tela seguinte abrir sem espera.
+ * Passo 1 dos dois fluxos: identifica o usuário pela matrícula.
+ *
+ * Devolve de uma vez o inventário por categoria (Fluxo 1) e o que já está com
+ * a pessoa (Fluxo 2). Uma chamada só porque a tela seguinte mostra as duas
+ * coisas lado a lado: buscar em duas etapas faria metade da tela chegar
+ * atrasada, e quem veio só devolver esperaria sem motivo.
  */
-export async function identificarUsuario(
-  matriculaBruta: string,
-): Promise<
-  Resultado<{ usuario: UsuarioIdentificado; categorias: Categoria[] }>
+export async function identificarUsuario(matriculaBruta: string): Promise<
+  Resultado<{
+    usuario: UsuarioIdentificado;
+    categorias: Categoria[];
+    emprestimos: EmprestimoAtivo[];
+  }>
 > {
   const matricula = limparMatricula(matriculaBruta);
 
@@ -75,7 +85,12 @@ export async function identificarUsuario(
       );
     }
 
-    return { ok: true, dados: { usuario, categorias: await listarCategorias() } };
+    const [categorias, emprestimos] = await Promise.all([
+      listarCategorias(),
+      buscarEmprestimosAtivos(matricula),
+    ]);
+
+    return { ok: true, dados: { usuario, categorias, emprestimos } };
   } catch (erro) {
     return falhaInterna(erro);
   }
@@ -249,6 +264,164 @@ class EquipamentoIndisponivelError extends Error {
   constructor(readonly ids: string[]) {
     super("Equipamento indisponível");
     this.name = "EquipamentoIndisponivelError";
+  }
+}
+
+/* ------------------------------------------------------------------------- *
+ * Fluxo 2 — Devolução pelo Usuário (spec, seção 4)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Leitura crua dos empréstimos `ATIVO` de uma matrícula.
+ *
+ * Fica fora do "use server" exportado de propósito: é reaproveitada pela
+ * identificação e pela devolução, e nenhuma das duas quer um endpoint a mais
+ * exposto na rede.
+ */
+async function buscarEmprestimosAtivos(
+  matricula: string,
+): Promise<EmprestimoAtivo[]> {
+  const emprestimos = await prisma.emprestimo.findMany({
+    where: { usuario_id: matricula, status: STATUS_EMPRESTIMO.ativo },
+    select: {
+      id: true,
+      equip_id: true,
+      data_retirada: true,
+      equipamento: { select: { tipo: true } },
+    },
+    // Mais antigo primeiro: o que está com a pessoa há mais tempo é o que ela
+    // provavelmente veio devolver.
+    orderBy: { data_retirada: "asc" },
+  });
+
+  return emprestimos.map(({ equipamento, ...emprestimo }) => ({
+    ...emprestimo,
+    tipo: equipamento.tipo,
+  }));
+}
+
+/**
+ * Passo 1 do Fluxo 2: o que está com a pessoa agora.
+ *
+ * Só empréstimos `ATIVO`. Os que já estão em `AGUARDANDO_BAIXA` ficam de fora
+ * porque, para o usuário, aquele item já foi devolvido — mostrá-lo com um botão
+ * "Devolver" convidaria a devolver duas vezes o mesmo aparelho.
+ */
+export async function listarEmprestimosAtivos(
+  matriculaBruta: string,
+): Promise<Resultado<EmprestimoAtivo[]>> {
+  const matricula = limparMatricula(matriculaBruta);
+
+  if (matricula.length === 0) {
+    return falha("MATRICULA_VAZIA", "Sessão perdida. Informe a matrícula novamente.");
+  }
+
+  try {
+    return { ok: true, dados: await buscarEmprestimosAtivos(matricula) };
+  } catch (erro) {
+    return falhaInterna(erro);
+  }
+}
+
+/**
+ * Passo 4 do Fluxo 2: o usuário confirmou no modal que deixou o item na bancada.
+ *
+ * O que muda e o que **não** muda:
+ * - `Emprestimo.status`: `ATIVO` -> `AGUARDANDO_BAIXA`.
+ * - `Emprestimo.data_devolucao`: recebe o instante da declaração.
+ * - `Equipamento.status`: continua `EMPRESTADO`. Ele só volta a `DISPONIVEL`
+ *   quando a secretaria confirmar o recebimento no /admin (Fluxo 3). Liberar
+ *   aqui faria o tablet oferecer um aparelho que ainda está na bancada — é
+ *   exatamente o buraco que o estado `AGUARDANDO_BAIXA` existe para tapar.
+ *
+ * A action recebe o número do empréstimo, mas o `where` filtra também por
+ * matrícula e por status `ATIVO`. Sem isso, um POST direto no endpoint daria
+ * baixa no empréstimo de qualquer pessoa só chutando um id sequencial.
+ */
+export async function confirmarDevolucao(
+  matriculaBruta: string,
+  emprestimoIdBruto: number,
+): Promise<Resultado<DevolucaoConfirmada>> {
+  const matricula = limparMatricula(matriculaBruta);
+
+  if (matricula.length === 0) {
+    return falha("MATRICULA_VAZIA", "Sessão perdida. Informe a matrícula novamente.");
+  }
+
+  const emprestimoId = Number(emprestimoIdBruto);
+
+  if (!Number.isInteger(emprestimoId) || emprestimoId <= 0) {
+    return falha(
+      "EMPRESTIMO_NAO_ENCONTRADO",
+      "Não encontramos esse empréstimo.",
+      "Atualize a lista e tente de novo.",
+    );
+  }
+
+  try {
+    const devolvido = await prisma.$transaction(async (tx) => {
+      const emprestimo = await tx.emprestimo.findFirst({
+        where: {
+          id: emprestimoId,
+          usuario_id: matricula,
+          status: STATUS_EMPRESTIMO.ativo,
+        },
+        select: {
+          id: true,
+          equip_id: true,
+          data_retirada: true,
+          equipamento: { select: { tipo: true } },
+        },
+      });
+
+      if (!emprestimo) throw new EmprestimoNaoAtivoError();
+
+      // O mesmo filtro de novo, agora na escrita: entre a leitura acima e esta
+      // linha, um duplo-toque (ou a secretaria dando baixa no /admin) pode ter
+      // mudado o status. `updateMany` conta as linhas afetadas; zero significa
+      // que alguém chegou antes, e aí a transação inteira volta atrás.
+      const alterados = await tx.emprestimo.updateMany({
+        where: {
+          id: emprestimoId,
+          usuario_id: matricula,
+          status: STATUS_EMPRESTIMO.ativo,
+        },
+        data: {
+          status: STATUS_EMPRESTIMO.aguardandoBaixa,
+          data_devolucao: new Date(),
+        },
+      });
+
+      if (alterados.count !== 1) throw new EmprestimoNaoAtivoError();
+
+      const { equipamento, ...resto } = emprestimo;
+      return { ...resto, tipo: equipamento.tipo };
+    });
+
+    // Relê a lista em vez de deixar a tela filtrar o item na mão: se a
+    // secretaria mexeu em outro empréstimo enquanto isso, o tablet já corrige.
+    return {
+      ok: true,
+      dados: { devolvido, restantes: await buscarEmprestimosAtivos(matricula) },
+    };
+  } catch (erro) {
+    if (erro instanceof EmprestimoNaoAtivoError) {
+      return falha(
+        "EMPRESTIMO_NAO_ENCONTRADO",
+        "Esse item já não consta como emprestado para você.",
+        "Talvez a devolução já tenha sido registrada. Confira a lista atualizada.",
+      );
+    }
+
+    return falhaInterna(erro);
+  }
+}
+
+/** Erro interno da transação da devolução, usado só para abortar e voltar atrás. */
+class EmprestimoNaoAtivoError extends Error {
+  constructor() {
+    super("Empréstimo não está ativo para esta matrícula");
+    this.name = "EmprestimoNaoAtivoError";
   }
 }
 
