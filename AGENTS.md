@@ -87,6 +87,13 @@ status provisória foi substituída. `tsc`, `lint` e `build` em 0; o fluxo intei
 foi exercitado no navegador e as actions foram testadas contra o `dev.db`,
 inclusive o rollback da transação.
 
+**Tarefa 3 — Fluxo 2 (concluída):** devolução pelo usuário, na mesma rota `/`.
+A tela seguinte à matrícula virou `TelaInicio`, que reúne "Meus equipamentos"
+(empréstimos `ATIVO` da matrícula) e a grade de categorias. `tsc`, `lint` e
+`build` em 0; as actions foram exercitadas contra o `dev.db` e também pela via
+HTTP real (POST com `Next-Action`), confirmando que o `Equipamento` **não** muda
+de status na devolução.
+
 **Decisões de design já tomadas** (não refazer sem motivo):
 
 - Paleta extraída da logo por leitura dos pixels: azul `#023770`, verde
@@ -105,11 +112,33 @@ inclusive o rollback da transação.
   Tailwind 4 duas utilidades concorrentes se resolvem pela ordem no CSS gerado,
   então "sobrescrever" por `className` sai aleatório (e o `!` de importante virou
   sufixo: `px-0!`, não `!px-0`).
+- **Modal é `<dialog>` nativo com `showModal()`**, não `<div>` posicionada. Dá de
+  graça a trava de foco, o `inert` no resto da página e o *top layer* — que
+  resolve a briga de `z-index` com a `BarraSelecao`, sticky no rodapé. Efeito
+  colateral que já economizou código: enquanto o modal está aberto, spinner ou
+  estado "travado" nas linhas atrás dele seriam desenhados onde ninguém vê.
+- **"Meus equipamentos" e as categorias dividem a tela em paisagem**, empilhadas
+  em retrato — a mesma solução da `TelaMatricula`, pelo mesmo motivo medido.
+  Empilhado nos dois casos, **três** empréstimos já empurravam a grade de
+  categorias para fora de um tablet deitado (1280x800): quem vinha retirar via
+  três caixas de ícone sem rótulo. Isso foi medido no navegador, não estimado.
+  A lista fica à esquerda e primeiro no HTML, para ordem visual e ordem de
+  leitura coincidirem. Sem nenhum empréstimo ativo a seção some inteira e a tela
+  volta a ser a do Fluxo 1, com o mesmo `h1`.
+- A legenda da linha diz "Tablet · ontem às 12:26" e esconde "retirado" em
+  `sr-only`. Não é enfeite: na coluna estreita sobram 199px e a versão com a
+  palavra ocupa 256px, quebrando em duas linhas. Quem enxerga tem o contexto da
+  seção; quem ouve, não — então a palavra continua lá para o leitor de tela.
+- **Escrita sempre filtra pela matrícula**, nunca só pelo id que veio da tela.
+  Server Action é endpoint POST público: sem o filtro, um POST direto daria
+  baixa no empréstimo de qualquer pessoa chutando um id sequencial.
 
-**Tarefa 3 (próxima):** Fluxo 2 — devolução pelo usuário, na mesma rota `/`.
-Encaixa depois da identificação, ao lado das categorias: a matrícula já traz o
-usuário, falta listar os empréstimos `ATIVO` dele e o modal de confirmação com o
-aviso da bancada.
+**Tarefa 4 (próxima):** Fluxo 3 — painel administrativo em `/admin`, protegido
+pela senha mestre do `.env`. Precisa da fila de `AGUARDANDO_BAIXA` com
+"Confirmar Recebimento" (que é onde `Emprestimo` vai a `CONCLUIDO` e o
+`Equipamento` finalmente volta a `DISPONIVEL`), da gestão de inventário e da
+visão dos `ATIVO`. Diferente do tablet, `/admin` lê o banco no render — as rotas
+precisam ser dinâmicas.
 
 ### Ambiente
 
