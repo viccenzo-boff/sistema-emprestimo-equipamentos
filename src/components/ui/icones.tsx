@@ -117,6 +117,20 @@ export function IconeApagar({ className }: PropsDeIcone) {
 }
 
 /**
+ * Devolução: a seta desce para dentro da bandeja.
+ * É a metáfora da bancada — o equipamento sai da mão e fica apoiado ali.
+ */
+export function IconeDevolver({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <path d="M12 3v9" {...TRACO} strokeWidth={2} />
+      <path d="m8.25 8.5 3.75 3.75 3.75-3.75" {...TRACO} strokeWidth={2} />
+      <path d="M3.5 14.5v4a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-4" {...TRACO} />
+    </Svg>
+  );
+}
+
+/**
  * Ícone da categoria, escolhido pelo `tipo` gravado no banco.
  *
  * Renderiza aqui dentro em vez de devolver o componente para quem chama: um
