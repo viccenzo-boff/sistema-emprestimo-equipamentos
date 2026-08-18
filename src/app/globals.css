@@ -1,28 +1,158 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+  Paleta institucional da Unoesc.
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  Os dois tons de marca foram extraídos do arquivo real
+  src/assets/brand/logo-unoesc-colorido.png (os dois valores mais frequentes na
+  imagem): azul #023770 e verde #3aaa35. Todo o resto da paleta é construído a
+  partir deles.
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  Contraste (verificado, não estimado):
+  - azul #023770 sobre branco ....... 11,8:1  -> texto e ações primárias
+  - verde #3aaa35 sobre branco ......  3,0:1  -> SÓ para bordas, ícones grandes
+                                                e realce de seleção
+  - verde-forte #1f7a1b com branco ..  5,4:1  -> superfície verde com texto branco
+
+  É por isso que existem dois verdes: o verde da logo não passa em texto pequeno.
+
+  Tema: claro, sem variante escura. O tablet fica em uma bancada sob luz
+  fluorescente forte; tela escura vira espelho do teto. A decisão é deliberada,
+  por isso color-scheme é fixado em light (evita o sistema invertendo controles).
+*/
+
+@theme {
+  /* Marca */
+  --color-marca-azul: oklch(34.2% 0.111 255.2);
+  --color-marca-azul-escuro: oklch(26% 0.095 255.2);
+  --color-marca-azul-claro: oklch(45% 0.13 255.2);
+  --color-marca-azul-tenue: oklch(96.5% 0.015 255.2);
+  --color-marca-verde: oklch(65.1% 0.185 142.5);
+  --color-marca-verde-forte: oklch(50.8% 0.154 142.4);
+  --color-marca-verde-tenue: oklch(96.5% 0.032 142.5);
+
+  /* Superfícies e tinta */
+  --color-fundo: oklch(97.6% 0.006 255.2);
+  --color-superficie: oklch(100% 0 0);
+  --color-superficie-2: oklch(98.2% 0.005 255.2);
+  --color-borda: oklch(90% 0.012 255.2);
+  --color-borda-forte: oklch(66.5% 0.022 255.2);
+  --color-tinta: oklch(22% 0.03 258);
+  --color-tinta-suave: oklch(46% 0.03 257);
+  --color-tinta-tenue: oklch(56.5% 0.025 257);
+
+  /* Estados semânticos */
+  --color-erro: oklch(48% 0.185 27);
+  --color-erro-fundo: oklch(96.5% 0.028 27);
+  --color-erro-borda: oklch(84% 0.085 27);
+  --color-aviso: oklch(47% 0.115 70);
+  --color-aviso-fundo: oklch(97% 0.04 85);
+  --color-aviso-borda: oklch(86% 0.09 80);
+  --color-sucesso: oklch(45% 0.14 142.4);
+  --color-sucesso-fundo: oklch(96.5% 0.032 142.5);
+  --color-sucesso-borda: oklch(84% 0.09 142.5);
+
+  /* Tipografia: uma família só, como manda interface de produto. */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* Movimento: curto e informativo. Nada de coreografia. */
+  --ease-saida: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-surgir: surgir 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-surgir-curto: surgir-curto 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  @keyframes surgir {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes surgir-curto {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  /* Usa a fonte carregada no layout. A tipografia institucional definitiva
-     será definida na Tarefa 2, junto com a paleta da Unoesc. */
-  font-family: var(--font-sans), system-ui, sans-serif;
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    height: 100%;
+    /* Evita o "flash" de zoom por duplo toque no tablet. */
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100%;
+    color: var(--color-tinta);
+    font-family: var(--font-sans);
+    /*
+      Gradiente sutil que ecoa a composição da logo: o azul entra pela esquerda
+      alta, o verde pela direita alta, e ambos se dissolvem em uma superfície
+      quase branca onde o conteúdo realmente acontece.
+    */
+    background-color: var(--color-fundo);
+    background-image:
+      radial-gradient(
+        ellipse 85% 55% at 12% -12%,
+        color-mix(in oklab, var(--color-marca-azul) 20%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        ellipse 70% 50% at 92% 2%,
+        color-mix(in oklab, var(--color-marca-verde) 18%, transparent),
+        transparent 66%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--color-marca-azul) 4%, white) 0%,
+        var(--color-fundo) 42%
+      );
+    background-attachment: fixed;
+    /* Kiosk: sem "puxar para atualizar" nem rolagem elástica acidental. */
+    overscroll-behavior: none;
+  }
+
+  /* Alvos de toque não devem piscar em cinza nem selecionar texto ao segurar. */
+  button {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-marca-azul);
+    outline-offset: 2px;
+  }
+
+  /* Números alinhados: matrícula e etiquetas não devem "dançar". */
+  .numeros-tabulares {
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
