@@ -35,19 +35,28 @@ type UsuarioSeed = {
   cursos: string;
 };
 
+/**
+ * Categorias do inventário, na ordem em que aparecem no tablet e no painel.
+ *
+ * A ordem importa: `Categoria.id` é o que ordena as duas telas, e o id sai da
+ * ordem de criação. Reordenar esta lista não reordena um banco já semeado — as
+ * categorias existentes mantêm o id que ganharam da primeira vez.
+ */
+const CATEGORIAS = ["Notebook", "Tablet", "Extensão"];
+
 /** Inventário inicial. Novos itens também podem ser cadastrados pelo painel /admin. */
-const INVENTARIO: { id: string; tipo: string }[] = [
+const INVENTARIO: { id: string; categoria: string }[] = [
   ...Array.from({ length: 10 }, (_, i) => ({
     id: `NOTE-${String(i + 1).padStart(2, "0")}`,
-    tipo: "Notebook",
+    categoria: "Notebook",
   })),
   ...Array.from({ length: 5 }, (_, i) => ({
     id: `TAB-${String(i + 1).padStart(2, "0")}`,
-    tipo: "Tablet",
+    categoria: "Tablet",
   })),
   ...Array.from({ length: 5 }, (_, i) => ({
     id: `EXT-${String(i + 1).padStart(2, "0")}`,
-    tipo: "Extensão",
+    categoria: "Extensão",
   })),
 ];
 
@@ -229,27 +238,56 @@ async function main() {
       });
     }
 
-    // 2. Equipamentos
+    // 2. Categorias
+    //
+    // Sequencial, e não `Promise.all`: a ordem de criação vira o `id`, e o `id`
+    // é o que ordena as categorias nas telas. Em paralelo, a ordem sairia do
+    // acaso do agendamento.
+    const idPorCategoria = new Map<string, number>();
+
+    for (const nome of CATEGORIAS) {
+      const categoria = await prisma.categoria.upsert({
+        where: { nome },
+        update: {},
+        create: { nome },
+      });
+
+      idPorCategoria.set(nome, categoria.id);
+    }
+    console.log(`Categorias: ${CATEGORIAS.length} (${CATEGORIAS.join(", ")}).`);
+
+    // 3. Equipamentos
     for (const equipamento of INVENTARIO) {
+      const categoria_id = idPorCategoria.get(equipamento.categoria);
+
+      if (categoria_id === undefined) {
+        throw new Error(
+          `Equipamento ${equipamento.id} referencia a categoria ` +
+            `"${equipamento.categoria}", que não está em CATEGORIAS.`,
+        );
+      }
+
       await prisma.equipamento.upsert({
         where: { id: equipamento.id },
-        // O status nao e atualizado de proposito: um item ja EMPRESTADO ou em
-        // MANUTENCAO nao pode voltar para DISPONIVEL por reexecucao do seed.
-        update: { tipo: equipamento.tipo },
-        create: { ...equipamento, status: "DISPONIVEL" },
+        // O status nao e atualizado de proposito: um item ja EMPRESTADO, em
+        // MANUTENCAO ou INATIVO nao pode voltar para DISPONIVEL por
+        // reexecucao do seed.
+        update: { categoria_id },
+        create: { id: equipamento.id, categoria_id, status: "DISPONIVEL" },
       });
     }
     console.log(`Equipamentos: ${INVENTARIO.length} itens no inventário.`);
 
-    const [totalUsuarios, totalEquipamentos, totalEmprestimos] =
+    const [totalUsuarios, totalCategorias, totalEquipamentos, totalEmprestimos] =
       await Promise.all([
         prisma.usuario.count(),
+        prisma.categoria.count(),
         prisma.equipamento.count(),
         prisma.emprestimo.count(),
       ]);
 
     console.log(
-      `\nBanco atual: ${totalUsuarios} usuários, ${totalEquipamentos} equipamentos, ${totalEmprestimos} empréstimos.`,
+      `\nBanco atual: ${totalUsuarios} usuários, ${totalCategorias} categorias, ${totalEquipamentos} equipamentos, ${totalEmprestimos} empréstimos.`,
     );
   } finally {
     await prisma.$disconnect();

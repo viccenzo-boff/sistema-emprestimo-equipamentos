@@ -26,15 +26,38 @@ model Usuario {
   emprestimos Emprestimo[]
 }
 
+/// Categorias do inventário ("Notebook", "Tablet", "Extensão").
+///
+/// Virou tabela na Tarefa 6: enquanto era uma String no `Equipamento`, a grafia
+/// era decidida no cadastro e cada variante ("notebook", "Notebook") abria uma
+/// categoria nova no tablet. Com `nome` único, o banco é quem garante que só
+/// existe uma.
+model Categoria {
+  id   Int    @id @default(autoincrement())
+  /// Nome exibido no tablet e no painel. Único — inclusive é o que impede
+  /// duas grafias da mesma coisa.
+  nome String @unique
+
+  equipamentos Equipamento[]
+}
+
 /// Inventário físico de equipamentos.
 model Equipamento {
   /// Identificador único da etiqueta (ex: "NOTE-01", "EXT-05").
-  id     String @id
-  /// Categoria (ex: "Notebook", "Tablet", "Extensão").
-  tipo   String
-  /// "DISPONIVEL", "EMPRESTADO" ou "MANUTENCAO".
-  status String @default("DISPONIVEL")
+  id           String @id
+  /// FK para Categoria.id. Obrigatória: equipamento sem categoria não aparece
+  /// em lugar nenhum do tablet, que é organizado por categoria.
+  categoria_id Int
+  /// "DISPONIVEL", "EMPRESTADO", "MANUTENCAO" ou "INATIVO".
+  ///
+  /// `INATIVO` é a aposentadoria do item: ele sai de circulação para sempre sem
+  /// sair do banco, porque apagá-lo levaria junto o histórico de empréstimos
+  /// que aponta para ele.
+  status       String @default("DISPONIVEL")
 
+  /// `onDelete: Restrict` é o que faz a regra "só apaga categoria vazia" ser do
+  /// banco, e não da tela: um DELETE com equipamento vinculado volta P2003.
+  categoria   Categoria    @relation(fields: [categoria_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
   emprestimos Emprestimo[]
 }
 
