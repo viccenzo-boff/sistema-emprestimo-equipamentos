@@ -1,37 +1,43 @@
 import { SeloStatus } from "@/components/admin/SeloStatus";
-import { STATUS_EQUIPAMENTO } from "@/lib/tipos";
+import { STATUS_EQUIPAMENTO, type ResumoDoInventario } from "@/lib/tipos";
 
 /**
- * As três contagens do inventário, no topo da tela.
+ * As contagens do inventário, no topo da tela.
  *
  * Serve para uma pergunta só, e é a que a coordenação faz de verdade: "sobra
  * notebook para hoje?". Por isso o número vem antes do rótulo e o selo repete
  * exatamente a cor e a palavra usadas na tabela abaixo — o olho liga os dois
  * sem legenda.
+ *
+ * O cartão de inativos só aparece quando existe algum. Um zero permanente na
+ * quarta coluna roubaria um quarto da faixa para informar nada, e — pior —
+ * quebraria a leitura de relance das três contagens que mudam todo dia.
  */
-
-type Props = {
-  disponiveis: number;
-  emprestados: number;
-  manutencao: number;
-  total: number;
-};
 
 export function ResumoInventario({
   disponiveis,
   emprestados,
   manutencao,
+  inativos,
   total,
-}: Props) {
+}: ResumoDoInventario) {
   const cartoes = [
     { status: STATUS_EQUIPAMENTO.disponivel, valor: disponiveis },
     { status: STATUS_EQUIPAMENTO.emprestado, valor: emprestados },
     { status: STATUS_EQUIPAMENTO.manutencao, valor: manutencao },
+    ...(inativos > 0
+      ? [{ status: STATUS_EQUIPAMENTO.inativo, valor: inativos }]
+      : []),
   ];
 
   return (
     <section aria-label="Resumo do inventário" className="flex flex-col gap-3">
-      <dl className="grid gap-4 sm:grid-cols-3">
+      <dl
+        className={[
+          "grid gap-4",
+          cartoes.length === 4 ? "sm:grid-cols-2 lg:grid-cols-4" : "sm:grid-cols-3",
+        ].join(" ")}
+      >
         {cartoes.map(({ status, valor }) => (
           <div
             key={status}
@@ -48,7 +54,8 @@ export function ResumoInventario({
       </dl>
 
       <p className="px-1 text-base text-tinta-tenue">
-        {total === 1 ? "1 equipamento" : `${total} equipamentos`} no inventário.
+        {total === 1 ? "1 equipamento" : `${total} equipamentos`} no inventário
+        {inativos > 0 ? ", contando os inativos" : ""}.
       </p>
     </section>
   );

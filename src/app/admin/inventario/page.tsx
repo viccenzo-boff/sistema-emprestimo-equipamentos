@@ -6,6 +6,7 @@ import { ResumoInventario } from "@/components/admin/ResumoInventario";
 import {
   contarFilaDeDevolucoes,
   listarInventario,
+  listarOpcoesDeCategoria,
   resumirInventario,
 } from "@/lib/consultas-admin";
 import { temSessaoAdmin } from "@/lib/sessao-admin";
@@ -13,22 +14,24 @@ import { temSessaoAdmin } from "@/lib/sessao-admin";
 /**
  * Gestão de Inventário (spec, seção 4, Fluxo 3, item 2).
  *
- * As categorias sugeridas no cadastro saem da própria lista já carregada, na
- * ordem em que ela vem — nada de uma consulta a mais para descobrir o que a
- * página tem na mão.
+ * As opções do `<select>` de categoria vêm de consulta própria, e não de um
+ * `map` sobre o inventário já carregado. Era assim até a Tarefa 5, quando
+ * categoria existia apenas como texto dentro de um equipamento e derivar dava
+ * no mesmo. Agora existe categoria sem nenhum item — recém-criada na tela ao
+ * lado, ou esvaziada — e derivar esconderia justamente aquela que a pessoa
+ * acabou de criar para usar.
  */
 export const dynamic = "force-dynamic";
 
 export default async function PaginaDeInventario() {
   if (!(await temSessaoAdmin())) redirect("/admin");
 
-  const [itens, resumo, pendentes] = await Promise.all([
+  const [itens, categorias, resumo, pendentes] = await Promise.all([
     listarInventario(),
+    listarOpcoesDeCategoria(),
     resumirInventario(),
     contarFilaDeDevolucoes(),
   ]);
-
-  const categorias = [...new Set(itens.map((item) => item.tipo))];
 
   return (
     <CascaAdmin

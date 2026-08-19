@@ -6,7 +6,13 @@ import Link from "next/link";
 import { sairDoAdmin } from "@/app/admin/actions";
 import logoUnoesc from "@/assets/brand/logo-unoesc-colorido.png";
 import { Botao } from "@/components/ui/Botao";
-import { IconeCaixa, IconeFila, IconeRelogio, IconeSair } from "@/components/ui/icones";
+import {
+  IconeCaixa,
+  IconeEtiquetas,
+  IconeFila,
+  IconeRelogio,
+  IconeSair,
+} from "@/components/ui/icones";
 
 /**
  * Moldura das três telas do painel: barra lateral de navegação e área de
@@ -27,7 +33,7 @@ import { IconeCaixa, IconeFila, IconeRelogio, IconeSair } from "@/components/ui/
  * em um notebook pequeno da coordenação sem virar outro projeto.
  */
 
-export type AbaDoPainel = "fila" | "ativos" | "inventario";
+export type AbaDoPainel = "fila" | "ativos" | "inventario" | "categorias";
 
 type Props = {
   aba: AbaDoPainel;
@@ -56,6 +62,14 @@ const ABAS = [
     rotulo: "Inventário",
     href: "/admin/inventario",
     Icone: IconeCaixa,
+  },
+  // Logo abaixo do Inventário porque é onde se vai depois de esbarrar nele: a
+  // categoria que falta no `<select>` do cadastro é criada aqui.
+  {
+    id: "categorias" as const,
+    rotulo: "Categorias",
+    href: "/admin/categorias",
+    Icone: IconeEtiquetas,
   },
 ];
 

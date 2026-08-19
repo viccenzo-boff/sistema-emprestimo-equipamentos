@@ -2,65 +2,98 @@
 
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { alterarStatusEquipamento, cadastrarEquipamento } from "@/app/admin/actions";
+import {
+  alterarStatusEquipamento,
+  cadastrarEquipamento,
+  renomearEtiqueta,
+} from "@/app/admin/actions";
 import { SeloStatus } from "@/components/admin/SeloStatus";
 import { Alerta } from "@/components/ui/Alerta";
 import { Botao } from "@/components/ui/Botao";
 import {
+  IconeBloquear,
   IconeCategoria,
   IconeCheck,
   IconeChevron,
   IconeFerramenta,
+  IconeLapis,
   IconeMais,
+  IconeRestaurar,
 } from "@/components/ui/icones";
+import { Modal } from "@/components/ui/Modal";
 import { Notificacao } from "@/components/ui/Notificacao";
 import {
   STATUS_EMPRESTIMO,
   STATUS_EQUIPAMENTO,
   type ItemDeInventario,
+  type OpcaoDeCategoria,
 } from "@/lib/tipos";
 
 /**
- * Gestão de Inventário (spec, seção 4, Fluxo 3, item 2): cadastrar equipamento
- * e tirá-lo de circulação — ou trazê-lo de volta.
+ * Gestão de Inventário (spec, seção 4, Fluxo 3, item 2; ampliada na Tarefa 6):
+ * cadastrar equipamento, trocar a etiqueta, tirar de circulação e aposentar.
  *
- * A tela oferece só a alternância `DISPONIVEL` <-> `MANUTENCAO`. `EMPRESTADO`
- * não é um botão porque não é uma decisão da secretaria: quem coloca é a
- * retirada no tablet, quem tira é a confirmação de recebimento. Uma linha com
- * empréstimo aberto mostra o nome de quem está com o item, em vez de um botão
- * apagado sem explicação — a pergunta seguinte de quem olha é sempre "com
- * quem?", e a resposta já está ali.
+ * A tela oferece três destinos — `DISPONIVEL`, `MANUTENCAO` e `INATIVO`.
+ * `EMPRESTADO` não é um botão porque não é uma decisão da secretaria: quem
+ * coloca é a retirada no tablet, quem tira é a confirmação de recebimento. Uma
+ * linha com empréstimo aberto mostra o nome de quem está com o item, em vez de
+ * um botão apagado sem explicação — a pergunta seguinte de quem olha é sempre
+ * "com quem?", e a resposta já está ali.
  *
- * A mesma regra vale no servidor, onde ela realmente vale
+ * As mesmas regras valem no servidor, onde elas realmente valem
  * ([actions](src/app/admin/actions.ts)): esta tela é conveniência, não barreira.
+ * Aqui a tabela de transições aparece só como "quais botões esta linha tem".
  */
 
 type Props = {
   itens: ItemDeInventario[];
-  /** Categorias já existentes, para o campo sugerir em vez de exigir memória. */
-  categorias: string[];
+  /** Categorias cadastradas, para o `<select>` do formulário. */
+  categorias: OpcaoDeCategoria[];
 };
 
 type Falha = { id: string; mensagem: string; detalhe?: string };
 
+/**
+ * O que está em voo agora.
+ *
+ * É um objeto, e não um `id` solto, porque a linha passou a ter mais de um
+ * botão: sem saber *qual* ação está rodando, o spinner apareceria no botão
+ * errado da linha certa.
+ */
+type EmAndamento = { id: string; acao: "situacao" | "etiqueta" } | null;
+
 export function GestaoInventario({ itens, categorias }: Props) {
   const router = useRouter();
   const [, iniciarTransicao] = useTransition();
-  const [alterandoId, setAlterandoId] = useState<string | null>(null);
+  const [emAndamento, setEmAndamento] = useState<EmAndamento>(null);
   const [falha, setFalha] = useState<Falha | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
+  const [editando, setEditando] = useState<ItemDeInventario | null>(null);
+  const [inativando, setInativando] = useState<ItemDeInventario | null>(null);
 
-  function alternarSituacao(item: ItemDeInventario) {
-    if (alterandoId !== null) return;
+  const ocupado = emAndamento !== null;
 
-    const destino =
-      item.status === STATUS_EQUIPAMENTO.disponivel
-        ? STATUS_EQUIPAMENTO.manutencao
-        : STATUS_EQUIPAMENTO.disponivel;
+  /**
+   * A linha na tela não corresponde mais ao banco: relê em vez de deixar a
+   * secretaria clicando em um botão que não pode dar certo.
+   */
+  function relerSeDesencontrou(motivo: string) {
+    if (
+      motivo === "EQUIPAMENTO_EM_USO" ||
+      motivo === "STATUS_INVALIDO" ||
+      motivo === "EQUIPAMENTO_NAO_ENCONTRADO"
+    ) {
+      router.refresh();
+    }
+  }
 
-    setAlterandoId(item.id);
+  function moverPara(item: ItemDeInventario, destino: string) {
+    if (ocupado) return;
+
+    setEmAndamento({ id: item.id, acao: "situacao" });
     setFalha(null);
 
     iniciarTransicao(async () => {
@@ -72,28 +105,46 @@ export function GestaoInventario({ itens, categorias }: Props) {
           mensagem: resultado.mensagem,
           detalhe: resultado.detalhe,
         });
-
-        // A linha na tela não corresponde mais ao banco: relê em vez de deixar
-        // a secretaria clicando em um botão que não pode dar certo.
-        if (
-          resultado.motivo === "EQUIPAMENTO_EM_USO" ||
-          resultado.motivo === "STATUS_INVALIDO" ||
-          resultado.motivo === "EQUIPAMENTO_NAO_ENCONTRADO"
-        ) {
-          router.refresh();
-        }
-
-        setAlterandoId(null);
+        relerSeDesencontrou(resultado.motivo);
+        setEmAndamento(null);
         return;
       }
 
-      setAviso(
-        destino === STATUS_EQUIPAMENTO.manutencao
-          ? `${item.id} foi para manutenção e saiu da lista do tablet.`
-          : `${item.id} está disponível para retirada.`,
-      );
+      setAviso(avisoDaMudanca(item, destino));
+      setInativando(null);
+      setEmAndamento(null);
+    });
+  }
 
-      setAlterandoId(null);
+  function trocarEtiqueta(item: ItemDeInventario, nova: string) {
+    if (ocupado) return;
+
+    setEmAndamento({ id: item.id, acao: "etiqueta" });
+    setFalha(null);
+
+    iniciarTransicao(async () => {
+      const resultado = await renomearEtiqueta(item.id, nova);
+
+      if (!resultado.ok) {
+        setFalha({
+          id: item.id,
+          mensagem: resultado.mensagem,
+          detalhe: resultado.detalhe,
+        });
+        relerSeDesencontrou(resultado.motivo);
+        setEmAndamento(null);
+        return;
+      }
+
+      const { de, para } = resultado.dados;
+
+      setAviso(
+        de === para
+          ? `${de} continua com a mesma etiqueta.`
+          : `${de} agora é ${para}. O histórico de empréstimos foi junto.`,
+      );
+      setEditando(null);
+      setEmAndamento(null);
     });
   }
 
@@ -107,7 +158,7 @@ export function GestaoInventario({ itens, categorias }: Props) {
         </h2>
 
         <div className="overflow-x-auto rounded-3xl border border-borda bg-superficie">
-          <table className="w-full min-w-3xl border-collapse text-left">
+          <table className="w-full min-w-4xl border-collapse text-left">
             <caption className="sr-only">
               Inventário completo, agrupado por categoria
             </caption>
@@ -121,7 +172,7 @@ export function GestaoInventario({ itens, categorias }: Props) {
                   Situação
                 </th>
                 <th scope="col" className={`${CABECALHO} text-right`}>
-                  Ação
+                  Ações
                 </th>
               </tr>
             </thead>
@@ -130,19 +181,44 @@ export function GestaoInventario({ itens, categorias }: Props) {
               {itens.map((item) => {
                 const emCiclo = item.responsavel !== null;
                 const disponivel = item.status === STATUS_EQUIPAMENTO.disponivel;
+                const emManutencao = item.status === STATUS_EQUIPAMENTO.manutencao;
+                const inativo = item.status === STATUS_EQUIPAMENTO.inativo;
+
+                // Um botão só fica preso quando *outra* linha está trabalhando:
+                // na própria linha o spinner já diz o que está acontecendo.
+                const travado = ocupado && emAndamento?.id !== item.id;
 
                 return (
                   <tr
                     key={item.id}
-                    className="border-b border-borda last:border-b-0 hover:bg-superficie-2"
+                    className={[
+                      "border-b border-borda last:border-b-0 hover:bg-superficie-2",
+                      // Inativo pesa menos na varredura: continua legível, mas
+                      // não disputa atenção com o que ainda circula.
+                      inativo ? "bg-superficie-2/60" : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
                   >
                     <td className={CELULA}>
                       <div className="flex items-center gap-3">
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-marca-azul-tenue text-marca-azul">
+                        <span
+                          className={[
+                            "flex size-10 shrink-0 items-center justify-center rounded-xl",
+                            inativo
+                              ? "bg-superficie-2 text-tinta-tenue"
+                              : "bg-marca-azul-tenue text-marca-azul",
+                          ].join(" ")}
+                        >
                           <IconeCategoria tipo={item.tipo} className="size-6" />
                         </span>
                         <span>
-                          <span className="block font-mono text-lg font-bold tracking-tight text-tinta">
+                          <span
+                            className={[
+                              "block font-mono text-lg font-bold tracking-tight",
+                              inativo ? "text-tinta-suave" : "text-tinta",
+                            ].join(" ")}
+                          >
                             {item.id}
                           </span>
                           <span className="block text-sm text-tinta-suave">
@@ -169,30 +245,94 @@ export function GestaoInventario({ itens, categorias }: Props) {
                           Situação travada até a devolução
                         </span>
                       ) : (
-                        <Botao
-                          variante="secundario"
-                          tamanho="pequeno"
-                          onClick={() => alternarSituacao(item)}
-                          carregando={alterandoId === item.id}
-                          disabled={alterandoId !== null && alterandoId !== item.id}
-                          aria-label={
-                            disponivel
-                              ? `Enviar ${item.id} para manutenção`
-                              : `Marcar ${item.id} como disponível`
-                          }
-                        >
+                        <div className="flex flex-wrap items-center justify-end gap-2">
+                          {/*
+                            Editar só em DISPONIVEL, e a regra é do negócio: o
+                            adesivo é trocado com o aparelho na mão, na bancada.
+                          */}
                           {disponivel ? (
-                            <>
+                            <Botao
+                              variante="secundario"
+                              tamanho="pequeno"
+                              onClick={() => setEditando(item)}
+                              disabled={travado}
+                              aria-label={`Trocar a etiqueta de ${item.id}`}
+                            >
+                              <IconeLapis className="size-5" />
+                              Editar
+                            </Botao>
+                          ) : null}
+
+                          {disponivel ? (
+                            <Botao
+                              variante="secundario"
+                              tamanho="pequeno"
+                              onClick={() =>
+                                moverPara(item, STATUS_EQUIPAMENTO.manutencao)
+                              }
+                              carregando={
+                                emAndamento?.id === item.id &&
+                                emAndamento.acao === "situacao"
+                              }
+                              disabled={travado}
+                              aria-label={`Enviar ${item.id} para manutenção`}
+                            >
                               <IconeFerramenta className="size-5" />
-                              Enviar para manutenção
-                            </>
-                          ) : (
-                            <>
+                              Manutenção
+                            </Botao>
+                          ) : null}
+
+                          {emManutencao ? (
+                            <Botao
+                              variante="secundario"
+                              tamanho="pequeno"
+                              onClick={() =>
+                                moverPara(item, STATUS_EQUIPAMENTO.disponivel)
+                              }
+                              carregando={
+                                emAndamento?.id === item.id &&
+                                emAndamento.acao === "situacao"
+                              }
+                              disabled={travado}
+                              aria-label={`Marcar ${item.id} como disponível`}
+                            >
                               <IconeCheck className="size-5" />
-                              Marcar como disponível
-                            </>
-                          )}
-                        </Botao>
+                              Disponível
+                            </Botao>
+                          ) : null}
+
+                          {disponivel || emManutencao ? (
+                            <Botao
+                              variante="fantasma"
+                              tamanho="pequeno"
+                              onClick={() => setInativando(item)}
+                              disabled={travado}
+                              aria-label={`Inativar ${item.id}`}
+                            >
+                              <IconeBloquear className="size-5" />
+                              Inativar
+                            </Botao>
+                          ) : null}
+
+                          {inativo ? (
+                            <Botao
+                              variante="secundario"
+                              tamanho="pequeno"
+                              onClick={() =>
+                                moverPara(item, STATUS_EQUIPAMENTO.disponivel)
+                              }
+                              carregando={
+                                emAndamento?.id === item.id &&
+                                emAndamento.acao === "situacao"
+                              }
+                              disabled={travado}
+                              aria-label={`Reativar ${item.id}`}
+                            >
+                              <IconeRestaurar className="size-5" />
+                              Reativar
+                            </Botao>
+                          ) : null}
+                        </div>
                       )}
 
                       {falha?.id === item.id ? (
@@ -213,17 +353,233 @@ export function GestaoInventario({ itens, categorias }: Props) {
 
         <p className="px-1 text-base text-tinta-tenue">
           Equipamento em manutenção não aparece no tablet — é assim que um aparelho
-          com defeito para de ser oferecido sem sair do inventário.
+          com defeito para de ser oferecido sem sair do inventário. Inativo é a
+          aposentadoria: some do tablet para sempre, mas continua aqui para o
+          histórico de empréstimos não ficar apontando para o vazio.
         </p>
       </section>
+
+      <ModalDeEtiqueta
+        item={editando}
+        salvando={emAndamento?.acao === "etiqueta"}
+        onCancelar={() => setEditando(null)}
+        onSalvar={trocarEtiqueta}
+      />
+
+      <ModalDeInativacao
+        item={inativando}
+        inativando={emAndamento?.acao === "situacao"}
+        onCancelar={() => setInativando(null)}
+        onConfirmar={(item) => moverPara(item, STATUS_EQUIPAMENTO.inativo)}
+      />
 
       <Notificacao mensagem={aviso} onFechar={() => setAviso(null)} />
     </>
   );
 }
 
-/** Valor de escape do `<select>`: abre o campo de texto para categoria nova. */
-const NOVA_CATEGORIA = "__nova__";
+/** O aviso do rodapé, que muda com o destino — e com de onde o item veio. */
+function avisoDaMudanca(item: ItemDeInventario, destino: string): string {
+  if (destino === STATUS_EQUIPAMENTO.manutencao) {
+    return `${item.id} foi para manutenção e saiu da lista do tablet.`;
+  }
+
+  if (destino === STATUS_EQUIPAMENTO.inativo) {
+    return `${item.id} foi inativado e não será mais oferecido para empréstimo.`;
+  }
+
+  // Mesmo destino, dois gestos diferentes: "voltou do conserto" e "voltou da
+  // aposentadoria" não são a mesma notícia para quem clicou.
+  return item.status === STATUS_EQUIPAMENTO.inativo
+    ? `${item.id} voltou ao inventário e está disponível para retirada.`
+    : `${item.id} está disponível para retirada.`;
+}
+
+/**
+ * Troca de etiqueta.
+ *
+ * O campo já vem com a etiqueta atual selecionada: quem abre este modal quase
+ * sempre vai digitar um código inteiro novo, não emendar uma letra.
+ *
+ * O `<form>` existe para o Enter funcionar — é um campo só, e obrigar o mouse
+ * até o botão em um formulário de um campo é a definição de atrito.
+ */
+function ModalDeEtiqueta({
+  item,
+  salvando,
+  onCancelar,
+  onSalvar,
+}: {
+  item: ItemDeInventario | null;
+  salvando: boolean;
+  onCancelar: () => void;
+  onSalvar: (item: ItemDeInventario, nova: string) => void;
+}) {
+  const campoRef = useRef<HTMLInputElement>(null);
+
+  /*
+    O foco vem depois do `showModal()`, não antes.
+
+    O <dialog> nativo move o foco para o primeiro elemento focável quando abre,
+    e o `showModal()` roda no efeito do `Modal` — ou seja, depois dos efeitos
+    dos filhos. Um `focus()` daqui seria desfeito um instante depois. O
+    `requestAnimationFrame` cai no quadro seguinte, quando o diálogo já abriu, e
+    aí o `select()` pega.
+  */
+  useEffect(() => {
+    if (!item) return;
+
+    const quadro = requestAnimationFrame(() => campoRef.current?.select());
+    return () => cancelAnimationFrame(quadro);
+  }, [item]);
+
+  if (!item) return null;
+
+  const idDoCampo = "nova-etiqueta";
+
+  return (
+    <Modal
+      aberto
+      titulo="Trocar a etiqueta"
+      bloqueado={salvando}
+      onFechar={onCancelar}
+      acoes={
+        <>
+          <Botao
+            variante="secundario"
+            onClick={onCancelar}
+            disabled={salvando}
+            className="sm:min-w-40"
+          >
+            Cancelar
+          </Botao>
+          <Botao
+            type="submit"
+            form="formulario-da-etiqueta"
+            carregando={salvando}
+            className="sm:min-w-40"
+          >
+            Salvar
+          </Botao>
+        </>
+      }
+    >
+      <form
+        id="formulario-da-etiqueta"
+        onSubmit={(evento) => {
+          evento.preventDefault();
+          const valor = new FormData(evento.currentTarget).get("nova_etiqueta");
+          onSalvar(item, String(valor ?? ""));
+        }}
+        className="flex flex-col gap-4"
+      >
+        <p>
+          O equipamento é o mesmo — muda só o código do adesivo. Todos os
+          empréstimos dele, abertos e concluídos, acompanham a troca.
+        </p>
+
+        <div className="flex flex-col gap-2">
+          <label htmlFor={idDoCampo} className="text-base font-semibold text-tinta">
+            Nova etiqueta
+          </label>
+          <input
+            ref={campoRef}
+            id={idDoCampo}
+            name="nova_etiqueta"
+            defaultValue={item.id}
+            required
+            maxLength={24}
+            autoComplete="off"
+            spellCheck={false}
+            disabled={salvando}
+            className={`${CAMPO} font-mono uppercase`}
+          />
+          <p className="text-base text-tinta-tenue">
+            Etiqueta atual:{" "}
+            <span className="font-mono font-semibold text-tinta-suave">
+              {item.id}
+            </span>
+          </p>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+/**
+ * Confirmação de inativação.
+ *
+ * A frase é a da especificação da tarefa, palavra por palavra — é ela que
+ * explica por que este botão não é um "excluir". A etiqueta aparece acima, em
+ * monoespaçada, porque "este equipamento" no meio de uma tabela de vinte linhas
+ * não diz qual.
+ */
+function ModalDeInativacao({
+  item,
+  inativando,
+  onCancelar,
+  onConfirmar,
+}: {
+  item: ItemDeInventario | null;
+  inativando: boolean;
+  onCancelar: () => void;
+  onConfirmar: (item: ItemDeInventario) => void;
+}) {
+  if (!item) return null;
+
+  return (
+    <Modal
+      aberto
+      titulo="Inativar equipamento"
+      bloqueado={inativando}
+      onFechar={onCancelar}
+      acoes={
+        <>
+          <Botao
+            variante="secundario"
+            onClick={onCancelar}
+            disabled={inativando}
+            className="sm:min-w-40"
+          >
+            Cancelar
+          </Botao>
+          <Botao
+            onClick={() => onConfirmar(item)}
+            carregando={inativando}
+            className="sm:min-w-40"
+          >
+            <IconeBloquear className="size-5" />
+            Inativar
+          </Botao>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-3 rounded-2xl border border-borda bg-superficie-2 p-4">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-marca-azul-tenue text-marca-azul">
+            <IconeCategoria tipo={item.tipo} className="size-6" />
+          </span>
+          <span>
+            <span className="block font-mono text-lg font-bold tracking-tight text-tinta">
+              {item.id}
+            </span>
+            <span className="block text-base text-tinta-suave">{item.tipo}</span>
+          </span>
+        </div>
+
+        <p>
+          Tem certeza que deseja inativar este equipamento? Ele não aparecerá
+          mais para novos empréstimos.
+        </p>
+
+        <p className="text-base text-tinta-tenue">
+          Ele continua na lista do inventário, marcado como inativo, e pode ser
+          reativado depois.
+        </p>
+      </div>
+    </Modal>
+  );
+}
 
 /**
  * Cadastro de equipamento novo.
@@ -232,33 +588,23 @@ const NOVA_CATEGORIA = "__nova__";
  * caixa de dez notebooks digita dez vezes seguidas, e tirar a mão do teclado
  * para clicar no campo dez vezes é a diferença entre usar e não usar a tela.
  *
- * **A categoria é um `<select>`, não um campo de texto com `datalist`.** O
- * `datalist` parece um combo mas é um campo de texto com sugestões: depois de
- * escolher "Notebook", a lista só reabre quando o texto volta a casar com algo
- * — na prática, apagando a palavra à mão para trocar para "Tablet". Com o
- * `<select>`, um clique sempre abre as opções e um segundo troca.
- *
- * O `<select>` sozinho, porém, fecharia a porta para a categoria que ainda não
- * existe — e o servidor aceita categoria nova de propósito (é ele quem escolhe
- * a grafia). Por isso a última opção é "Nova categoria...", que troca o campo
- * por um `<input>` de texto com o mesmo `name`. Um `name` só: `FormData.get`
- * devolve o primeiro campo homônimo, então dois ao mesmo tempo mandariam o
- * valor errado sem avisar.
+ * **A categoria é um `<select>` de opções vindas da tabela `Categoria`, e só.**
+ * Até a Tarefa 5 este campo era um texto com sugestões (`datalist`), que parece
+ * um combo mas não é: depois de escolher "Notebook", a lista só reabria
+ * apagando a palavra à mão. A Tarefa 5 trocou por `<select>` com um escape
+ * "Nova categoria..."; a Tarefa 6 tirou o escape, porque criar categoria virou
+ * uma tela com dono (`/admin/categorias`) e dois lugares criando a mesma coisa
+ * é como nasciam "notebook" e "Notebook" lado a lado. No lugar do escape ficou
+ * um link — o caminho continua a um clique, mas passa por onde a categoria é
+ * conferida.
  */
-function FormularioDeCadastro({ categorias }: { categorias: string[] }) {
+function FormularioDeCadastro({ categorias }: { categorias: OpcaoDeCategoria[] }) {
   const [estado, cadastrar, pendente] = useActionState(cadastrarEquipamento, {
     fase: "inicial" as const,
   });
 
   const etiquetaRef = useRef<HTMLInputElement>(null);
-  const categoriaNovaRef = useRef<HTMLInputElement>(null);
-
-  // Inventário vazio não tem lista para escolher — o primeiro cadastro já
-  // começa no campo de texto.
-  const [digitandoCategoria, setDigitandoCategoria] = useState(
-    categorias.length === 0,
-  );
-  const pediuCategoriaNova = useRef(false);
+  const semCategorias = categorias.length === 0;
 
   /*
     O `<select>` é **não-controlado** de propósito.
@@ -270,32 +616,12 @@ function FormularioDeCadastro({ categorias }: { categorias: string[] }) {
     categoria vazia — e o `FormData` lê o DOM, não o estado. Medido no
     navegador: depois de cadastrar TAB-99 com "Tablet" escolhido, o campo já
     aparecia em branco.
-
-    Nada aqui precisa do valor em estado: o sentinela da categoria nova chega
-    pelo próprio evento, e a volta para a lista remonta o `<select>`, que
-    renasce no `defaultValue`.
   */
   useEffect(() => {
     if (estado.fase !== "sucesso") return;
 
     etiquetaRef.current?.focus();
   }, [estado]);
-
-  // Só rouba o foco quando foi a secretaria que pediu o campo de texto — no
-  // inventário vazio a tela abre nele por padrão, e aí o foco é da etiqueta.
-  useEffect(() => {
-    if (!digitandoCategoria || !pediuCategoriaNova.current) return;
-
-    pediuCategoriaNova.current = false;
-    categoriaNovaRef.current?.focus();
-  }, [digitandoCategoria]);
-
-  function escolherCategoria(valor: string) {
-    if (valor !== NOVA_CATEGORIA) return;
-
-    pediuCategoriaNova.current = true;
-    setDigitandoCategoria(true);
-  }
 
   return (
     <section className="flex flex-col gap-4 rounded-3xl border border-borda bg-superficie p-6 lg:p-7">
@@ -308,6 +634,14 @@ function FormularioDeCadastro({ categorias }: { categorias: string[] }) {
           como disponível.
         </p>
       </div>
+
+      {semCategorias ? (
+        <Alerta
+          tom="aviso"
+          mensagem="Nenhuma categoria cadastrada."
+          detalhe="Todo equipamento pertence a uma categoria — crie a primeira em Categorias, no menu ao lado."
+        />
+      ) : null}
 
       <form
         action={cadastrar}
@@ -326,72 +660,63 @@ function FormularioDeCadastro({ categorias }: { categorias: string[] }) {
             autoComplete="off"
             spellCheck={false}
             placeholder="NOTE-11"
+            disabled={semCategorias}
             className={`${CAMPO} font-mono uppercase`}
           />
         </div>
 
         <div className="flex flex-1 flex-col gap-2">
           <div className="flex items-baseline justify-between gap-3">
-            <label htmlFor="tipo" className="text-base font-semibold text-tinta">
+            <label
+              htmlFor="categoria_id"
+              className="text-base font-semibold text-tinta"
+            >
               Categoria
             </label>
 
-            {digitandoCategoria && categorias.length > 0 ? (
-              <button
-                type="button"
-                onClick={() => setDigitandoCategoria(false)}
-                className="rounded-lg text-sm font-semibold text-marca-azul underline decoration-marca-azul-claro underline-offset-4 hover:text-marca-azul-escuro"
-              >
-                Escolher da lista
-              </button>
-            ) : null}
+            <Link
+              href="/admin/categorias"
+              className="rounded-lg text-sm font-semibold text-marca-azul underline decoration-marca-azul-claro underline-offset-4 hover:text-marca-azul-escuro"
+            >
+              Gerenciar
+            </Link>
           </div>
 
-          {digitandoCategoria ? (
-            <input
-              ref={categoriaNovaRef}
-              id="tipo"
-              name="tipo"
+          {/*
+            `appearance-none` apaga a seta nativa junto com o estilo do
+            sistema, então ela volta desenhada aqui — e com `pointer-events-none`,
+            para o clique atravessar e abrir a lista mesmo em cima do ícone.
+          */}
+          <div className="relative">
+            <select
+              id="categoria_id"
+              name="categoria_id"
               required
-              maxLength={30}
-              autoComplete="off"
-              placeholder="Ex.: Projetor"
-              className={CAMPO}
-            />
-          ) : (
-            /*
-              `appearance-none` apaga a seta nativa junto com o estilo do
-              sistema, então ela volta desenhada aqui — e com `pointer-events-none`,
-              para o clique atravessar e abrir a lista mesmo em cima do ícone.
-            */
-            <div className="relative">
-              <select
-                id="tipo"
-                name="tipo"
-                required
-                defaultValue=""
-                onChange={(evento) => escolherCategoria(evento.target.value)}
-                className={`${CAMPO} cursor-pointer appearance-none pr-12`}
-              >
-                <option value="" disabled>
-                  Selecione a categoria
+              defaultValue=""
+              disabled={semCategorias}
+              className={`${CAMPO} cursor-pointer appearance-none pr-12`}
+            >
+              <option value="" disabled>
+                Selecione a categoria
+              </option>
+
+              {categorias.map((categoria) => (
+                <option key={categoria.id} value={categoria.id}>
+                  {categoria.nome}
                 </option>
+              ))}
+            </select>
 
-                {categorias.map((existente) => (
-                  <option key={existente} value={existente}>
-                    {existente}
-                  </option>
-                ))}
-
-                <option value={NOVA_CATEGORIA}>Nova categoria...</option>
-              </select>
-
-              <IconeChevron className="pointer-events-none absolute top-1/2 right-4 size-5 -translate-y-1/2 text-tinta-tenue" />
-            </div>
-          )}
+            <IconeChevron className="pointer-events-none absolute top-1/2 right-4 size-5 -translate-y-1/2 text-tinta-tenue" />
+          </div>
         </div>
 
-        <Botao type="submit" carregando={pendente} className="sm:shrink-0">
+        <Botao
+          type="submit"
+          carregando={pendente}
+          disabled={semCategorias}
+          className="sm:shrink-0"
+        >
           <IconeMais className="size-5" />
           Cadastrar
         </Botao>
@@ -416,4 +741,5 @@ const CAMPO = [
   "text-lg text-tinta placeholder:text-tinta-tenue",
   "transition-colors duration-150",
   "hover:border-borda-forte focus:border-marca-azul focus:bg-superficie",
+  "disabled:cursor-not-allowed disabled:opacity-55",
 ].join(" ");

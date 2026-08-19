@@ -212,6 +212,59 @@ export function IconeFerramenta({ className }: PropsDeIcone) {
   );
 }
 
+/** Editar a etiqueta: o lápis é o verbo "renomear" em um símbolo só. */
+export function IconeLapis({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <path d="M4 20h4l10-10a2.4 2.4 0 0 0-3.4-3.4L4.6 16.6z" {...TRACO} />
+      <path d="m13.8 7.2 3 3" {...TRACO} />
+    </Svg>
+  );
+}
+
+/**
+ * Inativar: o círculo cortado, não a lixeira.
+ *
+ * A lixeira promete que o registro some, e ele não some — o equipamento fica no
+ * banco justamente para o histórico de empréstimos continuar apontando para
+ * algum lugar. O símbolo de proibido diz o que de fato acontece: o item para de
+ * ser oferecido.
+ */
+export function IconeBloquear({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <circle cx="12" cy="12" r="8.25" {...TRACO} />
+      <path d="m6.4 6.4 11.2 11.2" {...TRACO} />
+    </Svg>
+  );
+}
+
+/** Reativar: a seta que volta. */
+export function IconeRestaurar({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <path d="M4.5 9.5h5v-5" {...TRACO} />
+      <path
+        d="M4.9 9.4a8 8 0 1 1-.65 5.1"
+        {...TRACO}
+      />
+    </Svg>
+  );
+}
+
+/** Categorias: a etiqueta de prateleira. */
+export function IconeEtiquetas({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <path
+        d="M4 5.75A1.75 1.75 0 0 1 5.75 4h4.4c.46 0 .9.18 1.23.51l7.1 7.1a1.75 1.75 0 0 1 0 2.48l-4.4 4.4a1.75 1.75 0 0 1-2.47 0l-7.1-7.1A1.75 1.75 0 0 1 4 10.15z"
+        {...TRACO}
+      />
+      <circle cx="8.4" cy="8.4" r="1.35" {...TRACO} />
+    </Svg>
+  );
+}
+
 /**
  * Ícone da categoria, escolhido pelo `tipo` gravado no banco.
  *

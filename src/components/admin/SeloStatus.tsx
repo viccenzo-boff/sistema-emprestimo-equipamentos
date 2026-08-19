@@ -7,10 +7,15 @@ import { STATUS_EQUIPAMENTO } from "@/lib/tipos";
  * e quem não distingue verde de âmbar precisaria adivinhar. O ponto colorido é
  * reforço, não a informação.
  *
- * Os três tons vêm dos papéis semânticos da paleta, não de escolha livre:
- * disponível é o estado bom (sucesso), manutenção é o estado que pede atenção
- * (aviso), emprestado é estado neutro de sistema (azul da marca) — não é
- * problema nenhum um equipamento estar na mão de alguém.
+ * Os tons vêm dos papéis semânticos da paleta, não de escolha livre: disponível
+ * é o estado bom (sucesso), manutenção é o estado que pede atenção (aviso),
+ * emprestado é estado neutro de sistema (azul da marca) — não é problema nenhum
+ * um equipamento estar na mão de alguém.
+ *
+ * Inativo é o único sem cor: cinza sobre cinza, o mesmo par que a tabela usa
+ * para texto secundário. Não é um estado que peça ação nem que informe boa
+ * notícia — é um item que saiu de cena, e a linha inteira deve pesar menos que
+ * as vizinhas quando o olho varre a lista.
  */
 
 type Props = {
@@ -33,6 +38,11 @@ const SELOS: Record<string, { rotulo: string; caixa: string; ponto: string }> = 
     rotulo: "Manutenção",
     caixa: "border-aviso-borda bg-aviso-fundo text-aviso",
     ponto: "bg-aviso",
+  },
+  [STATUS_EQUIPAMENTO.inativo]: {
+    rotulo: "Inativo",
+    caixa: "border-borda bg-superficie-2 text-tinta-tenue",
+    ponto: "bg-tinta-tenue",
   },
 };
 
