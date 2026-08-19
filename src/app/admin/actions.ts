@@ -11,6 +11,7 @@ import {
   segundosDeBloqueio,
   temSessaoAdmin,
 } from "@/lib/sessao-admin";
+import { semAcento } from "@/lib/texto";
 import {
   STATUS_EMPRESTIMO,
   STATUS_EQUIPAMENTO,
@@ -858,13 +859,6 @@ export async function excluirCategoria(
  */
 const AJUDA_DA_CATEGORIA_EM_USO =
   "Inative os equipamentos dessa categoria antes de excluí-la — apagá-la levaria junto o histórico de empréstimos deles.";
-
-function semAcento(texto: string): string {
-  return texto
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase();
-}
 
 /** Rótulo em português de um status de equipamento, para mensagens de erro. */
 function rotuloDeStatus(status: string): string {

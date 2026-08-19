@@ -8,6 +8,29 @@
  */
 
 /**
+ * O texto reduzido à forma em que duas grafias da mesma palavra se encontram:
+ * sem acento e sem caixa. "Extensão", "extensao" e "EXTENSAO" viram a mesma
+ * coisa.
+ *
+ * Mora aqui, e não no módulo das actions, porque tem dois donos com naturezas
+ * opostas: o cadastro no servidor a usa para **recusar** uma categoria que já
+ * existe com outra grafia, e a busca do inventário a usa para **aceitar** o que
+ * a pessoa digitou sem acento. Se cada lado tivesse a sua cópia, o dia em que
+ * uma delas passasse a ignorar hífen (ou a tratar "ç") o inventário acharia
+ * itens que o cadastro considera diferentes — e a divergência seria silenciosa.
+ *
+ * Fica em módulo neutro por obrigação técnica, além da conceitual: um arquivo
+ * marcado com "use server" só exporta função assíncrona, então a busca, que
+ * roda no navegador, não teria como importá-la de lá.
+ */
+export function semAcento(texto: string): string {
+  return texto
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
+}
+
+/**
  * "Notebook" -> "Notebooks", "Extensão" -> "Extensões", "Projetor" ->
  * "Projetores".
  *
