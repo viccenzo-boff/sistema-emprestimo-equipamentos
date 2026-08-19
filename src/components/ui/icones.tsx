@@ -275,6 +275,46 @@ export function IconeLupa({ className }: PropsDeIcone) {
   );
 }
 
+/** Gestão de usuários: duas pessoas, que é o que a aba lista. */
+export function IconePessoas({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <circle cx="9.5" cy="8" r="3.25" {...TRACO} />
+      <path d="M3.5 19.25a6 6 0 0 1 12 0" {...TRACO} />
+      <path d="M16 5.1a3.25 3.25 0 0 1 0 5.8" {...TRACO} />
+      <path d="M17.5 13.9a6 6 0 0 1 3 5.35" {...TRACO} />
+    </Svg>
+  );
+}
+
+/**
+ * Importação de planilha: a grade da tabela com a seta entrando.
+ *
+ * A seta aponta para **dentro** do documento de propósito — a mesma forma com a
+ * seta saindo é o ícone universal de exportar, e as duas ações viveriam lado a
+ * lado se o painel um dia ganhar "baixar a lista".
+ */
+export function IconePlanilha({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <path d="M20 12.5v-6A1.5 1.5 0 0 0 18.5 5h-13A1.5 1.5 0 0 0 4 6.5v11A1.5 1.5 0 0 0 5.5 19h6" {...TRACO} />
+      <path d="M4 9.25h16M9.75 9.25V19" {...TRACO} />
+      <path d="M17.5 14.5v5.5m0 0 2.25-2.25M17.5 20l-2.25-2.25" {...TRACO} />
+    </Svg>
+  );
+}
+
+/** Confirmação de usuário: a pessoa com o visto. */
+export function IconePessoaCheck({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <circle cx="10" cy="8" r="3.25" {...TRACO} />
+      <path d="M4 19.25a6 6 0 0 1 10.4-4.1" {...TRACO} />
+      <path d="m14.75 18 2 2 3.75-4" {...TRACO} strokeWidth={2} />
+    </Svg>
+  );
+}
+
 /**
  * Ícone da categoria, escolhido pelo `tipo` gravado no banco.
  *

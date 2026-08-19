@@ -1,14 +1,18 @@
 import { prisma } from "@/lib/prisma";
 import { dataHora, haQuantoTempo } from "@/lib/texto";
 import {
+  PERFIL,
   STATUS_EMPRESTIMO,
   STATUS_EQUIPAMENTO,
+  STATUS_USUARIO,
   type CategoriaDoPainel,
   type EmprestimoEmCurso,
   type ItemDaFila,
   type ItemDeInventario,
   type OpcaoDeCategoria,
+  type ResumoDeUsuarios,
   type ResumoDoInventario,
+  type UsuarioDoPainel,
 } from "@/lib/tipos";
 
 /**
@@ -246,4 +250,92 @@ export async function listarOpcoesDeCategoria(): Promise<OpcaoDeCategoria[]> {
     select: { id: true, nome: true },
     orderBy: { id: "asc" },
   });
+}
+
+/* ------------------------------------------------------------------------- *
+ * Gestão de Usuários (Tarefa 8)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Todos os cadastros, com o que cada pessoa está devendo agora.
+ *
+ * O empréstimo aberto (`ATIVO` ou `AGUARDANDO_BAIXA`) vem junto porque é o que
+ * a inativação precisa dizer antes de acontecer: a secretaria **pode** inativar
+ * quem ainda está com equipamento — é o caso comum, alguém que saiu da
+ * faculdade — mas o modal mostra o que a pessoa tem, e não pergunta às cegas.
+ *
+ * Ordem: ativos primeiro, e dentro de cada grupo por nome. Não é alfabética
+ * pura de propósito — quem varre esta lista está procurando gente em
+ * circulação, e o cadastro aposentado é ruído até a hora em que não é.
+ * `sort` no Node, e não `orderBy` no banco, porque a ordenação por nome
+ * precisa de `localeCompare` em pt-BR: o SQLite compara byte a byte e jogaria
+ * "Ávila" depois de "Zamboni".
+ */
+export async function listarUsuariosDoPainel(): Promise<UsuarioDoPainel[]> {
+  const usuarios = await prisma.usuario.findMany({
+    select: {
+      matricula: true,
+      nome: true,
+      perfil: true,
+      cursos: true,
+      status: true,
+      emprestimos: {
+        where: {
+          status: {
+            in: [STATUS_EMPRESTIMO.ativo, STATUS_EMPRESTIMO.aguardandoBaixa],
+          },
+        },
+        select: { equip_id: true },
+        orderBy: { data_retirada: "asc" },
+      },
+    },
+  });
+
+  return usuarios
+    .map((usuario) => ({
+      matricula: usuario.matricula,
+      nome: usuario.nome,
+      perfil: usuario.perfil,
+      cursos: usuario.cursos,
+      status: usuario.status,
+      emprestimosAbertos: usuario.emprestimos.length,
+      equipamentosEmMaos: usuario.emprestimos.map((emprestimo) => emprestimo.equip_id),
+    }))
+    .sort((a, b) => {
+      const aAtivo = a.status === STATUS_USUARIO.ativo;
+      const bAtivo = b.status === STATUS_USUARIO.ativo;
+      if (aAtivo !== bAtivo) return aAtivo ? -1 : 1;
+
+      return a.nome.localeCompare(b.nome, "pt-BR", { sensitivity: "base" });
+    });
+}
+
+/**
+ * As contagens do topo da tela de usuários.
+ *
+ * Uma consulta agrupada por status e outra por perfil, em vez de carregar a
+ * tabela inteira para contar no Node: a planilha da coordenação traz o curso
+ * inteiro, e a lista cresce por semestre enquanto o resumo continua sendo
+ * cinco números.
+ */
+export async function resumirUsuarios(): Promise<ResumoDeUsuarios> {
+  const [porStatus, porPerfil] = await Promise.all([
+    prisma.usuario.groupBy({ by: ["status"], _count: { _all: true } }),
+    prisma.usuario.groupBy({ by: ["perfil"], _count: { _all: true } }),
+  ]);
+
+  const status = new Map(porStatus.map((grupo) => [grupo.status, grupo._count._all]));
+  const perfil = new Map(porPerfil.map((grupo) => [grupo.perfil, grupo._count._all]));
+
+  // O total sai da soma dos grupos, e não das contagens nomeadas: um status
+  // fora dos dois conhecidos sumiria da conta, e a pessoa continua cadastrada.
+  const total = porStatus.reduce((soma, grupo) => soma + grupo._count._all, 0);
+
+  return {
+    ativos: status.get(STATUS_USUARIO.ativo) ?? 0,
+    inativos: status.get(STATUS_USUARIO.inativo) ?? 0,
+    alunos: perfil.get(PERFIL.aluno) ?? 0,
+    professores: perfil.get(PERFIL.professor) ?? 0,
+    total,
+  };
 }

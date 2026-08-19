@@ -44,6 +44,19 @@ export const STATUS_USUARIO = {
   inativo: "INATIVO",
 } as const;
 
+/**
+ * Os dois perfis da spec (seção 3).
+ *
+ * Vira lista fechada aqui porque a importação de planilha precisa **recusar**
+ * um valor que não seja um dos dois: "alunos", "estudante" e "prof" chegam de
+ * planilha de coordenação o tempo todo, e aceitar cada variante criaria perfis
+ * que nenhuma tela sabe exibir.
+ */
+export const PERFIL = {
+  aluno: "ALUNO",
+  professor: "PROFESSOR",
+} as const;
+
 /** Teto de itens por retirada. Segura tanto o dedo escorregando quanto POST malicioso. */
 export const MAXIMO_ITENS_POR_RETIRADA = 10;
 
@@ -138,8 +151,18 @@ export type MotivoDeFalha =
   | "CATEGORIA_NAO_ENCONTRADA"
   | "CATEGORIA_DUPLICADA"
   | "CATEGORIA_EM_USO"
-  // Portal do tablet — cadastro inativo (Tarefa 8)
+  // Gestão de usuários (Tarefa 8)
+  | "USUARIO_NAO_ENCONTRADO"
   | "USUARIO_INATIVO"
+  | "MATRICULA_INVALIDA"
+  | "MATRICULA_DUPLICADA"
+  | "NOME_INVALIDO"
+  | "PERFIL_INVALIDO"
+  | "CURSOS_INVALIDOS"
+  | "ARQUIVO_INVALIDO"
+  | "PLANILHA_VAZIA"
+  | "PLANILHA_SEM_MATRICULA"
+  | "PLANILHA_EXCEDIDA"
   | "FALHA_INTERNA";
 
 export type RetiradaConfirmada = {
@@ -313,3 +336,111 @@ export type ResumoDoInventario = {
 
 /** Estado do formulário de cadastro de categoria. Mesma forma do de equipamento. */
 export type EstadoDaCategoria = EstadoDoCadastro;
+
+/* ------------------------------------------------------------------------- *
+ * Gestão de Usuários (Tarefa 8)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Uma linha da tabela de `/admin/usuarios`.
+ *
+ * `emprestimosAbertos` vem junto porque é o que a inativação precisa dizer: a
+ * secretaria pode inativar quem ainda está com equipamento — é justamente o
+ * caso comum, alguém que saiu da faculdade —, mas não às cegas. O modal mostra
+ * o que a pessoa tem antes de confirmar, e o empréstimo continua na aba
+ * Empréstimos Ativos para cobrança.
+ */
+export type UsuarioDoPainel = {
+  matricula: string;
+  nome: string;
+  perfil: string;
+  cursos: string;
+  status: string;
+  /** Empréstimos em `ATIVO` ou `AGUARDANDO_BAIXA` — o que a pessoa deve agora. */
+  emprestimosAbertos: number;
+  /** Etiquetas desses empréstimos, para o modal poder nomeá-las. */
+  equipamentosEmMaos: string[];
+};
+
+/** As contagens do topo da tela de usuários. */
+export type ResumoDeUsuarios = {
+  ativos: number;
+  inativos: number;
+  alunos: number;
+  professores: number;
+  total: number;
+};
+
+/**
+ * O que uma linha da planilha vai provocar no banco.
+ *
+ * Os três cenários da tarefa viram três verbos, e o quarto (`inalterada`)
+ * existe porque planilha de coordenação é reenviada inteira toda semana: sem
+ * ele, a prévia diria "180 atualizações" quando 178 delas não mudam um
+ * caractere, e ninguém leria a lista.
+ */
+export type AcaoDaLinha = "criar" | "atualizar" | "inalterada" | "erro";
+
+/** Um campo que a importação vai trocar, com o valor de antes e o de depois. */
+export type MudancaDeCampo = {
+  campo: "nome" | "perfil" | "cursos" | "status";
+  de: string;
+  para: string;
+};
+
+/**
+ * Uma linha da planilha depois de lida, normalizada e confrontada com o banco.
+ *
+ * `linha` é o número da linha **no arquivo** (contando o cabeçalho), e não o
+ * índice do array: quem for corrigir a planilha vai abri-la no Excel, e ali as
+ * linhas começam em 1.
+ */
+export type LinhaDaImportacao = {
+  linha: number;
+  matricula: string;
+  acao: AcaoDaLinha;
+  /** Nome atual (ou o que virá), só para a prévia ter o que exibir. */
+  nome: string;
+  /** O que muda. Vazio em `criar` (é tudo novo) e em `inalterada`. */
+  mudancas: MudancaDeCampo[];
+  /** Preenchido só quando `acao === "erro"`. */
+  erro?: string;
+};
+
+/**
+ * O resultado da leitura da planilha, antes de qualquer escrita.
+ *
+ * A prévia existe porque a importação não tem desfazer: um arquivo errado
+ * sobrescreveria centenas de cadastros, e o relatório depois do fato só contaria
+ * o estrago. Aqui a secretaria vê o que vai acontecer e decide.
+ */
+export type PreviaDaImportacao = {
+  /** Nome do arquivo lido, para a tela poder repeti-lo na confirmação. */
+  arquivo: string;
+  /** Cabeçalhos reconhecidos, na grafia normalizada. Diz o que a planilha trazia. */
+  colunas: string[];
+  linhas: LinhaDaImportacao[];
+  totais: { criar: number; atualizar: number; inalteradas: number; erros: number };
+};
+
+/**
+ * O que a importação de fato gravou.
+ *
+ * Repete a forma da prévia de propósito: o servidor **relê a planilha e refaz
+ * as contas** na confirmação, em vez de confiar no que a tela calculou. Se o
+ * banco mudou entre a prévia e o clique, é este número que vale — e a tela
+ * mostra os dois lado a lado quando eles diferem.
+ */
+export type ImportacaoConcluida = {
+  criados: number;
+  atualizados: number;
+  inalterados: number;
+  erros: number;
+};
+
+/** Estado do formulário de importação, para o `useActionState`. */
+export type EstadoDaImportacao =
+  | { fase: "inicial" }
+  | { fase: "previa"; previa: PreviaDaImportacao }
+  | { fase: "concluida"; resultado: ImportacaoConcluida }
+  | { fase: "erro"; mensagem: string; detalhe?: string };

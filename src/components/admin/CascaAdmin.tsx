@@ -10,12 +10,13 @@ import {
   IconeCaixa,
   IconeEtiquetas,
   IconeFila,
+  IconePessoas,
   IconeRelogio,
   IconeSair,
 } from "@/components/ui/icones";
 
 /**
- * Moldura das três telas do painel: barra lateral de navegação e área de
+ * Moldura das cinco telas do painel: barra lateral de navegação e área de
  * conteúdo.
  *
  * É componente, não `layout.tsx`, por dois motivos que se somam:
@@ -33,7 +34,12 @@ import {
  * em um notebook pequeno da coordenação sem virar outro projeto.
  */
 
-export type AbaDoPainel = "fila" | "ativos" | "inventario" | "categorias";
+export type AbaDoPainel =
+  | "fila"
+  | "ativos"
+  | "inventario"
+  | "categorias"
+  | "usuarios";
 
 type Props = {
   aba: AbaDoPainel;
@@ -70,6 +76,21 @@ const ABAS = [
     rotulo: "Categorias",
     href: "/admin/categorias",
     Icone: IconeEtiquetas,
+  },
+  /*
+    Usuários fica por último de propósito, e não junto da fila.
+
+    As quatro abas acima são o trabalho do dia — a secretaria entra no painel
+    para conferir devolução e mexer no inventário. Cadastro é manutenção de
+    início de semestre: a planilha da coordenação chega uma vez, é importada, e
+    a aba fica meses sem ser aberta. Pôr uma tarefa rara no topo empurraria para
+    baixo as três que acontecem toda hora.
+  */
+  {
+    id: "usuarios" as const,
+    rotulo: "Usuários",
+    href: "/admin/usuarios",
+    Icone: IconePessoas,
   },
 ];
 
