@@ -22,6 +22,17 @@ model Usuario {
   perfil    String
   /// Cursos vinculados (ex: "Sistemas de Informação, Ciência da Computação").
   cursos    String
+  /// "ATIVO" ou "INATIVO" (Tarefa 8).
+  ///
+  /// É a aposentadoria do cadastro, pelo mesmo motivo que o `INATIVO` do
+  /// `Equipamento`: usuário não é apagado, porque `Emprestimo.usuario_id`
+  /// aponta para ele e um DELETE levaria junto o histórico — conferido, o banco
+  /// recusa com P2003.
+  ///
+  /// `INATIVO` **bloqueia a retirada e permite a devolução**: quem saiu da
+  /// faculdade costuma estar com um aparelho na mochila, e travar a devolução
+  /// empurraria o equipamento para nunca voltar.
+  status    String @default("ATIVO")
 
   emprestimos Emprestimo[]
 }
@@ -75,6 +86,19 @@ model Emprestimo {
   /// "ATIVO" | "AGUARDANDO_BAIXA" | "CONCLUIDO".
   status         String    @default("ATIVO")
 
-  usuario     Usuario     @relation(fields: [usuario_id], references: [matricula])
-  equipamento Equipamento @relation(fields: [equip_id], references: [id])
+  /// `onUpdate: Cascade` é o que faz a correção de uma matrícula digitada
+  /// errada não quebrar o histórico: a PK do `Usuario` muda e todos os
+  /// empréstimos dele vão junto, na mesma instrução.
+  ///
+  /// Está **explícito de propósito**, embora seja o padrão do Prisma para
+  /// relação obrigatória — a migration inicial já tinha gravado
+  /// `ON UPDATE CASCADE` no SQL sem ninguém pedir. Escrito aqui, é regra do
+  /// projeto; implícito, era coincidência do gerador. O comportamento foi
+  /// exercitado contra uma cópia do `dev.db` na Tarefa 8, junto com o
+  /// `PRAGMA foreign_keys = 1` de que ele depende.
+  ///
+  /// `onDelete: Restrict` (também o padrão) é o que torna `INATIVO` a única
+  /// saída para um cadastro que sai de circulação.
+  usuario     Usuario     @relation(fields: [usuario_id], references: [matricula], onDelete: Restrict, onUpdate: Cascade)
+  equipamento Equipamento @relation(fields: [equip_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 }

@@ -228,7 +228,17 @@ async function main() {
     for (const usuario of usuarios) {
       await prisma.usuario.upsert({
         where: { matricula: usuario.matricula },
-        // Reimportar a planilha atualiza os dados cadastrais.
+        /*
+          Reimportar a planilha atualiza os dados cadastrais — e **não toca no
+          `status`**, de propósito (Tarefa 8).
+
+          É a mesma regra da importação de .xlsx pelo painel: campo que a
+          origem não menciona é campo que o banco preserva. O CSV do seed não
+          tem coluna de status, então rodar `db:seed` de novo não pode
+          ressuscitar um cadastro que a secretaria inativou na semana passada.
+          `status` também não aparece no `create`: quem cadastra novo nasce
+          `ATIVO` pelo padrão da coluna.
+        */
         update: {
           nome: usuario.nome,
           perfil: usuario.perfil,
