@@ -17,10 +17,17 @@ import type { EmprestimoAtivo } from "@/lib/tipos";
  *
  * A etiqueta aparece em destaque acima do aviso porque o erro caro aqui é
  * devolver o item errado quando se está com três na mão.
+ *
+ * O mesmo modal atende ao "Devolver tudo": a lista chega com um item ou com
+ * todos. No plural a frase vira "Deixe **os equipamentos** na bancada" — é a
+ * mesma instrução, e mantê-la no singular quando a pessoa está com três na mão
+ * seria dizer a coisa errada em nome da literalidade. As etiquetas continuam
+ * todas na tela, uma por linha: é o que ela vai conferir contra a pilha.
  */
 
 type Props = {
-  emprestimo: EmprestimoAtivo | null;
+  /** `null` fecha o modal. Um item é a devolução avulsa; vários, o "Devolver tudo". */
+  emprestimos: EmprestimoAtivo[] | null;
   onConfirmar: () => void;
   onCancelar: () => void;
   confirmando: boolean;
@@ -28,16 +35,19 @@ type Props = {
 };
 
 export function ModalDevolucao({
-  emprestimo,
+  emprestimos,
   onConfirmar,
   onCancelar,
   confirmando,
   erro,
 }: Props) {
+  const lista = emprestimos ?? [];
+  const varios = lista.length > 1;
+
   return (
     <Modal
-      aberto={emprestimo !== null}
-      titulo="Devolver equipamento"
+      aberto={emprestimos !== null}
+      titulo={varios ? "Devolver todos os equipamentos" : "Devolver equipamento"}
       bloqueado={confirmando}
       onFechar={onCancelar}
       acoes={
@@ -58,19 +68,26 @@ export function ModalDevolucao({
             carregando={confirmando}
             className="sm:min-w-64"
           >
-            Confirmar devolução
+            {varios ? `Confirmar devolução de ${lista.length} itens` : "Confirmar devolução"}
           </Botao>
         </>
       }
     >
       <div className="flex flex-col gap-5">
-        {emprestimo ? (
-          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-2xl border-2 border-borda bg-superficie-2 px-5 py-4">
-            <span className="font-mono text-2xl font-bold tracking-tight text-tinta">
-              {emprestimo.equip_id}
-            </span>
-            <span className="text-base text-tinta-suave">{emprestimo.tipo}</span>
-          </div>
+        {lista.length > 0 ? (
+          <ul className="flex flex-col gap-2">
+            {lista.map((emprestimo) => (
+              <li
+                key={emprestimo.id}
+                className="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-2xl border-2 border-borda bg-superficie-2 px-5 py-4"
+              >
+                <span className="font-mono text-2xl font-bold tracking-tight text-tinta">
+                  {emprestimo.equip_id}
+                </span>
+                <span className="text-base text-tinta-suave">{emprestimo.tipo}</span>
+              </li>
+            ))}
+          </ul>
         ) : null}
 
         <div className="flex items-start gap-4 rounded-2xl border border-aviso-borda bg-aviso-fundo p-5">
@@ -80,14 +97,17 @@ export function ModalDevolucao({
 
           {/* Frase literal da spec (seção 4, Fluxo 2, passo 3). Não reescrever. */}
           <p className="pt-0.5 text-xl leading-relaxed font-medium text-balance text-tinta">
-            <span className="font-bold text-aviso">Atenção:</span> Deixe o
-            equipamento na bancada. Confirma a devolução?
+            <span className="font-bold text-aviso">Atenção:</span>{" "}
+            {varios
+              ? "Deixe os equipamentos na bancada. Confirma a devolução?"
+              : "Deixe o equipamento na bancada. Confirma a devolução?"}
           </p>
         </div>
 
         <p className="text-base leading-relaxed text-tinta-suave">
-          A secretaria confere e dá baixa depois. Até lá o item continua
-          registrado no seu nome.
+          A secretaria confere e dá baixa depois. Até lá{" "}
+          {varios ? "os itens continuam registrados" : "o item continua registrado"} no
+          seu nome.
         </p>
 
         {erro ? <Alerta tom="erro" mensagem={erro.mensagem} detalhe={erro.detalhe} /> : null}

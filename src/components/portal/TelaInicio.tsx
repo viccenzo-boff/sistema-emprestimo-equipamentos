@@ -34,6 +34,7 @@ type Props = {
   tipoCarregando: string | null;
   emprestimos: EmprestimoAtivo[];
   onDevolver: (emprestimo: EmprestimoAtivo) => void;
+  onDevolverTudo: () => void;
   erroDevolucao: { mensagem: string; detalhe?: string } | null;
 };
 
@@ -45,6 +46,7 @@ export function TelaInicio({
   tipoCarregando,
   emprestimos,
   onDevolver,
+  onDevolverTudo,
   erroDevolucao,
 }: Props) {
   const temEmprestimos = emprestimos.length > 0;
@@ -71,6 +73,7 @@ export function TelaInicio({
           <MeusEquipamentos
             emprestimos={emprestimos}
             onDevolver={onDevolver}
+            onDevolverTudo={onDevolverTudo}
             erro={erroDevolucao}
           />
         ) : null}

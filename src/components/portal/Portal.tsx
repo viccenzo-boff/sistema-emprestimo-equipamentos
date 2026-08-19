@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   confirmarDevolucao,
   confirmarRetirada,
+  devolverTudo,
   identificarUsuario,
   listarDisponiveis,
   listarEmprestimosAtivos,
@@ -62,10 +63,14 @@ export function Portal() {
   const [equipamentos, setEquipamentos] = useState<EquipamentoDisponivel[]>([]);
   const [selecionados, setSelecionados] = useState<EquipamentoDisponivel[]>([]);
 
-  // Fluxo 2: o que está com a pessoa e o item que ela pediu para devolver.
+  // Fluxo 2: o que está com a pessoa e o que ela pediu para devolver.
+  //
+  // `paraDevolver` é uma lista, e não um item: o modal é o mesmo para o botão da
+  // linha (um item) e para o "Devolver tudo" (todos). Um estado só evita a
+  // combinação impossível de "modo lote" ligado com um item selecionado.
   const [emprestimos, setEmprestimos] = useState<EmprestimoAtivo[]>([]);
-  const [paraDevolver, setParaDevolver] = useState<EmprestimoAtivo | null>(null);
-  const [devolvendoId, setDevolvendoId] = useState<number | null>(null);
+  const [paraDevolver, setParaDevolver] = useState<EmprestimoAtivo[] | null>(null);
+  const [devolvendo, setDevolvendo] = useState(false);
 
   const [entrando, setEntrando] = useState(false);
   const [confirmando, setConfirmando] = useState(false);
@@ -91,7 +96,7 @@ export function Portal() {
     setSelecionados([]);
     setEmprestimos([]);
     setParaDevolver(null);
-    setDevolvendoId(null);
+    setDevolvendo(false);
     setErroLogin(null);
     setErroLista(null);
     setErroConfirmacao(null);
@@ -107,7 +112,7 @@ export function Portal() {
   // deixaria a pessoa sem saber se o item foi devolvido ou não.
   useEffect(() => {
     if (etapa.nome === "matricula" || etapa.nome === "sucesso") return;
-    if (devolvendoId !== null) return;
+    if (devolvendo) return;
 
     let temporizador = window.setTimeout(reiniciar, INATIVIDADE_MS);
 
@@ -124,7 +129,7 @@ export function Portal() {
       window.removeEventListener("pointerdown", renovar);
       window.removeEventListener("keydown", renovar);
     };
-  }, [etapa.nome, devolvendoId, reiniciar]);
+  }, [etapa.nome, devolvendo, reiniciar]);
 
   async function entrar() {
     if (entrando) return;
@@ -227,16 +232,27 @@ export function Portal() {
 
   /** Passo 2: o toque em "Devolver" só abre o modal. Nada vai para o banco. */
   function pedirDevolucao(emprestimo: EmprestimoAtivo) {
-    if (devolvendoId !== null) return;
+    abrirModalDeDevolucao([emprestimo]);
+  }
+
+  /** O mesmo passo 2, com a lista inteira: o atalho "Devolver tudo". */
+  function pedirDevolucaoDeTudo() {
+    if (emprestimos.length === 0) return;
+
+    abrirModalDeDevolucao(emprestimos);
+  }
+
+  function abrirModalDeDevolucao(alvos: EmprestimoAtivo[]) {
+    if (devolvendo) return;
 
     setErroModal(null);
     setErroDevolucao(null);
     setAviso(null);
-    setParaDevolver(emprestimo);
+    setParaDevolver(alvos);
   }
 
   function cancelarDevolucao() {
-    if (devolvendoId !== null) return;
+    if (devolvendo) return;
 
     setParaDevolver(null);
     setErroModal(null);
@@ -250,16 +266,22 @@ export function Portal() {
    * relidas aqui: a contagem de disponíveis não mudou.
    */
   async function efetivarDevolucao() {
-    if (!paraDevolver || devolvendoId !== null) return;
+    if (!paraDevolver || paraDevolver.length === 0 || devolvendo) return;
 
-    const alvo = paraDevolver;
+    const alvos = paraDevolver;
+    const emLote = alvos.length > 1;
 
-    setDevolvendoId(alvo.id);
+    setDevolvendo(true);
     setErroModal(null);
 
-    const resultado = await confirmarDevolucao(matricula, alvo.id);
+    // Um item passa pela action de sempre, que filtra por id **e** matrícula. O
+    // lote tem action própria: ela decide o alvo no servidor, a partir da
+    // matrícula, em vez de aceitar uma lista de ids vinda da tela.
+    const resultado = emLote
+      ? await devolverTudo(matricula)
+      : await confirmarDevolucao(matricula, alvos[0].id);
 
-    setDevolvendoId(null);
+    setDevolvendo(false);
 
     if (!resultado.ok) {
       if (resultado.motivo === "MATRICULA_VAZIA") {
@@ -290,7 +312,11 @@ export function Portal() {
 
     setParaDevolver(null);
     setEmprestimos(resultado.dados.restantes);
-    setAviso(`${resultado.dados.devolvido.equip_id} devolvido. Deixe na bancada.`);
+    setAviso(
+      "devolvidos" in resultado.dados
+        ? `${resultado.dados.devolvidos.length} equipamentos devolvidos. Deixe todos na bancada.`
+        : `${resultado.dados.devolvido.equip_id} devolvido. Deixe na bancada.`,
+    );
   }
 
   const selecionadosPorTipo = selecionados.reduce<Record<string, number>>(
@@ -330,6 +356,7 @@ export function Portal() {
             tipoCarregando={tipoCarregando}
             emprestimos={emprestimos}
             onDevolver={pedirDevolucao}
+            onDevolverTudo={pedirDevolucaoDeTudo}
             erroDevolucao={erroDevolucao}
           />
         ) : null}
@@ -369,10 +396,10 @@ export function Portal() {
       ) : null}
 
       <ModalDevolucao
-        emprestimo={paraDevolver}
+        emprestimos={paraDevolver}
         onConfirmar={efetivarDevolucao}
         onCancelar={cancelarDevolucao}
-        confirmando={devolvendoId !== null}
+        confirmando={devolvendo}
         erro={erroModal}
       />
 

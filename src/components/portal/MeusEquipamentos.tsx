@@ -21,10 +21,16 @@ import type { EmprestimoAtivo } from "@/lib/tipos";
 type Props = {
   emprestimos: EmprestimoAtivo[];
   onDevolver: (emprestimo: EmprestimoAtivo) => void;
+  onDevolverTudo: () => void;
   erro: { mensagem: string; detalhe?: string } | null;
 };
 
-export function MeusEquipamentos({ emprestimos, onDevolver, erro }: Props) {
+export function MeusEquipamentos({
+  emprestimos,
+  onDevolver,
+  onDevolverTudo,
+  erro,
+}: Props) {
   return (
     <section className="flex flex-col gap-4">
       <div className="flex items-baseline justify-between gap-4">
@@ -37,6 +43,24 @@ export function MeusEquipamentos({ emprestimos, onDevolver, erro }: Props) {
       </div>
 
       {erro ? <Alerta tom="erro" mensagem={erro.mensagem} detalhe={erro.detalhe} /> : null}
+
+      {/*
+        "Devolver tudo" só existe a partir de dois itens: com um só, ele seria o
+        mesmo gesto do botão da linha logo abaixo, com outro nome. Fica em
+        `secundario` e não em `sucesso` porque o atalho não é a ação principal —
+        a decisão de verdade acontece no modal, e é lá que o verde aparece.
+      */}
+      {emprestimos.length > 1 ? (
+        <Botao
+          variante="secundario"
+          onClick={onDevolverTudo}
+          larguraTotal
+          aria-label={`Devolver todos os ${emprestimos.length} equipamentos de uma vez`}
+        >
+          <IconeDevolver className="size-6" />
+          Devolver tudo ({emprestimos.length})
+        </Botao>
+      ) : null}
 
       <ul className="flex flex-col gap-3">
         {emprestimos.map((emprestimo) => (

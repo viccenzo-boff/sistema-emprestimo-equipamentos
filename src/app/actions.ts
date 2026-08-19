@@ -7,6 +7,7 @@ import {
   STATUS_EQUIPAMENTO,
   type Categoria,
   type DevolucaoConfirmada,
+  type DevolucaoEmLoteConfirmada,
   type EmprestimoAtivo,
   type EquipamentoDisponivel,
   type MotivoDeFalha,
@@ -422,6 +423,88 @@ class EmprestimoNaoAtivoError extends Error {
   constructor() {
     super("Empréstimo não está ativo para esta matrícula");
     this.name = "EmprestimoNaoAtivoError";
+  }
+}
+
+/**
+ * "Devolver tudo": manda para `AGUARDANDO_BAIXA` todos os empréstimos `ATIVO`
+ * da matrícula de uma vez só.
+ *
+ * Vale a mesma regra do item avulso — o `Equipamento` **não** muda de status.
+ * Quem devolve ao inventário é a secretaria, no /admin.
+ *
+ * O alvo é decidido no servidor a partir da matrícula, e não por uma lista de
+ * ids vinda da tela. Duas razões:
+ *
+ * - Segurança: é o mesmo motivo pelo qual a devolução avulsa filtra por
+ *   matrícula. Aceitar ids soltos daria a um POST forjado a chance de dar baixa
+ *   no empréstimo de outra pessoa.
+ * - Correção: entre o render da lista e o toque no botão, um item pode ter
+ *   saído (a secretaria deu baixa). "Todos os ativos agora" é exatamente o que
+ *   o botão promete, e é o que o `updateMany` faz em uma linha.
+ *
+ * Tudo em uma transação só: os itens vão juntos para a bancada, então a
+ * declaração é uma só. Devolver metade seria pior que não devolver nada — a
+ * pessoa sai achando que entregou tudo.
+ */
+export async function devolverTudo(
+  matriculaBruta: string,
+): Promise<Resultado<DevolucaoEmLoteConfirmada>> {
+  const matricula = limparMatricula(matriculaBruta);
+
+  if (matricula.length === 0) {
+    return falha("MATRICULA_VAZIA", "Sessão perdida. Informe a matrícula novamente.");
+  }
+
+  try {
+    const devolvidos = await prisma.$transaction(async (tx) => {
+      // Lê antes de escrever para saber *o que* foi devolvido: o `updateMany`
+      // devolve só a contagem, e a tela precisa das etiquetas para o aviso.
+      const ativos = await tx.emprestimo.findMany({
+        where: { usuario_id: matricula, status: STATUS_EMPRESTIMO.ativo },
+        select: {
+          id: true,
+          equip_id: true,
+          data_retirada: true,
+          equipamento: { select: { tipo: true } },
+        },
+        orderBy: { data_retirada: "asc" },
+      });
+
+      if (ativos.length === 0) throw new EmprestimoNaoAtivoError();
+
+      const alterados = await tx.emprestimo.updateMany({
+        where: { usuario_id: matricula, status: STATUS_EMPRESTIMO.ativo },
+        data: {
+          status: STATUS_EMPRESTIMO.aguardandoBaixa,
+          data_devolucao: new Date(),
+        },
+      });
+
+      // Menos linhas do que foram lidas significa que alguém mexeu no meio do
+      // caminho. A transação volta atrás inteira e a tela relê a lista.
+      if (alterados.count !== ativos.length) throw new EmprestimoNaoAtivoError();
+
+      return ativos.map(({ equipamento, ...emprestimo }) => ({
+        ...emprestimo,
+        tipo: equipamento.tipo,
+      }));
+    });
+
+    return {
+      ok: true,
+      dados: { devolvidos, restantes: await buscarEmprestimosAtivos(matricula) },
+    };
+  } catch (erro) {
+    if (erro instanceof EmprestimoNaoAtivoError) {
+      return falha(
+        "EMPRESTIMO_NAO_ENCONTRADO",
+        "Nenhum equipamento seu está pendente de devolução.",
+        "A lista pode ter mudado enquanto o modal estava aberto. Confira a lista atualizada.",
+      );
+    }
+
+    return falhaInterna(erro);
   }
 }
 

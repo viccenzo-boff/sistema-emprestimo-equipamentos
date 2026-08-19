@@ -109,6 +109,20 @@ export type DevolucaoConfirmada = {
   restantes: EmprestimoAtivo[];
 };
 
+/**
+ * Resultado do "Devolver tudo": os itens que foram para `AGUARDANDO_BAIXA` de
+ * uma vez só.
+ *
+ * `restantes` continua existindo — e normalmente vem vazio — porque a lista da
+ * tela é sempre a relida do banco, nunca a filtrada na mão. Se alguém retirou
+ * um equipamento em outro tablet no meio do caminho, ele aparece aqui em vez de
+ * sumir da tela sem explicação.
+ */
+export type DevolucaoEmLoteConfirmada = {
+  devolvidos: EmprestimoAtivo[];
+  restantes: EmprestimoAtivo[];
+};
+
 /* ------------------------------------------------------------------------- *
  * Fluxo 3 — Painel Administrativo (spec, seção 4)
  * ------------------------------------------------------------------------- */
