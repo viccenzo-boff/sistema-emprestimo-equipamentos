@@ -56,7 +56,9 @@ O mesmo vale para o Next 16: os guias estão em `node_modules/next/dist/docs/`.
 ### Convenções do projeto
 
 - **Schema**: os nomes de campo seguem a spec, em snake_case (`usuario_id`,
-  `equip_id`, `data_retirada`). Não "corrija" para camelCase.
+  `equip_id`, `data_retirada`, `categoria_id`). Não "corrija" para camelCase —
+  o enunciado da Tarefa 6 pedia `categoriaId`, e a convenção do projeto venceu
+  por decisão explícita.
 - **Matrícula é `String`**, sempre. Converter para número apaga zeros à esquerda.
 - **Imagens**: componentes usam import estático de `src/assets/<finalidade>/`;
   `public/` só para URL fixa (favicon, ícones PWA). Detalhes na seção "Imagens e
@@ -73,6 +75,13 @@ para `DISPONIVEL` — só a confirmação no `/admin` fecha o ciclo. Quebrar iss
 sistema oferecer no tablet um equipamento que ainda está na bancada.
 
 Cada item emprestado gera um registro **separado** em `Emprestimo`.
+
+`INATIVO` é a aposentadoria do equipamento, e existe porque **equipamento não é
+apagado**: `Emprestimo.equip_id` aponta para ele, e um DELETE levaria junto o
+histórico do semestre passado. O item inativo some do tablet (nem nas contagens
+entra) e continua na lista do inventário, em cinza, com botão de reativar.
+Categoria, ao contrário, pode ser apagada de verdade — nenhum `Emprestimo`
+aponta para ela —, mas só quando está vazia, e quem recusa é o banco.
 
 ### Estado atual
 
@@ -234,6 +243,82 @@ sessão. O banco foi devolvido ao estado em que estava antes da verificação.
   **os equipamentos** na bancada" — manter o singular com três aparelhos na mão
   seria dizer a coisa errada em nome da literalidade. O caso de um item continua
   literal, palavra por palavra.
+
+**Tarefa 6 — Gestão de inventário e categorias (concluída):** os quatro itens
+de [tarefa-06-gestao-inventario.md](tarefa-06-gestao-inventario.md) — a tabela
+`Categoria` com `Equipamento.categoria_id` obrigatório, o status `INATIVO`, a
+tela `/admin/categorias` (cadastrar, listar, excluir), o `<select>` de categoria
+alimentado pela tabela, e as ações de linha Editar etiqueta / Inativar /
+Reativar com modal em cada uma. `tsc`, `lint` e `build` em 0, com as **quatro**
+rotas do painel dinâmicas (`ƒ`). A migration foi escrita à mão e ensaiada em uma
+cópia do `dev.db` antes de tocar no arquivo real: 21 equipamentos preservados,
+zero empréstimo órfão, `foreign_key_check` vazio. Verificação em três frentes,
+com o banco devolvido à linha de base exata no fim de cada uma: HTTP real contra
+as actions do painel (transições válidas e inválidas, `EMPRESTADO` e
+`"constructor"` como destino, renomeação com o histórico acompanhando, exclusão
+de categoria cheia e vazia, tudo repetido sem sessão); navegador real (Chrome
+headless por CDP) para os dois formulários, os três modais e a medida de
+rolagem; e HTTP no portal do tablet (retirada, devolução, baixa, e a
+invisibilidade do inativo nas contagens).
+
+**Decisões da Tarefa 6** (não refazer sem motivo):
+
+- **A migration foi escrita à mão, e tinha que ser.** `prisma migrate dev`
+  recusa criar uma coluna obrigatória em tabela com 21 linhas — a recusa é o
+  aviso de que existe uma decisão sobre os dados a tomar, não um obstáculo. A
+  migration cria a `Categoria`, semeia a partir de `SELECT DISTINCT tipo` e
+  recria o `Equipamento` com **INNER JOIN** pelo nome: se alguma linha não
+  casasse, é melhor a migration falhar com o banco intacto do que atribuir um
+  vínculo inventado.
+- **A ordem das categorias é o `Categoria.id`**, e não uma lista no código.
+  Existiam duas cópias de `["Notebook", "Tablet", "Extensão"]` (uma no tablet,
+  outra no painel) que precisavam ser editadas à mão a cada categoria nova e
+  ainda assim não sabiam onde encaixar as que não conheciam. A migration semeou
+  aquelas três como 1, 2 e 3 na ordem do `CASE`: as telas não mudaram e as duas
+  listas sumiram.
+- **`onUpdate: Cascade` + `onDelete: Restrict` fazem o trabalho pesado, e isso
+  foi conferido antes de virar desenho.** O adapter `better-sqlite3` roda com
+  `PRAGMA foreign_keys = 1` — medido em uma cópia do banco, não lido na
+  documentação. Daí sai a renomeação de etiqueta (a PK muda e os 3 empréstimos
+  do item vão junto, dentro da mesma instrução) e a recusa de exclusão de
+  categoria em uso (P2003). Sem o pragma ligado, as duas regras seriam
+  decorativas.
+- **A tabela de transições é um `Map`, não um objeto.** `ORIGENS[chave]` em
+  objeto literal responde a `"constructor"` e `"toString"` com valores do
+  protótipo, e a guarda `if (!origens) recusa` deixaria passar — o destino vem
+  do corpo de um POST público. Exercitado: `"constructor"` como destino volta
+  `STATUS_INVALIDO`.
+- **Ainda é o destino que a tela manda, nunca a origem.** A regra da Tarefa 4
+  sobreviveu à chegada do terceiro status: o servidor deriva as origens
+  permitidas do destino (`DISPONIVEL` <- manutenção ou inativo; `MANUTENCAO`
+  <- disponível; `INATIVO` <- disponível ou manutenção) e o `updateMany` filtra
+  por elas. `MANUTENCAO` de propósito não é alcançável a partir de `INATIVO`:
+  reativa primeiro, decide o conserto depois.
+- **O escape "Nova categoria..." saiu do cadastro de equipamento.** Ele era a
+  solução certa na Tarefa 5, quando categoria era texto e não tinha dono. Com
+  `/admin/categorias`, dois lugares criando categoria é como nasciam "notebook"
+  e "Notebook" lado a lado. No lugar dele ficou um link "Gerenciar" — o caminho
+  continua a um clique, mas passa por onde a grafia é conferida.
+- **As opções do `<select>` vêm de consulta própria**, e não de um `map` sobre
+  o inventário já carregado (que era o certo até a Tarefa 5). Agora existe
+  categoria sem nenhum item, e derivar esconderia justamente a que a pessoa
+  acabou de criar para usar.
+- **Reativar existe, e não estava no enunciado.** Inativar sem volta é um
+  caminho sem retorno em um painel operado sob pressão; a única reversão seria
+  pelo Prisma Studio. Foi levantado como conflito antes de escrever código.
+- **O ícone de inativar é o círculo cortado, não a lixeira.** Lixeira promete
+  que o registro some, e ele não some — é justamente o oposto da regra.
+- **Inativo é o único selo sem cor.** Cinza sobre cinza, com a linha inteira
+  pesando menos: não é estado que peça ação nem que dê boa notícia. O quarto
+  cartão do resumo só aparece quando existe algum inativo — um zero permanente
+  roubaria um quarto da faixa para não informar nada.
+- **`plural()` deixou de ser duas regras.** A verificação no navegador flagrou
+  "Projetors": enquanto as categorias eram três e fixas, `+s` e `-ão/-ões`
+  bastavam; com categoria criada pela tela, a primeira que se tenta depois de
+  Notebook e Tablet costuma terminar em `-r`. A função ganhou as terminações de
+  nome de equipamento (`-r/-z`, `-m`, `-l`) e a tela de Categorias passou a
+  **mostrar o plural calculado** ao lado do nome — quem cadastra vê o erro na
+  hora, em vez de descobrir no tablet.
 
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel e um relatório para a
