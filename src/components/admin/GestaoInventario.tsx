@@ -659,7 +659,7 @@ function FormularioDeCadastro({ categorias }: { categorias: OpcaoDeCategoria[] }
             maxLength={24}
             autoComplete="off"
             spellCheck={false}
-            placeholder="NOTE-11"
+            placeholder="tipo equipamento-número etiqueta"
             disabled={semCategorias}
             className={`${CAMPO} font-mono uppercase`}
           />

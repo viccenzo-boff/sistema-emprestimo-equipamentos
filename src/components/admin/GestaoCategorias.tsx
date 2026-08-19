@@ -191,8 +191,7 @@ export function GestaoCategorias({ categorias }: Props) {
 
         <p className="px-1 text-base text-tinta-tenue">
           A ordem desta lista é a ordem em que as categorias aparecem no tablet e
-          no inventário. Só dá para excluir uma categoria vazia — apagar uma com
-          equipamentos levaria junto o histórico de empréstimos deles.
+          no inventário. Só é possível excluir uma categoria sem nenhum equipamento vinculado à ela.
         </p>
       </section>
 
@@ -290,8 +289,8 @@ function FormularioDeCategoria() {
           Cadastrar categoria
         </h2>
         <p className="mt-1 text-base text-tinta-suave">
-          No singular, como aparece na linha do equipamento — o tablet põe o
-          plural sozinho. Ex.: Projetor, Microfone.
+          Escreva no singular, como aparece na linha do equipamento — o tablet põe o
+          plural sozinho. Ex.: Projetor, Microfone...
         </p>
       </div>
 
