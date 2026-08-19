@@ -7,7 +7,6 @@ import {
   useRef,
   useState,
   useTransition,
-  type SelectHTMLAttributes,
 } from "react";
 
 import Link from "next/link";
@@ -22,11 +21,17 @@ import { SeloStatus } from "@/components/admin/SeloStatus";
 import { Alerta } from "@/components/ui/Alerta";
 import { Botao } from "@/components/ui/Botao";
 import {
+  CABECALHO,
+  CAMPO,
+  CAMPO_SEM_LADOS,
+  CELULA,
+  Selecao,
+} from "@/components/ui/Campo";
+import {
   IconeBloquear,
   IconeCaixa,
   IconeCategoria,
   IconeCheck,
-  IconeChevron,
   IconeFerramenta,
   IconeLapis,
   IconeLupa,
@@ -655,30 +660,6 @@ const SITUACOES = [
 ] as const;
 
 /**
- * `<select>` com a seta desenhada por nós.
- *
- * `appearance-none` apaga a seta nativa junto com o estilo do sistema, então
- * ela volta aqui — e com `pointer-events-none`, para o clique atravessar e
- * abrir a lista mesmo em cima do ícone. Virou componente quando o terceiro
- * `<select>` da tela apareceu: três cópias do mesmo `<div className="relative">`
- * é onde uma delas começa a divergir das outras.
- */
-function Selecao({ children, ...resto }: SelectHTMLAttributes<HTMLSelectElement>) {
-  return (
-    <div className="relative">
-      <select
-        className={`${CAMPO_SEM_LADOS} cursor-pointer appearance-none pr-12 pl-4`}
-        {...resto}
-      >
-        {children}
-      </select>
-
-      <IconeChevron className="pointer-events-none absolute top-1/2 right-4 size-5 -translate-y-1/2 text-tinta-tenue" />
-    </div>
-  );
-}
-
-/**
  * A tabela sem nenhuma linha para mostrar.
  *
  * São dois casos com a mesma aparência e conselhos opostos, e confundi-los é o
@@ -1054,28 +1035,3 @@ function FormularioDeCadastro({ categorias }: { categorias: OpcaoDeCategoria[] }
     </section>
   );
 }
-
-const CABECALHO =
-  "px-5 py-4 text-sm font-semibold tracking-wide text-tinta-tenue uppercase";
-const CELULA = "px-5 py-4 align-middle";
-
-/*
-  O campo sem o recuo lateral, para quem precisa de outro.
-
-  A separação não é preciosismo: `px-4` e `pl-12` são utilidades concorrentes, e
-  no Tailwind 4 quem vence é a ordem no CSS gerado, não a ordem no atributo — a
-  mesma armadilha já registrada para os tamanhos do `Botao`. O `<select>` daqui
-  vinha somando `pr-12` por cima do `px-4` e só funcionava por sorte da ordem;
-  a busca, que precisa de espaço para a lupa à esquerda, teria a mesma sorte a
-  cada build. Quem quer recuo diferente compõe a partir daqui e não sobrepõe
-  nada.
-*/
-const CAMPO_SEM_LADOS = [
-  "min-h-14 w-full rounded-2xl border-2 border-borda bg-superficie-2",
-  "text-lg text-tinta placeholder:text-tinta-tenue",
-  "transition-colors duration-150",
-  "hover:border-borda-forte focus:border-marca-azul focus:bg-superficie",
-  "disabled:cursor-not-allowed disabled:opacity-55",
-].join(" ");
-
-const CAMPO = `${CAMPO_SEM_LADOS} px-4`;

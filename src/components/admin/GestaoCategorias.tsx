@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { cadastrarCategoria, excluirCategoria } from "@/app/admin/actions";
 import { Alerta } from "@/components/ui/Alerta";
 import { Botao } from "@/components/ui/Botao";
+import { CABECALHO, CAMPO, CELULA } from "@/components/ui/Campo";
 import { IconeApagar, IconeCategoria, IconeMais } from "@/components/ui/icones";
 import { Modal } from "@/components/ui/Modal";
 import { Notificacao } from "@/components/ui/Notificacao";
@@ -330,13 +331,3 @@ function FormularioDeCategoria() {
     </section>
   );
 }
-
-const CABECALHO =
-  "px-5 py-4 text-sm font-semibold tracking-wide text-tinta-tenue uppercase";
-const CELULA = "px-5 py-4 align-middle";
-const CAMPO = [
-  "min-h-14 w-full rounded-2xl border-2 border-borda bg-superficie-2 px-4",
-  "text-lg text-tinta placeholder:text-tinta-tenue",
-  "transition-colors duration-150",
-  "hover:border-borda-forte focus:border-marca-azul focus:bg-superficie",
-].join(" ");
