@@ -133,12 +133,56 @@ de status na devolução.
   Server Action é endpoint POST público: sem o filtro, um POST direto daria
   baixa no empréstimo de qualquer pessoa chutando um id sequencial.
 
-**Tarefa 4 (próxima):** Fluxo 3 — painel administrativo em `/admin`, protegido
-pela senha mestre do `.env`. Precisa da fila de `AGUARDANDO_BAIXA` com
-"Confirmar Recebimento" (que é onde `Emprestimo` vai a `CONCLUIDO` e o
-`Equipamento` finalmente volta a `DISPONIVEL`), da gestão de inventário e da
-visão dos `ATIVO`. Diferente do tablet, `/admin` lê o banco no render — as rotas
-precisam ser dinâmicas.
+**Tarefa 4 — Fluxo 3 (concluída):** painel administrativo em `/admin`, com a
+tela de senha, a fila de `AGUARDANDO_BAIXA` ("Confirmar Recebimento Físico"), a
+visão somente-leitura dos `ATIVO` em `/admin/ativos` e a gestão de inventário em
+`/admin/inventario` (alternar `DISPONIVEL`/`MANUTENCAO` e cadastrar item novo).
+`tsc`, `lint` e `build` em 0, com as três rotas classificadas como dinâmicas
+(`ƒ`) no relatório do build. O fluxo inteiro foi exercitado por HTTP real contra
+o `dev.db`: login certo e errado, cookie adulterado e com prazo esticado à mão,
+baixa de um empréstimo (que virou `CONCLUIDO` com o equipamento voltando a
+`DISPONIVEL`), repetição da mesma baixa, as travas do inventário, o cadastro com
+normalização de etiqueta e categoria, e o bloqueio por tentativas.
+
+**Decisões do Fluxo 3** (não refazer sem motivo):
+
+- **A sessão é um HMAC do prazo de validade, com a senha mestre como chave.** O
+  cookie não carrega a senha, não dá para esticar o prazo (ele está dentro da
+  assinatura) e trocar `ADMIN_PASSWORD` derruba todas as sessões. Como a chave é
+  o `.env` e não um segredo sorteado no boot, reiniciar o servidor não desloga
+  ninguém. `secure` fica **falso** de propósito: a rede da secretaria é HTTP, e
+  com a flag ligada o navegador descartaria o cookie.
+- **`temSessaoAdmin()` é chamada em cada página e em cada action**, nunca no
+  layout. Layout não re-renderiza entre rotas irmãs e não impede um POST direto
+  no endpoint da Server Action — usar layout como porta dá sensação de proteção
+  sem proteção. Pelo mesmo motivo a barra lateral é o componente `CascaAdmin`,
+  composto dentro de cada página: é o que mantém o contador da fila correto ao
+  trocar de aba.
+- **Cinco senhas erradas bloqueiam novas tentativas por 1 minuto.** A senha é
+  única e a rede é local; sem freio, um script tenta o dicionário inteiro. O
+  contador vive no `globalThis` pelo mesmo motivo do Prisma (o hot-reload
+  recriaria um contador zerado).
+- **Datas são formatadas no servidor** e descem como texto pronto para as ilhas
+  de cliente. Formatar de novo na hidratação é a receita clássica de divergência
+  de fuso/minuto em texto de tempo.
+- **`EMPRESTADO` não é um botão no inventário.** O painel só alterna
+  `DISPONIVEL` <-> `MANUTENCAO`; equipamento com empréstimo aberto mostra o nome
+  de quem está com ele em vez de um botão apagado. Mudar `EMPRESTADO` à mão
+  deixaria um `Emprestimo` aberto apontando para um item "disponível".
+- **O status de origem é derivado do destino, nunca recebido da tela.** Além de
+  fechar o par permitido, dá de graça a trava de concorrência: o `updateMany`
+  filtra pela origem e conta as linhas afetadas.
+- **Fila é cartão, ativos e inventário são tabela.** A fila é uma tarefa física
+  por linha (pegar da bancada, conferir a etiqueta); as outras duas são varredura
+  com o olho. Verde só na fila — é a única ação crítica da tela.
+- **Cadastro normaliza etiqueta para maiúsculas e adota a grafia de categoria já
+  usada no banco** (comparando sem acento e sem caixa). Sem isso, "note-11"
+  conviveria com "NOTE-11" no mesmo armário e "notebook" abriria uma categoria
+  nova no tablet ao lado de "Notebook".
+
+**Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
+`public/`), histórico de empréstimos concluídos no painel e um relatório para a
+coordenação. Nada disso está na spec — confirmar antes de construir.
 
 ### Ambiente
 

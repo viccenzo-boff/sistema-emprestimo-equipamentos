@@ -88,11 +88,16 @@ prisma/
 src/
   app/                       rotas (App Router)
   app/actions.ts             Server Actions do portal do tablet
+  app/admin/                 painel: fila (/admin), ativos, inventário
+  app/admin/actions.ts       Server Actions do painel
   app/globals.css            paleta institucional e estilos base
   assets/brand/              identidade visual (logo da Unoesc)
   components/portal/         telas do portal (matrícula, categorias, itens)
+  components/admin/          telas do painel (casca, fila, tabelas, senha)
   components/ui/             primitivas reutilizadas (Botao, Alerta, ícones)
   lib/prisma.ts              instância única do Prisma Client
+  lib/sessao-admin.ts        senha mestre e cookie de sessão do /admin
+  lib/consultas-admin.ts     leituras do painel (fila, ativos, inventário)
   lib/tipos.ts               tipos compartilhados entre actions e telas
   lib/texto.ts               ajustes de texto em português
   generated/prisma/          Prisma Client gerado (não versionado)
@@ -140,6 +145,26 @@ recurso ficam juntas na listagem alfabética.
 
 Prefira SVG para logos e ícones (escala sem perda e pesa menos). A logo atual é PNG porque foi o
 formato fornecido pela coordenação — se um SVG aparecer, ele substitui o PNG no mesmo lugar.
+
+## Acesso ao painel `/admin`
+
+O painel é protegido por uma senha mestre única, definida em `ADMIN_PASSWORD` no `.env` — sem
+cadastro de usuários, como pede a spec para o MVP. Quem acerta a senha recebe um cookie de sessão
+`sessao_admin` que vale **8 horas** (um turno) e é `HttpOnly`.
+
+O cookie não guarda a senha: guarda o prazo de validade e uma assinatura HMAC-SHA256 desse prazo,
+tendo a senha mestre como chave. Na prática:
+
+- Não dá para forjar uma sessão nem esticar o prazo sem conhecer a senha.
+- Trocar `ADMIN_PASSWORD` invalida todas as sessões abertas.
+- Reiniciar o servidor **não** derruba quem está logado.
+- Depois de 5 tentativas erradas seguidas, novas tentativas ficam bloqueadas por 1 minuto.
+
+A verificação é refeita em cada página e em cada Server Action do painel — Server Action é
+endpoint POST público, e esconder o botão na tela não fecha a porta.
+
+> `secure` está desligado no cookie de propósito: o sistema roda em **HTTP** na rede local. Se um
+> dia for publicado com HTTPS, ligue a flag em [`src/lib/sessao-admin.ts`](src/lib/sessao-admin.ts).
 
 ## Modelo de dados
 
