@@ -180,6 +180,61 @@ normalização de etiqueta e categoria, e o bloqueio por tentativas.
   conviveria com "NOTE-11" no mesmo armário e "notebook" abriria uma categoria
   nova no tablet ao lado de "Notebook".
 
+**Tarefa 5 — Refinamento de UI/UX (concluída):** os cinco itens de
+[tarefa-05-refinamento.md](tarefa-05-refinamento.md) — cartão de login mais
+estreito e sem rolagem com erro, logo do login fora do cartão, `<select>` de
+categoria no inventário, "Confirmar Todas as Devoluções" no painel e "Devolver
+tudo" no tablet. `tsc`, `lint` e `build` em 0, com as três rotas do painel ainda
+dinâmicas (`ƒ`). Tudo exercitado no navegador real (Chrome headless por CDP, sem
+instalar dependência) e contra o `dev.db`: a baixa de cinco itens em lote, a
+devolução de três itens pelo aluno, os dois cadastros seguidos pelo `<select>`,
+o caso de item único nas duas telas, e a recusa das actions do painel sem
+sessão. O banco foi devolvido ao estado em que estava antes da verificação.
+
+**Decisões da Tarefa 5** (não refazer sem motivo):
+
+- **A logo do login vive no cabeçalho da página, não dentro do cartão.** Dentro
+  dela estava em um `flex flex-col`, e o `align-items: stretch` esticava a
+  imagem até a largura do cartão com a altura presa em `h-11` — a distorção era
+  isso, não o arquivo. Fora, em faixa horizontal com o mesmo `h-11 sm:h-12` e o
+  mesmo `px-4 py-5 sm:px-8` do cabeçalho do portal (medido: 60,7x48 nos dois,
+  proporção 1,2646 contra 1,265 nativa). Sem o `mx-auto max-w-5xl` do portal:
+  ali há conteúdo à direita para equilibrar, aqui não.
+- **O erro do login é inline, não um cartão de `Alerta`.** A caixa do `Alerta`
+  custava ~125px e empurrava o "Entrar" para fora de um notebook de 768px.
+  Medido depois da mudança: documento em 768px nos dois estados, com o botão
+  terminando em 536px (sem erro) e 566px (com erro). `Alerta` continua onde é
+  mensagem de página — o aviso de instalação incompleta.
+- **A categoria do inventário é `<select>`, com escape para categoria nova.** O
+  `datalist` parece combo mas é campo de texto: depois de escolher "Notebook", a
+  lista só reabre apagando a palavra. A última opção do `<select>` troca o campo
+  por um `<input>` com o **mesmo** `name` — nunca os dois ao mesmo tempo, porque
+  `FormData.get` devolve o primeiro homônimo e mandaria o valor errado calado.
+- **O `<select>` é não-controlado.** O React 19 limpa o formulário sozinho
+  quando a action termina; com `value` controlado o DOM volta ao `defaultValue`
+  e o React continua achando que o valor escolhido está lá — e o `FormData` lê o
+  DOM. Isso foi observado no navegador antes de virar bug de produção: depois de
+  cadastrar TAB-99 com "Tablet" escolhido, o campo já aparecia em branco.
+- **A baixa em lote do painel é melhor-esforço, item a item.** O gesto físico já
+  aconteceu — a secretaria recolheu a pilha. Uma linha que saiu da fila em outra
+  aba não pode desfazer a conferência das outras quatro. O resumo conta tudo:
+  confirmados, presos em manutenção, fora da fila e falhos.
+- **A devolução em lote do aluno é uma transação só.** Ao contrário da do
+  painel, os itens vão juntos para a bancada: devolver metade faria a pessoa
+  sair achando que entregou tudo.
+- **O lote do aluno decide o alvo pela matrícula, no servidor**; o do painel
+  recebe os ids da tela. Não é incoerência: no tablet, aceitar ids soltos abriria
+  a porta para dar baixa no empréstimo de outra pessoa; no painel, "tudo que
+  estiver na fila agora" incluiria uma devolução declarada depois do render, com
+  o aparelho ainda na mochila.
+- **Os dois botões de lote só aparecem a partir de dois itens.** Com um só, cada
+  um duplicaria o botão da linha logo abaixo — dois gestos idênticos e a dúvida
+  de qual faz o quê.
+- **A frase crítica da spec ganha plural quando o modal é de vários.** "Deixe
+  **os equipamentos** na bancada" — manter o singular com três aparelhos na mão
+  seria dizer a coisa errada em nome da literalidade. O caso de um item continua
+  literal, palavra por palavra.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel e um relatório para a
 coordenação. Nada disso está na spec — confirmar antes de construir.
