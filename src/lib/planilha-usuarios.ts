@@ -89,6 +89,19 @@ const COLUNAS: Record<string, readonly string[]> = {
 };
 
 /**
+ * Os nomes canônicos das colunas, na ordem em que a planilha modelo os escreve
+ * (Tarefa 9).
+ *
+ * Sai das chaves de `COLUNAS` de propósito, em vez de ser uma segunda lista com
+ * o mesmo conteúdo: quem escreve o modelo é o **leitor**, e não um vizinho que
+ * concorda com ele hoje. Duas listas divergiriam no dia em que uma coluna
+ * mudasse de nome — o modelo passaria a gerar um arquivo que este próprio
+ * módulo recusa, e nem o verificador de tipos nem o lint teriam o que dizer.
+ * Mesmo argumento que tirou `semAcento` das actions na Tarefa 7.
+ */
+export const COLUNAS_CANONICAS: readonly string[] = Object.keys(COLUNAS);
+
+/**
  * Lê o arquivo .xlsx e devolve as linhas com os campos que **estavam
  * preenchidos**.
  *

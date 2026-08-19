@@ -304,6 +304,26 @@ export function IconePlanilha({ className }: PropsDeIcone) {
   );
 }
 
+/**
+ * Baixar: a seta descendo para a bandeja.
+ *
+ * Deliberadamente **não** é a grade do [IconePlanilha] com a seta invertida,
+ * que era a forma prevista ali para um futuro "baixar a lista". Os dois botões
+ * vivem no mesmo cartão, e a versão espelhada obrigaria a secretaria a
+ * distinguir importar de baixar pela direção de uma seta de 20px. A forma
+ * genérica de download não tem esse problema — e deixa a grade espelhada livre
+ * para quando existir exportação de dados de verdade.
+ */
+export function IconeBaixar({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <path d="M12 3.75v10.5" {...TRACO} />
+      <path d="m8.25 10.5 3.75 3.75 3.75-3.75" {...TRACO} />
+      <path d="M4.75 16v2.5A1.75 1.75 0 0 0 6.5 20.25h11a1.75 1.75 0 0 0 1.75-1.75V16" {...TRACO} />
+    </Svg>
+  );
+}
+
 /** Confirmação de usuário: a pessoa com o visto. */
 export function IconePessoaCheck({ className }: PropsDeIcone) {
   return (

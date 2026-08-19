@@ -7,6 +7,7 @@ import { Alerta } from "@/components/ui/Alerta";
 import { Botao } from "@/components/ui/Botao";
 import {
   IconeAlerta,
+  IconeBaixar,
   IconeCheck,
   IconeLapis,
   IconeMais,
@@ -56,6 +57,12 @@ export function ImportacaoPlanilha() {
   const [arrastando, setArrastando] = useState(false);
   const [pendente, iniciarTransicao] = useTransition();
   const entradaRef = useRef<HTMLInputElement>(null);
+
+  // O download do modelo tem estado próprio, e não uma fase de `estado`: ele não
+  // participa do ciclo analisar → confirmar, e enfiá-lo ali faria baixar o
+  // modelo apagar a prévia que a pessoa está lendo para decidir.
+  const [baixando, setBaixando] = useState(false);
+  const [erroDoModelo, setErroDoModelo] = useState<string | null>(null);
 
   function escolher(novo: File | null) {
     setArquivo(novo);
@@ -122,6 +129,51 @@ export function ImportacaoPlanilha() {
     if (entradaRef.current) entradaRef.current.value = "";
   }
 
+  /**
+   * Gera a planilha modelo no próprio navegador e entrega ao download (Tarefa 9).
+   *
+   * O `import()` é dinâmico de propósito: o SheetJS tem ~1 MB, e um import
+   * estático o traria no pacote inicial desta tela — que abre todo dia — por
+   * causa de um botão clicado uma vez por semestre. Assim o pacote só desce no
+   * primeiro clique, e a tela não recarrega, como o enunciado pede.
+   *
+   * A âncora criada na hora, e não `XLSX.writeFile`: aqui o tipo MIME é escrito
+   * explicitamente e o endereço temporário é revogado na mesma função, sem
+   * depender do que a biblioteca faz com o DOM por dentro.
+   */
+  async function baixarModelo() {
+    if (baixando) return;
+
+    setBaixando(true);
+    setErroDoModelo(null);
+
+    try {
+      const { gerarPlanilhaModelo, NOME_DA_PLANILHA_MODELO, TIPO_XLSX } =
+        await import("@/lib/planilha-modelo");
+
+      const endereco = URL.createObjectURL(
+        new Blob([gerarPlanilhaModelo()], { type: TIPO_XLSX }),
+      );
+
+      const ancora = document.createElement("a");
+      ancora.href = endereco;
+      ancora.download = NOME_DA_PLANILHA_MODELO;
+      document.body.append(ancora);
+      ancora.click();
+      ancora.remove();
+      URL.revokeObjectURL(endereco);
+    } catch {
+      // Falha real e possível: o pacote do SheetJS não desceu (rede caiu, ou o
+      // servidor foi reiniciado com outra versão dos arquivos). Sem esta
+      // mensagem, o botão gira uma vez e não acontece nada.
+      setErroDoModelo(
+        "Não foi possível gerar a planilha modelo. Recarregue a página e tente de novo.",
+      );
+    } finally {
+      setBaixando(false);
+    }
+  }
+
   return (
     <section className="flex flex-col gap-5 rounded-3xl border border-borda bg-superficie p-6 lg:p-7">
       <div>
@@ -137,6 +189,39 @@ export function ImportacaoPlanilha() {
           <span className="font-mono">status</span>. Nada é gravado antes de você
           conferir a prévia.
         </p>
+      </div>
+
+      {/*
+        O botão fica entre a explicação e a área de soltar, que é a ordem da
+        tarefa real: primeiro se descobre quais colunas existem, depois se pega
+        o arquivo com elas, e só então se envia o preenchido.
+
+        `self-start` no botão, e não `items-start` no bloco: com o alinhamento no
+        pai, o parágrafo abaixo também encolheria para o próprio conteúdo e sairia
+        em uma linha larguíssima. É a mesma armadilha de `stretch` que distorceu a
+        logo do login na Tarefa 5, do outro lado.
+      */}
+      <div className="flex flex-col gap-2">
+        <Botao
+          variante="secundario"
+          tamanho="pequeno"
+          onClick={baixarModelo}
+          carregando={baixando}
+          className="self-start"
+        >
+          <IconeBaixar className="size-5" />
+          Baixar planilha modelo
+        </Botao>
+
+        <p className="max-w-prose text-sm text-tinta-tenue">
+          Vem vazia, só com os cabeçalhos. Se a matrícula tiver zero à esquerda,
+          formate a coluna como <span className="font-semibold">Texto</span> antes
+          de digitar — em formato Geral o Excel guarda{" "}
+          <span className="font-mono">0012345</span> como{" "}
+          <span className="font-mono">12345</span>.
+        </p>
+
+        {erroDoModelo ? <Alerta tom="erro" mensagem={erroDoModelo} /> : null}
       </div>
 
       <Area
