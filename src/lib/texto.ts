@@ -43,6 +43,43 @@ export function desdeQuando(data: Date): string {
   return `${DIA.format(data)} às ${hora}`;
 }
 
+const DATA_E_HORA = new Intl.DateTimeFormat("pt-BR", {
+  dateStyle: "short",
+  timeStyle: "short",
+});
+
+/**
+ * "18/08/2026, 14:32" — data completa, para o painel da secretaria.
+ *
+ * Aqui, diferente do tablet, o valor exato importa: é o que vai para a conversa
+ * com o aluno ("saiu na terça de manhã"). Roda no servidor, no render das
+ * páginas do /admin, e o texto pronto é que desce para a tela.
+ */
+export function dataHora(data: Date): string {
+  return DATA_E_HORA.format(data);
+}
+
+/**
+ * "há 12 min", "há 3 h", "há 2 dias" — o quanto o relógio já andou.
+ *
+ * É a coluna que faz a secretaria agir: na fila diz há quanto tempo o
+ * equipamento devia estar na bancada; nos ativos, há quanto tempo está fora.
+ * Formatado no servidor junto com a data absoluta ao lado — sozinho, um texto
+ * relativo envelhece na tela aberta o dia inteiro.
+ */
+export function haQuantoTempo(data: Date): string {
+  const minutos = Math.floor((Date.now() - data.getTime()) / 60_000);
+
+  if (minutos < 1) return "agora";
+  if (minutos < 60) return `há ${minutos} min`;
+
+  const horas = Math.floor(minutos / 60);
+  if (horas < 24) return `há ${horas} h`;
+
+  const dias = Math.floor(horas / 24);
+  return dias === 1 ? "há 1 dia" : `há ${dias} dias`;
+}
+
 /**
  * Primeiro nome, para a saudação.
  * "Prof. Daniel Rocha" -> "Prof. Daniel": o tratamento sozinho não serve.

@@ -130,6 +130,73 @@ export function IconeDevolver({ className }: PropsDeIcone) {
   );
 }
 
+/* ------------------------------------------------------------------------- *
+ * Painel Administrativo (Fluxo 3)
+ * ------------------------------------------------------------------------- */
+
+/** Fila de devoluções: itens empilhados esperando conferência na bancada. */
+export function IconeFila({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <path d="M3.5 13.5v5a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-5" {...TRACO} />
+      <path d="M3.5 13.5h4l1.5 2.5h6l1.5-2.5h4" {...TRACO} />
+      <path d="M7.5 3.5h9M6.5 7.5h11" {...TRACO} />
+    </Svg>
+  );
+}
+
+/** Empréstimos ativos: o que está fora, e há quanto tempo. */
+export function IconeRelogio({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <circle cx="12" cy="12" r="8.5" {...TRACO} />
+      <path d="M12 7.5V12l3 2" {...TRACO} />
+    </Svg>
+  );
+}
+
+/** Acesso restrito: a tela de senha do painel. */
+export function IconeCadeado({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <rect x="4.5" y="10.5" width="15" height="10" rx="2" {...TRACO} />
+      <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" {...TRACO} />
+      <circle cx="12" cy="15.5" r="1.1" fill="currentColor" stroke="none" />
+    </Svg>
+  );
+}
+
+/** Sair do painel. */
+export function IconeSair({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <path d="M15 4.5h3.5a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5H15" {...TRACO} />
+      <path d="M10.5 8 6.5 12l4 4M6.5 12H15" {...TRACO} />
+    </Svg>
+  );
+}
+
+/** Cadastrar item novo no inventário. */
+export function IconeMais({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <path d="M12 5.5v13M5.5 12h13" {...TRACO} strokeWidth={2.25} />
+    </Svg>
+  );
+}
+
+/** Manutenção: o equipamento sai de circulação. */
+export function IconeFerramenta({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <path
+        d="M15.5 3.5a5 5 0 0 0-4.6 6.95L3.9 17.4a1.5 1.5 0 0 0 0 2.12l.58.58a1.5 1.5 0 0 0 2.12 0l6.95-6.95A5 5 0 1 0 15.5 3.5z"
+        {...TRACO}
+      />
+    </Svg>
+  );
+}
+
 /**
  * Ícone da categoria, escolhido pelo `tipo` gravado no banco.
  *
