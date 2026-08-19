@@ -71,7 +71,7 @@ export function CascaAdmin({ aba, pendentes, titulo, descricao, children }: Prop
               Painel Administrativo
             </p>
             <p className="text-sm leading-tight text-tinta-tenue">
-              Secretaria · Computação
+              Secretaria
             </p>
           </div>
 

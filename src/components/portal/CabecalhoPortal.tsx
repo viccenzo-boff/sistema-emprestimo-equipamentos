@@ -48,7 +48,7 @@ export function CabecalhoPortal({ usuario, onSair }: Props) {
       ) : (
         <p className="text-right text-sm leading-tight text-tinta-suave sm:text-base">
           Empréstimo de equipamentos
-          <span className="block text-tinta-tenue">Secretaria · Computação</span>
+          <span className="block text-tinta-tenue">Secretaria</span>
         </p>
       )}
     </header>
