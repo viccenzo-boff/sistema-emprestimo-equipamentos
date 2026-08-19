@@ -196,3 +196,22 @@ export type RecebimentoConfirmado = {
    */
   liberado: boolean;
 };
+
+/**
+ * O que a Fila devolve depois de "Confirmar Todas as Devoluções".
+ *
+ * O lote é conferido item a item, e não tudo-ou-nada: a secretaria está com uma
+ * pilha de aparelhos na bancada, e uma linha que saiu da fila por outra aba não
+ * pode desfazer a baixa das outras quatro que ela acabou de recolher. Por isso
+ * o resultado é um resumo, e não um `ok` seco.
+ */
+export type RecebimentoEmLote = {
+  /** Etiquetas que fecharam o ciclo agora. */
+  confirmados: string[];
+  /** Destas, as que continuam fora do inventário por estarem em `MANUTENCAO`. */
+  presas: string[];
+  /** Linhas que já não estavam na fila quando o lote rodou (outra aba chegou antes). */
+  foraDaFila: number;
+  /** Linhas que falharam por erro inesperado — o lote segue, mas a tela avisa. */
+  comFalha: number;
+};

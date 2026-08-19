@@ -4,13 +4,20 @@ import { useState, useTransition } from "react";
 
 import { useRouter } from "next/navigation";
 
-import { confirmarRecebimento } from "@/app/admin/actions";
+import {
+  confirmarRecebimento,
+  confirmarTodosOsRecebimentos,
+} from "@/app/admin/actions";
 import { SeloStatus } from "@/components/admin/SeloStatus";
 import { Alerta } from "@/components/ui/Alerta";
 import { Botao } from "@/components/ui/Botao";
 import { IconeCategoria, IconeCheck } from "@/components/ui/icones";
 import { Notificacao } from "@/components/ui/Notificacao";
-import { STATUS_EQUIPAMENTO, type ItemDaFila } from "@/lib/tipos";
+import {
+  STATUS_EQUIPAMENTO,
+  type ItemDaFila,
+  type RecebimentoEmLote,
+} from "@/lib/tipos";
 
 /**
  * Fila de Devoluções — a ação crítica do painel (spec, seção 4, Fluxo 3).
@@ -29,20 +36,28 @@ type Props = {
   itens: ItemDaFila[];
 };
 
+/** Espelha o teto do servidor (ver `MAXIMO_DE_BAIXAS_EM_LOTE` nas actions). */
+const MAXIMO_POR_RODADA = 50;
+
 type Falha = { id: number; mensagem: string; detalhe?: string };
 
 export function FilaDeDevolucoes({ itens }: Props) {
   const router = useRouter();
   const [, iniciarTransicao] = useTransition();
   const [confirmandoId, setConfirmandoId] = useState<number | null>(null);
+  const [confirmandoTudo, setConfirmandoTudo] = useState(false);
   const [falha, setFalha] = useState<Falha | null>(null);
+  const [falhaDoLote, setFalhaDoLote] = useState<Omit<Falha, "id"> | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
 
+  const ocupada = confirmandoId !== null || confirmandoTudo;
+
   function confirmar(item: ItemDaFila) {
-    if (confirmandoId !== null) return;
+    if (ocupada) return;
 
     setConfirmandoId(item.id);
     setFalha(null);
+    setFalhaDoLote(null);
 
     iniciarTransicao(async () => {
       const resultado = await confirmarRecebimento(item.id);
@@ -69,6 +84,45 @@ export function FilaDeDevolucoes({ itens }: Props) {
       );
 
       setConfirmandoId(null);
+    });
+  }
+
+  /**
+   * "Confirmar Todas as Devoluções": a bancada inteira de uma vez.
+   *
+   * Manda os ids que estão nesta tela, e não um "tudo que estiver na fila": um
+   * aluno pode ter declarado uma devolução depois deste render, com o aparelho
+   * ainda na mochila. O botão confirma o que a secretaria tem diante dos olhos.
+   */
+  function confirmarTudo() {
+    if (ocupada || itens.length === 0) return;
+
+    setConfirmandoTudo(true);
+    setFalha(null);
+    setFalhaDoLote(null);
+
+    iniciarTransicao(async () => {
+      // O servidor recusa lotes acima do teto dele. Enviar uma rodada de cada
+      // vez faz a fila gigante encolher a cada clique, em vez de devolver o
+      // mesmo erro para sempre — o botão nunca fica sem saída.
+      const resultado = await confirmarTodosOsRecebimentos(
+        itens.slice(0, MAXIMO_POR_RODADA).map((item) => item.id),
+      );
+
+      if (!resultado.ok) {
+        setFalhaDoLote({
+          mensagem: resultado.mensagem,
+          detalhe: resultado.detalhe,
+        });
+
+        if (resultado.motivo === "EMPRESTIMO_NAO_ENCONTRADO") router.refresh();
+
+        setConfirmandoTudo(false);
+        return;
+      }
+
+      setAviso(resumirLote(resultado.dados));
+      setConfirmandoTudo(false);
     });
   }
 
@@ -102,6 +156,47 @@ export function FilaDeDevolucoes({ itens }: Props) {
   return (
     <>
       <section className="flex flex-col gap-4">
+        {/*
+          A barra do lote só aparece com dois ou mais itens: com um só, ela
+          duplicaria em verde o botão que já está na linha logo abaixo — dois
+          gestos idênticos para a mesma tarefa, e a dúvida de qual dos dois faz
+          o quê.
+        */}
+        {itens.length > 1 ? (
+          <div className="flex flex-col gap-4 rounded-3xl border border-borda bg-superficie p-5 lg:flex-row lg:items-center lg:justify-between lg:p-6">
+            <div className="min-w-0">
+              <p className="numeros-tabulares text-lg leading-snug font-semibold text-tinta">
+                {itens.length} equipamentos aguardando conferência
+              </p>
+              <p className="mt-1 text-base leading-snug text-tinta-suave">
+                Confira as etiquetas na bancada antes de dar baixa em todos de uma
+                vez.
+              </p>
+            </div>
+
+            <Botao
+              variante="sucesso"
+              tamanho="grande"
+              onClick={confirmarTudo}
+              carregando={confirmandoTudo}
+              disabled={confirmandoId !== null}
+              className="w-full lg:w-auto lg:shrink-0"
+              aria-label={`Confirmar o recebimento físico de todos os ${itens.length} equipamentos da fila`}
+            >
+              <IconeCheck className="size-6" />
+              Confirmar Todas as Devoluções
+            </Botao>
+          </div>
+        ) : null}
+
+        {falhaDoLote ? (
+          <Alerta
+            tom="erro"
+            mensagem={falhaDoLote.mensagem}
+            detalhe={falhaDoLote.detalhe}
+          />
+        ) : null}
+
         <ul className="flex flex-col gap-4">
           {itens.map((item) => (
             <li
@@ -146,7 +241,7 @@ export function FilaDeDevolucoes({ itens }: Props) {
                   tamanho="grande"
                   onClick={() => confirmar(item)}
                   carregando={confirmandoId === item.id}
-                  disabled={confirmandoId !== null && confirmandoId !== item.id}
+                  disabled={ocupada && confirmandoId !== item.id}
                   className="w-full lg:w-auto"
                   aria-label={`Confirmar recebimento físico de ${item.equip_id}, devolvido por ${item.nome}`}
                 >
@@ -182,4 +277,50 @@ export function FilaDeDevolucoes({ itens }: Props) {
       <Notificacao mensagem={aviso} onFechar={() => setAviso(null)} />
     </>
   );
+}
+
+/**
+ * Uma frase que conta o lote inteiro, incluindo o que não deu certo.
+ *
+ * O lote é melhor-esforço no servidor, então "5 recebidos" pode esconder duas
+ * linhas que ficaram para trás. Omitir isso faria a secretaria fechar a tela
+ * achando que a bancada está limpa.
+ */
+function resumirLote({
+  confirmados,
+  presas,
+  foraDaFila,
+  comFalha,
+}: RecebimentoEmLote): string {
+  const partes = [
+    confirmados.length === 1
+      ? "1 equipamento recebido."
+      : `${confirmados.length} equipamentos recebidos.`,
+  ];
+
+  if (presas.length > 0) {
+    partes.push(
+      presas.length === 1
+        ? `${presas[0]} continua em manutenção.`
+        : `${presas.length} continuam em manutenção.`,
+    );
+  }
+
+  if (foraDaFila > 0) {
+    partes.push(
+      foraDaFila === 1
+        ? "1 já tinha saído da fila."
+        : `${foraDaFila} já tinham saído da fila.`,
+    );
+  }
+
+  if (comFalha > 0) {
+    partes.push(
+      comFalha === 1
+        ? "1 não pôde ser confirmado — tente de novo."
+        : `${comFalha} não puderam ser confirmados — tente de novo.`,
+    );
+  }
+
+  return partes.join(" ");
 }

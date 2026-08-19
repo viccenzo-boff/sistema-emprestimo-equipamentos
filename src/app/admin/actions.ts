@@ -18,6 +18,7 @@ import {
   type EstadoDoLogin,
   type MotivoDeFalha,
   type RecebimentoConfirmado,
+  type RecebimentoEmLote,
   type Resultado,
 } from "@/lib/tipos";
 
@@ -38,6 +39,15 @@ import {
 
 /** Todas as telas do painel vivem sob /admin; uma invalidação cobre as três. */
 const RAIZ_DO_PAINEL = "/admin";
+
+/**
+ * Teto de baixas em uma chamada de "Confirmar Todas".
+ *
+ * A fila real da secretaria tem unidades, não centenas — o número existe para
+ * que um POST forjado não vire uma varredura do banco inteiro em uma requisição
+ * só. Se a fila passar disso, a tela pede duas rodadas.
+ */
+const MAXIMO_DE_BAIXAS_EM_LOTE = 50;
 
 function falha(
   motivo: MotivoDeFalha,
@@ -176,49 +186,7 @@ export async function confirmarRecebimento(
   }
 
   try {
-    const confirmado = await prisma.$transaction(async (tx) => {
-      const emprestimo = await tx.emprestimo.findFirst({
-        where: {
-          id: emprestimoId,
-          status: STATUS_EMPRESTIMO.aguardandoBaixa,
-        },
-        select: {
-          id: true,
-          equip_id: true,
-          usuario: { select: { nome: true } },
-          equipamento: { select: { tipo: true, status: true } },
-        },
-      });
-
-      if (!emprestimo) throw new ForaDaFilaError();
-
-      const baixados = await tx.emprestimo.updateMany({
-        where: { id: emprestimoId, status: STATUS_EMPRESTIMO.aguardandoBaixa },
-        data: {
-          status: STATUS_EMPRESTIMO.concluido,
-          // A data que interessa para o inventário é a da conferência física,
-          // não a da declaração no tablet: é quando o equipamento voltou.
-          data_devolucao: new Date(),
-        },
-      });
-
-      if (baixados.count !== 1) throw new ForaDaFilaError();
-
-      const liberados = await tx.equipamento.updateMany({
-        where: {
-          id: emprestimo.equip_id,
-          status: STATUS_EQUIPAMENTO.emprestado,
-        },
-        data: { status: STATUS_EQUIPAMENTO.disponivel },
-      });
-
-      return {
-        equip_id: emprestimo.equip_id,
-        tipo: emprestimo.equipamento.tipo,
-        nome: emprestimo.usuario.nome,
-        liberado: liberados.count === 1,
-      };
-    });
+    const confirmado = await darBaixa(emprestimoId);
 
     revalidatePath(RAIZ_DO_PAINEL, "layout");
 
@@ -234,6 +202,148 @@ export async function confirmarRecebimento(
 
     return falhaInterna(erro);
   }
+}
+
+/**
+ * A transação da baixa de **um** empréstimo, sem invalidação de cache e sem
+ * tradução de erro — as duas coisas mudam entre a baixa avulsa e a do lote.
+ *
+ * Lança `ForaDaFilaError` quando a linha já não está em `AGUARDANDO_BAIXA`.
+ */
+async function darBaixa(emprestimoId: number): Promise<RecebimentoConfirmado> {
+  return prisma.$transaction(async (tx) => {
+    const emprestimo = await tx.emprestimo.findFirst({
+      where: {
+        id: emprestimoId,
+        status: STATUS_EMPRESTIMO.aguardandoBaixa,
+      },
+      select: {
+        id: true,
+        equip_id: true,
+        usuario: { select: { nome: true } },
+        equipamento: { select: { tipo: true, status: true } },
+      },
+    });
+
+    if (!emprestimo) throw new ForaDaFilaError();
+
+    const baixados = await tx.emprestimo.updateMany({
+      where: { id: emprestimoId, status: STATUS_EMPRESTIMO.aguardandoBaixa },
+      data: {
+        status: STATUS_EMPRESTIMO.concluido,
+        // A data que interessa para o inventário é a da conferência física,
+        // não a da declaração no tablet: é quando o equipamento voltou.
+        data_devolucao: new Date(),
+      },
+    });
+
+    if (baixados.count !== 1) throw new ForaDaFilaError();
+
+    const liberados = await tx.equipamento.updateMany({
+      where: {
+        id: emprestimo.equip_id,
+        status: STATUS_EQUIPAMENTO.emprestado,
+      },
+      data: { status: STATUS_EQUIPAMENTO.disponivel },
+    });
+
+    return {
+      equip_id: emprestimo.equip_id,
+      tipo: emprestimo.equipamento.tipo,
+      nome: emprestimo.usuario.nome,
+      liberado: liberados.count === 1,
+    };
+  });
+}
+
+/**
+ * "Confirmar Todas as Devoluções": dá baixa em tudo o que está na fila.
+ *
+ * **Cada item é uma transação própria, e o lote é melhor-esforço.** Não é
+ * descuido: o gesto físico já aconteceu — a secretaria recolheu a pilha da
+ * bancada. Se a linha 3 saiu da fila porque a colega deu baixa nela em outra
+ * aba, abortar o lote inteiro desfaria a conferência das outras quatro, que
+ * estão na mão de quem clicou. O resumo diz o que fechou e o que não fechou.
+ *
+ * Os ids vêm da tela — e não de um "tudo que estiver em AGUARDANDO_BAIXA
+ * agora" — de propósito: um aluno pode ter declarado uma devolução depois do
+ * render, com o aparelho ainda na mochila. O botão confirma o que a secretaria
+ * viu na lista, não o que apareceu depois.
+ *
+ * A sessão é conferida aqui, como em toda action do painel: este é um endpoint
+ * POST público, e é o que mais estraga se for chamado sem sessão.
+ */
+export async function confirmarTodosOsRecebimentos(
+  emprestimoIdsBrutos: number[],
+): Promise<Resultado<RecebimentoEmLote>> {
+  if (!(await temSessaoAdmin())) return semSessao();
+
+  const ids = Array.from(
+    new Set(
+      (Array.isArray(emprestimoIdsBrutos) ? emprestimoIdsBrutos : [])
+        .map((id) => Number(id))
+        .filter((id) => Number.isInteger(id) && id > 0),
+    ),
+  );
+
+  if (ids.length === 0) {
+    return falha(
+      "EMPRESTIMO_NAO_ENCONTRADO",
+      "Nada para confirmar.",
+      "A fila está vazia ou a página está desatualizada.",
+    );
+  }
+
+  if (ids.length > MAXIMO_DE_BAIXAS_EM_LOTE) {
+    return falha(
+      "SELECAO_EXCEDIDA",
+      `São no máximo ${MAXIMO_DE_BAIXAS_EM_LOTE} baixas por vez.`,
+      "Confirme em duas rodadas — a lista se atualiza sozinha entre elas.",
+    );
+  }
+
+  const resumo: RecebimentoEmLote = {
+    confirmados: [],
+    presas: [],
+    foraDaFila: 0,
+    comFalha: 0,
+  };
+
+  // Sequencial, não `Promise.all`: são escritas no mesmo arquivo SQLite, e
+  // dez transações concorrendo pelo mesmo lock só trocam paralelismo por
+  // "database is locked".
+  for (const id of ids) {
+    try {
+      const baixado = await darBaixa(id);
+
+      resumo.confirmados.push(baixado.equip_id);
+      if (!baixado.liberado) resumo.presas.push(baixado.equip_id);
+    } catch (erro) {
+      if (erro instanceof ForaDaFilaError) {
+        resumo.foraDaFila += 1;
+        continue;
+      }
+
+      console.error("[admin] falha ao dar baixa em lote:", erro);
+      resumo.comFalha += 1;
+    }
+  }
+
+  // Uma invalidação para o lote inteiro: a fila, os ativos e o inventário são
+  // relidos uma vez só, e não uma vez por item.
+  revalidatePath(RAIZ_DO_PAINEL, "layout");
+
+  if (resumo.confirmados.length === 0) {
+    return falha(
+      "EMPRESTIMO_NAO_ENCONTRADO",
+      "Nenhuma baixa foi registrada.",
+      resumo.comFalha > 0
+        ? "Tente de novo. Se continuar, confira se o banco de dados está acessível."
+        : "A fila já tinha sido conferida em outra aba. A lista foi atualizada.",
+    );
+  }
+
+  return { ok: true, dados: resumo };
 }
 
 /** Erro interno da transação da baixa, usado só para abortar e voltar atrás. */
