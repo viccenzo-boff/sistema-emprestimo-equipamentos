@@ -185,6 +185,21 @@ export function IconeMais({ className }: PropsDeIcone) {
   );
 }
 
+/**
+ * Seta do `<select>` de categoria.
+ *
+ * Existe porque `appearance-none` apaga a seta nativa junto com o estilo do
+ * sistema — e sem seta o campo volta a parecer um campo de texto, que é
+ * exatamente a confusão que o `<select>` veio resolver.
+ */
+export function IconeChevron({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <path d="m6.5 9.5 5.5 5.5 5.5-5.5" {...TRACO} strokeWidth={2} />
+    </Svg>
+  );
+}
+
 /** Manutenção: o equipamento sai de circulação. */
 export function IconeFerramenta({ className }: PropsDeIcone) {
   return (

@@ -8,7 +8,13 @@ import { alterarStatusEquipamento, cadastrarEquipamento } from "@/app/admin/acti
 import { SeloStatus } from "@/components/admin/SeloStatus";
 import { Alerta } from "@/components/ui/Alerta";
 import { Botao } from "@/components/ui/Botao";
-import { IconeCategoria, IconeCheck, IconeFerramenta, IconeMais } from "@/components/ui/icones";
+import {
+  IconeCategoria,
+  IconeCheck,
+  IconeChevron,
+  IconeFerramenta,
+  IconeMais,
+} from "@/components/ui/icones";
 import { Notificacao } from "@/components/ui/Notificacao";
 import {
   STATUS_EMPRESTIMO,
@@ -216,27 +222,80 @@ export function GestaoInventario({ itens, categorias }: Props) {
   );
 }
 
+/** Valor de escape do `<select>`: abre o campo de texto para categoria nova. */
+const NOVA_CATEGORIA = "__nova__";
+
 /**
  * Cadastro de equipamento novo.
  *
  * O foco volta para a etiqueta depois de cada cadastro: quem chega com uma
  * caixa de dez notebooks digita dez vezes seguidas, e tirar a mão do teclado
  * para clicar no campo dez vezes é a diferença entre usar e não usar a tela.
+ *
+ * **A categoria é um `<select>`, não um campo de texto com `datalist`.** O
+ * `datalist` parece um combo mas é um campo de texto com sugestões: depois de
+ * escolher "Notebook", a lista só reabre quando o texto volta a casar com algo
+ * — na prática, apagando a palavra à mão para trocar para "Tablet". Com o
+ * `<select>`, um clique sempre abre as opções e um segundo troca.
+ *
+ * O `<select>` sozinho, porém, fecharia a porta para a categoria que ainda não
+ * existe — e o servidor aceita categoria nova de propósito (é ele quem escolhe
+ * a grafia). Por isso a última opção é "Nova categoria...", que troca o campo
+ * por um `<input>` de texto com o mesmo `name`. Um `name` só: `FormData.get`
+ * devolve o primeiro campo homônimo, então dois ao mesmo tempo mandariam o
+ * valor errado sem avisar.
  */
 function FormularioDeCadastro({ categorias }: { categorias: string[] }) {
   const [estado, cadastrar, pendente] = useActionState(cadastrarEquipamento, {
     fase: "inicial" as const,
   });
 
-  const formularioRef = useRef<HTMLFormElement>(null);
   const etiquetaRef = useRef<HTMLInputElement>(null);
+  const categoriaNovaRef = useRef<HTMLInputElement>(null);
 
+  // Inventário vazio não tem lista para escolher — o primeiro cadastro já
+  // começa no campo de texto.
+  const [digitandoCategoria, setDigitandoCategoria] = useState(
+    categorias.length === 0,
+  );
+  const pediuCategoriaNova = useRef(false);
+
+  /*
+    O `<select>` é **não-controlado** de propósito.
+
+    O React 19 limpa o formulário sozinho quando a action termina. Com um
+    `<select>` controlado isso desencontra os dois lados: o DOM volta para o
+    `defaultValue` e o React, que só reescreve o campo quando a prop muda,
+    continua achando que o valor escolhido está lá. O próximo envio mandaria a
+    categoria vazia — e o `FormData` lê o DOM, não o estado. Medido no
+    navegador: depois de cadastrar TAB-99 com "Tablet" escolhido, o campo já
+    aparecia em branco.
+
+    Nada aqui precisa do valor em estado: o sentinela da categoria nova chega
+    pelo próprio evento, e a volta para a lista remonta o `<select>`, que
+    renasce no `defaultValue`.
+  */
   useEffect(() => {
     if (estado.fase !== "sucesso") return;
 
-    formularioRef.current?.reset();
     etiquetaRef.current?.focus();
   }, [estado]);
+
+  // Só rouba o foco quando foi a secretaria que pediu o campo de texto — no
+  // inventário vazio a tela abre nele por padrão, e aí o foco é da etiqueta.
+  useEffect(() => {
+    if (!digitandoCategoria || !pediuCategoriaNova.current) return;
+
+    pediuCategoriaNova.current = false;
+    categoriaNovaRef.current?.focus();
+  }, [digitandoCategoria]);
+
+  function escolherCategoria(valor: string) {
+    if (valor !== NOVA_CATEGORIA) return;
+
+    pediuCategoriaNova.current = true;
+    setDigitandoCategoria(true);
+  }
 
   return (
     <section className="flex flex-col gap-4 rounded-3xl border border-borda bg-superficie p-6 lg:p-7">
@@ -251,7 +310,6 @@ function FormularioDeCadastro({ categorias }: { categorias: string[] }) {
       </div>
 
       <form
-        ref={formularioRef}
         action={cadastrar}
         className="flex flex-col gap-4 sm:flex-row sm:items-end"
       >
@@ -273,24 +331,64 @@ function FormularioDeCadastro({ categorias }: { categorias: string[] }) {
         </div>
 
         <div className="flex flex-1 flex-col gap-2">
-          <label htmlFor="tipo" className="text-base font-semibold text-tinta">
-            Categoria
-          </label>
-          <input
-            id="tipo"
-            name="tipo"
-            required
-            maxLength={30}
-            autoComplete="off"
-            list="categorias-existentes"
-            placeholder="Notebook"
-            className={CAMPO}
-          />
-          <datalist id="categorias-existentes">
-            {categorias.map((categoria) => (
-              <option key={categoria} value={categoria} />
-            ))}
-          </datalist>
+          <div className="flex items-baseline justify-between gap-3">
+            <label htmlFor="tipo" className="text-base font-semibold text-tinta">
+              Categoria
+            </label>
+
+            {digitandoCategoria && categorias.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => setDigitandoCategoria(false)}
+                className="rounded-lg text-sm font-semibold text-marca-azul underline decoration-marca-azul-claro underline-offset-4 hover:text-marca-azul-escuro"
+              >
+                Escolher da lista
+              </button>
+            ) : null}
+          </div>
+
+          {digitandoCategoria ? (
+            <input
+              ref={categoriaNovaRef}
+              id="tipo"
+              name="tipo"
+              required
+              maxLength={30}
+              autoComplete="off"
+              placeholder="Ex.: Projetor"
+              className={CAMPO}
+            />
+          ) : (
+            /*
+              `appearance-none` apaga a seta nativa junto com o estilo do
+              sistema, então ela volta desenhada aqui — e com `pointer-events-none`,
+              para o clique atravessar e abrir a lista mesmo em cima do ícone.
+            */
+            <div className="relative">
+              <select
+                id="tipo"
+                name="tipo"
+                required
+                defaultValue=""
+                onChange={(evento) => escolherCategoria(evento.target.value)}
+                className={`${CAMPO} cursor-pointer appearance-none pr-12`}
+              >
+                <option value="" disabled>
+                  Selecione a categoria
+                </option>
+
+                {categorias.map((existente) => (
+                  <option key={existente} value={existente}>
+                    {existente}
+                  </option>
+                ))}
+
+                <option value={NOVA_CATEGORIA}>Nova categoria...</option>
+              </select>
+
+              <IconeChevron className="pointer-events-none absolute top-1/2 right-4 size-5 -translate-y-1/2 text-tinta-tenue" />
+            </div>
+          )}
         </div>
 
         <Botao type="submit" carregando={pendente} className="sm:shrink-0">
