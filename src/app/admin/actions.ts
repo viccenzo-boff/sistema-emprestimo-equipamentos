@@ -14,6 +14,7 @@ import {
 import {
   STATUS_EMPRESTIMO,
   STATUS_EQUIPAMENTO,
+  type EstadoDaCategoria,
   type EstadoDoCadastro,
   type EstadoDoLogin,
   type MotivoDeFalha,
@@ -221,7 +222,9 @@ async function darBaixa(emprestimoId: number): Promise<RecebimentoConfirmado> {
         id: true,
         equip_id: true,
         usuario: { select: { nome: true } },
-        equipamento: { select: { tipo: true, status: true } },
+        equipamento: {
+          select: { categoria: { select: { nome: true } }, status: true },
+        },
       },
     });
 
@@ -249,7 +252,7 @@ async function darBaixa(emprestimoId: number): Promise<RecebimentoConfirmado> {
 
     return {
       equip_id: emprestimo.equip_id,
-      tipo: emprestimo.equipamento.tipo,
+      tipo: emprestimo.equipamento.categoria.nome,
       nome: emprestimo.usuario.nome,
       liberado: liberados.count === 1,
     };
@@ -359,23 +362,52 @@ class ForaDaFilaError extends Error {
  * ------------------------------------------------------------------------- */
 
 /**
- * Tira um equipamento de circulação (`MANUTENCAO`) ou devolve à vista do
- * tablet (`DISPONIVEL`).
+ * De onde um equipamento pode vir, para cada destino que o painel oferece.
  *
- * São as duas únicas transições que o painel oferece, e a restrição é de
- * negócio, não de tela:
+ * É a regra de negócio inteira em uma tabela, e ela é lida **no servidor**: a
+ * tela manda para onde quer levar o item, nunca de onde ele está saindo. Isso
+ * fecha o conjunto de transições permitidas e ainda dá de graça a trava de
+ * concorrência — o `updateMany` filtra pela origem e conta as linhas afetadas,
+ * então duas abas clicando ao mesmo tempo mudam a linha uma vez só.
  *
- * - `EMPRESTADO` não entra nem sai daqui. Esse status pertence ao ciclo de
- *   empréstimo: quem o define é a retirada no tablet, quem o desfaz é a
- *   confirmação de recebimento. Mudá-lo à mão deixaria um `Emprestimo` aberto
- *   apontando para um equipamento "disponível" — o tablet ofereceria um
- *   aparelho que está na mochila de alguém.
+ * `EMPRESTADO` não aparece nem como origem nem como destino. Esse status
+ * pertence ao ciclo de empréstimo: quem o define é a retirada no tablet, quem o
+ * desfaz é a confirmação de recebimento. Mudá-lo à mão deixaria um `Emprestimo`
+ * aberto apontando para um equipamento "disponível" — o tablet ofereceria um
+ * aparelho que está na mochila de alguém.
+ *
+ * `MANUTENCAO` também não é alcançável a partir de `INATIVO`: um aparelho
+ * aposentado volta para a prateleira primeiro, e só então alguém decide que ele
+ * precisa de conserto. Dois passos, e não um atalho que junta duas decisões
+ * diferentes no mesmo clique.
+ *
+ * É um `Map`, e não um objeto: `ORIGENS[chave]` em um objeto responde a
+ * `"constructor"` e `"toString"` com valores herdados do protótipo — e o que
+ * chega aqui é o corpo de um POST público.
+ */
+const ORIGENS_PERMITIDAS = new Map<string, readonly string[]>([
+  [
+    STATUS_EQUIPAMENTO.disponivel,
+    [STATUS_EQUIPAMENTO.manutencao, STATUS_EQUIPAMENTO.inativo],
+  ],
+  [STATUS_EQUIPAMENTO.manutencao, [STATUS_EQUIPAMENTO.disponivel]],
+  [
+    STATUS_EQUIPAMENTO.inativo,
+    [STATUS_EQUIPAMENTO.disponivel, STATUS_EQUIPAMENTO.manutencao],
+  ],
+]);
+
+/**
+ * Move um equipamento entre as situações que o painel controla: `DISPONIVEL`,
+ * `MANUTENCAO` e `INATIVO`.
+ *
+ * As transições válidas estão em `ORIGENS_PERMITIDAS`. Além delas, duas travas:
+ *
  * - Com empréstimo aberto (`ATIVO` ou `AGUARDANDO_BAIXA`), nada muda mesmo que
  *   o status do equipamento esteja inconsistente. Primeiro fecha-se o ciclo.
- *
- * O status esperado é derivado do destino (o inverso dele), nunca recebido da
- * tela: além de fechar o par permitido, dá de graça a trava de concorrência no
- * `updateMany` — duas abas clicando ao mesmo tempo, uma só muda a linha.
+ * - `EMPRESTADO` sem empréstimo aberto é inconsistência de dados, e a action
+ *   recusa em vez de "consertar" — liberar um item que talvez esteja com
+ *   alguém é pior do que uma mensagem pedindo para conferir o histórico.
  */
 export async function alterarStatusEquipamento(
   equipIdBruto: string,
@@ -389,25 +421,16 @@ export async function alterarStatusEquipamento(
     return falha("EQUIPAMENTO_NAO_ENCONTRADO", "Equipamento não informado.");
   }
 
-  const destino =
-    novoStatusBruto === STATUS_EQUIPAMENTO.manutencao
-      ? STATUS_EQUIPAMENTO.manutencao
-      : novoStatusBruto === STATUS_EQUIPAMENTO.disponivel
-        ? STATUS_EQUIPAMENTO.disponivel
-        : null;
+  const destino = typeof novoStatusBruto === "string" ? novoStatusBruto : "";
+  const origens = ORIGENS_PERMITIDAS.get(destino);
 
-  if (!destino) {
+  if (!origens) {
     return falha(
       "STATUS_INVALIDO",
       "Situação inválida para um equipamento.",
-      "O painel só alterna entre Disponível e Manutenção.",
+      "O painel move o equipamento entre Disponível, Manutenção e Inativo.",
     );
   }
-
-  const origem =
-    destino === STATUS_EQUIPAMENTO.manutencao
-      ? STATUS_EQUIPAMENTO.disponivel
-      : STATUS_EQUIPAMENTO.manutencao;
 
   try {
     const equipamento = await prisma.equipamento.findUnique({
@@ -458,15 +481,15 @@ export async function alterarStatusEquipamento(
     }
 
     const alterados = await prisma.equipamento.updateMany({
-      where: { id: equipId, status: origem },
+      where: { id: equipId, status: { in: [...origens] } },
       data: { status: destino },
     });
 
     if (alterados.count !== 1) {
       return falha(
         "STATUS_INVALIDO",
-        `${equipId} já não estava como ${rotuloDeStatus(origem)}.`,
-        "A lista foi atualizada com a situação atual.",
+        `${equipId} não pode ir de ${rotuloDeStatus(equipamento.status)} para ${rotuloDeStatus(destino)}.`,
+        "A situação mudou em outra aba. A lista foi atualizada.",
       );
     }
 
@@ -479,16 +502,29 @@ export async function alterarStatusEquipamento(
 }
 
 /**
+ * Formato da etiqueta, usado no cadastro e na renomeação.
+ *
+ * Sem espaço e sem acento porque a etiqueta é lida de um adesivo e digitada de
+ * novo mais tarde: "NOTE 11" e "NOTE-11" seriam dois equipamentos, e "EXTENSÃO"
+ * digitado sem o til seria um terceiro.
+ */
+const ETIQUETA_VALIDA = /^[A-Z0-9][A-Z0-9._-]{0,23}$/;
+
+const AJUDA_DA_ETIQUETA =
+  "Use letras, números, ponto, hífen ou sublinhado — sem espaços nem acentos. Ex.: NOTE-11.";
+
+/**
  * Cadastra um equipamento novo (spec, seção 4, Fluxo 3, item 2).
  *
- * Duas normalizações que evitam problema de prateleira:
+ * A etiqueta vira maiúscula: o id é comparado byte a byte no SQLite, então
+ * "note-11" e "NOTE-11" conviveriam como dois equipamentos — dois adesivos
+ * iguais no mesmo armário.
  *
- * - A etiqueta vira maiúscula. O id é comparado byte a byte no SQLite, então
- *   "note-11" e "NOTE-11" conviveriam como dois equipamentos — dois adesivos
- *   iguais no mesmo armário.
- * - A categoria adota a grafia já usada no banco quando existe uma equivalente
- *   ignorando maiúsculas e acentos. Sem isso, "notebook" abriria uma categoria
- *   nova no tablet, ao lado de "Notebook", com um item dentro.
+ * **A categoria chega como id, não como texto.** Até a Tarefa 5 chegava
+ * digitada, e esta action tinha que adivinhar se "notebook" era a mesma coisa
+ * que "Notebook". Com a tabela `Categoria`, quem escolhe a grafia é a tela de
+ * Categorias, uma vez só — aqui a única pergunta que sobra é se o id existe, e
+ * quem responde é a chave estrangeira.
  *
  * O item nasce `DISPONIVEL`: cadastrar é registrar o que chegou. Se veio com
  * defeito, o botão de manutenção está na linha seguinte da mesma tela.
@@ -508,39 +544,35 @@ export async function cadastrarEquipamento(
   const etiqueta = String(formulario.get("etiqueta") ?? "")
     .trim()
     .toUpperCase();
-  const tipoDigitado = String(formulario.get("tipo") ?? "")
-    .trim()
-    .replace(/\s+/g, " ");
+  const categoria_id = Number(formulario.get("categoria_id"));
 
-  if (!/^[A-Z0-9][A-Z0-9._-]{0,23}$/.test(etiqueta)) {
+  if (!ETIQUETA_VALIDA.test(etiqueta)) {
     return {
       fase: "erro",
       mensagem: "Etiqueta inválida.",
-      detalhe:
-        "Use letras, números, ponto, hífen ou sublinhado — sem espaços nem acentos. Ex.: NOTE-11.",
+      detalhe: AJUDA_DA_ETIQUETA,
     };
   }
 
-  if (tipoDigitado.length === 0 || tipoDigitado.length > 30) {
+  if (!Number.isInteger(categoria_id) || categoria_id <= 0) {
     return {
       fase: "erro",
-      mensagem: "Informe a categoria do equipamento.",
-      detalhe: "Ex.: Notebook, Tablet, Extensão.",
+      mensagem: "Escolha a categoria do equipamento.",
+      detalhe: "A lista vem da tela de Categorias, no menu ao lado.",
     };
   }
 
   try {
-    const tipo = await grafiaDaCategoria(tipoDigitado);
-
-    await prisma.equipamento.create({
-      data: { id: etiqueta, tipo, status: STATUS_EQUIPAMENTO.disponivel },
+    const equipamento = await prisma.equipamento.create({
+      data: { id: etiqueta, categoria_id, status: STATUS_EQUIPAMENTO.disponivel },
+      select: { categoria: { select: { nome: true } } },
     });
 
     revalidatePath(RAIZ_DO_PAINEL, "layout");
 
     return {
       fase: "sucesso",
-      mensagem: `${etiqueta} cadastrado em ${tipo} e disponível para retirada.`,
+      mensagem: `${etiqueta} cadastrado em ${equipamento.categoria.nome} e disponível para retirada.`,
     };
   } catch (erro) {
     // P2002 = violação de chave única. Chega aqui quando duas pessoas cadastram
@@ -551,6 +583,16 @@ export async function cadastrarEquipamento(
         fase: "erro",
         mensagem: `A etiqueta ${etiqueta} já existe.`,
         detalhe: "Confira a lista abaixo: cada adesivo é único no inventário.",
+      };
+    }
+
+    // P2003 = chave estrangeira. A categoria escolhida foi excluída entre o
+    // render da página e o envio do formulário.
+    if (codigoDoPrisma(erro) === "P2003") {
+      return {
+        fase: "erro",
+        mensagem: "Essa categoria não existe mais.",
+        detalhe: "Atualize a página: alguém pode tê-la excluído em outra aba.",
       };
     }
 
@@ -565,22 +607,257 @@ export async function cadastrarEquipamento(
 }
 
 /**
- * Devolve a grafia já usada no banco para a categoria digitada, comparando sem
- * acento e sem caixa. Se for categoria nova, devolve com a inicial maiúscula.
+ * Troca a etiqueta de um equipamento (Tarefa 6).
+ *
+ * A etiqueta é a **chave primária** do `Equipamento` e é para lá que o
+ * histórico inteiro aponta (`Emprestimo.equip_id`). Renomear parece perigoso e
+ * não é: a chave estrangeira foi declarada `onUpdate: Cascade` e o adapter do
+ * SQLite roda com `PRAGMA foreign_keys = ON`, então o banco propaga a troca
+ * para todos os empréstimos, ativos e concluídos, dentro da mesma instrução.
+ * Foi conferido contra o `dev.db` antes de esta action existir.
+ *
+ * Só `DISPONIVEL` pode ser renomeado, e a regra é do negócio: um adesivo é
+ * trocado com o aparelho na mão, na bancada. Enquanto o item está com alguém —
+ * ou marcado como emprestado — a etiqueta na tela tem que continuar batendo com
+ * a que o aluno vai devolver.
+ *
+ * A trava de concorrência é a de sempre: o `updateMany` filtra pelo status
+ * esperado e conta as linhas: zero significa que o item saiu de `DISPONIVEL`
+ * entre o render e o clique.
  */
-async function grafiaDaCategoria(digitado: string): Promise<string> {
-  const existentes = await prisma.equipamento.findMany({
-    distinct: ["tipo"],
-    select: { tipo: true },
-  });
+export async function renomearEtiqueta(
+  equipIdBruto: string,
+  novaEtiquetaBruta: string,
+): Promise<Resultado<{ de: string; para: string }>> {
+  if (!(await temSessaoAdmin())) return semSessao();
 
-  const chave = semAcento(digitado);
-  const conhecida = existentes.find((item) => semAcento(item.tipo) === chave);
+  const atual = typeof equipIdBruto === "string" ? equipIdBruto.trim() : "";
+  const nova =
+    typeof novaEtiquetaBruta === "string"
+      ? novaEtiquetaBruta.trim().toUpperCase()
+      : "";
 
-  if (conhecida) return conhecida.tipo;
+  if (atual.length === 0) {
+    return falha("EQUIPAMENTO_NAO_ENCONTRADO", "Equipamento não informado.");
+  }
 
-  return digitado.charAt(0).toUpperCase() + digitado.slice(1);
+  if (!ETIQUETA_VALIDA.test(nova)) {
+    return falha("ETIQUETA_INVALIDA", "Etiqueta inválida.", AJUDA_DA_ETIQUETA);
+  }
+
+  try {
+    const equipamento = await prisma.equipamento.findUnique({
+      where: { id: atual },
+      select: { id: true, status: true },
+    });
+
+    if (!equipamento) {
+      return falha(
+        "EQUIPAMENTO_NAO_ENCONTRADO",
+        `Equipamento ${atual} não existe.`,
+        "Atualize a página: a lista pode estar desatualizada.",
+      );
+    }
+
+    if (equipamento.status !== STATUS_EQUIPAMENTO.disponivel) {
+      return falha(
+        "STATUS_INVALIDO",
+        `${atual} não está disponível.`,
+        `A etiqueta só é trocada com o aparelho na bancada — este consta como ${rotuloDeStatus(equipamento.status)}.`,
+      );
+    }
+
+    if (nova === atual) {
+      return { ok: true, dados: { de: atual, para: atual } };
+    }
+
+    const alterados = await prisma.equipamento.updateMany({
+      where: { id: atual, status: STATUS_EQUIPAMENTO.disponivel },
+      data: { id: nova },
+    });
+
+    if (alterados.count !== 1) {
+      return falha(
+        "STATUS_INVALIDO",
+        `${atual} deixou de estar disponível.`,
+        "A situação mudou em outra aba. A lista foi atualizada.",
+      );
+    }
+
+    revalidatePath(RAIZ_DO_PAINEL, "layout");
+
+    return { ok: true, dados: { de: atual, para: nova } };
+  } catch (erro) {
+    if (codigoDoPrisma(erro) === "P2002") {
+      return falha(
+        "ETIQUETA_DUPLICADA",
+        `A etiqueta ${nova} já existe.`,
+        "Cada adesivo é único no inventário. Confira a lista abaixo.",
+      );
+    }
+
+    return falhaInterna(erro);
+  }
 }
+
+/* ------------------------------------------------------------------------- *
+ * Gestão de Categorias
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Cadastra uma categoria (Tarefa 6).
+ *
+ * A recusa por equivalência é o ponto da tela: `nome` é único no banco, mas o
+ * SQLite compara byte a byte — "notebook" e "Notebook" passariam as duas, e o
+ * tablet mostraria dois cartões para a mesma prateleira. Aqui a comparação
+ * ignora caixa e acento, então "extensao" esbarra em "Extensão" e a mensagem
+ * diz qual é a grafia que já existe.
+ */
+export async function cadastrarCategoria(
+  _estadoAnterior: EstadoDaCategoria,
+  formulario: FormData,
+): Promise<EstadoDaCategoria> {
+  if (!(await temSessaoAdmin())) {
+    return {
+      fase: "erro",
+      mensagem: "Sessão encerrada.",
+      detalhe: "Atualize a página e informe a senha novamente.",
+    };
+  }
+
+  const digitado = String(formulario.get("nome") ?? "")
+    .trim()
+    .replace(/\s+/g, " ");
+
+  if (digitado.length === 0 || digitado.length > 30) {
+    return {
+      fase: "erro",
+      mensagem: "Informe o nome da categoria.",
+      detalhe: "Até 30 caracteres. Ex.: Notebook, Tablet, Projetor.",
+    };
+  }
+
+  try {
+    const existentes = await prisma.categoria.findMany({ select: { nome: true } });
+    const chave = semAcento(digitado);
+    const equivalente = existentes.find((item) => semAcento(item.nome) === chave);
+
+    if (equivalente) {
+      return {
+        fase: "erro",
+        mensagem: `A categoria ${equivalente.nome} já existe.`,
+        detalhe: "Duas grafias da mesma categoria virariam duas prateleiras no tablet.",
+      };
+    }
+
+    // Nome no singular e com inicial maiúscula: é assim que ele aparece na
+    // linha do inventário. O plural do tablet ("Notebooks") é calculado na
+    // hora de exibir, e não guardado.
+    const nome = digitado.charAt(0).toUpperCase() + digitado.slice(1);
+
+    await prisma.categoria.create({ data: { nome } });
+
+    revalidatePath(RAIZ_DO_PAINEL, "layout");
+
+    return {
+      fase: "sucesso",
+      mensagem: `Categoria ${nome} criada. Já dá para cadastrar equipamentos nela.`,
+    };
+  } catch (erro) {
+    if (codigoDoPrisma(erro) === "P2002") {
+      return {
+        fase: "erro",
+        mensagem: `A categoria ${digitado} já existe.`,
+        detalhe: "Ela pode ter sido criada em outra aba. Atualize a página.",
+      };
+    }
+
+    console.error("[admin] falha ao cadastrar categoria:", erro);
+
+    return {
+      fase: "erro",
+      mensagem: "Não foi possível criar a categoria.",
+      detalhe: "Tente de novo. Se continuar, confira o banco de dados.",
+    };
+  }
+}
+
+/**
+ * Exclui uma categoria — e só consegue se ela estiver vazia.
+ *
+ * **Quem recusa é o banco**, não esta função: a relação foi declarada
+ * `onDelete: Restrict`, então um DELETE com equipamento vinculado volta P2003 e
+ * a linha continua lá. A contagem lida antes existe para dar a mensagem certa
+ * ("3 equipamentos vinculados") e para a tela não oferecer um botão que só
+ * poderia dar erro — mas ela envelhece no mesmo instante em que é lida, e é o
+ * `catch` do P2003 que segura o caso real: alguém cadastrando um equipamento
+ * nessa categoria em outra aba enquanto a exclusão está em voo.
+ *
+ * Categoria não é histórico: nenhum `Emprestimo` aponta para ela, só
+ * equipamentos. Por isso ela pode ser apagada de verdade, enquanto o
+ * equipamento só pode ser inativado.
+ */
+export async function excluirCategoria(
+  categoriaIdBruta: number,
+): Promise<Resultado<{ id: number; nome: string }>> {
+  if (!(await temSessaoAdmin())) return semSessao();
+
+  const id = Number(categoriaIdBruta);
+
+  if (!Number.isInteger(id) || id <= 0) {
+    return falha(
+      "CATEGORIA_NAO_ENCONTRADA",
+      "Categoria inválida.",
+      "Atualize a página e tente de novo.",
+    );
+  }
+
+  try {
+    const categoria = await prisma.categoria.findUnique({
+      where: { id },
+      select: { id: true, nome: true, _count: { select: { equipamentos: true } } },
+    });
+
+    if (!categoria) {
+      return falha(
+        "CATEGORIA_NAO_ENCONTRADA",
+        "Essa categoria já não existe.",
+        "Outra pessoa pode tê-la excluído. A lista foi atualizada.",
+      );
+    }
+
+    if (categoria._count.equipamentos > 0) {
+      return falha(
+        "CATEGORIA_EM_USO",
+        `${categoria.nome} ainda tem equipamentos.`,
+        AJUDA_DA_CATEGORIA_EM_USO,
+      );
+    }
+
+    await prisma.categoria.delete({ where: { id } });
+
+    revalidatePath(RAIZ_DO_PAINEL, "layout");
+
+    return { ok: true, dados: { id: categoria.id, nome: categoria.nome } };
+  } catch (erro) {
+    if (codigoDoPrisma(erro) === "P2003") {
+      return falha(
+        "CATEGORIA_EM_USO",
+        "A categoria ainda tem equipamentos.",
+        AJUDA_DA_CATEGORIA_EM_USO,
+      );
+    }
+
+    return falhaInterna(erro);
+  }
+}
+
+/**
+ * O detalhe da recusa, dito igual nos dois caminhos: o da contagem lida antes e
+ * o do P2003 que o banco devolve quando um equipamento entrou no meio.
+ */
+const AJUDA_DA_CATEGORIA_EM_USO =
+  "Inative os equipamentos dessa categoria antes de excluí-la — apagá-la levaria junto o histórico de empréstimos deles.";
 
 function semAcento(texto: string): string {
   return texto
@@ -593,5 +870,6 @@ function semAcento(texto: string): string {
 function rotuloDeStatus(status: string): string {
   if (status === STATUS_EQUIPAMENTO.disponivel) return "disponível";
   if (status === STATUS_EQUIPAMENTO.emprestado) return "emprestado";
+  if (status === STATUS_EQUIPAMENTO.inativo) return "inativo";
   return "em manutenção";
 }
