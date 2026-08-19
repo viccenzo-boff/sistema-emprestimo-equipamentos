@@ -18,12 +18,13 @@ import { TelaInicio } from "@/components/portal/TelaInicio";
 import { TelaMatricula } from "@/components/portal/TelaMatricula";
 import { TelaSucesso } from "@/components/portal/TelaSucesso";
 import { Notificacao } from "@/components/ui/Notificacao";
-import type {
-  Categoria,
-  EmprestimoAtivo,
-  EquipamentoDisponivel,
-  RetiradaConfirmada,
-  UsuarioIdentificado,
+import {
+  STATUS_USUARIO,
+  type Categoria,
+  type EmprestimoAtivo,
+  type EquipamentoDisponivel,
+  type RetiradaConfirmada,
+  type UsuarioIdentificado,
 } from "@/lib/tipos";
 
 /**
@@ -350,6 +351,7 @@ export function Portal() {
         {etapa.nome === "inicio" && usuario ? (
           <TelaInicio
             nome={usuario.nome}
+            inativo={usuario.status === STATUS_USUARIO.inativo}
             categorias={categorias}
             selecionadosPorTipo={selecionadosPorTipo}
             onEscolher={abrirCategoria}

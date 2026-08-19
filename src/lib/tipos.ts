@@ -30,15 +30,37 @@ export const STATUS_EMPRESTIMO = {
   concluido: "CONCLUIDO",
 } as const;
 
+/**
+ * Status possíveis de um cadastro de usuário (Tarefa 8).
+ *
+ * `INATIVO` **bloqueia a retirada e permite a devolução**. A assimetria é a
+ * regra inteira: quem sai da faculdade costuma estar com um aparelho na
+ * mochila, e travar também a devolução transformaria o cadastro inativado na
+ * garantia de que o equipamento nunca volta. Quem devolve não está pedindo
+ * nada ao sistema — está entregando.
+ */
+export const STATUS_USUARIO = {
+  ativo: "ATIVO",
+  inativo: "INATIVO",
+} as const;
+
 /** Teto de itens por retirada. Segura tanto o dedo escorregando quanto POST malicioso. */
 export const MAXIMO_ITENS_POR_RETIRADA = 10;
 
-/** Dados do usuário expostos ao tablet. Só o que a tela realmente mostra. */
+/**
+ * Dados do usuário expostos ao tablet. Só o que a tela realmente mostra.
+ *
+ * `status` entrou na Tarefa 8 porque a tela precisa dele: um cadastro `INATIVO`
+ * continua entrando (para poder devolver) e a grade de categorias dá lugar a
+ * uma explicação. Sem o campo aqui, o tablet mostraria o inventário inteiro
+ * para alguém que não pode retirar nada, e a recusa só apareceria no fim.
+ */
 export type UsuarioIdentificado = {
   matricula: string;
   nome: string;
   perfil: string;
   cursos: string;
+  status: string;
 };
 
 /**
@@ -116,6 +138,8 @@ export type MotivoDeFalha =
   | "CATEGORIA_NAO_ENCONTRADA"
   | "CATEGORIA_DUPLICADA"
   | "CATEGORIA_EM_USO"
+  // Portal do tablet — cadastro inativo (Tarefa 8)
+  | "USUARIO_INATIVO"
   | "FALHA_INTERNA";
 
 export type RetiradaConfirmada = {

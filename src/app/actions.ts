@@ -5,6 +5,7 @@ import {
   MAXIMO_ITENS_POR_RETIRADA,
   STATUS_EMPRESTIMO,
   STATUS_EQUIPAMENTO,
+  STATUS_USUARIO,
   type Categoria,
   type DevolucaoConfirmada,
   type DevolucaoEmLoteConfirmada,
@@ -64,7 +65,19 @@ export async function identificarUsuario(matriculaBruta: string): Promise<
   }
 
   try {
-    const usuario = await prisma.usuario.findUnique({ where: { matricula } });
+    const usuario = await prisma.usuario.findUnique({
+      where: { matricula },
+      // `select` explícito, e não o registro inteiro: o que sai daqui desce
+      // para o navegador, e a próxima coluna que alguém adicionar ao `Usuario`
+      // não deve virar dado público por acidente.
+      select: {
+        matricula: true,
+        nome: true,
+        perfil: true,
+        cursos: true,
+        status: true,
+      },
+    });
 
     if (!usuario) {
       return falha(
@@ -73,6 +86,18 @@ export async function identificarUsuario(matriculaBruta: string): Promise<
         "Confira os números digitados. Se estiver certo, procure a secretaria.",
       );
     }
+
+    /*
+      Cadastro `INATIVO` **entra**. A recusa é só da retirada, e ela mora em
+      `confirmarRetirada`.
+
+      Se a barreira fosse aqui, a pessoa inativada não conseguiria nem devolver
+      o que está com ela — e é justamente quem foi inativado (saiu da
+      faculdade, trancou a matrícula) que costuma ter um aparelho na mochila.
+      Bloquear os dois lados transformaria a inativação na garantia de que o
+      equipamento nunca volta. A tela usa o `status` para trocar a grade de
+      categorias por uma explicação, mantendo "Meus equipamentos" no lugar.
+    */
 
     const [categorias, emprestimos] = await Promise.all([
       listarCategorias(),
@@ -217,13 +242,42 @@ export async function confirmarRetirada(
   }
 
   try {
-    const usuario = await prisma.usuario.findUnique({ where: { matricula } });
+    const usuario = await prisma.usuario.findUnique({
+      where: { matricula },
+      select: {
+        matricula: true,
+        nome: true,
+        perfil: true,
+        cursos: true,
+        status: true,
+      },
+    });
 
     if (!usuario) {
       return falha(
         "MATRICULA_NAO_ENCONTRADA",
         `Matrícula ${matricula} não encontrada.`,
         "Comece de novo pela tela inicial.",
+      );
+    }
+
+    /*
+      A recusa da retirada para cadastro inativo (Tarefa 8).
+
+      Está **no servidor** e não só na tela, pela razão de sempre: esta action é
+      um endpoint POST público, e a tela que esconde a grade de categorias é
+      conveniência, não barreira. Sem esta linha, um POST direto retiraria
+      equipamento em nome de uma matrícula desligada.
+
+      A devolução (`confirmarDevolucao`) não tem trava equivalente, e é
+      deliberado: quem devolve não está pedindo nada ao sistema — está
+      entregando um aparelho que a secretaria quer de volta.
+    */
+    if (usuario.status === STATUS_USUARIO.inativo) {
+      return falha(
+        "USUARIO_INATIVO",
+        "Este cadastro está inativo.",
+        "Procure a secretaria para reativar a sua matrícula. Se você está com algum equipamento, a devolução continua liberada.",
       );
     }
 
