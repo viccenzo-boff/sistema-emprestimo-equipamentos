@@ -83,6 +83,20 @@ entra) e continua na lista do inventário, em cinza, com botão de reativar.
 Categoria, ao contrário, pode ser apagada de verdade — nenhum `Emprestimo`
 aponta para ela —, mas só quando está vazia, e quem recusa é o banco.
 
+**`Usuario.status` tem o mesmo nome e uma regra diferente do `Equipamento`.**
+Usuário também nunca é apagado (`Emprestimo.usuario_id` aponta para ele, e o
+banco recusa o DELETE com P2003), mas o `INATIVO` dele é **assimétrico**:
+bloqueia a **retirada** e libera a **devolução**. Quem foi inativado costuma
+estar com um aparelho na mochila, e travar os dois lados faria a inativação
+garantir que o equipamento nunca volta. Por isso a matrícula inativa entra no
+tablet normalmente — a grade de categorias é que dá lugar a uma explicação. Pelo
+mesmo motivo, inativar alguém com empréstimo aberto é **permitido** (com aviso),
+ao contrário do equipamento, cuja situação trava até o ciclo fechar.
+
+A matrícula é editável no painel, e a correção dela **leva o histórico junto**
+(`onUpdate: Cascade` + `PRAGMA foreign_keys = 1`). Só aceita dígitos, até 15,
+porque é isso que o teclado do tablet consegue digitar.
+
 ### Estado atual
 
 **Tarefa 1 (concluída):** setup de Next.js 16 + Tailwind 4 + Prisma 7/SQLite, com
@@ -400,6 +414,115 @@ vazio.
   categoria, e é o que a linha mostra. Quem procura por pessoa tem a aba
   Empréstimos Ativos.
 
+**Tarefa 8 — Gestão de usuários e importação de .xlsx (concluída):** os quatro
+itens de [tarefa-08-gestao-usuarios.md](tarefa-08-gestao-usuarios.md) — o campo
+`Usuario.status`, a leitura nativa de planilha do Excel com a biblioteca `xlsx`
+(SheetJS), a importação com atualização parcial nos três cenários do enunciado,
+e a tela `/admin/usuarios` com busca, filtros, edição por modal e o botão de
+ativar/inativar de um clique. `tsc`, `lint` e `build` em 0, com as **cinco**
+rotas do painel dinâmicas (`ƒ`). A migration foi ensaiada em uma cópia do
+`dev.db` antes do arquivo real. Verificação em três frentes, com o banco
+devolvido à linha de base exata no fim: o parser exercitado por script contra
+arquivos .xlsx montados em memória (27 asserções, incluindo o arquivo "sujo");
+navegador real (Chrome headless por CDP, sem instalar dependência) para os três
+cenários, os dois modais, o dropzone, os filtros e o tablet (83 asserções); e
+HTTP real reproduzindo byte a byte as chamadas de Server Action **sem o cookie
+de sessão**, inclusive a de upload multipart (7 asserções).
+
+**Decisões da Tarefa 8** (não refazer sem motivo):
+
+- **`INATIVO` bloqueia a retirada e libera a devolução.** O enunciado criava o
+  campo e o botão sem dizer o que o status faz; sem essa regra ele seria só um
+  rótulo. Foi levantado como conflito antes de escrever código. A assimetria é o
+  ponto: quem foi inativado (saiu, trancou a matrícula) quase sempre está com um
+  aparelho na mochila, e travar a devolução transformaria a inativação na
+  garantia de que o equipamento nunca volta. Quem devolve não pede nada ao
+  sistema — está entregando.
+- **O `onUpdate: Cascade` do item 1 já existia** — é o padrão do Prisma para
+  relação obrigatória, e a migration inicial já o tinha gravado no SQL. Ficou
+  **explícito** no schema pelo valor de documentação (escrito é regra do
+  projeto; implícito era coincidência do gerador), mas **não houve mudança de
+  SQL**. O comportamento foi provado por script em cópia do banco: renomear a
+  matrícula levou os empréstimos junto, e o `DELETE` de usuário com histórico
+  voltou P2003 — que é o que torna `INATIVO` a única saída, como no equipamento.
+- **A biblioteca `xlsx` vem do CDN oficial da SheetJS, não do npm.** O pacote
+  publicado no npm está parado na 0.18.5 (2022) e carrega duas advisories sem
+  correção (prototype pollution, ReDoS); a SheetJS migrou a distribuição para o
+  próprio CDN. O `package.json` aponta para o tarball 0.20.3 — a mesma
+  biblioteca que o enunciado pede, na versão corrigida. `npm audit` continua com
+  os mesmos 3 avisos de `deepmerge-ts`, e nenhum novo.
+- **Os três cenários da tarefa saem de uma regra, não de três ramos:** *campo
+  que a planilha preencheu é campo que a importação grava; campo que a planilha
+  não trouxe é campo que o banco preserva.* Por isso `undefined` (coluna ausente
+  **ou** célula vazia) é tipo, e não string vazia, em `LinhaLida`. Escrever os
+  três ramos separados foi tentado e descartado: eles repetiam a validação de
+  perfil e de status, e a primeira divergência entre as cópias seria silenciosa.
+- **A importação tem prévia obrigatória, e ela não escreve nada.** A operação
+  não tem desfazer — um arquivo errado sobrescreveria centenas de cadastros — e
+  um relatório depois do fato só contaria o estrago. Conflito de reversibilidade
+  levantado antes do código; a decisão de exigir a confirmação foi do usuário.
+- **A planilha é enviada duas vezes, e o servidor refaz o plano na gravação.**
+  Não é desperdício: uma lista de operações vinda do cliente seria escrita
+  direto no banco (a action é um endpoint POST público), e entre a prévia e o
+  clique o banco pode ter mudado. Por isso também **não é um `<form action>`** —
+  o React 19 limpa o formulário quando a action termina, e um
+  `<input type="file">` limpo perderia o arquivo que a segunda etapa precisa.
+- **A gravação é uma transação só.** Ao contrário da baixa em lote da fila (que
+  é melhor-esforço porque o gesto físico já aconteceu), aqui a secretaria
+  conferiu uma lista e clicou uma vez: metade aplicada deixaria a base em um
+  estado que ninguém revisou.
+- **Matrícula é só dígito, até 15 — e a regra veio do tablet.** Uma validação
+  mais frouxa foi escrita e **reprovada na verificação**: ela deixava gravar
+  "TROCADA-01" com sucesso, criando um cadastro que existe no painel e que
+  ninguém consegue digitar no portal, porque o campo da `TelaMatricula` descarta
+  não-dígitos e corta em 15. Quando duas telas tocam o mesmo campo, vale a regra
+  do consumidor mais restrito. Se um dia a coordenação usar prefixo de letra,
+  quem muda primeiro é o teclado.
+- **O arquivo é conferido pelos bytes (assinatura de ZIP), não pela extensão.**
+  A biblioteca **não recusa sozinha**: medido, um `.txt` renomeado para `.xlsx`
+  passa por `XLSX.read` sem lançar nada — o SheetJS cai no interpretador de CSV
+  e devolve uma planilha de uma linha. Sem a guarda, a importação "funcionaria"
+  gravando lixo.
+- **`blankrows: true` é obrigatório na leitura**, por mais que linha em branco
+  não interesse: descartá-las **desalinha a numeração** com a que o Excel
+  mostra, e o erro reportado como "linha 3" estaria na linha 4 do arquivo. Pelo
+  mesmo motivo o cabeçalho é a primeira linha que **contém a coluna de
+  matrícula**, e não a primeira linha preenchida — planilha de coordenação vem
+  com título de relatório em cima da tabela.
+- **`perfil` e `status` são listas fechadas, e a recusa é por linha.** "prof",
+  "alunos" e "estudante" não passam: um perfil adivinhado errado muda quem pode
+  o quê e não deixa rastro. A prévia mostra a linha reprovada com o valor que
+  veio, e quem corrige é a planilha. Uma célula ruim no meio de trezentas não
+  derruba a importação das outras 299.
+- **`inalterada` é uma quarta ação, e existe por causa do reenvio.** A planilha
+  da coordenação é reenviada inteira todo semestre; sem essa categoria a prévia
+  diria "180 atualizações" quando 178 não mudam um caractere, e ninguém leria a
+  lista. As linhas inalteradas contam no cartão e **não** entram na lista.
+- **Inativar quem está com equipamento é permitido, com aviso.** Diferente do
+  equipamento, cujo status trava enquanto há empréstimo aberto. É o caso comum —
+  inativa-se justamente quem saiu — e travar deixaria o cadastro ativo (apto a
+  retirar mais) até alguém lembrar de voltar. Sem empréstimo aberto o botão é
+  **um clique, sem modal**, como o enunciado pede; o modal é a exceção que só
+  aparece quando há o que avisar, e ele **relê a contagem do servidor** antes de
+  mostrar o número.
+- **`Campo.tsx` nasceu de uma divergência já consumada.** `CAMPO`, `CABECALHO` e
+  `CELULA` estavam copiados em `GestaoInventario` e `GestaoCategorias`, e as
+  duas cópias **já não eram iguais** — a de Categorias tinha perdido o estado
+  `disabled` pelo caminho, então campo desabilitado ali tinha aparência de campo
+  editável. Com a terceira tela precisando das mesmas classes, copiar de novo
+  era garantir a próxima divergência. Mesmo argumento que tirou `semAcento` das
+  actions na Tarefa 7.
+- **`bodySizeLimit` é 4 MB no Next e 3 MB na action, e a diferença é
+  deliberada.** Se fossem iguais, o arquivo grande demais estouraria no
+  framework e a pessoa veria um erro genérico de rede em vez da frase que diz o
+  que fazer.
+- **O seed não toca no `status` ao reimportar.** Mesma regra da planilha: o CSV
+  não tem a coluna, então `db:seed` não pode ressuscitar um cadastro que a
+  secretaria inativou na semana passada.
+- **A aba Usuários fica por último no menu.** As quatro acima são o trabalho do
+  dia; cadastro é manutenção de início de semestre. Pôr uma tarefa rara no topo
+  empurraria para baixo as que acontecem toda hora.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel e um relatório para a
 coordenação. Nada disso está na spec — confirmar antes de construir.
@@ -411,6 +534,11 @@ coordenação. Nada disso está na spec — confirmar antes de construir.
 - `npm audit` reporta 3 avisos "high" em `deepmerge-ts`, via `@prisma/config` —
   dependência **só de desenvolvimento**, sem exposição no app. **Não rode
   `npm audit fix --force`**: ele rebaixa o Prisma para 6.x e quebra este setup.
+- **A dependência `xlsx` aponta para uma URL do CDN da SheetJS, e é de
+  propósito.** O pacote no npm parou na 0.18.5 (2022), com duas advisories sem
+  correção; a SheetJS distribui as versões novas apenas pelo próprio CDN. Trocar
+  para `npm i xlsx` reinstala a versão vulnerável. Para atualizar, troque o
+  número da versão na URL dentro do `package.json`.
 - A porta 3000 desta máquina costuma estar ocupada por outro processo; o Next cai
   para 3001+ sozinho.
 - `prisma/data/usuarios.csv` (planilha real, dados pessoais) está no `.gitignore`.
