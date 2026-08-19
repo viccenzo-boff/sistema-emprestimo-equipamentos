@@ -28,9 +28,6 @@ import {
  * filtra por ela, e nunca só pelo id que veio da tela.
  */
 
-/** Ordem em que as categorias aparecem no tablet. O resto vem depois, alfabético. */
-const ORDEM_DAS_CATEGORIAS = ["Notebook", "Tablet", "Extensão"];
-
 function falha(
   motivo: MotivoDeFalha,
   mensagem: string,
@@ -43,15 +40,6 @@ function falha(
 /** Normaliza a matrícula sem tocar em zeros à esquerda (são significativos). */
 function limparMatricula(bruta: unknown): string {
   return typeof bruta === "string" ? bruta.trim() : "";
-}
-
-function ordenarCategorias(a: Categoria, b: Categoria): number {
-  const posA = ORDEM_DAS_CATEGORIAS.indexOf(a.tipo);
-  const posB = ORDEM_DAS_CATEGORIAS.indexOf(b.tipo);
-  if (posA !== -1 && posB !== -1) return posA - posB;
-  if (posA !== -1) return -1;
-  if (posB !== -1) return 1;
-  return a.tipo.localeCompare(b.tipo, "pt-BR");
 }
 
 /**
@@ -100,30 +88,56 @@ export async function identificarUsuario(matriculaBruta: string): Promise<
 /**
  * Categorias do inventário com a contagem de unidades livres.
  *
- * Categorias sem nenhuma unidade livre continuam aparecendo (desabilitadas):
- * "Notebooks — nenhum disponível" informa; a categoria sumir da tela confunde.
+ * Categorias sem nenhuma unidade **livre** continuam aparecendo
+ * (desabilitadas): "Notebooks — nenhum disponível" informa; a categoria sumir
+ * da tela confunde. Categoria sem nenhum equipamento **nenhum** é outra coisa,
+ * e some: desde a Tarefa 6 dá para criar uma categoria vazia no painel, e um
+ * cartão que nunca teve aparelho não informa nada — só ocupa um alvo de toque.
+ *
+ * Equipamento `INATIVO` não entra em conta alguma, nem no total. Para quem está
+ * no tablet, um aparelho aposentado não existe: "2 de 12 disponíveis" com
+ * quatro itens fora de circulação manda a pessoa procurar o que não está lá.
+ *
+ * A ordem é a do `Categoria.id` — a de criação. Era uma lista fixa no código
+ * até a Tarefa 6; a migration semeou Notebook, Tablet e Extensão como 1, 2 e 3,
+ * então a tela continua na mesma ordem sem a lista existir.
  */
 async function listarCategorias(): Promise<Categoria[]> {
-  const [todos, livres] = await Promise.all([
-    prisma.equipamento.groupBy({ by: ["tipo"], _count: { _all: true } }),
+  const [categorias, grupos] = await Promise.all([
+    prisma.categoria.findMany({
+      select: { id: true, nome: true },
+      orderBy: { id: "asc" },
+    }),
     prisma.equipamento.groupBy({
-      by: ["tipo"],
-      where: { status: STATUS_EQUIPAMENTO.disponivel },
+      by: ["categoria_id", "status"],
+      where: { status: { not: STATUS_EQUIPAMENTO.inativo } },
       _count: { _all: true },
     }),
   ]);
 
-  const disponiveisPorTipo = new Map(
-    livres.map((grupo) => [grupo.tipo, grupo._count._all]),
-  );
+  const totalPorCategoria = new Map<number, number>();
+  const livresPorCategoria = new Map<number, number>();
 
-  return todos
-    .map((grupo) => ({
-      tipo: grupo.tipo,
-      total: grupo._count._all,
-      disponiveis: disponiveisPorTipo.get(grupo.tipo) ?? 0,
+  for (const grupo of grupos) {
+    const quantos = grupo._count._all;
+
+    totalPorCategoria.set(
+      grupo.categoria_id,
+      (totalPorCategoria.get(grupo.categoria_id) ?? 0) + quantos,
+    );
+
+    if (grupo.status === STATUS_EQUIPAMENTO.disponivel) {
+      livresPorCategoria.set(grupo.categoria_id, quantos);
+    }
+  }
+
+  return categorias
+    .map((categoria) => ({
+      tipo: categoria.nome,
+      total: totalPorCategoria.get(categoria.id) ?? 0,
+      disponiveis: livresPorCategoria.get(categoria.id) ?? 0,
     }))
-    .sort(ordenarCategorias);
+    .filter((categoria) => categoria.total > 0);
 }
 
 /**
@@ -138,12 +152,21 @@ export async function listarDisponiveis(
 ): Promise<Resultado<EquipamentoDisponivel[]>> {
   try {
     const equipamentos = await prisma.equipamento.findMany({
-      where: { tipo, status: STATUS_EQUIPAMENTO.disponivel },
-      select: { id: true, tipo: true },
+      where: {
+        categoria: { nome: tipo },
+        status: STATUS_EQUIPAMENTO.disponivel,
+      },
+      select: { id: true, categoria: { select: { nome: true } } },
       orderBy: { id: "asc" },
     });
 
-    return { ok: true, dados: equipamentos };
+    return {
+      ok: true,
+      dados: equipamentos.map(({ id, categoria }) => ({
+        id,
+        tipo: categoria.nome,
+      })),
+    };
   } catch (erro) {
     return falhaInterna(erro);
   }
@@ -207,7 +230,7 @@ export async function confirmarRetirada(
     const retirada = await prisma.$transaction(async (tx) => {
       const itens = await tx.equipamento.findMany({
         where: { id: { in: ids }, status: STATUS_EQUIPAMENTO.disponivel },
-        select: { id: true, tipo: true },
+        select: { id: true, categoria: { select: { nome: true } } },
         orderBy: { id: "asc" },
       });
 
@@ -232,7 +255,11 @@ export async function confirmarRetirada(
         })),
       });
 
-      return { itens, registrados: criados.count };
+      return {
+        // A etiqueta e o nome da categoria — é o que a tela de sucesso lista.
+        itens: itens.map(({ id, categoria }) => ({ id, tipo: categoria.nome })),
+        registrados: criados.count,
+      };
     });
 
     return {
@@ -288,7 +315,7 @@ async function buscarEmprestimosAtivos(
       id: true,
       equip_id: true,
       data_retirada: true,
-      equipamento: { select: { tipo: true } },
+      equipamento: { select: { categoria: { select: { nome: true } } } },
     },
     // Mais antigo primeiro: o que está com a pessoa há mais tempo é o que ela
     // provavelmente veio devolver.
@@ -297,7 +324,7 @@ async function buscarEmprestimosAtivos(
 
   return emprestimos.map(({ equipamento, ...emprestimo }) => ({
     ...emprestimo,
-    tipo: equipamento.tipo,
+    tipo: equipamento.categoria.nome,
   }));
 }
 
@@ -371,7 +398,7 @@ export async function confirmarDevolucao(
           id: true,
           equip_id: true,
           data_retirada: true,
-          equipamento: { select: { tipo: true } },
+          equipamento: { select: { categoria: { select: { nome: true } } } },
         },
       });
 
@@ -396,7 +423,7 @@ export async function confirmarDevolucao(
       if (alterados.count !== 1) throw new EmprestimoNaoAtivoError();
 
       const { equipamento, ...resto } = emprestimo;
-      return { ...resto, tipo: equipamento.tipo };
+      return { ...resto, tipo: equipamento.categoria.nome };
     });
 
     // Relê a lista em vez de deixar a tela filtrar o item na mão: se a
@@ -466,7 +493,7 @@ export async function devolverTudo(
           id: true,
           equip_id: true,
           data_retirada: true,
-          equipamento: { select: { tipo: true } },
+          equipamento: { select: { categoria: { select: { nome: true } } } },
         },
         orderBy: { data_retirada: "asc" },
       });
@@ -487,7 +514,7 @@ export async function devolverTudo(
 
       return ativos.map(({ equipamento, ...emprestimo }) => ({
         ...emprestimo,
-        tipo: equipamento.tipo,
+        tipo: equipamento.categoria.nome,
       }));
     });
 

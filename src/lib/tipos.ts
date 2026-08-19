@@ -7,11 +7,20 @@
  * nessa regra quando aparecer uma constante compartilhada.
  */
 
-/** Status possíveis de um equipamento (spec, seção 3). */
+/** Status possíveis de um equipamento (spec, seção 3; `INATIVO` veio na Tarefa 6). */
 export const STATUS_EQUIPAMENTO = {
   disponivel: "DISPONIVEL",
   emprestado: "EMPRESTADO",
   manutencao: "MANUTENCAO",
+  /**
+   * Aposentado: sai de circulação sem sair do banco.
+   *
+   * Existe porque apagar um equipamento levaria junto o histórico de
+   * empréstimos que aponta para ele — o `Emprestimo` do semestre passado
+   * deixaria de saber qual aparelho foi. `INATIVO` é o "deletar" que a
+   * secretaria quer, com o histórico intacto.
+   */
+  inativo: "INATIVO",
 } as const;
 
 /** Status possíveis de um empréstimo (spec, seção 3). */
@@ -32,7 +41,18 @@ export type UsuarioIdentificado = {
   cursos: string;
 };
 
-/** Uma categoria do inventário e quantas unidades dela estão livres agora. */
+/**
+ * Uma categoria do inventário e quantas unidades dela estão livres agora.
+ *
+ * `tipo` é o `nome` da `Categoria` no banco. O nome do campo ficou como estava
+ * de propósito: é o vocabulário que o tablet inteiro usa ("tipo de
+ * equipamento"), e trocá-lo aqui renomearia meia dúzia de componentes sem mudar
+ * uma linha do que aparece na tela.
+ *
+ * `total` **não conta os inativos**: para quem está no tablet, um equipamento
+ * aposentado não existe — dizer "2 de 12 disponíveis" com 4 itens fora de
+ * circulação faria a pessoa procurar aparelho que não está na prateleira.
+ */
 export type Categoria = {
   tipo: string;
   disponiveis: number;
@@ -93,6 +113,9 @@ export type MotivoDeFalha =
   | "ETIQUETA_INVALIDA"
   | "TIPO_INVALIDO"
   | "STATUS_INVALIDO"
+  | "CATEGORIA_NAO_ENCONTRADA"
+  | "CATEGORIA_DUPLICADA"
+  | "CATEGORIA_EM_USO"
   | "FALHA_INTERNA";
 
 export type RetiradaConfirmada = {
@@ -168,7 +191,7 @@ export type EmprestimoEmCurso = {
   ha: string;
 };
 
-/** Uma linha da Gestão de Inventário. */
+/** Uma linha da Gestão de Inventário. `tipo` é o `nome` da `Categoria`. */
 export type ItemDeInventario = {
   id: string;
   tipo: string;
@@ -229,3 +252,40 @@ export type RecebimentoEmLote = {
   /** Linhas que falharam por erro inesperado — o lote segue, mas a tela avisa. */
   comFalha: number;
 };
+
+/**
+ * Uma linha da tela de Categorias.
+ *
+ * `equipamentos` vem junto porque é ele que decide se o botão de excluir pode
+ * aparecer — e, quando não pode, é a explicação: "3 equipamentos vinculados".
+ * A trava de verdade continua sendo do banco (`onDelete: Restrict`); esta
+ * contagem é o que evita oferecer um botão que só existe para dar erro.
+ */
+export type CategoriaDoPainel = {
+  id: number;
+  nome: string;
+  equipamentos: number;
+};
+
+/** Uma opção do `<select>` de categoria no cadastro de equipamento. */
+export type OpcaoDeCategoria = {
+  id: number;
+  nome: string;
+};
+
+/** As contagens do topo da Gestão de Inventário. */
+export type ResumoDoInventario = {
+  disponiveis: number;
+  emprestados: number;
+  manutencao: number;
+  inativos: number;
+  /**
+   * Todos os equipamentos cadastrados, inativos inclusive. Aqui — ao contrário
+   * do tablet — o inativo conta: a secretaria está olhando o patrimônio, e o
+   * aparelho aposentado continua sendo um aparelho que existe no armário.
+   */
+  total: number;
+};
+
+/** Estado do formulário de cadastro de categoria. Mesma forma do de equipamento. */
+export type EstadoDaCategoria = EstadoDoCadastro;

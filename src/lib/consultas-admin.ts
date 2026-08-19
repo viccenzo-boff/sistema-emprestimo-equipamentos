@@ -3,9 +3,12 @@ import { dataHora, haQuantoTempo } from "@/lib/texto";
 import {
   STATUS_EMPRESTIMO,
   STATUS_EQUIPAMENTO,
+  type CategoriaDoPainel,
   type EmprestimoEmCurso,
   type ItemDaFila,
   type ItemDeInventario,
+  type OpcaoDeCategoria,
+  type ResumoDoInventario,
 } from "@/lib/tipos";
 
 /**
@@ -21,9 +24,6 @@ import {
  * verificação porque não têm como responder por ela — não redirecionam nem
  * renderizam nada.
  */
-
-/** Ordem em que as categorias aparecem no inventário. Igual à do tablet. */
-const ORDEM_DAS_CATEGORIAS = ["Notebook", "Tablet", "Extensão"];
 
 /**
  * A fila que a secretaria trabalha: o usuário declarou a devolução no tablet e
@@ -41,7 +41,7 @@ export async function listarFilaDeDevolucoes(): Promise<ItemDaFila[]> {
       data_retirada: true,
       data_devolucao: true,
       usuario: { select: { nome: true, matricula: true, perfil: true } },
-      equipamento: { select: { tipo: true } },
+      equipamento: { select: { categoria: { select: { nome: true } } } },
     },
     orderBy: [{ data_devolucao: "asc" }, { id: "asc" }],
   });
@@ -54,7 +54,7 @@ export async function listarFilaDeDevolucoes(): Promise<ItemDaFila[]> {
     return {
       id: registro.id,
       equip_id: registro.equip_id,
-      tipo: registro.equipamento.tipo,
+      tipo: registro.equipamento.categoria.nome,
       nome: registro.usuario.nome,
       matricula: registro.usuario.matricula,
       perfil: registro.usuario.perfil,
@@ -87,7 +87,7 @@ export async function listarEmprestimosEmCurso(): Promise<EmprestimoEmCurso[]> {
       equip_id: true,
       data_retirada: true,
       usuario: { select: { nome: true, matricula: true, perfil: true } },
-      equipamento: { select: { tipo: true } },
+      equipamento: { select: { categoria: { select: { nome: true } } } },
     },
     orderBy: { data_retirada: "asc" },
   });
@@ -95,7 +95,7 @@ export async function listarEmprestimosEmCurso(): Promise<EmprestimoEmCurso[]> {
   return registros.map((registro) => ({
     id: registro.id,
     equip_id: registro.equip_id,
-    tipo: registro.equipamento.tipo,
+    tipo: registro.equipamento.categoria.nome,
     nome: registro.usuario.nome,
     matricula: registro.usuario.matricula,
     perfil: registro.usuario.perfil,
@@ -115,7 +115,7 @@ export async function listarInventario(): Promise<ItemDeInventario[]> {
   const equipamentos = await prisma.equipamento.findMany({
     select: {
       id: true,
-      tipo: true,
+      categoria: { select: { id: true, nome: true } },
       status: true,
       emprestimos: {
         where: {
@@ -139,8 +139,11 @@ export async function listarInventario(): Promise<ItemDeInventario[]> {
       const aberto = equipamento.emprestimos[0];
 
       return {
+        // `ordem` é a posição da categoria (o id dela) e existe só para o
+        // `sort` abaixo — some no `map` final, antes de a linha virar tela.
+        ordem: equipamento.categoria.id,
         id: equipamento.id,
-        tipo: equipamento.tipo,
+        tipo: equipamento.categoria.nome,
         status: equipamento.status,
         responsavel: aberto
           ? {
@@ -151,38 +154,39 @@ export async function listarInventario(): Promise<ItemDeInventario[]> {
           : null,
       };
     })
-    .sort(ordenarInventario);
+    .sort(ordenarInventario)
+    // `ordem` sai aqui: serviu ao `sort` e não tem o que fazer na tela.
+    .map(({ id, tipo, status, responsavel }) => ({
+      id,
+      tipo,
+      status,
+      responsavel,
+    }));
 }
 
 /**
  * Agrupa por categoria na ordem do tablet e, dentro dela, pela etiqueta.
  *
+ * A ordem das categorias é a do `Categoria.id` — a de criação. Antes da Tarefa
+ * 6 era uma lista fixa no código, que precisava ser editada à mão a cada
+ * categoria nova e ainda assim não sabia onde encaixar as que não conhecia. A
+ * migration semeou justamente aquelas três como 1, 2 e 3: a tela não mudou, e a
+ * lista de exceções deixou de existir.
+ *
  * A etiqueta é comparada com `numeric: true`: sem isso "NOTE-10" vem antes de
  * "NOTE-2", e a lista deixa de bater com a prateleira.
  */
-function ordenarInventario(a: ItemDeInventario, b: ItemDeInventario): number {
-  const posA = ORDEM_DAS_CATEGORIAS.indexOf(a.tipo);
-  const posB = ORDEM_DAS_CATEGORIAS.indexOf(b.tipo);
-
-  if (posA !== posB) {
-    if (posA !== -1 && posB !== -1) return posA - posB;
-    if (posA !== -1) return -1;
-    if (posB !== -1) return 1;
-  }
-
-  const porTipo = a.tipo.localeCompare(b.tipo, "pt-BR");
-  if (porTipo !== 0) return porTipo;
+function ordenarInventario(
+  a: ItemDeInventario & { ordem: number },
+  b: ItemDeInventario & { ordem: number },
+): number {
+  if (a.ordem !== b.ordem) return a.ordem - b.ordem;
 
   return a.id.localeCompare(b.id, "pt-BR", { numeric: true });
 }
 
 /** Contagem por status, para o resumo do topo da tela de inventário. */
-export async function resumirInventario(): Promise<{
-  disponiveis: number;
-  emprestados: number;
-  manutencao: number;
-  total: number;
-}> {
+export async function resumirInventario(): Promise<ResumoDoInventario> {
   const grupos = await prisma.equipamento.groupBy({
     by: ["status"],
     _count: { _all: true },
@@ -190,14 +194,56 @@ export async function resumirInventario(): Promise<{
 
   const por = new Map(grupos.map((grupo) => [grupo.status, grupo._count._all]));
 
-  const disponiveis = por.get(STATUS_EQUIPAMENTO.disponivel) ?? 0;
-  const emprestados = por.get(STATUS_EQUIPAMENTO.emprestado) ?? 0;
-  const manutencao = por.get(STATUS_EQUIPAMENTO.manutencao) ?? 0;
+  // O total é somado dos grupos, e não das quatro contagens nomeadas: um status
+  // que não seja nenhum dos quatro sumiria da conta, mas o equipamento continua
+  // existindo — e o total tem que dizer isso.
+  const total = grupos.reduce((soma, grupo) => soma + grupo._count._all, 0);
 
   return {
-    disponiveis,
-    emprestados,
-    manutencao,
-    total: disponiveis + emprestados + manutencao,
+    disponiveis: por.get(STATUS_EQUIPAMENTO.disponivel) ?? 0,
+    emprestados: por.get(STATUS_EQUIPAMENTO.emprestado) ?? 0,
+    manutencao: por.get(STATUS_EQUIPAMENTO.manutencao) ?? 0,
+    inativos: por.get(STATUS_EQUIPAMENTO.inativo) ?? 0,
+    total,
   };
+}
+
+/**
+ * As categorias para a tela `/admin/categorias`, com quantos equipamentos cada
+ * uma tem.
+ *
+ * Ordenadas por `id` — a mesma ordem do inventário e do tablet. Alfabética
+ * seria mais bonita e menos útil: quem administra procura a categoria no lugar
+ * em que ela aparece nas outras telas.
+ */
+export async function listarCategoriasDoPainel(): Promise<CategoriaDoPainel[]> {
+  const categorias = await prisma.categoria.findMany({
+    select: {
+      id: true,
+      nome: true,
+      _count: { select: { equipamentos: true } },
+    },
+    orderBy: { id: "asc" },
+  });
+
+  return categorias.map((categoria) => ({
+    id: categoria.id,
+    nome: categoria.nome,
+    equipamentos: categoria._count.equipamentos,
+  }));
+}
+
+/**
+ * As opções do `<select>` de categoria no cadastro de equipamento.
+ *
+ * Consulta própria, e não um `map` sobre o inventário já carregado: desde a
+ * Tarefa 6 existe categoria sem nenhum equipamento — recém-criada, ou esvaziada
+ * — e derivar as opções da lista de itens esconderia justamente a categoria que
+ * a pessoa acabou de criar para usar agora.
+ */
+export async function listarOpcoesDeCategoria(): Promise<OpcaoDeCategoria[]> {
+  return prisma.categoria.findMany({
+    select: { id: true, nome: true },
+    orderBy: { id: "asc" },
+  });
 }
