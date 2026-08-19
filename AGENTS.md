@@ -523,6 +523,75 @@ de sessão**, inclusive a de upload multipart (7 asserções).
   dia; cadastro é manutenção de início de semestre. Pôr uma tarefa rara no topo
   empurraria para baixo as que acontecem toda hora.
 
+**Tarefa 9 — Planilha modelo para download (concluída):** os dois itens de
+[tarefa-09-planilha-modelo.md](tarefa-09-planilha-modelo.md) — o botão
+secundário "Baixar planilha modelo" dentro do cartão "Importar planilha" (entre
+o texto explicativo e a área pontilhada) e a geração do
+`modelo_importacao_usuarios.xlsx` no próprio navegador, com uma linha de
+cabeçalho e nada abaixo dela. `tsc`, `lint` e `build` em 0, com as cinco rotas
+do painel ainda dinâmicas (`ƒ`). Verificado em três frentes: prova em Node
+contra o **módulo de produção** (24 asserções — assinatura de ZIP, ida e volta
+pelo próprio importador, e o caso sujo); navegador real (Chrome headless por
+CDP, sem instalar dependência — 30 asserções, incluindo o download de verdade
+chegando ao disco, a medição do pacote inicial e a rota fechada sem sessão); e a
+volta do arquivo **que o Chrome gravou** pelo `lerPlanilha`, preenchido e também
+sujo (14 asserções). O banco terminou idêntico à linha de base, com
+`foreign_key_check` vazio.
+
+**Decisões da Tarefa 9** (não refazer sem motivo):
+
+- **O SheetJS entra por `import()` dinâmico, e isso é medido.** A biblioteca tem
+  ~1 MB; um `import` estático em componente de cliente a colocaria no pacote
+  inicial de `/admin/usuarios` — tela que abre todo dia — por causa de um botão
+  clicado uma vez por semestre. Conferido no navegador: nenhum pedaço acima de
+  300 KB desce antes do clique, e o pedaço novo chega **no** clique. A tela não
+  recarrega (`performance.getEntriesByType('navigation').length === 1`), que é o
+  que o enunciado exige.
+- **`gerarPlanilhaModelo` devolve `ArrayBuffer`, não `Uint8Array`.** Não é
+  preferência: `XLSX.write(pasta, { type: "array" })` devolve `ArrayBuffer` — e
+  os tipos publicados do pacote dizem `any`, então nada acusa. A primeira versão
+  da prova leu `undefined` nos quatro primeiros bytes por isso. O perigo é o
+  silêncio: um `Blob` montado sobre o valor errado é um `Blob` **válido e
+  vazio**, e o arquivo chegaria com 0 byte na pasta de downloads sem uma linha
+  de erro em lugar nenhum. `ArrayBuffer` é também o que os dois consumidores já
+  pedem (o `Blob` e o `lerPlanilha`): conversão que não existe é conversão que
+  não erra.
+- **O cabeçalho não é escrito no gerador — vem de `COLUNAS_CANONICAS`,
+  exportado do leitor.** Uma segunda lista pareceria idêntica hoje e divergiria
+  no dia em que uma coluna mudasse de nome: o modelo geraria um arquivo que o
+  próprio importador recusa, e nem `tsc`, nem `lint`, nem `build` teriam o que
+  dizer. Mesmo argumento que tirou `semAcento` das actions na Tarefa 7.
+- **O aviso sobre zero à esquerda não é enfeite, e o número dele foi medido.**
+  Com a coluna no formato Geral, `0012345` digitado no Excel vira o número
+  12345 dentro do arquivo, chega aqui como `"12345"`, **passa** na validação de
+  matrícula e criaria um cadastro errado calado. O seed do projeto usa
+  justamente `0012345`. Duas alternativas foram levantadas e descartadas: (a)
+  não avisar nada — mantém a armadilha; (b) reservar ~200 células da coluna A
+  pré-formatadas como Texto — funciona (o SheetJS comunitário escreve
+  `numFmtId="49"` em célula; conferido no XML gerado), mas protege só as 200
+  primeiras linhas e põe no arquivo 200 linhas em branco que o enunciado pede
+  que não existam. **Formatar a coluna inteira não é possível nesta versão:** o
+  estilo no elemento `<col>` é recurso pago, e o comunitário escreve ali só a
+  largura — conferido, não lido na documentação.
+- **`self-start` no botão, e não `items-start` no bloco.** Com o alinhamento no
+  pai, o parágrafo de aviso também encolheria para o próprio conteúdo e sairia
+  em uma linha larguíssima. É a mesma armadilha de `stretch` que distorceu a
+  logo do login na Tarefa 5, vista do outro lado. Medido: botão de 241px em um
+  cartão de 1024px.
+- **O ícone de baixar é a seta na bandeja, e não a grade do `IconePlanilha`
+  espelhada** — que era a forma prevista no comentário daquele ícone para um
+  futuro "baixar a lista". Os dois botões vivem no mesmo cartão, e a versão
+  espelhada obrigaria a distinguir importar de baixar pela direção de uma seta
+  de 20px. A grade espelhada continua reservada para quando existir exportação
+  de dados de verdade.
+- **O download tem estado próprio (`baixando`, `erroDoModelo`), fora da máquina
+  de estados da importação.** Ele não participa do ciclo analisar → confirmar;
+  enfiá-lo em uma fase de `estado` faria baixar o modelo **apagar a prévia** que
+  a pessoa está lendo para decidir se confirma.
+- **Não há linha de exemplo abaixo do cabeçalho.** Além de o enunciado pedir
+  assim, exemplo em planilha modelo é dado que alguém esquece de apagar — e
+  "Ana Souza" viraria um cadastro real na primeira importação distraída.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel e um relatório para a
 coordenação. Nada disso está na spec — confirmar antes de construir.
