@@ -265,6 +265,16 @@ export function IconeEtiquetas({ className }: PropsDeIcone) {
   );
 }
 
+/** Busca no inventário: a lupa, que é a única forma que ninguém precisa aprender. */
+export function IconeLupa({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <circle cx="10.75" cy="10.75" r="6.25" {...TRACO} />
+      <path d="m15.4 15.4 4.1 4.1" {...TRACO} strokeWidth={2} />
+    </Svg>
+  );
+}
+
 /**
  * Ícone da categoria, escolhido pelo `tipo` gravado no banco.
  *

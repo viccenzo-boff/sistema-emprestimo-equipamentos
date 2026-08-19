@@ -1,6 +1,14 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState, useTransition } from "react";
+import {
+  useActionState,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+  type SelectHTMLAttributes,
+} from "react";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -15,16 +23,19 @@ import { Alerta } from "@/components/ui/Alerta";
 import { Botao } from "@/components/ui/Botao";
 import {
   IconeBloquear,
+  IconeCaixa,
   IconeCategoria,
   IconeCheck,
   IconeChevron,
   IconeFerramenta,
   IconeLapis,
+  IconeLupa,
   IconeMais,
   IconeRestaurar,
 } from "@/components/ui/icones";
 import { Modal } from "@/components/ui/Modal";
 import { Notificacao } from "@/components/ui/Notificacao";
+import { semAcento } from "@/lib/texto";
 import {
   STATUS_EMPRESTIMO,
   STATUS_EQUIPAMENTO,
@@ -74,7 +85,69 @@ export function GestaoInventario({ itens, categorias }: Props) {
   const [editando, setEditando] = useState<ItemDeInventario | null>(null);
   const [inativando, setInativando] = useState<ItemDeInventario | null>(null);
 
+  // Os três filtros da Tarefa 7. String vazia é "sem filtro" nos três, para
+  // "está filtrando?" ser uma pergunta só, e não três perguntas de tipos
+  // diferentes.
+  const [busca, setBusca] = useState("");
+  const [categoriaFiltrada, setCategoriaFiltrada] = useState("");
+  const [statusFiltrado, setStatusFiltrado] = useState("");
+
   const ocupado = emAndamento !== null;
+
+  const termo = semAcento(busca.trim());
+  const filtrando =
+    termo !== "" || categoriaFiltrada !== "" || statusFiltrado !== "";
+
+  function limparFiltros() {
+    setBusca("");
+    setCategoriaFiltrada("");
+    setStatusFiltrado("");
+  }
+
+  /*
+    A filtragem é no cliente, sobre os itens que já chegaram no render.
+
+    A spec deixava a escolha entre isto e `searchParams` no servidor. O
+    inventário inteiro cabe em um render (22 itens hoje, e a secretaria compra
+    aparelho por caixa, não por milhar), a página já é `force-dynamic` e este
+    componente já é ilha de cliente com a lista inteira na mão. Pelo servidor,
+    cada tecla digitada custaria uma ida ao Next — no computador da própria
+    secretaria, com o banco SQLite ao lado, mas ainda assim um render inteiro do
+    Server Component por caractere, e a lista piscando enquanto se digita.
+
+    A troca é que os filtros não sobrevivem ao F5 nem entram no histórico do
+    navegador. Para uma tela operada de pé, em uma sessão, isso não é perda:
+    ninguém compartilha link de inventário filtrado, e o `router.refresh()` que
+    as ações disparam preserva o estado do cliente — o filtro continua lá depois
+    de mandar um item para manutenção, que é justamente quando ele importa.
+  */
+  const visiveis = useMemo(() => {
+    const comFalha = falha?.id ?? null;
+
+    return itens.filter((item) => {
+      /*
+        A linha que está exibindo um erro nunca é escondida por filtro.
+
+        O `Alerta` da falha mora dentro da própria linha, e `relerSeDesencontrou`
+        relê o banco quando a tela e o banco discordam — a releitura pode trocar
+        o status do item para um que o filtro exclui. Sem esta saída, o pedido
+        falharia, a linha sumiria levando a explicação junto, e a secretaria
+        veria o clique não fazer nada.
+      */
+      if (item.id === comFalha) return true;
+
+      if (categoriaFiltrada !== "" && item.tipo !== categoriaFiltrada) return false;
+      if (statusFiltrado !== "" && item.status !== statusFiltrado) return false;
+      if (termo === "") return true;
+
+      // Etiqueta e categoria, que é o que a spec pede — e é o que está escrito
+      // na linha. `semAcento` nos dois lados: quem digita "extensao" com pressa
+      // procura a mesma coisa que quem digita "Extensão".
+      return (
+        semAcento(item.id).includes(termo) || semAcento(item.tipo).includes(termo)
+      );
+    });
+  }, [itens, termo, categoriaFiltrada, statusFiltrado, falha?.id]);
 
   /**
    * A linha na tela não corresponde mais ao banco: relê em vez de deixar a
@@ -157,10 +230,22 @@ export function GestaoInventario({ itens, categorias }: Props) {
           Equipamentos
         </h2>
 
+        <BarraDeFiltros
+          categorias={categorias}
+          busca={busca}
+          categoriaFiltrada={categoriaFiltrada}
+          statusFiltrado={statusFiltrado}
+          onBusca={setBusca}
+          onCategoria={setCategoriaFiltrada}
+          onStatus={setStatusFiltrado}
+        />
+
         <div className="overflow-x-auto rounded-3xl border border-borda bg-superficie">
           <table className="w-full min-w-4xl border-collapse text-left">
             <caption className="sr-only">
-              Inventário completo, agrupado por categoria
+              {filtrando
+                ? "Equipamentos que correspondem à busca e aos filtros, agrupados por categoria"
+                : "Inventário completo, agrupado por categoria"}
             </caption>
 
             <thead>
@@ -178,7 +263,18 @@ export function GestaoInventario({ itens, categorias }: Props) {
             </thead>
 
             <tbody>
-              {itens.map((item) => {
+              {visiveis.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="px-5 py-16">
+                    <EstadoVazio
+                      inventarioVazio={itens.length === 0}
+                      onLimpar={limparFiltros}
+                    />
+                  </td>
+                </tr>
+              ) : null}
+
+              {visiveis.map((item) => {
                 const emCiclo = item.responsavel !== null;
                 const disponivel = item.status === STATUS_EQUIPAMENTO.disponivel;
                 const emManutencao = item.status === STATUS_EQUIPAMENTO.manutencao;
@@ -351,12 +447,54 @@ export function GestaoInventario({ itens, categorias }: Props) {
           </table>
         </div>
 
-        <p className="px-1 text-base text-tinta-tenue">
-          Equipamento em manutenção não aparece no tablet — é assim que um aparelho
-          com defeito para de ser oferecido sem sair do inventário. Inativo é a
-          aposentadoria: some do tablet para sempre, mas continua aqui para o
-          histórico de empréstimos não ficar apontando para o vazio.
+        {/*
+          O resultado da busca é anunciado daqui, e não da linha visível abaixo:
+          a região precisa já existir no DOM quando o texto muda, senão o leitor
+          de tela não fala — e a linha visível some sempre que não há filtro. É
+          `sr-only`, ou seja, posicionada em absoluto: não vira item do flex e
+          não abre um vão entre a tabela e o texto de rodapé.
+        */}
+        <p role="status" className="sr-only">
+          {filtrando
+            ? `${visiveis.length} de ${itens.length} equipamentos correspondem aos filtros.`
+            : ""}
         </p>
+
+        <div className="flex flex-col gap-3 px-1">
+          {/*
+            A contagem existe por causa do cadastro: com um filtro ativo, um
+            equipamento novo que não casa com ele é cadastrado de verdade e não
+            aparece na tabela. O alerta verde diz "cadastrado", a tabela não
+            mostra, e sem esta linha a conclusão razoável é que falhou. Com ela,
+            o "de 22" cresce na mesma hora e explica onde o item foi parar.
+
+            Fora de filtro a linha some: "Mostrando 22 de 22" é ruído, e o total
+            já está dito nos cartões do topo.
+          */}
+          {filtrando && visiveis.length > 0 ? (
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-base text-tinta-suave">
+                Mostrando{" "}
+                <span className="numeros-tabulares font-semibold text-tinta">
+                  {visiveis.length}
+                </span>{" "}
+                de <span className="numeros-tabulares">{itens.length}</span>{" "}
+                {itens.length === 1 ? "equipamento" : "equipamentos"}.
+              </p>
+
+              <Botao variante="fantasma" tamanho="pequeno" onClick={limparFiltros}>
+                Limpar filtros
+              </Botao>
+            </div>
+          ) : null}
+
+          <p className="text-base text-tinta-tenue">
+            Equipamento em manutenção não aparece no tablet — é assim que um
+            aparelho com defeito para de ser oferecido sem sair do inventário.
+            Inativo é a aposentadoria: some do tablet para sempre, mas continua
+            aqui para o histórico de empréstimos não ficar apontando para o vazio.
+          </p>
+        </div>
       </section>
 
       <ModalDeEtiqueta
@@ -393,6 +531,200 @@ function avisoDaMudanca(item: ItemDeInventario, destino: string): string {
   return item.status === STATUS_EQUIPAMENTO.inativo
     ? `${item.id} voltou ao inventário e está disponível para retirada.`
     : `${item.id} está disponível para retirada.`;
+}
+
+/**
+ * Busca e filtros da tabela (Tarefa 7).
+ *
+ * Fica **entre o `h2` e a tabela**, e não no topo da página junto dos cartões:
+ * um controle que muda o que a tabela mostra pertence à tabela. Encostado no
+ * resumo, ele pareceria filtrar também as contagens — que continuam sendo do
+ * inventário inteiro, de propósito: a pergunta "sobra notebook para hoje?" não
+ * pode mudar de resposta porque alguém deixou um filtro posto.
+ *
+ * Os três controles são **controlados** (`value` + `onChange`), ao contrário do
+ * `<select>` do cadastro logo acima, que é não-controlado por obrigação. Não é
+ * incoerência: aquele vive dentro de um `<form action>` que o React 19 limpa
+ * sozinho quando a action termina, e o valor é lido do DOM pelo `FormData`.
+ * Estes não são enviados a lugar nenhum — o estado deles *é* o filtro.
+ */
+function BarraDeFiltros({
+  categorias,
+  busca,
+  categoriaFiltrada,
+  statusFiltrado,
+  onBusca,
+  onCategoria,
+  onStatus,
+}: {
+  categorias: OpcaoDeCategoria[];
+  busca: string;
+  categoriaFiltrada: string;
+  statusFiltrado: string;
+  onBusca: (valor: string) => void;
+  onCategoria: (valor: string) => void;
+  onStatus: (valor: string) => void;
+}) {
+  return (
+    <div role="search" className="flex flex-col gap-3 lg:flex-row">
+      <div className="relative lg:flex-1">
+        <label htmlFor="busca-no-inventario" className="sr-only">
+          Buscar equipamento por etiqueta ou categoria
+        </label>
+
+        <IconeLupa className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-tinta-tenue" />
+
+        <input
+          id="busca-no-inventario"
+          type="search"
+          value={busca}
+          onChange={(evento) => onBusca(evento.target.value)}
+          placeholder="Buscar por etiqueta ou categoria..."
+          autoComplete="off"
+          spellCheck={false}
+          className={`${CAMPO_SEM_LADOS} pr-4 pl-12`}
+        />
+      </div>
+
+      {/*
+        A largura é medida, não estimada: com 26rem os dois seletores cortavam o
+        próprio rótulo ("Todas as catego…"), porque cada um fica com metade da
+        faixa menos os 48px que a seta ocupa à direita. Com 34rem, medido no
+        navegador em 1440, 1280 e 1024px: 198px de espaço útil para "Todas as
+        categorias", que ocupa 162px — 36px de folga, e a maior opção de
+        situação ("Todas as situações", 156px) sobra 42px.
+      */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:w-[34rem] lg:shrink-0">
+        {/*
+          As opções vêm da tabela `Categoria`, pela mesma consulta que alimenta o
+          cadastro — não de um `map` sobre os itens já carregados. Derivar dos
+          itens faria a categoria recém-criada, ainda sem equipamento, sumir da
+          lista; e faria a opção desaparecer justamente quando o filtro anterior
+          esvaziou a tabela, prendendo quem filtrou.
+
+          O valor é o **nome**, e não o id, porque é o nome que a linha carrega
+          (`ItemDeInventario.tipo`). Dá no mesmo: `Categoria.nome` é UNIQUE no
+          banco — conferido no índice `Categoria_nome_key`, não só no schema.
+        */}
+        <Selecao
+          aria-label="Filtrar por categoria"
+          value={categoriaFiltrada}
+          onChange={(evento) => onCategoria(evento.target.value)}
+        >
+          <option value="">Todas as categorias</option>
+
+          {categorias.map((categoria) => (
+            <option key={categoria.id} value={categoria.nome}>
+              {categoria.nome}
+            </option>
+          ))}
+        </Selecao>
+
+        <Selecao
+          aria-label="Filtrar por situação"
+          value={statusFiltrado}
+          onChange={(evento) => onStatus(evento.target.value)}
+        >
+          <option value="">Todas as situações</option>
+
+          {SITUACOES.map((situacao) => (
+            <option key={situacao.valor} value={situacao.valor}>
+              {situacao.rotulo}
+            </option>
+          ))}
+        </Selecao>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * As opções do filtro de situação, na ordem em que um equipamento as vive:
+ * disponível, emprestado, em conserto, aposentado.
+ *
+ * `EMPRESTADO` entra aqui mesmo não sendo um botão de ação — filtrar não é
+ * mudar. É a única forma de responder "o que está fora agora?" sem trocar de
+ * aba, e a coluna Situação já distingue quem está com o item de quem só
+ * declarou a devolução.
+ */
+const SITUACOES = [
+  { valor: STATUS_EQUIPAMENTO.disponivel, rotulo: "Disponível" },
+  { valor: STATUS_EQUIPAMENTO.emprestado, rotulo: "Emprestado" },
+  { valor: STATUS_EQUIPAMENTO.manutencao, rotulo: "Manutenção" },
+  { valor: STATUS_EQUIPAMENTO.inativo, rotulo: "Inativo" },
+] as const;
+
+/**
+ * `<select>` com a seta desenhada por nós.
+ *
+ * `appearance-none` apaga a seta nativa junto com o estilo do sistema, então
+ * ela volta aqui — e com `pointer-events-none`, para o clique atravessar e
+ * abrir a lista mesmo em cima do ícone. Virou componente quando o terceiro
+ * `<select>` da tela apareceu: três cópias do mesmo `<div className="relative">`
+ * é onde uma delas começa a divergir das outras.
+ */
+function Selecao({ children, ...resto }: SelectHTMLAttributes<HTMLSelectElement>) {
+  return (
+    <div className="relative">
+      <select
+        className={`${CAMPO_SEM_LADOS} cursor-pointer appearance-none pr-12 pl-4`}
+        {...resto}
+      >
+        {children}
+      </select>
+
+      <IconeChevron className="pointer-events-none absolute top-1/2 right-4 size-5 -translate-y-1/2 text-tinta-tenue" />
+    </div>
+  );
+}
+
+/**
+ * A tabela sem nenhuma linha para mostrar.
+ *
+ * São dois casos com a mesma aparência e conselhos opostos, e confundi-los é o
+ * que faz uma tela parecer quebrada: **não há equipamento nenhum** (a resposta
+ * é o formulário acima) e **os filtros não acharam nada** (a resposta é desfazer
+ * os filtros). Sem o botão, a saída do segundo caso é lembrar quais dos três
+ * controles estão postos e zerar um por um — e o filtro esquecido em outra aba
+ * é exatamente o que faz alguém concluir que o inventário sumiu.
+ */
+function EstadoVazio({
+  inventarioVazio,
+  onLimpar,
+}: {
+  inventarioVazio: boolean;
+  onLimpar: () => void;
+}) {
+  return (
+    <div className="flex flex-col items-center gap-4 text-center">
+      <span className="flex size-14 items-center justify-center rounded-2xl bg-superficie-2 text-tinta-tenue">
+        {inventarioVazio ? (
+          <IconeCaixa className="size-8" />
+        ) : (
+          <IconeLupa className="size-8" />
+        )}
+      </span>
+
+      <div>
+        <p className="text-xl font-semibold tracking-tight text-tinta">
+          {inventarioVazio
+            ? "Nenhum equipamento cadastrado"
+            : "Nenhum equipamento encontrado com estes filtros."}
+        </p>
+        <p className="mt-2 text-base text-tinta-suave">
+          {inventarioVazio
+            ? "Cadastre o primeiro no formulário acima — é ele que faz a categoria aparecer no tablet."
+            : "Tente outra etiqueta ou categoria, ou volte a ver o inventário inteiro."}
+        </p>
+      </div>
+
+      {inventarioVazio ? null : (
+        <Botao variante="secundario" tamanho="pequeno" onClick={onLimpar}>
+          Limpar filtros
+        </Botao>
+      )}
+    </div>
+  );
 }
 
 /**
@@ -682,33 +1014,23 @@ function FormularioDeCadastro({ categorias }: { categorias: OpcaoDeCategoria[] }
             </Link>
           </div>
 
-          {/*
-            `appearance-none` apaga a seta nativa junto com o estilo do
-            sistema, então ela volta desenhada aqui — e com `pointer-events-none`,
-            para o clique atravessar e abrir a lista mesmo em cima do ícone.
-          */}
-          <div className="relative">
-            <select
-              id="categoria_id"
-              name="categoria_id"
-              required
-              defaultValue=""
-              disabled={semCategorias}
-              className={`${CAMPO} cursor-pointer appearance-none pr-12`}
-            >
-              <option value="" disabled>
-                Selecione a categoria
+          <Selecao
+            id="categoria_id"
+            name="categoria_id"
+            required
+            defaultValue=""
+            disabled={semCategorias}
+          >
+            <option value="" disabled>
+              Selecione a categoria
+            </option>
+
+            {categorias.map((categoria) => (
+              <option key={categoria.id} value={categoria.id}>
+                {categoria.nome}
               </option>
-
-              {categorias.map((categoria) => (
-                <option key={categoria.id} value={categoria.id}>
-                  {categoria.nome}
-                </option>
-              ))}
-            </select>
-
-            <IconeChevron className="pointer-events-none absolute top-1/2 right-4 size-5 -translate-y-1/2 text-tinta-tenue" />
-          </div>
+            ))}
+          </Selecao>
         </div>
 
         <Botao
@@ -736,10 +1058,24 @@ function FormularioDeCadastro({ categorias }: { categorias: OpcaoDeCategoria[] }
 const CABECALHO =
   "px-5 py-4 text-sm font-semibold tracking-wide text-tinta-tenue uppercase";
 const CELULA = "px-5 py-4 align-middle";
-const CAMPO = [
-  "min-h-14 w-full rounded-2xl border-2 border-borda bg-superficie-2 px-4",
+
+/*
+  O campo sem o recuo lateral, para quem precisa de outro.
+
+  A separação não é preciosismo: `px-4` e `pl-12` são utilidades concorrentes, e
+  no Tailwind 4 quem vence é a ordem no CSS gerado, não a ordem no atributo — a
+  mesma armadilha já registrada para os tamanhos do `Botao`. O `<select>` daqui
+  vinha somando `pr-12` por cima do `px-4` e só funcionava por sorte da ordem;
+  a busca, que precisa de espaço para a lupa à esquerda, teria a mesma sorte a
+  cada build. Quem quer recuo diferente compõe a partir daqui e não sobrepõe
+  nada.
+*/
+const CAMPO_SEM_LADOS = [
+  "min-h-14 w-full rounded-2xl border-2 border-borda bg-superficie-2",
   "text-lg text-tinta placeholder:text-tinta-tenue",
   "transition-colors duration-150",
   "hover:border-borda-forte focus:border-marca-azul focus:bg-superficie",
   "disabled:cursor-not-allowed disabled:opacity-55",
 ].join(" ");
+
+const CAMPO = `${CAMPO_SEM_LADOS} px-4`;
