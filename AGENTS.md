@@ -120,7 +120,10 @@ de status na devolução.
   Variantes de tamanho são propriedades do componente, não classes soltas: no
   Tailwind 4 duas utilidades concorrentes se resolvem pela ordem no CSS gerado,
   então "sobrescrever" por `className` sai aleatório (e o `!` de importante virou
-  sufixo: `px-0!`, não `!px-0`).
+  sufixo: `px-0!`, não `!px-0`). A mesma armadilha vale para recuo: por isso o
+  campo do painel é composto a partir de `CAMPO_SEM_LADOS`, e quem precisa de
+  outro recuo (a lupa da busca à esquerda, a seta do `<select>` à direita) monta
+  o seu em vez de somar `pl-12` por cima de um `px-4`.
 - **Modal é `<dialog>` nativo com `showModal()`**, não `<div>` posicionada. Dá de
   graça a trava de foco, o `inert` no resto da página e o *top layer* — que
   resolve a briga de `z-index` com a `BarraSelecao`, sticky no rodapé. Efeito
@@ -219,11 +222,15 @@ sessão. O banco foi devolvido ao estado em que estava antes da verificação.
   lista só reabre apagando a palavra. A última opção do `<select>` troca o campo
   por um `<input>` com o **mesmo** `name` — nunca os dois ao mesmo tempo, porque
   `FormData.get` devolve o primeiro homônimo e mandaria o valor errado calado.
-- **O `<select>` é não-controlado.** O React 19 limpa o formulário sozinho
-  quando a action termina; com `value` controlado o DOM volta ao `defaultValue`
-  e o React continua achando que o valor escolhido está lá — e o `FormData` lê o
-  DOM. Isso foi observado no navegador antes de virar bug de produção: depois de
-  cadastrar TAB-99 com "Tablet" escolhido, o campo já aparecia em branco.
+- **O `<select>` *de formulário* é não-controlado.** O React 19 limpa o
+  formulário sozinho quando a action termina; com `value` controlado o DOM volta
+  ao `defaultValue` e o React continua achando que o valor escolhido está lá — e
+  o `FormData` lê o DOM. Isso foi observado no navegador antes de virar bug de
+  produção: depois de cadastrar TAB-99 com "Tablet" escolhido, o campo já
+  aparecia em branco. **A regra é do formulário, não do `<select>`:** os
+  seletores de filtro da Tarefa 7 são controlados, e têm que ser — eles não são
+  enviados a lugar nenhum, o estado deles *é* o filtro. Não "corrija" um pelo
+  outro.
 - **A baixa em lote do painel é melhor-esforço, item a item.** O gesto físico já
   aconteceu — a secretaria recolheu a pilha. Uma linha que saiu da fila em outra
   aba não pode desfazer a conferência das outras quatro. O resumo conta tudo:
@@ -319,6 +326,79 @@ invisibilidade do inativo nas contagens).
   nome de equipamento (`-r/-z`, `-m`, `-l`) e a tela de Categorias passou a
   **mostrar o plural calculado** ao lado do nome — quem cadastra vê o erro na
   hora, em vez de descobrir no tablet.
+
+**Tarefa 7 — Busca e filtros do inventário (concluída):** os três itens de
+[tarefa-07-filtros-pesquisa.md](tarefa-07-filtros-pesquisa.md) — a barra de
+busca por etiqueta ou categoria, os `<select>` de categoria e de situação, e o
+estado vazio com mensagem em vez de tabela em branco. `tsc`, `lint` e `build` em
+0, com as quatro rotas do painel ainda dinâmicas (`ƒ`). Verificado no navegador
+real (Chrome headless por CDP, sem instalar dependência): 22 conferências de
+filtro, mais 9 que escrevem no banco. O banco foi devolvido à linha de base
+exata no fim — 5 categorias, 22 equipamentos, 20 empréstimos, `foreign_key_check`
+vazio.
+
+**Decisões da Tarefa 7** (não refazer sem motivo):
+
+- **A filtragem é no cliente, e a spec deixava a escolha.** O inventário inteiro
+  já chega no render, a página é `force-dynamic` e o componente já é ilha de
+  cliente com a lista na mão. Por `searchParams` no servidor, cada tecla custaria
+  um render inteiro do Server Component — no computador da própria secretaria,
+  mas com a lista piscando enquanto se digita. O preço aceito: os filtros não
+  sobrevivem ao F5 nem entram no histórico. Para uma tela operada de pé, em uma
+  sessão, ninguém compartilha link de inventário filtrado — e o `router.refresh()`
+  das ações preserva o estado do cliente, que é quando o filtro importa.
+- **A barra fica entre o `h2` e a tabela, não junto dos cartões.** Encostada no
+  resumo, pareceria filtrar também as contagens — que continuam sendo do
+  inventário inteiro de propósito: "sobra notebook para hoje?" não pode mudar de
+  resposta porque alguém deixou um filtro posto.
+- **`semAcento` saiu das actions para [texto.ts](src/lib/texto.ts).** Tem dois
+  donos de naturezas opostas: o cadastro a usa para **recusar** categoria
+  repetida com outra grafia, a busca para **aceitar** "extensao" sem acento. Duas
+  cópias divergiriam em silêncio. Além disso, módulo `"use server"` só exporta
+  função assíncrona — a busca, que roda no navegador, não teria como importá-la
+  de lá.
+- **O valor do filtro de categoria é o nome, não o id.** É o nome que a linha
+  carrega (`ItemDeInventario.tipo`), e dá no mesmo porque `Categoria.nome` é
+  UNIQUE — conferido no índice `Categoria_nome_key` dentro do `dev.db`, não lido
+  no schema. As opções vêm da mesma consulta que alimenta o cadastro, e não de um
+  `map` sobre os itens carregados: derivar esconderia a categoria vazia, e faria
+  a opção sumir justamente quando o filtro anterior esvaziou a tabela, prendendo
+  quem filtrou.
+- **A linha que exibe um erro nunca é escondida por filtro.** O `Alerta` da falha
+  mora dentro da própria linha, e `relerSeDesencontrou` relê o banco quando tela
+  e banco discordam — a releitura pode trocar o status para um que o filtro
+  exclui. Sem a exceção, o pedido falharia, a linha sumiria levando a explicação
+  junto, e a secretaria veria o clique não fazer nada. Exercitado de verdade:
+  com o filtro em `Disponível`, o `NOTE-04` foi mudado para `MANUTENCAO` por
+  fora, o clique falhou com `STATUS_INVALIDO`, e a linha ficou na tela mostrando
+  o motivo.
+- **"Mostrando X de Y" só aparece com filtro ativo, e existe por causa do
+  cadastro.** Com um filtro posto, um equipamento novo que não casa com ele é
+  gravado e não aparece na tabela: o alerta verde diz "cadastrado", a tabela não
+  mostra, e a conclusão razoável é que falhou. O "de 22" virando "de 23" na mesma
+  hora explica onde o item foi parar. Fora de filtro a linha some — "Mostrando 22
+  de 22" é ruído, e o total já está nos cartões do topo. A alternativa descartada
+  foi limpar os filtros sozinho no cadastro: desfaz um filtro que a pessoa pôs, e
+  quem cadastra dez notebooks seguidos o perde dez vezes.
+- **O estado vazio tem botão de volta, e são dois casos com conselhos opostos.**
+  Sem equipamento nenhum, a resposta é o formulário acima; sem resultado de
+  filtro, a resposta é desfazer o filtro. Confundir os dois é o que faz uma tela
+  parecer quebrada. O "Limpar filtros" não estava no enunciado: foi levantado
+  como conflito de reversibilidade antes de escrever código, porque a única saída
+  seria lembrar quais dos três controles estão postos e zerar um por um.
+- **O anúncio para leitor de tela é um `role="status"` `sr-only` sempre
+  presente.** Região viva só fala se já existir no DOM quando o texto muda, e a
+  linha de contagem visível some sempre que não há filtro. É `sr-only`, ou seja,
+  posicionada em absoluto: não vira item do flex e não abre vão entre a tabela e
+  o rodapé.
+- **A largura dos seletores é medida.** Com 26rem os dois cortavam o próprio
+  rótulo ("Todas as catego…") — defeito que `tsc`, `lint`, `build` e as 22
+  asserções de conteúdo atravessaram sem piscar, porque o texto *está* no DOM,
+  só invisível. Com 34rem, medido em 1440, 1280 e 1024px: 198px úteis para
+  "Todas as categorias", que ocupa 162px.
+- **Não há busca por nome de quem está com o item.** A spec pede etiqueta e
+  categoria, e é o que a linha mostra. Quem procura por pessoa tem a aba
+  Empréstimos Ativos.
 
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel e um relatório para a
