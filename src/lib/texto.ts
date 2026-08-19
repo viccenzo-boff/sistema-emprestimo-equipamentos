@@ -1,15 +1,48 @@
 /**
  * Ajustes de texto para a interface em português.
  *
- * O banco guarda o `tipo` no singular ("Notebook", "Extensão") porque é o que
- * descreve uma linha da tabela. A tela fala de conjuntos ("Notebooks"), então a
- * conversão mora aqui — em um lugar só, para as telas não divergirem entre si.
+ * O banco guarda o nome da categoria no singular ("Notebook", "Extensão")
+ * porque é o que descreve uma linha da tabela. A tela fala de conjuntos
+ * ("Notebooks"), então a conversão mora aqui — em um lugar só, para as telas
+ * não divergirem entre si.
  */
 
-/** "Notebook" -> "Notebooks", "Extensão" -> "Extensões". */
+/**
+ * "Notebook" -> "Notebooks", "Extensão" -> "Extensões", "Projetor" ->
+ * "Projetores".
+ *
+ * É uma heurística, não um flexionador de português: cobre as terminações que
+ * aparecem em nome de equipamento. Até a Tarefa 6 bastavam duas regras, porque
+ * as categorias eram três e estavam fixas no código. Agora a secretaria cria
+ * categoria pela tela — e a primeira que se tenta criar depois de "Notebook" e
+ * "Tablet" costuma ser "Projetor" ou "Monitor", que a regra do `+s` estragava
+ * ("Projetors"). Por isso a tela de Categorias mostra o plural calculado ao
+ * lado do nome: se alguma palavra escapar destas regras, quem cadastrou vê na
+ * hora, em vez de descobrir no tablet.
+ */
 export function plural(tipo: string): string {
+  // Já está no plural (ou é invariável): "Óculos", "Fones".
   if (tipo.endsWith("s")) return tipo;
+
+  // "Extensão" -> "Extensões". Vale para os substantivos de equipamento; o
+  // português tem "mão -> mãos", mas nenhum aparelho se chama assim.
   if (tipo.endsWith("ão")) return `${tipo.slice(0, -2)}ões`;
+
+  // "Projetor" -> "Projetores", "Luz" -> "Luzes".
+  if (/[rz]$/i.test(tipo)) return `${tipo}es`;
+
+  // "Microfone" segue o `+s`; "Som" -> "Sons", "Nuvem" -> "Nuvens".
+  if (/m$/i.test(tipo)) return `${tipo.slice(0, -1)}ns`;
+
+  // "Varal" -> "Varais", "Painel" -> "Painéis", "Funil" -> "Funis".
+  const finalEmL = /(a|e|o|u|i)l$/i.exec(tipo);
+  if (finalEmL) {
+    const vogal = finalEmL[1].toLowerCase();
+    if (vogal === "i") return `${tipo.slice(0, -2)}is`;
+    const acentuada = vogal === "e" ? "é" : vogal === "o" ? "ó" : vogal;
+    return `${tipo.slice(0, -2)}${acentuada}is`;
+  }
+
   return `${tipo}s`;
 }
 
