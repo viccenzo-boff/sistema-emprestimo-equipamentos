@@ -13,7 +13,13 @@ datasource db {
 }
 
 /// Estudantes e professores (importados inicialmente via planilha da coordenação).
-model Usuario {
+///
+/// Chamava-se `Usuario` até a Tarefa 10. O nome mudou porque o sistema passou a
+/// ter **duas** espécies de gente dentro dele: quem retira equipamento e quem
+/// administra o painel. Com `Administrador.usuario` sendo o login da secretaria,
+/// "usuário" ficou querendo dizer duas coisas — e a que aparece no tablet é uma
+/// pessoa, não uma conta.
+model Pessoa {
   /// Chave primária. String para preservar zeros à esquerda.
   matricula String @id
   /// Nome completo.
@@ -25,9 +31,9 @@ model Usuario {
   /// "ATIVO" ou "INATIVO" (Tarefa 8).
   ///
   /// É a aposentadoria do cadastro, pelo mesmo motivo que o `INATIVO` do
-  /// `Equipamento`: usuário não é apagado, porque `Emprestimo.usuario_id`
-  /// aponta para ele e um DELETE levaria junto o histórico — conferido, o banco
-  /// recusa com P2003.
+  /// `Equipamento`: pessoa não é apagada, porque `Emprestimo.pessoa_id` aponta
+  /// para ela e um DELETE levaria junto o histórico — conferido, o banco recusa
+  /// com P2003.
   ///
   /// `INATIVO` **bloqueia a retirada e permite a devolução**: quem saiu da
   /// faculdade costuma estar com um aparelho na mochila, e travar a devolução
@@ -35,6 +41,32 @@ model Usuario {
   status    String @default("ATIVO")
 
   emprestimos Emprestimo[]
+}
+
+/// Contas de acesso ao Painel Administrativo (Tarefa 10).
+///
+/// Substituiu a senha mestre única do `.env`. O motivo é responsabilização: com
+/// uma senha só, "quem deu baixa neste equipamento" não tinha resposta possível
+/// — todo mundo era a mesma pessoa para o sistema.
+///
+/// **Não há tela de cadastro de administrador neste MVP**, por decisão da
+/// Tarefa 10: as contas nascem pelo `prisma/seed.ts`. A consequência a conhecer
+/// é que recuperar uma senha esquecida se faz apagando a linha no
+/// `npm run db:studio` e rodando `npm run db:seed` de novo, que a recria com a
+/// senha padrão.
+model Administrador {
+  id      Int    @id @default(autoincrement())
+  /// Nome de quem opera — é o que aparece no painel ("Secretaria", "Cidi").
+  nome    String
+  /// Login digitado na tela de senha. Único: é a chave da busca no login.
+  usuario String @unique
+  /// **Hash bcrypt**, nunca a senha. Sessenta caracteres, prefixo `$2b$10$`.
+  ///
+  /// O hash também é a **chave que assina o cookie de sessão** — ver
+  /// [sessao-admin.ts](../src/lib/sessao-admin.ts). Daí sai de graça que trocar
+  /// a senha de alguém, ou apagar a conta, derruba a sessão daquela pessoa e só
+  /// dela, sem nenhum segredo extra no `.env`.
+  senha   String
 }
 
 /// Categorias do inventário ("Notebook", "Tablet", "Extensão").
@@ -75,8 +107,8 @@ model Equipamento {
 /// Logs de movimentação — um registro isolado por item emprestado.
 model Emprestimo {
   id             Int       @id @default(autoincrement())
-  /// FK para Usuario.matricula.
-  usuario_id     String
+  /// FK para Pessoa.matricula. Chamava-se `usuario_id` até a Tarefa 10.
+  pessoa_id      String
   /// FK para Equipamento.id.
   equip_id       String
   /// Preenchido na criação.
@@ -87,8 +119,8 @@ model Emprestimo {
   status         String    @default("ATIVO")
 
   /// `onUpdate: Cascade` é o que faz a correção de uma matrícula digitada
-  /// errada não quebrar o histórico: a PK do `Usuario` muda e todos os
-  /// empréstimos dele vão junto, na mesma instrução.
+  /// errada não quebrar o histórico: a PK da `Pessoa` muda e todos os
+  /// empréstimos dela vão junto, na mesma instrução.
   ///
   /// Está **explícito de propósito**, embora seja o padrão do Prisma para
   /// relação obrigatória — a migration inicial já tinha gravado
@@ -99,6 +131,6 @@ model Emprestimo {
   ///
   /// `onDelete: Restrict` (também o padrão) é o que torna `INATIVO` a única
   /// saída para um cadastro que sai de circulação.
-  usuario     Usuario     @relation(fields: [usuario_id], references: [matricula], onDelete: Restrict, onUpdate: Cascade)
+  pessoa      Pessoa      @relation(fields: [pessoa_id], references: [matricula], onDelete: Restrict, onUpdate: Cascade)
   equipamento Equipamento @relation(fields: [equip_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
 }
