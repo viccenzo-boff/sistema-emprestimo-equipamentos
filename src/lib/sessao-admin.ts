@@ -223,6 +223,38 @@ export async function existeAdministrador(): Promise<boolean> {
 }
 
 /**
+ * Acha o administrador pelo login, **sem diferenciar maiúscula de minúscula**.
+ *
+ * O caminho rápido é o `findUnique` no índice, com o valor já em minúsculas —
+ * é o que o `prisma/seed.ts` grava e o que acontece em todo login normal.
+ *
+ * O caminho lento existe por um defeito medido, não por precaução: o `=` do
+ * SQLite é sensível à caixa, e o único jeito de acrescentar um administrador
+ * neste MVP é digitando no `npm run db:studio` — onde ninguém prometeu digitar
+ * em minúsculas. Uma conta gravada como "Coordenacao" ficava **inalcançável**:
+ * existia na tabela, aparecia no Studio, e não havia nada que se pudesse
+ * digitar na tela para entrar com ela, porque o campo normaliza para minúsculo
+ * antes de procurar. Cadastro gravável e inutilizável — o defeito não estava
+ * na escrita nem na leitura isoladamente, e sim no acordo entre as duas.
+ *
+ * A varredura é aceitável porque esta tabela tem unidades de linhas (não há
+ * tela de cadastro), e ela só roda quando o caminho rápido erra.
+ */
+async function procurarAdministrador(usuario: string) {
+  const exato = await prisma.administrador.findUnique({
+    where: { usuario },
+    select: { id: true, nome: true, senha: true },
+  });
+  if (exato) return exato;
+
+  const todos = await prisma.administrador.findMany({
+    select: { id: true, nome: true, senha: true, usuario: true },
+  });
+
+  return todos.find((a) => a.usuario.trim().toLowerCase() === usuario) ?? null;
+}
+
+/**
  * Confere login e senha contra o banco.
  *
  * A mensagem de recusa é a mesma para "usuário não existe" e "senha errada" —
@@ -245,10 +277,7 @@ export async function autenticar(
   const segundos = segundosDeBloqueio(usuario);
   if (segundos > 0) return { resultado: "bloqueado", segundos };
 
-  const admin = await prisma.administrador.findUnique({
-    where: { usuario },
-    select: { id: true, nome: true, senha: true },
-  });
+  const admin = await procurarAdministrador(usuario);
 
   // Conferido nesta sessão: `compare` contra um hash corrompido devolve `false`
   // em vez de lançar, então uma linha estragada no banco recusa o login em vez

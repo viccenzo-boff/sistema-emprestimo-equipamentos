@@ -716,6 +716,17 @@ fronteira exata do freio de tentativas (12).
   leitor pega `SheetNames[0]`** — planilha de coordenação vem com o nome que o
   Excel deu ("Planilha1", "Sheet1"). Conferido com a ida e volta completa, e com
   o arquivo sujo.
+- **O login ignora caixa e espaços em volta, e isso saiu de um defeito
+  medido.** O `=` do SQLite é sensível à caixa e o campo da tela normaliza para
+  minúsculas; como a única forma de acrescentar uma conta neste MVP é digitando
+  no `db:studio`, uma linha gravada como "Coordenacao" existia na tabela,
+  aparecia no Studio, e **não havia nada que se pudesse digitar na tela para
+  entrar com ela**. Nenhuma das duas camadas estava errada sozinha — o defeito
+  morava no acordo entre elas, que é a classe que nem tipo, nem lint, nem build
+  pegam. Achado pela pergunta do pré-voo ("o valor mais esquisito que dá para
+  gravar aqui passa em quem lê?") e provado no navegador, com três grafias.
+  O caminho rápido continua sendo o `findUnique` no índice; a varredura só roda
+  quando ele erra, e a tabela tem unidades de linhas.
 - **`TelaSenha` virou `TelaLogin`.** Um componente chamado "tela de senha" com
   dois campos manda a próxima pessoa procurar o campo que falta.
 

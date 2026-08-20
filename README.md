@@ -183,6 +183,9 @@ Na prática:
   O contador é por login: quem erra a própria senha não tranca o painel para os colegas.
 - "Usuário ou senha inválidos" é uma mensagem só, e o tempo de resposta é o mesmo nos dois casos —
   dizer qual metade errou entregaria metade da credencial.
+- O login **não diferencia maiúscula de minúscula**, e espaços em volta são ignorados. Importa
+  porque acrescentar uma conta pelo `db:studio` é digitar à mão: uma linha gravada como
+  `Coordenacao` ficaria inalcançável se a busca fosse sensível à caixa.
 
 A verificação é refeita em cada página e em cada Server Action do painel — Server Action é
 endpoint POST público, e esconder o botão na tela não fecha a porta.

@@ -58,7 +58,15 @@ model Administrador {
   id      Int    @id @default(autoincrement())
   /// Nome de quem opera — é o que aparece no painel ("Secretaria", "Cidi").
   nome    String
-  /// Login digitado na tela de senha. Único: é a chave da busca no login.
+  /// Login digitado na tela de login. Único: é a chave da busca.
+  ///
+  /// O seed grava em minúsculas, e a busca **ignora caixa e espaços em volta**
+  /// — ver `procurarAdministrador` em
+  /// [sessao-admin.ts](../src/lib/sessao-admin.ts). Não é precaução: o `=` do
+  /// SQLite é sensível à caixa, e como a única forma de acrescentar uma conta
+  /// neste MVP é digitando no `db:studio`, uma linha gravada como
+  /// "Coordenacao" existia na tabela e não havia nada que se pudesse digitar
+  /// na tela para entrar com ela. Medido antes de virar código.
   usuario String @unique
   /// **Hash bcrypt**, nunca a senha. Sessenta caracteres, prefixo `$2b$10$`.
   ///
