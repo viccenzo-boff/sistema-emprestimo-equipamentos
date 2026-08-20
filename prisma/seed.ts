@@ -7,6 +7,12 @@ import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import bcrypt from "bcryptjs";
 
 import { PrismaClient } from "../src/generated/prisma/client";
+// O custo do bcrypt tem um dono só: o seed cria as contas e o painel troca a
+// senha delas (Tarefa 11). Duas constantes de mesmo nome em arquivos diferentes
+// seriam duas regras assim que uma fosse ajustada. O módulo é neutro de
+// propósito — não importa `next/headers` nem o Prisma —, e por isso pode ser
+// lido daqui, de dentro do `tsx` no terminal.
+import { CUSTO_BCRYPT } from "../src/lib/senha";
 
 /**
  * Seed do Sistema de Empréstimo de Equipamentos (Unoesc).
@@ -128,15 +134,6 @@ const ADMINISTRADORES: { nome: string; usuario: string }[] = [
 
 /** Senha inicial das quatro contas. Existe para ser trocada. */
 const SENHA_PADRAO = "Mudar@123";
-
-/**
- * Custo do bcrypt. 10 é o padrão da biblioteca e o que foi medido nesta
- * máquina: ~209ms para gerar e ~159ms para conferir. O `bcryptjs` é JavaScript
- * puro (sem compilação nativa), então o custo 12 subiu para ~630ms — caro
- * demais para uma tela que a secretaria abre várias vezes por dia, e sem ganho
- * proporcional numa rede fechada que já tem freio de tentativas.
- */
-const CUSTO_BCRYPT = 10;
 
 /** Remove acentos e normaliza para comparar cabeçalhos e o campo perfil. */
 function normalizar(texto: string): string {
