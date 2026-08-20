@@ -348,10 +348,25 @@ export async function alterarStatusPessoa(
     });
 
     if (alterados.count !== 1) {
+      /*
+        A mensagem dizia o status ERRADO, e o defeito é da Tarefa 8 — esta
+        tarefa só o revelou ao trocar o vocabulário em volta.
+
+        Zero linhas alteradas quer dizer que o cadastro **não** estava em
+        nenhuma origem permitida; como só há dois status e a origem de um é o
+        outro, isso quer dizer que ele já está no destino. A versão anterior
+        anunciava justamente o contrário ("já está inativo" ao tentar ativar),
+        mandando a secretaria clicar de novo no mesmo botão.
+
+        É a mesma forma que a troca de status do equipamento já usava: dizer o
+        estado real, e não adivinhar o oposto.
+      */
       return falha(
         "STATUS_INVALIDO",
-        `${pessoa.nome} já está ${destino === STATUS_PESSOA.ativo ? "inativo" : "ativo"}... ou mudou em outra aba.`,
-        "A lista foi atualizada.",
+        `O cadastro de ${pessoa.nome} já está ${
+          destino === STATUS_PESSOA.ativo ? "ativo" : "inativo"
+        }.`,
+        "A situação mudou em outra aba. A lista foi atualizada.",
       );
     }
 
