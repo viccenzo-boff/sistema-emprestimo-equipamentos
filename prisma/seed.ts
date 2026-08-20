@@ -4,31 +4,52 @@ import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import bcrypt from "bcryptjs";
 
 import { PrismaClient } from "../src/generated/prisma/client";
 
 /**
  * Seed do Sistema de Empréstimo de Equipamentos (Unoesc).
  *
- * Usuários: importados da planilha da coordenação, exportada como CSV em
- *   prisma/data/usuarios.csv
+ * Pessoas: importadas da planilha da coordenação, exportada como CSV em
+ *   prisma/data/pessoas.csv
  * com as colunas: matricula, nome, perfil, cursos
  *
  * Para usar um arquivo em outro caminho, defina a variável de ambiente
- * USUARIOS_CSV (ex.: USUARIOS_CSV=C:/planilhas/alunos.csv npm run db:seed).
+ * PESSOAS_CSV (ex.: PESSOAS_CSV=C:/planilhas/alunos.csv npm run db:seed).
  *
  * Se o arquivo não existir, um conjunto pequeno de dados de exemplo é usado
  * para permitir testar os fluxos do tablet e do painel administrativo.
  *
- * O script é idempotente: pode ser executado várias vezes sem duplicar dados
- * e sem resetar o status de equipamentos que já estão emprestados.
+ * O script é idempotente: pode ser executado várias vezes sem duplicar dados,
+ * sem resetar o status de equipamentos que já estão emprestados e sem devolver
+ * ao padrão a senha de um administrador que já existe.
  */
 
-const CAMINHO_CSV = process.env.USUARIOS_CSV
-  ? resolve(process.env.USUARIOS_CSV)
-  : join(process.cwd(), "prisma", "data", "usuarios.csv");
+/**
+ * O CSV mudou de nome na Tarefa 10 (`usuarios.csv` -> `pessoas.csv`), e o nome
+ * antigo continua sendo aceito.
+ *
+ * Não é gentileza: o arquivo real está no `.gitignore` e mora na máquina da
+ * secretaria, onde ninguém vai renomeá-lo por causa de um commit. Sem o
+ * atalho, o seed não acharia a planilha, cairia nos quatro registros de
+ * exemplo e **não daria erro nenhum** — a falha apareceria semanas depois, na
+ * forma de um aluno que "não está cadastrado".
+ */
+function caminhoDoCsv(): { caminho: string; legado: boolean } {
+  const daVariavel = process.env.PESSOAS_CSV ?? process.env.USUARIOS_CSV;
+  if (daVariavel) return { caminho: resolve(daVariavel), legado: false };
 
-type UsuarioSeed = {
+  const atual = join(process.cwd(), "prisma", "data", "pessoas.csv");
+  if (existsSync(atual)) return { caminho: atual, legado: false };
+
+  const antigo = join(process.cwd(), "prisma", "data", "usuarios.csv");
+  if (existsSync(antigo)) return { caminho: antigo, legado: true };
+
+  return { caminho: atual, legado: false };
+}
+
+type PessoaSeed = {
   matricula: string;
   nome: string;
   perfil: string;
@@ -60,7 +81,7 @@ const INVENTARIO: { id: string; categoria: string }[] = [
   })),
 ];
 
-const USUARIOS_EXEMPLO: UsuarioSeed[] = [
+const PESSOAS_EXEMPLO: PessoaSeed[] = [
   {
     matricula: "0012345",
     nome: "Ana Souza",
@@ -87,11 +108,41 @@ const USUARIOS_EXEMPLO: UsuarioSeed[] = [
   },
 ];
 
+/* ------------------------------------------------------------------------- *
+ * Administradores do painel (Tarefa 10)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * As contas do painel nascem aqui porque a Tarefa 10 decidiu não ter tela de
+ * cadastro de administrador neste MVP. Consequência a conhecer: **este arquivo
+ * é o caminho de recuperação** de uma senha esquecida — apaga-se a linha no
+ * `npm run db:studio` e roda-se `npm run db:seed` de novo, que recria a conta
+ * com a senha padrão.
+ */
+const ADMINISTRADORES: { nome: string; usuario: string }[] = [
+  { nome: "Secretaria", usuario: "secretaria" },
+  { nome: "Cidi", usuario: "cidi" },
+  { nome: "Jeanzão", usuario: "jeanzao" },
+  { nome: "Viccenzo", usuario: "viccenzo" },
+];
+
+/** Senha inicial das quatro contas. Existe para ser trocada. */
+const SENHA_PADRAO = "Mudar@123";
+
+/**
+ * Custo do bcrypt. 10 é o padrão da biblioteca e o que foi medido nesta
+ * máquina: ~209ms para gerar e ~159ms para conferir. O `bcryptjs` é JavaScript
+ * puro (sem compilação nativa), então o custo 12 subiu para ~630ms — caro
+ * demais para uma tela que a secretaria abre várias vezes por dia, e sem ganho
+ * proporcional numa rede fechada que já tem freio de tentativas.
+ */
+const CUSTO_BCRYPT = 10;
+
 /** Remove acentos e normaliza para comparar cabeçalhos e o campo perfil. */
 function normalizar(texto: string): string {
   return texto
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .trim()
     .toLowerCase();
 }
@@ -131,9 +182,9 @@ function dividirLinha(linha: string, delimitador: string): string[] {
   return campos.map((campo) => campo.trim());
 }
 
-function lerUsuariosDoCsv(caminho: string): UsuarioSeed[] {
+function lerPessoasDoCsv(caminho: string): PessoaSeed[] {
   // Excel em pt-BR grava UTF-8 com BOM e costuma usar ";" como separador.
-  const conteudo = readFileSync(caminho, "utf8").replace(/^﻿/, "");
+  const conteudo = readFileSync(caminho, "utf8").replace(/^\uFEFF/, "");
   const linhas = conteudo
     .split(/\r?\n/)
     .filter((linha) => linha.trim().length > 0);
@@ -167,7 +218,7 @@ function lerUsuariosDoCsv(caminho: string): UsuarioSeed[] {
     );
   }
 
-  const porMatricula = new Map<string, UsuarioSeed>();
+  const porMatricula = new Map<string, PessoaSeed>();
   const ignoradas: number[] = [];
 
   linhas.slice(1).forEach((linha, indice) => {
@@ -210,24 +261,32 @@ async function main() {
   try {
     console.log("Seed - Sistema de Empréstimo de Equipamentos\n");
 
-    // 1. Usuários (planilha da coordenação, ou dados de exemplo)
-    let usuarios: UsuarioSeed[];
+    // 1. Pessoas (planilha da coordenação, ou dados de exemplo)
+    const { caminho: CAMINHO_CSV, legado } = caminhoDoCsv();
+    let pessoas: PessoaSeed[];
 
     if (existsSync(CAMINHO_CSV)) {
-      usuarios = lerUsuariosDoCsv(CAMINHO_CSV);
-      console.log(`Usuários: ${usuarios.length} lidos de ${CAMINHO_CSV}`);
+      pessoas = lerPessoasDoCsv(CAMINHO_CSV);
+      console.log(`Pessoas: ${pessoas.length} lidas de ${CAMINHO_CSV}`);
+
+      if (legado) {
+        console.warn(
+          `  Aviso: este arquivo usa o nome antigo. Renomeie para\n` +
+            `  prisma/data/pessoas.csv — "usuarios.csv" segue aceito, mas é legado.`,
+        );
+      }
     } else {
-      usuarios = USUARIOS_EXEMPLO;
+      pessoas = PESSOAS_EXEMPLO;
       console.log(
-        `Usuários: ${CAMINHO_CSV} não encontrado - usando ${usuarios.length} registros de exemplo.\n` +
+        `Pessoas: ${CAMINHO_CSV} não encontrado - usando ${pessoas.length} registros de exemplo.\n` +
           `  Para importar a planilha real, exporte-a como CSV com as colunas\n` +
-          `  matricula, nome, perfil, cursos e salve em prisma/data/usuarios.csv`,
+          `  matricula, nome, perfil, cursos e salve em prisma/data/pessoas.csv`,
       );
     }
 
-    for (const usuario of usuarios) {
-      await prisma.usuario.upsert({
-        where: { matricula: usuario.matricula },
+    for (const pessoa of pessoas) {
+      await prisma.pessoa.upsert({
+        where: { matricula: pessoa.matricula },
         /*
           Reimportar a planilha atualiza os dados cadastrais — e **não toca no
           `status`**, de propósito (Tarefa 8).
@@ -240,11 +299,11 @@ async function main() {
           `ATIVO` pelo padrão da coluna.
         */
         update: {
-          nome: usuario.nome,
-          perfil: usuario.perfil,
-          cursos: usuario.cursos,
+          nome: pessoa.nome,
+          perfil: pessoa.perfil,
+          cursos: pessoa.cursos,
         },
-        create: usuario,
+        create: pessoa,
       });
     }
 
@@ -288,16 +347,76 @@ async function main() {
     }
     console.log(`Equipamentos: ${INVENTARIO.length} itens no inventário.`);
 
-    const [totalUsuarios, totalCategorias, totalEquipamentos, totalEmprestimos] =
-      await Promise.all([
-        prisma.usuario.count(),
-        prisma.categoria.count(),
-        prisma.equipamento.count(),
-        prisma.emprestimo.count(),
-      ]);
+    /*
+      4. Administradores do painel (Tarefa 10).
+
+      A SENHA DE QUEM JÁ EXISTE NÃO É TOCADA — é a mesma regra do `status` da
+      pessoa e do `status` do equipamento, e é o que impede que rodar `db:seed`
+      para importar a planilha nova de segunda-feira devolva as quatro senhas
+      ao padrão sem ninguém pedir. O `nome` continua sendo atualizado, porque
+      esse **está** no seed: campo que a origem menciona é campo que o seed
+      grava.
+
+      O hash só é calculado para quem vai ser criado. Cada um custa ~209ms de
+      CPU, e nos outros casos não haveria o que fazer com o resultado.
+    */
+    const criados: string[] = [];
+
+    for (const admin of ADMINISTRADORES) {
+      const existente = await prisma.administrador.findUnique({
+        where: { usuario: admin.usuario },
+        select: { id: true },
+      });
+
+      if (existente) {
+        await prisma.administrador.update({
+          where: { usuario: admin.usuario },
+          data: { nome: admin.nome },
+        });
+        continue;
+      }
+
+      await prisma.administrador.create({
+        data: {
+          nome: admin.nome,
+          usuario: admin.usuario,
+          senha: await bcrypt.hash(SENHA_PADRAO, CUSTO_BCRYPT),
+        },
+      });
+
+      criados.push(admin.usuario);
+    }
+
+    if (criados.length > 0) {
+      console.log(
+        `Administradores: ${criados.length} criado(s) - ${criados.join(", ")}.\n` +
+          `  Senha inicial de todos: ${SENHA_PADRAO}\n` +
+          `  TROQUE ANTES DE USAR NA SECRETARIA.`,
+      );
+    } else {
+      console.log(
+        `Administradores: ${ADMINISTRADORES.length} já existiam - senhas preservadas.`,
+      );
+    }
+
+    const [
+      totalPessoas,
+      totalCategorias,
+      totalEquipamentos,
+      totalEmprestimos,
+      totalAdministradores,
+    ] = await Promise.all([
+      prisma.pessoa.count(),
+      prisma.categoria.count(),
+      prisma.equipamento.count(),
+      prisma.emprestimo.count(),
+      prisma.administrador.count(),
+    ]);
 
     console.log(
-      `\nBanco atual: ${totalUsuarios} usuários, ${totalCategorias} categorias, ${totalEquipamentos} equipamentos, ${totalEmprestimos} empréstimos.`,
+      `\nBanco atual: ${totalPessoas} pessoas, ${totalCategorias} categorias, ` +
+        `${totalEquipamentos} equipamentos, ${totalEmprestimos} empréstimos, ` +
+        `${totalAdministradores} administradores.`,
     );
   } finally {
     await prisma.$disconnect();

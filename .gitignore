@@ -52,6 +52,7 @@ next-env.d.ts
 *.db-shm
 
 # planilha real da coordenação: contém dados pessoais, não versionar
+/prisma/data/pessoas.csv
 /prisma/data/usuarios.csv
 
 # cache da ferramenta impeccable
