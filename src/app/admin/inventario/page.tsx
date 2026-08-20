@@ -9,7 +9,7 @@ import {
   listarOpcoesDeCategoria,
   resumirInventario,
 } from "@/lib/consultas-admin";
-import { temSessaoAdmin } from "@/lib/sessao-admin";
+import { sessaoAdmin } from "@/lib/sessao-admin";
 
 /**
  * Gestão de Inventário (spec, seção 4, Fluxo 3, item 2).
@@ -24,7 +24,8 @@ import { temSessaoAdmin } from "@/lib/sessao-admin";
 export const dynamic = "force-dynamic";
 
 export default async function PaginaDeInventario() {
-  if (!(await temSessaoAdmin())) redirect("/admin");
+  const admin = await sessaoAdmin();
+  if (!admin) redirect("/admin");
 
   const [itens, categorias, resumo, pendentes] = await Promise.all([
     listarInventario(),
@@ -35,6 +36,7 @@ export default async function PaginaDeInventario() {
 
   return (
     <CascaAdmin
+      admin={admin}
       aba="inventario"
       pendentes={pendentes}
       titulo="Inventário"

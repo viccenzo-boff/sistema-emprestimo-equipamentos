@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { sairDoAdmin } from "@/app/admin/actions";
 import logoUnoesc from "@/assets/brand/logo-unoesc-colorido.png";
+import type { SessaoAdmin } from "@/lib/sessao-admin";
 import { Botao } from "@/components/ui/Botao";
 import {
   IconeCaixa,
@@ -39,9 +40,19 @@ export type AbaDoPainel =
   | "ativos"
   | "inventario"
   | "categorias"
-  | "usuarios";
+  | "pessoas";
 
 type Props = {
+  /**
+   * Quem está logado agora (Tarefa 10).
+   *
+   * O nome aparece embaixo da marca, onde antes havia a palavra "Secretaria"
+   * escrita à mão. Não é enfeite: é o motivo declarado da tarefa. Com senha
+   * única, "quem confirmou o recebimento deste equipamento?" não tinha resposta
+   * possível, e quem está de pé no balcão não tinha como saber sequer com qual
+   * conta o navegador ficou aberto desde o turno anterior.
+   */
+  admin: SessaoAdmin;
   aba: AbaDoPainel;
   /** Quantos empréstimos esperam conferência agora. Vira aviso no menu. */
   pendentes: number;
@@ -78,7 +89,7 @@ const ABAS = [
     Icone: IconeEtiquetas,
   },
   /*
-    Usuários fica por último de propósito, e não junto da fila.
+    Pessoas fica por último de propósito, e não junto da fila.
 
     As quatro abas acima são o trabalho do dia — a secretaria entra no painel
     para conferir devolução e mexer no inventário. Cadastro é manutenção de
@@ -87,14 +98,21 @@ const ABAS = [
     baixo as três que acontecem toda hora.
   */
   {
-    id: "usuarios" as const,
-    rotulo: "Usuários",
-    href: "/admin/usuarios",
+    id: "pessoas" as const,
+    rotulo: "Pessoas",
+    href: "/admin/pessoas",
     Icone: IconePessoas,
   },
 ];
 
-export function CascaAdmin({ aba, pendentes, titulo, descricao, children }: Props) {
+export function CascaAdmin({
+  admin,
+  aba,
+  pendentes,
+  titulo,
+  descricao,
+  children,
+}: Props) {
   return (
     <div className="flex min-h-full flex-1 flex-col lg:flex-row">
       <aside className="flex shrink-0 flex-col gap-8 border-b border-borda bg-superficie p-6 lg:w-72 lg:border-r lg:border-b-0 lg:p-7">
@@ -105,8 +123,16 @@ export function CascaAdmin({ aba, pendentes, titulo, descricao, children }: Prop
             <p className="mt-3 text-sm leading-tight font-semibold text-tinta">
               Painel Administrativo
             </p>
-            <p className="text-sm leading-tight text-tinta-tenue">
-              Secretaria
+            {/*
+              O nome de quem entrou, no lugar do "Secretaria" que era fixo.
+
+              `break-words` porque o nome vem do banco e ninguém prometeu que
+              cabe em 18rem: um nome comprido sem quebra empurraria a barra
+              lateral inteira para fora do próprio recuo.
+            */}
+            <p className="text-sm leading-tight break-words text-tinta-tenue">
+              <span className="sr-only">Conectado como </span>
+              {admin.nome}
             </p>
           </div>
 

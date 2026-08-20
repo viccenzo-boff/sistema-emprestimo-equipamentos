@@ -6,7 +6,7 @@ import {
   contarFilaDeDevolucoes,
   listarEmprestimosEmCurso,
 } from "@/lib/consultas-admin";
-import { temSessaoAdmin } from "@/lib/sessao-admin";
+import { sessaoAdmin } from "@/lib/sessao-admin";
 
 /**
  * Visão Geral dos empréstimos `ATIVO` (spec, seção 4, Fluxo 3, item 3).
@@ -18,7 +18,8 @@ import { temSessaoAdmin } from "@/lib/sessao-admin";
 export const dynamic = "force-dynamic";
 
 export default async function PaginaDeAtivos() {
-  if (!(await temSessaoAdmin())) redirect("/admin");
+  const admin = await sessaoAdmin();
+  if (!admin) redirect("/admin");
 
   const [emprestimos, pendentes] = await Promise.all([
     listarEmprestimosEmCurso(),
@@ -27,6 +28,7 @@ export default async function PaginaDeAtivos() {
 
   return (
     <CascaAdmin
+      admin={admin}
       aba="ativos"
       pendentes={pendentes}
       titulo="Empréstimos Ativos"

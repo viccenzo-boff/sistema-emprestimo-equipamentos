@@ -6,7 +6,7 @@ import {
   contarFilaDeDevolucoes,
   listarCategoriasDoPainel,
 } from "@/lib/consultas-admin";
-import { temSessaoAdmin } from "@/lib/sessao-admin";
+import { sessaoAdmin } from "@/lib/sessao-admin";
 
 /**
  * Gestão de Categorias (Tarefa 6).
@@ -18,7 +18,8 @@ import { temSessaoAdmin } from "@/lib/sessao-admin";
 export const dynamic = "force-dynamic";
 
 export default async function PaginaDeCategorias() {
-  if (!(await temSessaoAdmin())) redirect("/admin");
+  const admin = await sessaoAdmin();
+  if (!admin) redirect("/admin");
 
   const [categorias, pendentes] = await Promise.all([
     listarCategoriasDoPainel(),
@@ -27,6 +28,7 @@ export default async function PaginaDeCategorias() {
 
   return (
     <CascaAdmin
+      admin={admin}
       aba="categorias"
       pendentes={pendentes}
       titulo="Categorias"

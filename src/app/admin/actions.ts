@@ -5,10 +5,9 @@ import { redirect } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
 import {
-  conferirSenha,
+  autenticar,
   criarSessao,
   encerrarSessao,
-  segundosDeBloqueio,
   temSessaoAdmin,
 } from "@/lib/sessao-admin";
 import { semAcento } from "@/lib/texto";
@@ -64,7 +63,7 @@ function semSessao(): Resultado<never> {
   return falha(
     "SEM_SESSAO",
     "Sessão encerrada.",
-    "Atualize a página e informe a senha novamente.",
+    "Atualize a página e entre de novo.",
   );
 }
 
@@ -93,49 +92,59 @@ function codigoDoPrisma(erro: unknown): string | null {
  * ------------------------------------------------------------------------- */
 
 /**
- * Confere a senha mestre e abre a sessão.
+ * Confere usuário e senha contra a tabela `Administrador` e abre a sessão
+ * (Tarefa 10).
  *
  * A assinatura é a do `useActionState` (estado anterior, formulário). O sucesso
  * não devolve estado: emite `redirect` para o próprio /admin, que agora
  * renderiza o painel porque o cookie já foi para a resposta.
  *
- * As mensagens de erro são deliberadamente vagas quanto ao motivo — "senha
- * incorreta" e nada mais. A exceção é a senha não configurada, que é problema
- * de instalação e precisa dizer o nome da variável para alguém poder resolver.
+ * **"Usuário ou senha inválidos" é uma mensagem só de propósito.** Distinguir
+ * "esse login não existe" de "a senha está errada" entrega metade da
+ * credencial a quem está tentando adivinhar — e a metade mais cara de
+ * descobrir. O tempo de resposta também não distingue os dois casos; quem
+ * garante isso é o `HASH_DE_ISCA` em [sessao-admin](src/lib/sessao-admin.ts).
+ *
+ * A exceção é "não há administrador cadastrado": esse é problema de
+ * instalação, não tentativa de invasão, e precisa dizer o comando que resolve.
+ * É o que sobrou do antigo aviso de `ADMIN_PASSWORD` ausente.
  */
 export async function entrarNoAdmin(
   _estadoAnterior: EstadoDoLogin,
   formulario: FormData,
 ): Promise<EstadoDoLogin> {
-  const conferencia = conferirSenha(formulario.get("senha"));
+  const autenticacao = await autenticar(
+    formulario.get("usuario"),
+    formulario.get("senha"),
+  );
 
-  if (conferencia === "nao-configurada") {
+  if (autenticacao.resultado === "sem-contas") {
     return {
-      mensagem: "O painel não está configurado.",
+      mensagem: "Nenhum administrador cadastrado.",
       detalhe:
-        "Defina ADMIN_PASSWORD no arquivo .env do servidor e reinicie o sistema.",
+        "Rode `npm run db:seed` no servidor para criar as contas do painel.",
     };
   }
 
-  if (conferencia === "bloqueado") {
+  if (autenticacao.resultado === "bloqueado") {
     return {
       mensagem: "Muitas tentativas seguidas.",
-      detalhe: `Aguarde ${segundosDeBloqueio()} segundos antes de tentar de novo.`,
+      detalhe: `Aguarde ${autenticacao.segundos} segundos antes de tentar de novo.`,
     };
   }
 
-  if (conferencia === "vazia") {
-    return { mensagem: "Digite a senha do painel." };
+  if (autenticacao.resultado === "vazio") {
+    return { mensagem: "Informe o usuário e a senha." };
   }
 
-  if (conferencia === "incorreta") {
+  if (autenticacao.resultado === "credenciais") {
     return {
-      mensagem: "Senha incorreta.",
+      mensagem: "Usuário ou senha inválidos.",
       detalhe: "Confira o teclado e tente novamente.",
     };
   }
 
-  await criarSessao();
+  await criarSessao(autenticacao.admin);
 
   // Fora de try/catch de propósito: `redirect` sinaliza por exceção, e um
   // catch por perto engoliria a navegação.
@@ -222,7 +231,7 @@ async function darBaixa(emprestimoId: number): Promise<RecebimentoConfirmado> {
       select: {
         id: true,
         equip_id: true,
-        usuario: { select: { nome: true } },
+        pessoa: { select: { nome: true } },
         equipamento: {
           select: { categoria: { select: { nome: true } }, status: true },
         },
@@ -254,7 +263,7 @@ async function darBaixa(emprestimoId: number): Promise<RecebimentoConfirmado> {
     return {
       equip_id: emprestimo.equip_id,
       tipo: emprestimo.equipamento.categoria.nome,
-      nome: emprestimo.usuario.nome,
+      nome: emprestimo.pessoa.nome,
       liberado: liberados.count === 1,
     };
   });
@@ -445,7 +454,7 @@ export async function alterarStatusEquipamento(
               in: [STATUS_EMPRESTIMO.ativo, STATUS_EMPRESTIMO.aguardandoBaixa],
             },
           },
-          select: { status: true, usuario: { select: { nome: true } } },
+          select: { status: true, pessoa: { select: { nome: true } } },
           take: 1,
         },
       },
@@ -462,7 +471,7 @@ export async function alterarStatusEquipamento(
     const aberto = equipamento.emprestimos[0];
 
     if (aberto) {
-      const comQuem = aberto.usuario.nome;
+      const comQuem = aberto.pessoa.nome;
 
       return falha(
         "EQUIPAMENTO_EM_USO",
@@ -538,7 +547,7 @@ export async function cadastrarEquipamento(
     return {
       fase: "erro",
       mensagem: "Sessão encerrada.",
-      detalhe: "Atualize a página e informe a senha novamente.",
+      detalhe: "Atualize a página e entre de novo.",
     };
   }
 
@@ -722,7 +731,7 @@ export async function cadastrarCategoria(
     return {
       fase: "erro",
       mensagem: "Sessão encerrada.",
-      detalhe: "Atualize a página e informe a senha novamente.",
+      detalhe: "Atualize a página e entre de novo.",
     };
   }
 
