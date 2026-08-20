@@ -80,6 +80,16 @@ sistema oferecer no tablet um equipamento que ainda está na bancada.
 
 Cada item emprestado gera um registro **separado** em `Emprestimo`.
 
+**São três marcadores temporais, e cada um tem um dono só** (Tarefa 12):
+`data_retirada` é o tablet entregando, `data_devolucao` é o tablet **declarando**
+a devolução (`ATIVO` -> `AGUARDANDO_BAIXA`) e `data_baixa` é a secretaria
+**conferindo fisicamente** (`AGUARDANDO_BAIXA` -> `CONCLUIDO`). A diferença entre
+os dois últimos é o tempo de prateleira — o aparelho parado na bancada, invisível
+para o tablet e para o inventário. Até a Tarefa 12 a baixa **sobrescrevia** a
+`data_devolucao`, então esse intervalo dava zero sempre; se alguém devolver aquela
+linha ao `updateMany` de `darBaixa`, a métrica volta a mentir sem nenhum erro
+aparecer.
+
 `INATIVO` é a aposentadoria do equipamento, e existe porque **equipamento não é
 apagado**: `Emprestimo.equip_id` aponta para ele, e um DELETE levaria junto o
 histórico do semestre passado. O item inativo some do tablet (nem nas contagens
@@ -842,12 +852,62 @@ ressemear — em cópia.
   São quatro contas e um computador só — "Senha alterada" sem o nome é
   justamente a frase que não resolve a dúvida que a sprint existe para resolver.
 
+**Tarefa 12 — Auditoria de baixa física (concluída):** os dois itens de
+[tarefa-12-auditoria-devolucao.md](tarefa-12-auditoria-devolucao.md) — o campo
+`Emprestimo.data_baixa` (`DateTime?`) e o preenchimento dele na confirmação de
+recebimento do painel. `tsc`, `lint` e `build` em 0, com as cinco rotas do painel
+dinâmicas (`ƒ`). A migration foi gerada com `--create-only`, lida (é um
+`ALTER TABLE ADD COLUMN` puro, sem reconstrução de tabela) e ensaiada em cópia do
+`dev.db` antes do arquivo real — 9 asserções, com os 7 ids preservados e
+`foreign_key_check` vazio. Verificação por HTTP real contra o servidor de
+produção, com o login feito pela via sem JavaScript: 30 asserções cobrindo o
+ciclo avulso, o lote, a baixa repetida e as duas actions sem cookie de sessão. O
+banco foi devolvido à linha de base item a item.
+
+**Decisões da Tarefa 12** (não refazer sem motivo):
+
+- **A baixa deixou de sobrescrever `data_devolucao`, e essa é a mudança que a
+  tarefa de fato exigia.** O enunciado só pedia o campo novo, descrevendo
+  `data_devolucao` como "quando o aluno clica em devolver no tablet" — o que era
+  verdade até a secretaria dar baixa, porque `darBaixa` regravava o campo com o
+  próprio instante (decisão da Tarefa 4, quando havia um campo de data para dois
+  eventos). Aplicado ao pé da letra, `data_baixa - data_devolucao` daria ~0 ms
+  para sempre: a métrica de gargalo nasceria morta, e nada acusaria — o tipo está
+  certo, a coluna existe, o valor é gravado, e o relatório traria zeros
+  plausíveis. Levantado como conflito antes da primeira edição; a decisão de
+  remover a sobrescrita foi do usuário. Medido depois: com 1500 ms entre a
+  declaração e a baixa, o intervalo gravado foi 1564 ms.
+- **Nenhuma tela mudou, e isso foi conferido.** `listarFilaDeDevolucoes` é o
+  único lugar que lê `data_devolucao`, e só de linhas `AGUARDANDO_BAIXA` — que
+  são justamente as que ainda não passaram pela baixa. Não existe tela de
+  histórico de `CONCLUIDO`, então a mudança não tem efeito visível hoje. Por isso
+  o degrau do navegador foi **pulado de propósito**: a tarefa não tocou em
+  formulário nem em diálogo, e o diff não tem uma linha de componente.
+- **Os 6 empréstimos concluídos antes da Tarefa 12 ficam com `data_baixa` nula.**
+  A `data_devolucao` deles é, comprovadamente, o instante da baixa (`darBaixa`
+  era o único caminho até `CONCLUIDO`), então copiar seria transferir um valor
+  verdadeiro — e é justamente por isso que não se copia: o intervalo resultante
+  seria zero, e seis prateleiras instantâneas que ninguém mediu entrariam em
+  qualquer média futura como se tivessem sido. Nulo se exclui sozinho do cálculo.
+  Mesma família da regra "campo que a origem não menciona é campo que o banco
+  preserva".
+- **`data_baixa` é gravada só no `darBaixa`, que é o ponto único das duas telas.**
+  A baixa avulsa e a "Confirmar Todas as Devoluções" passam pela mesma função, e
+  foi o que evitou a segunda cópia da regra. Exercitado nos dois caminhos.
+- **A baixa repetida não reescreve `data_baixa`.** Cai de graça do `updateMany`
+  filtrado por `status: AGUARDANDO_BAIXA` que já existia contra duplo-clique, mas
+  agora tem uma consequência a mais: o carimbo de auditoria é imutável depois de
+  posto. Exercitado — a segunda chamada é recusada e o valor não muda.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
 coordenação e — agora que existe conta individual — registrar **quem** deu baixa
-em cada empréstimo (o `Emprestimo` não tem essa coluna; a Tarefa 10 criou a
-identidade, a 11 deu a cada pessoa uma senha própria, e o rastro continua não
-existindo). Nada disso está na spec — confirmar antes de construir.
+em cada empréstimo (a Tarefa 10 criou a identidade, a 11 deu a cada pessoa uma
+senha própria, a 12 passou a registrar **quando** a baixa aconteceu — e o
+**quem** continua não existindo, porque `Emprestimo` não tem coluna de
+administrador). O relatório de tempo de prateleira também não existe: a Tarefa 12
+criou o dado, e ninguém ainda o lê. Nada disso está na spec — confirmar antes de
+construir.
 
 ### Ambiente
 

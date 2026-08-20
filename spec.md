@@ -40,7 +40,8 @@ Registra os logs de movimentação (um log isolado por item).
 * `pessoa_id` (String, FK): Relacionamento com `Pessoa.matricula`. (Chamava-se `usuario_id` até a Tarefa 10.)
 * `equip_id` (String, FK): Relacionamento com `Equipamento.id`.
 * `data_retirada` (DateTime): Preenchido na criação.
-* `data_devolucao` (DateTime, Nullable): Preenchido quando o ciclo é concluído.
+* `data_devolucao` (DateTime, Nullable): Preenchido quando o usuário **declara** a devolução no tablet (`ATIVO` -> `AGUARDANDO_BAIXA`). (Até a Tarefa 12 a baixa da secretaria sobrescrevia este campo; hoje ele guarda a declaração e nada mais escreve nele.)
+* `data_baixa` (DateTime, Nullable): Preenchido quando a secretaria **confere fisicamente** o equipamento (`AGUARDANDO_BAIXA` -> `CONCLUIDO`). A diferença para `data_devolucao` é o tempo de prateleira. (Tarefa 12; nulo nos empréstimos concluídos antes dela.)
 * `status` (String): 
   * "ATIVO": O usuário está com o equipamento.
   * "AGUARDANDO_BAIXA": O usuário informou no tablet que devolveu, mas a secretaria ainda não recolheu fisicamente.

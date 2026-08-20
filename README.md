@@ -212,7 +212,10 @@ Conforme a seção 3 de [spec.md](spec.md), mais o que as tarefas 6, 8 e 10 acre
 - **Equipamento** — `id` (PK, etiqueta como `NOTE-01`), `tipo`, `status`
   (`DISPONIVEL` | `EMPRESTADO` | `MANUTENCAO`).
 - **Emprestimo** — um registro por item movimentado: `pessoa_id`, `equip_id`, `data_retirada`,
-  `data_devolucao`, `status` (`ATIVO` | `AGUARDANDO_BAIXA` | `CONCLUIDO`).
+  `data_devolucao`, `data_baixa`, `status` (`ATIVO` | `AGUARDANDO_BAIXA` | `CONCLUIDO`). Os três
+  marcadores de tempo têm donos distintos: a retirada no tablet, a **declaração** da devolução no
+  tablet (`data_devolucao`) e a **conferência física** na secretaria (`data_baixa`, Tarefa 12) —
+  a diferença entre os dois últimos é o tempo que o equipamento passou na bancada.
 
 O status `AGUARDANDO_BAIXA` é o que separa "a pessoa disse que devolveu" de "a secretaria
 recolheu o equipamento": enquanto o empréstimo está nesse estado, o equipamento **não** volta a
