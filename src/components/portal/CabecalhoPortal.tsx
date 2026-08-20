@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import logoUnoesc from "@/assets/brand/logo-unoesc-colorido.png";
 import { Botao } from "@/components/ui/Botao";
-import type { UsuarioIdentificado } from "@/lib/tipos";
+import type { PessoaIdentificada } from "@/lib/tipos";
 
 /**
  * Cabeçalho do portal.
@@ -15,11 +15,11 @@ import type { UsuarioIdentificado } from "@/lib/tipos";
  */
 
 type Props = {
-  usuario: UsuarioIdentificado | null;
+  pessoa: PessoaIdentificada | null;
   onSair: () => void;
 };
 
-export function CabecalhoPortal({ usuario, onSair }: Props) {
+export function CabecalhoPortal({ pessoa, onSair }: Props) {
   return (
     <header className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-4 py-5 sm:px-8">
       {/* Import estático: largura e altura vêm do próprio arquivo. */}
@@ -30,15 +30,15 @@ export function CabecalhoPortal({ usuario, onSair }: Props) {
         priority
       />
 
-      {usuario ? (
+      {pessoa ? (
         <div className="flex items-center gap-3">
           <div className="hidden text-right sm:block">
             <p className="text-base leading-tight font-semibold text-tinta">
-              {usuario.nome}
+              {pessoa.nome}
             </p>
             <p className="numeros-tabulares text-sm text-tinta-suave">
-              {usuario.perfil === "PROFESSOR" ? "Professor" : "Aluno"} ·{" "}
-              {usuario.matricula}
+              {pessoa.perfil === "PROFESSOR" ? "Professor" : "Aluno"} ·{" "}
+              {pessoa.matricula}
             </p>
           </div>
           <Botao variante="fantasma" tamanho="pequeno" onClick={onSair}>

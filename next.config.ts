@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
        *
        * O limite de verdade é o do servidor, e não o da tela: a action recusa
        * acima de 3 MB com mensagem própria (`MAXIMO_DE_BYTES` em
-       * [planilha-usuarios](src/lib/planilha-usuarios.ts)). Este teto fica
+       * [planilha-pessoas](src/lib/planilha-pessoas.ts)). Este teto fica
        * deliberadamente **acima** daquele — se fossem iguais, o arquivo grande
        * demais estouraria no framework e a pessoa veria um erro genérico de
        * rede em vez da frase que diz o que fazer.

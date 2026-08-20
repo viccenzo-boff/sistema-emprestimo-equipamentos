@@ -31,7 +31,7 @@ export const STATUS_EMPRESTIMO = {
 } as const;
 
 /**
- * Status possíveis de um cadastro de usuário (Tarefa 8).
+ * Status possíveis de um cadastro de pessoa (Tarefa 8).
  *
  * `INATIVO` **bloqueia a retirada e permite a devolução**. A assimetria é a
  * regra inteira: quem sai da faculdade costuma estar com um aparelho na
@@ -39,7 +39,7 @@ export const STATUS_EMPRESTIMO = {
  * garantia de que o equipamento nunca volta. Quem devolve não está pedindo
  * nada ao sistema — está entregando.
  */
-export const STATUS_USUARIO = {
+export const STATUS_PESSOA = {
   ativo: "ATIVO",
   inativo: "INATIVO",
 } as const;
@@ -61,14 +61,14 @@ export const PERFIL = {
 export const MAXIMO_ITENS_POR_RETIRADA = 10;
 
 /**
- * Dados do usuário expostos ao tablet. Só o que a tela realmente mostra.
+ * Dados da pessoa expostos ao tablet. Só o que a tela realmente mostra.
  *
  * `status` entrou na Tarefa 8 porque a tela precisa dele: um cadastro `INATIVO`
  * continua entrando (para poder devolver) e a grade de categorias dá lugar a
  * uma explicação. Sem o campo aqui, o tablet mostraria o inventário inteiro
  * para alguém que não pode retirar nada, e a recusa só apareceria no fim.
  */
-export type UsuarioIdentificado = {
+export type PessoaIdentificada = {
   matricula: string;
   nome: string;
   perfil: string;
@@ -101,7 +101,7 @@ export type EquipamentoDisponivel = {
 };
 
 /**
- * Um item que está com o usuário agora (empréstimo `ATIVO`).
+ * Um item que está com a pessoa agora (empréstimo `ATIVO`).
  *
  * `id` é o do empréstimo, não o da etiqueta: como cada item vira um registro
  * separado em `Emprestimo`, é o número do registro que a devolução precisa
@@ -151,9 +151,9 @@ export type MotivoDeFalha =
   | "CATEGORIA_NAO_ENCONTRADA"
   | "CATEGORIA_DUPLICADA"
   | "CATEGORIA_EM_USO"
-  // Gestão de usuários (Tarefa 8)
-  | "USUARIO_NAO_ENCONTRADO"
-  | "USUARIO_INATIVO"
+  // Gestão de pessoas (Tarefa 8)
+  | "PESSOA_NAO_ENCONTRADA"
+  | "PESSOA_INATIVA"
   | "MATRICULA_INVALIDA"
   | "MATRICULA_DUPLICADA"
   | "NOME_INVALIDO"
@@ -166,7 +166,7 @@ export type MotivoDeFalha =
   | "FALHA_INTERNA";
 
 export type RetiradaConfirmada = {
-  usuario: UsuarioIdentificado;
+  pessoa: PessoaIdentificada;
   itens: EquipamentoDisponivel[];
   registrados: number;
 };
@@ -219,7 +219,7 @@ export type ItemDaFila = {
   perfil: string;
   /** "18/08/2026, 14:32" — quando o item saiu. */
   retiradoEm: string;
-  /** Quando o usuário declarou a devolução no tablet. */
+  /** Quando a pessoa declarou a devolução no tablet. */
   declaradoEm: string;
   /** "há 2 horas" — o que diz se o item já devia estar na bancada. */
   esperandoHa: string;
@@ -338,11 +338,11 @@ export type ResumoDoInventario = {
 export type EstadoDaCategoria = EstadoDoCadastro;
 
 /* ------------------------------------------------------------------------- *
- * Gestão de Usuários (Tarefa 8)
+ * Gestão de Pessoas (Tarefa 8)
  * ------------------------------------------------------------------------- */
 
 /**
- * Uma linha da tabela de `/admin/usuarios`.
+ * Uma linha da tabela de `/admin/pessoas`.
  *
  * `emprestimosAbertos` vem junto porque é o que a inativação precisa dizer: a
  * secretaria pode inativar quem ainda está com equipamento — é justamente o
@@ -350,7 +350,7 @@ export type EstadoDaCategoria = EstadoDoCadastro;
  * o que a pessoa tem antes de confirmar, e o empréstimo continua na aba
  * Empréstimos Ativos para cobrança.
  */
-export type UsuarioDoPainel = {
+export type PessoaDoPainel = {
   matricula: string;
   nome: string;
   perfil: string;
@@ -362,8 +362,8 @@ export type UsuarioDoPainel = {
   equipamentosEmMaos: string[];
 };
 
-/** As contagens do topo da tela de usuários. */
-export type ResumoDeUsuarios = {
+/** As contagens do topo da tela de pessoas. */
+export type ResumoDePessoas = {
   ativos: number;
   inativos: number;
   alunos: number;

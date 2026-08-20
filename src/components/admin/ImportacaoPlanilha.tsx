@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 
-import { analisarPlanilha, importarPlanilha } from "@/app/admin/usuarios/actions";
+import { analisarPlanilha, importarPlanilha } from "@/app/admin/pessoas/actions";
 import { Alerta } from "@/components/ui/Alerta";
 import { Botao } from "@/components/ui/Botao";
 import {
@@ -20,7 +20,7 @@ import type {
 } from "@/lib/tipos";
 
 /**
- * Importação da planilha de usuários (.xlsx) — Tarefa 8, itens 2 e 3.
+ * Importação da planilha de pessoas (.xlsx) — Tarefa 8, itens 2 e 3.
  *
  * A tela tem **duas etapas obrigatórias**: analisar e confirmar. A importação
  * não tem desfazer — um arquivo errado sobrescreveria centenas de cadastros — e

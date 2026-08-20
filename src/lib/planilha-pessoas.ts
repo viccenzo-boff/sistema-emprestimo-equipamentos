@@ -3,14 +3,14 @@ import * as XLSX from "xlsx";
 import { semAcento } from "@/lib/texto";
 import {
   PERFIL,
-  STATUS_USUARIO,
+  STATUS_PESSOA,
   type AcaoDaLinha,
   type LinhaDaImportacao,
   type MudancaDeCampo,
 } from "@/lib/tipos";
 
 /**
- * Leitura da planilha de usuários (.xlsx) e a conta do que ela vai provocar
+ * Leitura da planilha de pessoas (.xlsx) e a conta do que ela vai provocar
  * (Tarefa 8, itens 2 e 3).
  *
  * Módulo puro de propósito: lê bytes, devolve um plano, e **não escreve nada**.
@@ -176,7 +176,7 @@ export function lerPlanilha(bytes: ArrayBuffer, nomeDoArquivo: string): Planilha
     );
   }
 
-  // A primeira aba, e não uma chamada "usuarios": a planilha da coordenação
+  // A primeira aba, e não uma chamada "pessoas": a planilha da coordenação
   // vem com o nome que o Excel deu ("Planilha1", "Sheet1", o nome do curso).
   const nomeDaAba = pasta.SheetNames[0];
   const aba = nomeDaAba ? pasta.Sheets[nomeDaAba] : undefined;
@@ -360,7 +360,7 @@ function texto(celula: unknown): string {
 }
 
 /** O cadastro como ele está no banco, para a comparação. */
-export type UsuarioExistente = {
+export type PessoaExistente = {
   matricula: string;
   nome: string;
   perfil: string;
@@ -370,11 +370,11 @@ export type UsuarioExistente = {
 
 /** O que a importação vai gravar em uma linha, já validado. */
 export type OperacaoDaLinha =
-  | { tipo: "criar"; dados: UsuarioExistente }
+  | { tipo: "criar"; dados: PessoaExistente }
   | {
       tipo: "atualizar";
       matricula: string;
-      campos: Partial<Omit<UsuarioExistente, "matricula">>;
+      campos: Partial<Omit<PessoaExistente, "matricula">>;
     }
   | { tipo: "inalterada"; matricula: string }
   | { tipo: "erro"; matricula: string; erro: string };
@@ -402,7 +402,7 @@ export type OperacaoDaLinha =
  */
 export function montarPlano(
   linhas: LinhaLida[],
-  existentes: Map<string, UsuarioExistente>,
+  existentes: Map<string, PessoaExistente>,
 ): { operacoes: OperacaoDaLinha[]; previa: LinhaDaImportacao[] } {
   const operacoes: OperacaoDaLinha[] = [];
   const previa: LinhaDaImportacao[] = [];
@@ -458,14 +458,14 @@ export function montarPlano(
         continue;
       }
 
-      const novo: UsuarioExistente = {
+      const novo: PessoaExistente = {
         matricula: linha.matricula,
         nome: linha.nome as string,
         perfil: perfil as string,
         cursos: linha.cursos as string,
         // Status ausente na criação assume o padrão da coluna; "INATIVO" na
         // planilha cadastra já inativo, como a tarefa pede.
-        status: status ?? STATUS_USUARIO.ativo,
+        status: status ?? STATUS_PESSOA.ativo,
       };
 
       operacoes.push({ tipo: "criar", dados: novo });
@@ -479,7 +479,7 @@ export function montarPlano(
     }
 
     /* ------------------ Cenários A e B: atualização parcial ---------------- */
-    const campos: Partial<Omit<UsuarioExistente, "matricula">> = {};
+    const campos: Partial<Omit<PessoaExistente, "matricula">> = {};
     const mudancas: MudancaDeCampo[] = [];
 
     /** Só entra no update o que veio preenchido **e** é diferente do que está lá. */
@@ -528,7 +528,7 @@ function normalizarPerfil(bruto: string): string | null {
 /** "inativo", "Inativo", "INATIVO" -> "INATIVO". Qualquer outra coisa -> `null`. */
 function normalizarStatus(bruto: string): string | null {
   const chave = semAcento(bruto);
-  if (chave === "ativo") return STATUS_USUARIO.ativo;
-  if (chave === "inativo") return STATUS_USUARIO.inativo;
+  if (chave === "ativo") return STATUS_PESSOA.ativo;
+  if (chave === "inativo") return STATUS_PESSOA.inativo;
   return null;
 }

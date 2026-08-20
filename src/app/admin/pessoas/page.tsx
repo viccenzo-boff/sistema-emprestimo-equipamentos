@@ -1,18 +1,18 @@
 import { redirect } from "next/navigation";
 
 import { CascaAdmin } from "@/components/admin/CascaAdmin";
-import { GestaoUsuarios } from "@/components/admin/GestaoUsuarios";
+import { GestaoPessoas } from "@/components/admin/GestaoPessoas";
 import { ImportacaoPlanilha } from "@/components/admin/ImportacaoPlanilha";
-import { ResumoUsuarios } from "@/components/admin/ResumoUsuarios";
+import { ResumoPessoas } from "@/components/admin/ResumoPessoas";
 import {
   contarFilaDeDevolucoes,
-  listarUsuariosDoPainel,
-  resumirUsuarios,
+  listarPessoasDoPainel,
+  resumirPessoas,
 } from "@/lib/consultas-admin";
-import { temSessaoAdmin } from "@/lib/sessao-admin";
+import { sessaoAdmin } from "@/lib/sessao-admin";
 
 /**
- * Gestão de Usuários (Tarefa 8).
+ * Gestão de Pessoas (Tarefa 8).
  *
  * `force-dynamic` pela regra do projeto: rota que lê o banco não pode ser
  * pré-renderizada, senão o Next congela os dados no build e a secretaria passa
@@ -25,25 +25,27 @@ import { temSessaoAdmin } from "@/lib/sessao-admin";
  */
 export const dynamic = "force-dynamic";
 
-export default async function PaginaDeUsuarios() {
-  if (!(await temSessaoAdmin())) redirect("/admin");
+export default async function PaginaDePessoas() {
+  const admin = await sessaoAdmin();
+  if (!admin) redirect("/admin");
 
-  const [usuarios, resumo, pendentes] = await Promise.all([
-    listarUsuariosDoPainel(),
-    resumirUsuarios(),
+  const [pessoas, resumo, pendentes] = await Promise.all([
+    listarPessoasDoPainel(),
+    resumirPessoas(),
     contarFilaDeDevolucoes(),
   ]);
 
   return (
     <CascaAdmin
-      aba="usuarios"
+      admin={admin}
+      aba="pessoas"
       pendentes={pendentes}
-      titulo="Usuários"
+      titulo="Pessoas"
       descricao="Estudantes e professores que podem retirar equipamento no tablet."
     >
-      <ResumoUsuarios {...resumo} />
+      <ResumoPessoas {...resumo} />
       <ImportacaoPlanilha />
-      <GestaoUsuarios usuarios={usuarios} />
+      <GestaoPessoas pessoas={pessoas} />
     </CascaAdmin>
   );
 }

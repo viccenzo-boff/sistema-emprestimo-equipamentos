@@ -275,7 +275,7 @@ export function IconeLupa({ className }: PropsDeIcone) {
   );
 }
 
-/** Gestão de usuários: duas pessoas, que é o que a aba lista. */
+/** Aba Pessoas: duas silhuetas, que é o que a lista mostra. */
 export function IconePessoas({ className }: PropsDeIcone) {
   return (
     <Svg className={className}>
@@ -324,7 +324,7 @@ export function IconeBaixar({ className }: PropsDeIcone) {
   );
 }
 
-/** Confirmação de usuário: a pessoa com o visto. */
+/** Confirmação de cadastro: a silhueta com o visto. */
 export function IconePessoaCheck({ className }: PropsDeIcone) {
   return (
     <Svg className={className}>

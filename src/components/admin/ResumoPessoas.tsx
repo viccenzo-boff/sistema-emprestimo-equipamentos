@@ -1,8 +1,8 @@
-import { SeloPerfil, SeloStatusUsuario } from "@/components/admin/SeloStatus";
-import { PERFIL, STATUS_USUARIO, type ResumoDeUsuarios } from "@/lib/tipos";
+import { SeloPerfil, SeloStatusPessoa } from "@/components/admin/SeloStatus";
+import { PERFIL, STATUS_PESSOA, type ResumoDePessoas } from "@/lib/tipos";
 
 /**
- * As contagens de cadastros, no topo da tela de usuários.
+ * As contagens de cadastros, no topo da tela de pessoas.
  *
  * Espelha o [ResumoInventario](src/components/admin/ResumoInventario.tsx) de
  * propósito — mesma faixa, mesmo tamanho de número, mesmo selo repetido da
@@ -19,13 +19,13 @@ import { PERFIL, STATUS_USUARIO, type ResumoDeUsuarios } from "@/lib/tipos";
  * sempre: a proporção aluno/professor é a leitura que a coordenação faz, e
  * "0 professores" é uma informação de verdade.
  */
-export function ResumoUsuarios({
+export function ResumoPessoas({
   ativos,
   inativos,
   alunos,
   professores,
   total,
-}: ResumoDeUsuarios) {
+}: ResumoDePessoas) {
   const temInativos = inativos > 0;
 
   return (
@@ -37,12 +37,12 @@ export function ResumoUsuarios({
         ].join(" ")}
       >
         <Cartao valor={ativos}>
-          <SeloStatusUsuario status={STATUS_USUARIO.ativo} />
+          <SeloStatusPessoa status={STATUS_PESSOA.ativo} />
         </Cartao>
 
         {temInativos ? (
           <Cartao valor={inativos}>
-            <SeloStatusUsuario status={STATUS_USUARIO.inativo} />
+            <SeloStatusPessoa status={STATUS_PESSOA.inativo} />
           </Cartao>
         ) : null}
 

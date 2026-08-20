@@ -1,9 +1,9 @@
 import * as XLSX from "xlsx";
 
-import { COLUNAS_CANONICAS } from "@/lib/planilha-usuarios";
+import { COLUNAS_CANONICAS } from "@/lib/planilha-pessoas";
 
 /**
- * Geração da planilha modelo da importação de usuários (Tarefa 9).
+ * Geração da planilha modelo da importação de pessoas (Tarefa 9).
  *
  * Módulo puro: monta bytes e devolve. Não escreve em disco, não fala com o
  * banco e não depende de nada do servidor — por isso o mesmo arquivo serve ao
@@ -11,14 +11,14 @@ import { COLUNAS_CANONICAS } from "@/lib/planilha-usuarios";
  *
  * **É carregado por `import()` dinâmico**, e isso não é preferência de estilo:
  * o SheetJS tem cerca de 1 MB, e um `import` estático em componente de cliente
- * o colocaria no pacote inicial de `/admin/usuarios` — que carrega a cada visita
+ * o colocaria no pacote inicial de `/admin/pessoas` — que carrega a cada visita
  * à tela, para um botão que a secretaria clica uma vez por semestre. Com o
  * `import()` dentro do clique, o pacote vai pela rede só quando alguém pede o
  * modelo. A tela continua sem recarregar, que é o que o enunciado exige.
  */
 
 /** O nome do arquivo que chega na pasta de downloads, como o enunciado pede. */
-export const NOME_DA_PLANILHA_MODELO = "modelo_importacao_usuarios.xlsx";
+export const NOME_DA_PLANILHA_MODELO = "modelo_importacao_pessoas.xlsx";
 
 /** O tipo MIME de .xlsx, para o navegador saber o que está recebendo. */
 export const TIPO_XLSX =
@@ -57,7 +57,7 @@ export function gerarPlanilhaModelo(): ArrayBuffer {
   aba["!cols"] = COLUNAS_CANONICAS.map(() => ({ wch: 18 }));
 
   const pasta = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(pasta, aba, "usuarios");
+  XLSX.utils.book_append_sheet(pasta, aba, "pessoas");
 
   return XLSX.write(pasta, { bookType: "xlsx", type: "array" }) as ArrayBuffer;
 }

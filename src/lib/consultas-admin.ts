@@ -4,15 +4,15 @@ import {
   PERFIL,
   STATUS_EMPRESTIMO,
   STATUS_EQUIPAMENTO,
-  STATUS_USUARIO,
+  STATUS_PESSOA,
   type CategoriaDoPainel,
   type EmprestimoEmCurso,
   type ItemDaFila,
   type ItemDeInventario,
   type OpcaoDeCategoria,
-  type ResumoDeUsuarios,
+  type ResumoDePessoas,
   type ResumoDoInventario,
-  type UsuarioDoPainel,
+  type PessoaDoPainel,
 } from "@/lib/tipos";
 
 /**
@@ -30,7 +30,7 @@ import {
  */
 
 /**
- * A fila que a secretaria trabalha: o usuário declarou a devolução no tablet e
+ * A fila que a secretaria trabalha: a pessoa declarou a devolução no tablet e
  * o equipamento (em tese) está na bancada esperando conferência.
  *
  * Mais antigo primeiro: o que está esperando há mais tempo é o que corre risco
@@ -44,7 +44,7 @@ export async function listarFilaDeDevolucoes(): Promise<ItemDaFila[]> {
       equip_id: true,
       data_retirada: true,
       data_devolucao: true,
-      usuario: { select: { nome: true, matricula: true, perfil: true } },
+      pessoa: { select: { nome: true, matricula: true, perfil: true } },
       equipamento: { select: { categoria: { select: { nome: true } } } },
     },
     orderBy: [{ data_devolucao: "asc" }, { id: "asc" }],
@@ -59,9 +59,9 @@ export async function listarFilaDeDevolucoes(): Promise<ItemDaFila[]> {
       id: registro.id,
       equip_id: registro.equip_id,
       tipo: registro.equipamento.categoria.nome,
-      nome: registro.usuario.nome,
-      matricula: registro.usuario.matricula,
-      perfil: registro.usuario.perfil,
+      nome: registro.pessoa.nome,
+      matricula: registro.pessoa.matricula,
+      perfil: registro.pessoa.perfil,
       retiradoEm: dataHora(registro.data_retirada),
       declaradoEm: dataHora(declarada),
       esperandoHa: haQuantoTempo(declarada),
@@ -90,7 +90,7 @@ export async function listarEmprestimosEmCurso(): Promise<EmprestimoEmCurso[]> {
       id: true,
       equip_id: true,
       data_retirada: true,
-      usuario: { select: { nome: true, matricula: true, perfil: true } },
+      pessoa: { select: { nome: true, matricula: true, perfil: true } },
       equipamento: { select: { categoria: { select: { nome: true } } } },
     },
     orderBy: { data_retirada: "asc" },
@@ -100,9 +100,9 @@ export async function listarEmprestimosEmCurso(): Promise<EmprestimoEmCurso[]> {
     id: registro.id,
     equip_id: registro.equip_id,
     tipo: registro.equipamento.categoria.nome,
-    nome: registro.usuario.nome,
-    matricula: registro.usuario.matricula,
-    perfil: registro.usuario.perfil,
+    nome: registro.pessoa.nome,
+    matricula: registro.pessoa.matricula,
+    perfil: registro.pessoa.perfil,
     retiradoEm: dataHora(registro.data_retirada),
     ha: haQuantoTempo(registro.data_retirada),
   }));
@@ -129,7 +129,7 @@ export async function listarInventario(): Promise<ItemDeInventario[]> {
         },
         select: {
           status: true,
-          usuario: { select: { nome: true, matricula: true } },
+          pessoa: { select: { nome: true, matricula: true } },
         },
         orderBy: { data_retirada: "desc" },
         take: 1,
@@ -151,8 +151,8 @@ export async function listarInventario(): Promise<ItemDeInventario[]> {
         status: equipamento.status,
         responsavel: aberto
           ? {
-              nome: aberto.usuario.nome,
-              matricula: aberto.usuario.matricula,
+              nome: aberto.pessoa.nome,
+              matricula: aberto.pessoa.matricula,
               status: aberto.status,
             }
           : null,
@@ -253,7 +253,7 @@ export async function listarOpcoesDeCategoria(): Promise<OpcaoDeCategoria[]> {
 }
 
 /* ------------------------------------------------------------------------- *
- * Gestão de Usuários (Tarefa 8)
+ * Gestão de Pessoas (Tarefa 8)
  * ------------------------------------------------------------------------- */
 
 /**
@@ -271,8 +271,8 @@ export async function listarOpcoesDeCategoria(): Promise<OpcaoDeCategoria[]> {
  * precisa de `localeCompare` em pt-BR: o SQLite compara byte a byte e jogaria
  * "Ávila" depois de "Zamboni".
  */
-export async function listarUsuariosDoPainel(): Promise<UsuarioDoPainel[]> {
-  const usuarios = await prisma.usuario.findMany({
+export async function listarPessoasDoPainel(): Promise<PessoaDoPainel[]> {
+  const pessoas = await prisma.pessoa.findMany({
     select: {
       matricula: true,
       nome: true,
@@ -291,19 +291,19 @@ export async function listarUsuariosDoPainel(): Promise<UsuarioDoPainel[]> {
     },
   });
 
-  return usuarios
-    .map((usuario) => ({
-      matricula: usuario.matricula,
-      nome: usuario.nome,
-      perfil: usuario.perfil,
-      cursos: usuario.cursos,
-      status: usuario.status,
-      emprestimosAbertos: usuario.emprestimos.length,
-      equipamentosEmMaos: usuario.emprestimos.map((emprestimo) => emprestimo.equip_id),
+  return pessoas
+    .map((pessoa) => ({
+      matricula: pessoa.matricula,
+      nome: pessoa.nome,
+      perfil: pessoa.perfil,
+      cursos: pessoa.cursos,
+      status: pessoa.status,
+      emprestimosAbertos: pessoa.emprestimos.length,
+      equipamentosEmMaos: pessoa.emprestimos.map((emprestimo) => emprestimo.equip_id),
     }))
     .sort((a, b) => {
-      const aAtivo = a.status === STATUS_USUARIO.ativo;
-      const bAtivo = b.status === STATUS_USUARIO.ativo;
+      const aAtivo = a.status === STATUS_PESSOA.ativo;
+      const bAtivo = b.status === STATUS_PESSOA.ativo;
       if (aAtivo !== bAtivo) return aAtivo ? -1 : 1;
 
       return a.nome.localeCompare(b.nome, "pt-BR", { sensitivity: "base" });
@@ -311,17 +311,17 @@ export async function listarUsuariosDoPainel(): Promise<UsuarioDoPainel[]> {
 }
 
 /**
- * As contagens do topo da tela de usuários.
+ * As contagens do topo da tela de pessoas.
  *
  * Uma consulta agrupada por status e outra por perfil, em vez de carregar a
  * tabela inteira para contar no Node: a planilha da coordenação traz o curso
  * inteiro, e a lista cresce por semestre enquanto o resumo continua sendo
  * cinco números.
  */
-export async function resumirUsuarios(): Promise<ResumoDeUsuarios> {
+export async function resumirPessoas(): Promise<ResumoDePessoas> {
   const [porStatus, porPerfil] = await Promise.all([
-    prisma.usuario.groupBy({ by: ["status"], _count: { _all: true } }),
-    prisma.usuario.groupBy({ by: ["perfil"], _count: { _all: true } }),
+    prisma.pessoa.groupBy({ by: ["status"], _count: { _all: true } }),
+    prisma.pessoa.groupBy({ by: ["perfil"], _count: { _all: true } }),
   ]);
 
   const status = new Map(porStatus.map((grupo) => [grupo.status, grupo._count._all]));
@@ -332,8 +332,8 @@ export async function resumirUsuarios(): Promise<ResumoDeUsuarios> {
   const total = porStatus.reduce((soma, grupo) => soma + grupo._count._all, 0);
 
   return {
-    ativos: status.get(STATUS_USUARIO.ativo) ?? 0,
-    inativos: status.get(STATUS_USUARIO.inativo) ?? 0,
+    ativos: status.get(STATUS_PESSOA.ativo) ?? 0,
+    inativos: status.get(STATUS_PESSOA.inativo) ?? 0,
     alunos: perfil.get(PERFIL.aluno) ?? 0,
     professores: perfil.get(PERFIL.professor) ?? 0,
     total,

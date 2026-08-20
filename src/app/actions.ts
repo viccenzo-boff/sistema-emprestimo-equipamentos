@@ -5,7 +5,7 @@ import {
   MAXIMO_ITENS_POR_RETIRADA,
   STATUS_EMPRESTIMO,
   STATUS_EQUIPAMENTO,
-  STATUS_USUARIO,
+  STATUS_PESSOA,
   type Categoria,
   type DevolucaoConfirmada,
   type DevolucaoEmLoteConfirmada,
@@ -14,7 +14,7 @@ import {
   type MotivoDeFalha,
   type Resultado,
   type RetiradaConfirmada,
-  type UsuarioIdentificado,
+  type PessoaIdentificada,
 } from "@/lib/tipos";
 
 /**
@@ -44,16 +44,16 @@ function limparMatricula(bruta: unknown): string {
 }
 
 /**
- * Passo 1 dos dois fluxos: identifica o usuário pela matrícula.
+ * Passo 1 dos dois fluxos: identifica a pessoa pela matrícula.
  *
  * Devolve de uma vez o inventário por categoria (Fluxo 1) e o que já está com
  * a pessoa (Fluxo 2). Uma chamada só porque a tela seguinte mostra as duas
  * coisas lado a lado: buscar em duas etapas faria metade da tela chegar
  * atrasada, e quem veio só devolver esperaria sem motivo.
  */
-export async function identificarUsuario(matriculaBruta: string): Promise<
+export async function identificarPessoa(matriculaBruta: string): Promise<
   Resultado<{
-    usuario: UsuarioIdentificado;
+    pessoa: PessoaIdentificada;
     categorias: Categoria[];
     emprestimos: EmprestimoAtivo[];
   }>
@@ -65,10 +65,10 @@ export async function identificarUsuario(matriculaBruta: string): Promise<
   }
 
   try {
-    const usuario = await prisma.usuario.findUnique({
+    const pessoa = await prisma.pessoa.findUnique({
       where: { matricula },
       // `select` explícito, e não o registro inteiro: o que sai daqui desce
-      // para o navegador, e a próxima coluna que alguém adicionar ao `Usuario`
+      // para o navegador, e a próxima coluna que alguém adicionar ao `Pessoa`
       // não deve virar dado público por acidente.
       select: {
         matricula: true,
@@ -79,7 +79,7 @@ export async function identificarUsuario(matriculaBruta: string): Promise<
       },
     });
 
-    if (!usuario) {
+    if (!pessoa) {
       return falha(
         "MATRICULA_NAO_ENCONTRADA",
         `Matrícula ${matricula} não encontrada.`,
@@ -104,7 +104,7 @@ export async function identificarUsuario(matriculaBruta: string): Promise<
       buscarEmprestimosAtivos(matricula),
     ]);
 
-    return { ok: true, dados: { usuario, categorias, emprestimos } };
+    return { ok: true, dados: { pessoa, categorias, emprestimos } };
   } catch (erro) {
     return falhaInterna(erro);
   }
@@ -242,7 +242,7 @@ export async function confirmarRetirada(
   }
 
   try {
-    const usuario = await prisma.usuario.findUnique({
+    const pessoa = await prisma.pessoa.findUnique({
       where: { matricula },
       select: {
         matricula: true,
@@ -253,7 +253,7 @@ export async function confirmarRetirada(
       },
     });
 
-    if (!usuario) {
+    if (!pessoa) {
       return falha(
         "MATRICULA_NAO_ENCONTRADA",
         `Matrícula ${matricula} não encontrada.`,
@@ -273,9 +273,9 @@ export async function confirmarRetirada(
       deliberado: quem devolve não está pedindo nada ao sistema — está
       entregando um aparelho que a secretaria quer de volta.
     */
-    if (usuario.status === STATUS_USUARIO.inativo) {
+    if (pessoa.status === STATUS_PESSOA.inativo) {
       return falha(
-        "USUARIO_INATIVO",
+        "PESSOA_INATIVA",
         "Este cadastro está inativo.",
         "Procure a secretaria para reativar a sua matrícula. Se você está com algum equipamento, a devolução continua liberada.",
       );
@@ -303,7 +303,7 @@ export async function confirmarRetirada(
 
       const criados = await tx.emprestimo.createMany({
         data: ids.map((equipId) => ({
-          usuario_id: usuario.matricula,
+          pessoa_id: pessoa.matricula,
           equip_id: equipId,
           status: STATUS_EMPRESTIMO.ativo,
         })),
@@ -319,7 +319,7 @@ export async function confirmarRetirada(
     return {
       ok: true,
       dados: {
-        usuario,
+        pessoa,
         itens: retirada.itens,
         registrados: retirada.registrados,
       },
@@ -350,7 +350,7 @@ class EquipamentoIndisponivelError extends Error {
 }
 
 /* ------------------------------------------------------------------------- *
- * Fluxo 2 — Devolução pelo Usuário (spec, seção 4)
+ * Fluxo 2 — Devolução pela Pessoa (spec, seção 4)
  * ------------------------------------------------------------------------- */
 
 /**
@@ -364,7 +364,7 @@ async function buscarEmprestimosAtivos(
   matricula: string,
 ): Promise<EmprestimoAtivo[]> {
   const emprestimos = await prisma.emprestimo.findMany({
-    where: { usuario_id: matricula, status: STATUS_EMPRESTIMO.ativo },
+    where: { pessoa_id: matricula, status: STATUS_EMPRESTIMO.ativo },
     select: {
       id: true,
       equip_id: true,
@@ -386,7 +386,7 @@ async function buscarEmprestimosAtivos(
  * Passo 1 do Fluxo 2: o que está com a pessoa agora.
  *
  * Só empréstimos `ATIVO`. Os que já estão em `AGUARDANDO_BAIXA` ficam de fora
- * porque, para o usuário, aquele item já foi devolvido — mostrá-lo com um botão
+ * porque, para a pessoa, aquele item já foi devolvido — mostrá-lo com um botão
  * "Devolver" convidaria a devolver duas vezes o mesmo aparelho.
  */
 export async function listarEmprestimosAtivos(
@@ -406,7 +406,7 @@ export async function listarEmprestimosAtivos(
 }
 
 /**
- * Passo 4 do Fluxo 2: o usuário confirmou no modal que deixou o item na bancada.
+ * Passo 4 do Fluxo 2: a pessoa confirmou no modal que deixou o item na bancada.
  *
  * O que muda e o que **não** muda:
  * - `Emprestimo.status`: `ATIVO` -> `AGUARDANDO_BAIXA`.
@@ -445,7 +445,7 @@ export async function confirmarDevolucao(
       const emprestimo = await tx.emprestimo.findFirst({
         where: {
           id: emprestimoId,
-          usuario_id: matricula,
+          pessoa_id: matricula,
           status: STATUS_EMPRESTIMO.ativo,
         },
         select: {
@@ -465,7 +465,7 @@ export async function confirmarDevolucao(
       const alterados = await tx.emprestimo.updateMany({
         where: {
           id: emprestimoId,
-          usuario_id: matricula,
+          pessoa_id: matricula,
           status: STATUS_EMPRESTIMO.ativo,
         },
         data: {
@@ -542,7 +542,7 @@ export async function devolverTudo(
       // Lê antes de escrever para saber *o que* foi devolvido: o `updateMany`
       // devolve só a contagem, e a tela precisa das etiquetas para o aviso.
       const ativos = await tx.emprestimo.findMany({
-        where: { usuario_id: matricula, status: STATUS_EMPRESTIMO.ativo },
+        where: { pessoa_id: matricula, status: STATUS_EMPRESTIMO.ativo },
         select: {
           id: true,
           equip_id: true,
@@ -555,7 +555,7 @@ export async function devolverTudo(
       if (ativos.length === 0) throw new EmprestimoNaoAtivoError();
 
       const alterados = await tx.emprestimo.updateMany({
-        where: { usuario_id: matricula, status: STATUS_EMPRESTIMO.ativo },
+        where: { pessoa_id: matricula, status: STATUS_EMPRESTIMO.ativo },
         data: {
           status: STATUS_EMPRESTIMO.aguardandoBaixa,
           data_devolucao: new Date(),

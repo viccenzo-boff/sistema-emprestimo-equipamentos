@@ -8,23 +8,23 @@ import {
   lerPlanilha,
   montarPlano,
   type OperacaoDaLinha,
-  type UsuarioExistente,
-} from "@/lib/planilha-usuarios";
+  type PessoaExistente,
+} from "@/lib/planilha-pessoas";
 import { prisma } from "@/lib/prisma";
 import { temSessaoAdmin } from "@/lib/sessao-admin";
 import {
   PERFIL,
   STATUS_EMPRESTIMO,
-  STATUS_USUARIO,
+  STATUS_PESSOA,
   type ImportacaoConcluida,
   type MotivoDeFalha,
   type PreviaDaImportacao,
   type Resultado,
-  type UsuarioDoPainel,
+  type PessoaDoPainel,
 } from "@/lib/tipos";
 
 /**
- * Server Actions da Gestão de Usuários — Tarefa 8.
+ * Server Actions da Gestão de Pessoas — Tarefa 8.
  *
  * Mora em arquivo próprio, e não no [actions.ts](src/app/admin/actions.ts) do
  * painel, por tamanho: aquele já passa de 900 linhas com a fila, o inventário e
@@ -48,12 +48,12 @@ function semSessao(): Resultado<never> {
   return falha(
     "SEM_SESSAO",
     "Sessão encerrada.",
-    "Atualize a página e informe a senha novamente.",
+    "Atualize a página e entre de novo.",
   );
 }
 
 function falhaInterna(erro: unknown): Resultado<never> {
-  console.error("[admin/usuarios] falha inesperada:", erro);
+  console.error("[admin/pessoas] falha inesperada:", erro);
 
   return falha(
     "FALHA_INTERNA",
@@ -191,12 +191,12 @@ async function gravar(operacoes: OperacaoDaLinha[]): Promise<ImportacaoConcluida
         }
 
         if (operacao.tipo === "criar") {
-          await tx.usuario.create({ data: operacao.dados });
+          await tx.pessoa.create({ data: operacao.dados });
           resultado.criados += 1;
           continue;
         }
 
-        await tx.usuario.update({
+        await tx.pessoa.update({
           where: { matricula: operacao.matricula },
           data: operacao.campos,
         });
@@ -210,8 +210,8 @@ async function gravar(operacoes: OperacaoDaLinha[]): Promise<ImportacaoConcluida
 }
 
 /** O banco inteiro em memória, para o plano poder comparar campo a campo. */
-async function carregarExistentes(): Promise<Map<string, UsuarioExistente>> {
-  const usuarios = await prisma.usuario.findMany({
+async function carregarExistentes(): Promise<Map<string, PessoaExistente>> {
+  const pessoas = await prisma.pessoa.findMany({
     select: {
       matricula: true,
       nome: true,
@@ -221,7 +221,7 @@ async function carregarExistentes(): Promise<Map<string, UsuarioExistente>> {
     },
   });
 
-  return new Map(usuarios.map((usuario) => [usuario.matricula, usuario]));
+  return new Map(pessoas.map((pessoa) => [pessoa.matricula, pessoa]));
 }
 
 /**
@@ -291,8 +291,8 @@ function contar(linhas: PreviaDaImportacao["linhas"]): PreviaDaImportacao["totai
  * passar. O que chega aqui é o corpo de um POST público.
  */
 const ORIGENS_PERMITIDAS = new Map<string, readonly string[]>([
-  [STATUS_USUARIO.ativo, [STATUS_USUARIO.inativo]],
-  [STATUS_USUARIO.inativo, [STATUS_USUARIO.ativo]],
+  [STATUS_PESSOA.ativo, [STATUS_PESSOA.inativo]],
+  [STATUS_PESSOA.inativo, [STATUS_PESSOA.ativo]],
 ]);
 
 /**
@@ -305,7 +305,7 @@ const ORIGENS_PERMITIDAS = new Map<string, readonly string[]>([
  * retirar mais — no intervalo. O empréstimo continua aberto e visível na aba
  * Empréstimos Ativos, que é onde a cobrança acontece.
  */
-export async function alterarStatusUsuario(
+export async function alterarStatusPessoa(
   matriculaBruta: string,
   novoStatusBruto: string,
 ): Promise<Resultado<{ matricula: string; nome: string; status: string }>> {
@@ -314,7 +314,7 @@ export async function alterarStatusUsuario(
   const matricula = typeof matriculaBruta === "string" ? matriculaBruta.trim() : "";
 
   if (matricula.length === 0) {
-    return falha("USUARIO_NAO_ENCONTRADO", "Usuário não informado.");
+    return falha("PESSOA_NAO_ENCONTRADA", "Matrícula não informada.");
   }
 
   const destino = typeof novoStatusBruto === "string" ? novoStatusBruto : "";
@@ -329,20 +329,20 @@ export async function alterarStatusUsuario(
   }
 
   try {
-    const usuario = await prisma.usuario.findUnique({
+    const pessoa = await prisma.pessoa.findUnique({
       where: { matricula },
       select: { matricula: true, nome: true, status: true },
     });
 
-    if (!usuario) {
+    if (!pessoa) {
       return falha(
-        "USUARIO_NAO_ENCONTRADO",
+        "PESSOA_NAO_ENCONTRADA",
         `A matrícula ${matricula} não existe.`,
         "Atualize a página: a lista pode estar desatualizada.",
       );
     }
 
-    const alterados = await prisma.usuario.updateMany({
+    const alterados = await prisma.pessoa.updateMany({
       where: { matricula, status: { in: [...origens] } },
       data: { status: destino },
     });
@@ -350,7 +350,7 @@ export async function alterarStatusUsuario(
     if (alterados.count !== 1) {
       return falha(
         "STATUS_INVALIDO",
-        `${usuario.nome} já está ${destino === STATUS_USUARIO.ativo ? "inativo" : "ativo"}... ou mudou em outra aba.`,
+        `${pessoa.nome} já está ${destino === STATUS_PESSOA.ativo ? "inativo" : "ativo"}... ou mudou em outra aba.`,
         "A lista foi atualizada.",
       );
     }
@@ -359,7 +359,7 @@ export async function alterarStatusUsuario(
 
     return {
       ok: true,
-      dados: { matricula, nome: usuario.nome, status: destino },
+      dados: { matricula, nome: pessoa.nome, status: destino },
     };
   } catch (erro) {
     return falhaInterna(erro);
@@ -377,7 +377,7 @@ export async function alterarStatusUsuario(
  * Uma validação mais frouxa aqui foi tentada e **reprovada na verificação**:
  * ela deixava a secretaria gravar "TROCADA-01" com sucesso, criando um cadastro
  * que existe no banco, aparece no painel, e que **ninguém consegue digitar no
- * tablet** — um usuário que nunca mais retira nem devolve nada. A regra do
+ * tablet** — uma pessoa que nunca mais retira nem devolve nada. A regra do
  * campo mais restrito é que vale para o sistema inteiro; se um dia a
  * coordenação passar a usar prefixo de letra, quem muda primeiro é o teclado.
  *
@@ -404,7 +404,7 @@ const AJUDA_DA_MATRICULA =
  * abriu o modal está com o formulário inteiro preenchido na frente, e um campo
  * apagado é apagamento intencional, não omissão.
  */
-export async function editarUsuario(
+export async function editarPessoa(
   matriculaAtualBruta: string,
   dadosBrutos: {
     matricula: string;
@@ -419,7 +419,7 @@ export async function editarUsuario(
   const atual = typeof matriculaAtualBruta === "string" ? matriculaAtualBruta.trim() : "";
 
   if (atual.length === 0) {
-    return falha("USUARIO_NAO_ENCONTRADO", "Usuário não informado.");
+    return falha("PESSOA_NAO_ENCONTRADA", "Matrícula não informada.");
   }
 
   const dados = dadosBrutos ?? {};
@@ -460,25 +460,25 @@ export async function editarUsuario(
     );
   }
 
-  if (status !== STATUS_USUARIO.ativo && status !== STATUS_USUARIO.inativo) {
+  if (status !== STATUS_PESSOA.ativo && status !== STATUS_PESSOA.inativo) {
     return falha("STATUS_INVALIDO", "Situação inválida.", "Use Ativo ou Inativo.");
   }
 
   try {
-    const existente = await prisma.usuario.findUnique({
+    const existente = await prisma.pessoa.findUnique({
       where: { matricula: atual },
       select: { matricula: true },
     });
 
     if (!existente) {
       return falha(
-        "USUARIO_NAO_ENCONTRADO",
+        "PESSOA_NAO_ENCONTRADA",
         `A matrícula ${atual} não existe.`,
         "Atualize a página: alguém pode tê-la alterado em outra aba.",
       );
     }
 
-    await prisma.usuario.update({
+    await prisma.pessoa.update({
       where: { matricula: atual },
       data: { matricula, nome, perfil, cursos, status },
     });
@@ -510,19 +510,19 @@ export async function editarUsuario(
  */
 export async function contarEmprestimosAbertos(
   matriculaBruta: string,
-): Promise<Resultado<Pick<UsuarioDoPainel, "emprestimosAbertos" | "equipamentosEmMaos">>> {
+): Promise<Resultado<Pick<PessoaDoPainel, "emprestimosAbertos" | "equipamentosEmMaos">>> {
   if (!(await temSessaoAdmin())) return semSessao();
 
   const matricula = typeof matriculaBruta === "string" ? matriculaBruta.trim() : "";
 
   if (matricula.length === 0) {
-    return falha("USUARIO_NAO_ENCONTRADO", "Usuário não informado.");
+    return falha("PESSOA_NAO_ENCONTRADA", "Matrícula não informada.");
   }
 
   try {
     const abertos = await prisma.emprestimo.findMany({
       where: {
-        usuario_id: matricula,
+        pessoa_id: matricula,
         status: {
           in: [STATUS_EMPRESTIMO.ativo, STATUS_EMPRESTIMO.aguardandoBaixa],
         },

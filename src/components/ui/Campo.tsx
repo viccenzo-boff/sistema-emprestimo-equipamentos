@@ -9,7 +9,7 @@ import { IconeChevron } from "@/components/ui/icones";
  * `CAMPO` existia copiada em `GestaoInventario` e em `GestaoCategorias`, e as
  * duas **já não eram iguais** — a cópia de Categorias tinha perdido o estado
  * `disabled` pelo caminho, então um campo desabilitado ali continuava com
- * aparência de campo editável. Com a terceira tela (Usuários) precisando das
+ * aparência de campo editável. Com a terceira tela (Pessoas) precisando das
  * mesmas classes, copiar de novo era garantir a próxima divergência.
  *
  * É o mesmo argumento que já tirou `semAcento` das actions na Tarefa 7: uma

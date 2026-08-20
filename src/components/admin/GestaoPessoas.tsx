@@ -5,11 +5,11 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import {
-  alterarStatusUsuario,
+  alterarStatusPessoa,
   contarEmprestimosAbertos,
-  editarUsuario,
-} from "@/app/admin/usuarios/actions";
-import { SeloPerfil, SeloStatusUsuario } from "@/components/admin/SeloStatus";
+  editarPessoa,
+} from "@/app/admin/pessoas/actions";
+import { SeloPerfil, SeloStatusPessoa } from "@/components/admin/SeloStatus";
 import { Alerta } from "@/components/ui/Alerta";
 import { Botao } from "@/components/ui/Botao";
 import { CABECALHO, CAMPO, CAMPO_SEM_LADOS, CELULA, Selecao } from "@/components/ui/Campo";
@@ -23,14 +23,14 @@ import {
 import { Modal } from "@/components/ui/Modal";
 import { Notificacao } from "@/components/ui/Notificacao";
 import { semAcento } from "@/lib/texto";
-import { PERFIL, STATUS_USUARIO, type UsuarioDoPainel } from "@/lib/tipos";
+import { PERFIL, STATUS_PESSOA, type PessoaDoPainel } from "@/lib/tipos";
 
 /**
- * Gestão de Usuários (Tarefa 8, item 4): a tabela de cadastros com busca,
+ * Gestão de Pessoas (Tarefa 8, item 4): a tabela de cadastros com busca,
  * filtros, edição por modal e o botão de ativar/inativar direto na linha.
  *
  * As regras de verdade estão no servidor
- * ([actions](src/app/admin/usuarios/actions.ts)); esta tela é conveniência, não
+ * ([actions](src/app/admin/pessoas/actions.ts)); esta tela é conveniência, não
  * barreira — a mesma divisão do inventário. Aqui a tabela de transições aparece
  * só como "qual botão esta linha tem".
  *
@@ -43,7 +43,7 @@ import { PERFIL, STATUS_USUARIO, type UsuarioDoPainel } from "@/lib/tipos";
  */
 
 type Props = {
-  usuarios: UsuarioDoPainel[];
+  pessoas: PessoaDoPainel[];
 };
 
 type Falha = { matricula: string; mensagem: string; detalhe?: string };
@@ -53,18 +53,18 @@ type EmAndamento = { matricula: string; acao: "situacao" | "edicao" } | null;
 
 /** O alvo do modal de inativação, já com a contagem relida do servidor. */
 type Inativando = {
-  usuario: UsuarioDoPainel;
+  pessoa: PessoaDoPainel;
   emprestimosAbertos: number;
   equipamentosEmMaos: string[];
 };
 
-export function GestaoUsuarios({ usuarios }: Props) {
+export function GestaoPessoas({ pessoas }: Props) {
   const router = useRouter();
   const [, iniciarTransicao] = useTransition();
   const [emAndamento, setEmAndamento] = useState<EmAndamento>(null);
   const [falha, setFalha] = useState<Falha | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
-  const [editando, setEditando] = useState<UsuarioDoPainel | null>(null);
+  const [editando, setEditando] = useState<PessoaDoPainel | null>(null);
   const [inativando, setInativando] = useState<Inativando | null>(null);
 
   // String vazia é "sem filtro" nos três, para "está filtrando?" ser uma
@@ -86,7 +86,7 @@ export function GestaoUsuarios({ usuarios }: Props) {
   const visiveis = useMemo(() => {
     const comFalha = falha?.matricula ?? null;
 
-    return usuarios.filter((usuario) => {
+    return pessoas.filter((pessoa) => {
       /*
         A linha que está exibindo um erro nunca é escondida por filtro.
 
@@ -96,26 +96,26 @@ export function GestaoUsuarios({ usuarios }: Props) {
         linha sumiria levando a explicação junto, e a secretaria veria o clique
         não fazer nada.
       */
-      if (usuario.matricula === comFalha) return true;
+      if (pessoa.matricula === comFalha) return true;
 
-      if (perfilFiltrado !== "" && usuario.perfil !== perfilFiltrado) return false;
-      if (statusFiltrado !== "" && usuario.status !== statusFiltrado) return false;
+      if (perfilFiltrado !== "" && pessoa.perfil !== perfilFiltrado) return false;
+      if (statusFiltrado !== "" && pessoa.status !== statusFiltrado) return false;
       if (termo === "") return true;
 
       // Nome e matrícula, que é o que a tarefa pede. Os cursos entram junto
       // porque estão na mesma célula da tabela: procurar "direito" e não achar
       // a linha que diz "Direito" na tela seria a busca mentindo.
       return (
-        semAcento(usuario.nome).includes(termo) ||
-        semAcento(usuario.matricula).includes(termo) ||
-        semAcento(usuario.cursos).includes(termo)
+        semAcento(pessoa.nome).includes(termo) ||
+        semAcento(pessoa.matricula).includes(termo) ||
+        semAcento(pessoa.cursos).includes(termo)
       );
     });
-  }, [usuarios, termo, perfilFiltrado, statusFiltrado, falha?.matricula]);
+  }, [pessoas, termo, perfilFiltrado, statusFiltrado, falha?.matricula]);
 
   function relerSeDesencontrou(motivo: string) {
     if (
-      motivo === "USUARIO_NAO_ENCONTRADO" ||
+      motivo === "PESSOA_NAO_ENCONTRADA" ||
       motivo === "STATUS_INVALIDO" ||
       motivo === "MATRICULA_DUPLICADA"
     ) {
@@ -123,18 +123,18 @@ export function GestaoUsuarios({ usuarios }: Props) {
     }
   }
 
-  function moverPara(usuario: UsuarioDoPainel, destino: string) {
+  function moverPara(pessoa: PessoaDoPainel, destino: string) {
     if (ocupado) return;
 
-    setEmAndamento({ matricula: usuario.matricula, acao: "situacao" });
+    setEmAndamento({ matricula: pessoa.matricula, acao: "situacao" });
     setFalha(null);
 
     iniciarTransicao(async () => {
-      const resultado = await alterarStatusUsuario(usuario.matricula, destino);
+      const resultado = await alterarStatusPessoa(pessoa.matricula, destino);
 
       if (!resultado.ok) {
         setFalha({
-          matricula: usuario.matricula,
+          matricula: pessoa.matricula,
           mensagem: resultado.mensagem,
           detalhe: resultado.detalhe,
         });
@@ -144,7 +144,7 @@ export function GestaoUsuarios({ usuarios }: Props) {
       }
 
       setAviso(
-        destino === STATUS_USUARIO.inativo
+        destino === STATUS_PESSOA.inativo
           ? `${resultado.dados.nome} foi inativado e não consegue mais retirar equipamento.`
           : `${resultado.dados.nome} está ativo e já pode retirar equipamento.`,
       );
@@ -171,24 +171,24 @@ export function GestaoUsuarios({ usuarios }: Props) {
    * menos, o pior que acontece é o aviso não aparecer — e a inativação era
    * permitida de qualquer forma.
    */
-  function pedirInativacao(usuario: UsuarioDoPainel) {
+  function pedirInativacao(pessoa: PessoaDoPainel) {
     if (ocupado) return;
 
-    if (usuario.emprestimosAbertos === 0) {
-      moverPara(usuario, STATUS_USUARIO.inativo);
+    if (pessoa.emprestimosAbertos === 0) {
+      moverPara(pessoa, STATUS_PESSOA.inativo);
       return;
     }
 
-    setEmAndamento({ matricula: usuario.matricula, acao: "situacao" });
+    setEmAndamento({ matricula: pessoa.matricula, acao: "situacao" });
     setFalha(null);
 
     iniciarTransicao(async () => {
-      const resultado = await contarEmprestimosAbertos(usuario.matricula);
+      const resultado = await contarEmprestimosAbertos(pessoa.matricula);
       setEmAndamento(null);
 
       if (!resultado.ok) {
         setFalha({
-          matricula: usuario.matricula,
+          matricula: pessoa.matricula,
           mensagem: resultado.mensagem,
           detalhe: resultado.detalhe,
         });
@@ -198,22 +198,22 @@ export function GestaoUsuarios({ usuarios }: Props) {
 
       // Devolveu tudo entre o render e o clique: não há o que avisar.
       if (resultado.dados.emprestimosAbertos === 0) {
-        moverPara(usuario, STATUS_USUARIO.inativo);
+        moverPara(pessoa, STATUS_PESSOA.inativo);
         return;
       }
 
-      setInativando({ usuario, ...resultado.dados });
+      setInativando({ pessoa, ...resultado.dados });
     });
   }
 
-  function salvarEdicao(atual: UsuarioDoPainel, dados: DadosEditados) {
+  function salvarEdicao(atual: PessoaDoPainel, dados: DadosEditados) {
     if (ocupado) return;
 
     setEmAndamento({ matricula: atual.matricula, acao: "edicao" });
     setFalha(null);
 
     iniciarTransicao(async () => {
-      const resultado = await editarUsuario(atual.matricula, dados);
+      const resultado = await editarPessoa(atual.matricula, dados);
 
       if (!resultado.ok) {
         setFalha({
@@ -284,22 +284,22 @@ export function GestaoUsuarios({ usuarios }: Props) {
                 <tr>
                   <td colSpan={4} className="px-5 py-16">
                     <EstadoVazio
-                      semCadastros={usuarios.length === 0}
+                      semCadastros={pessoas.length === 0}
                       onLimpar={limparFiltros}
                     />
                   </td>
                 </tr>
               ) : null}
 
-              {visiveis.map((usuario) => {
-                const inativo = usuario.status === STATUS_USUARIO.inativo;
+              {visiveis.map((pessoa) => {
+                const inativo = pessoa.status === STATUS_PESSOA.inativo;
                 // Um botão só fica preso quando *outra* linha está trabalhando:
                 // na própria linha o spinner já diz o que está acontecendo.
-                const travado = ocupado && emAndamento?.matricula !== usuario.matricula;
+                const travado = ocupado && emAndamento?.matricula !== pessoa.matricula;
 
                 return (
                   <tr
-                    key={usuario.matricula}
+                    key={pessoa.matricula}
                     className={[
                       "border-b border-borda last:border-b-0 hover:bg-superficie-2",
                       // Inativo pesa menos na varredura: continua legível, mas
@@ -317,7 +317,7 @@ export function GestaoUsuarios({ usuarios }: Props) {
                             inativo ? "text-tinta-suave" : "text-tinta",
                           ].join(" ")}
                         >
-                          {usuario.nome}
+                          {pessoa.nome}
                         </span>
                         <span className="mt-0.5 block text-sm text-tinta-suave">
                           {/*
@@ -327,19 +327,19 @@ export function GestaoUsuarios({ usuarios }: Props) {
                             zeros à esquerda precisam ser contáveis com o olho.
                           */}
                           <span className="font-mono font-semibold">
-                            {usuario.matricula}
+                            {pessoa.matricula}
                           </span>
                           <span className="mx-1.5" aria-hidden="true">
                             ·
                           </span>
-                          {usuario.cursos}
+                          {pessoa.cursos}
                         </span>
 
-                        {usuario.emprestimosAbertos > 0 ? (
+                        {pessoa.emprestimosAbertos > 0 ? (
                           <span className="mt-1 block text-sm text-marca-azul">
                             Está com{" "}
                             <span className="font-mono font-semibold">
-                              {usuario.equipamentosEmMaos.join(", ")}
+                              {pessoa.equipamentosEmMaos.join(", ")}
                             </span>
                           </span>
                         ) : null}
@@ -347,11 +347,11 @@ export function GestaoUsuarios({ usuarios }: Props) {
                     </td>
 
                     <td className={CELULA}>
-                      <SeloPerfil perfil={usuario.perfil} />
+                      <SeloPerfil perfil={pessoa.perfil} />
                     </td>
 
                     <td className={CELULA}>
-                      <SeloStatusUsuario status={usuario.status} />
+                      <SeloStatusPessoa status={pessoa.status} />
                     </td>
 
                     <td className={`${CELULA} text-right`}>
@@ -359,9 +359,9 @@ export function GestaoUsuarios({ usuarios }: Props) {
                         <Botao
                           variante="secundario"
                           tamanho="pequeno"
-                          onClick={() => setEditando(usuario)}
+                          onClick={() => setEditando(pessoa)}
                           disabled={travado}
-                          aria-label={`Editar o cadastro de ${usuario.nome}`}
+                          aria-label={`Editar o cadastro de ${pessoa.nome}`}
                         >
                           <IconeLapis className="size-5" />
                           Editar
@@ -371,13 +371,13 @@ export function GestaoUsuarios({ usuarios }: Props) {
                           <Botao
                             variante="secundario"
                             tamanho="pequeno"
-                            onClick={() => moverPara(usuario, STATUS_USUARIO.ativo)}
+                            onClick={() => moverPara(pessoa, STATUS_PESSOA.ativo)}
                             carregando={
-                              emAndamento?.matricula === usuario.matricula &&
+                              emAndamento?.matricula === pessoa.matricula &&
                               emAndamento.acao === "situacao"
                             }
                             disabled={travado}
-                            aria-label={`Ativar o cadastro de ${usuario.nome}`}
+                            aria-label={`Ativar o cadastro de ${pessoa.nome}`}
                           >
                             <IconePessoaCheck className="size-5" />
                             Ativar
@@ -386,13 +386,13 @@ export function GestaoUsuarios({ usuarios }: Props) {
                           <Botao
                             variante="fantasma"
                             tamanho="pequeno"
-                            onClick={() => pedirInativacao(usuario)}
+                            onClick={() => pedirInativacao(pessoa)}
                             carregando={
-                              emAndamento?.matricula === usuario.matricula &&
+                              emAndamento?.matricula === pessoa.matricula &&
                               emAndamento.acao === "situacao"
                             }
                             disabled={travado}
-                            aria-label={`Inativar o cadastro de ${usuario.nome}`}
+                            aria-label={`Inativar o cadastro de ${pessoa.nome}`}
                           >
                             <IconeBloquear className="size-5" />
                             Inativar
@@ -400,7 +400,7 @@ export function GestaoUsuarios({ usuarios }: Props) {
                         )}
                       </div>
 
-                      {falha?.matricula === usuario.matricula ? (
+                      {falha?.matricula === pessoa.matricula ? (
                         <Alerta
                           tom="erro"
                           mensagem={falha.mensagem}
@@ -424,7 +424,7 @@ export function GestaoUsuarios({ usuarios }: Props) {
         */}
         <p role="status" className="sr-only">
           {filtrando
-            ? `${visiveis.length} de ${usuarios.length} cadastros correspondem aos filtros.`
+            ? `${visiveis.length} de ${pessoas.length} cadastros correspondem aos filtros.`
             : ""}
         </p>
 
@@ -436,8 +436,8 @@ export function GestaoUsuarios({ usuarios }: Props) {
                 <span className="numeros-tabulares font-semibold text-tinta">
                   {visiveis.length}
                 </span>{" "}
-                de <span className="numeros-tabulares">{usuarios.length}</span>{" "}
-                {usuarios.length === 1 ? "cadastro" : "cadastros"}.
+                de <span className="numeros-tabulares">{pessoas.length}</span>{" "}
+                {pessoas.length === 1 ? "cadastro" : "cadastros"}.
               </p>
 
               <Botao variante="fantasma" tamanho="pequeno" onClick={limparFiltros}>
@@ -456,7 +456,7 @@ export function GestaoUsuarios({ usuarios }: Props) {
       </section>
 
       <ModalDeEdicao
-        usuario={editando}
+        pessoa={editando}
         salvando={emAndamento?.acao === "edicao"}
         onCancelar={() => setEditando(null)}
         onSalvar={salvarEdicao}
@@ -466,7 +466,7 @@ export function GestaoUsuarios({ usuarios }: Props) {
         alvo={inativando}
         inativando={emAndamento?.acao === "situacao"}
         onCancelar={() => setInativando(null)}
-        onConfirmar={(usuario) => moverPara(usuario, STATUS_USUARIO.inativo)}
+        onConfirmar={(pessoa) => moverPara(pessoa, STATUS_PESSOA.inativo)}
       />
 
       <Notificacao mensagem={aviso} onFechar={() => setAviso(null)} />
@@ -505,14 +505,14 @@ function BarraDeFiltros({
   return (
     <div role="search" className="flex flex-col gap-3 lg:flex-row">
       <div className="relative lg:flex-1">
-        <label htmlFor="busca-de-usuarios" className="sr-only">
+        <label htmlFor="busca-de-pessoas" className="sr-only">
           Buscar por nome ou matrícula
         </label>
 
         <IconeLupa className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-tinta-tenue" />
 
         <input
-          id="busca-de-usuarios"
+          id="busca-de-pessoas"
           type="search"
           value={busca}
           onChange={(evento) => onBusca(evento.target.value)}
@@ -545,8 +545,8 @@ function BarraDeFiltros({
           onChange={(evento) => onStatus(evento.target.value)}
         >
           <option value="">Todas as situações</option>
-          <option value={STATUS_USUARIO.ativo}>Ativo</option>
-          <option value={STATUS_USUARIO.inativo}>Inativo</option>
+          <option value={STATUS_PESSOA.ativo}>Ativo</option>
+          <option value={STATUS_PESSOA.inativo}>Inativo</option>
         </Selecao>
       </div>
     </div>
@@ -618,19 +618,19 @@ export type DadosEditados = {
  * porque trocar uma chave primária parece perigoso para quem está clicando.
  *
  * O `<form>` existe para o Enter funcionar, e os campos são **não-controlados**
- * (`defaultValue`): o modal é montado do zero a cada abertura — `usuario` nulo
+ * (`defaultValue`): o modal é montado do zero a cada abertura — `pessoa` nulo
  * devolve `null` — então não há estado velho para sincronizar.
  */
 function ModalDeEdicao({
-  usuario,
+  pessoa,
   salvando,
   onCancelar,
   onSalvar,
 }: {
-  usuario: UsuarioDoPainel | null;
+  pessoa: PessoaDoPainel | null;
   salvando: boolean;
   onCancelar: () => void;
-  onSalvar: (usuario: UsuarioDoPainel, dados: DadosEditados) => void;
+  onSalvar: (pessoa: PessoaDoPainel, dados: DadosEditados) => void;
 }) {
   const campoRef = useRef<HTMLInputElement>(null);
 
@@ -642,13 +642,13 @@ function ModalDeEdicao({
     seguinte, quando o diálogo já abriu.
   */
   useEffect(() => {
-    if (!usuario) return;
+    if (!pessoa) return;
 
     const quadro = requestAnimationFrame(() => campoRef.current?.select());
     return () => cancelAnimationFrame(quadro);
-  }, [usuario]);
+  }, [pessoa]);
 
-  if (!usuario) return null;
+  if (!pessoa) return null;
 
   return (
     <Modal
@@ -668,7 +668,7 @@ function ModalDeEdicao({
           </Botao>
           <Botao
             type="submit"
-            form="formulario-do-usuario"
+            form="formulario-da-pessoa"
             carregando={salvando}
             className="sm:min-w-40"
           >
@@ -678,12 +678,12 @@ function ModalDeEdicao({
       }
     >
       <form
-        id="formulario-do-usuario"
+        id="formulario-da-pessoa"
         onSubmit={(evento) => {
           evento.preventDefault();
           const dados = new FormData(evento.currentTarget);
 
-          onSalvar(usuario, {
+          onSalvar(pessoa, {
             matricula: String(dados.get("matricula") ?? ""),
             nome: String(dados.get("nome") ?? ""),
             perfil: String(dados.get("perfil") ?? ""),
@@ -701,7 +701,7 @@ function ModalDeEdicao({
             ref={campoRef}
             id="matricula"
             name="matricula"
-            defaultValue={usuario.matricula}
+            defaultValue={pessoa.matricula}
             required
             maxLength={20}
             autoComplete="off"
@@ -722,7 +722,7 @@ function ModalDeEdicao({
           <input
             id="nome"
             name="nome"
-            defaultValue={usuario.nome}
+            defaultValue={pessoa.nome}
             required
             maxLength={120}
             autoComplete="off"
@@ -739,7 +739,7 @@ function ModalDeEdicao({
             <Selecao
               id="perfil"
               name="perfil"
-              defaultValue={usuario.perfil}
+              defaultValue={pessoa.perfil}
               disabled={salvando}
             >
               <option value={PERFIL.aluno}>Aluno</option>
@@ -754,11 +754,11 @@ function ModalDeEdicao({
             <Selecao
               id="status"
               name="status"
-              defaultValue={usuario.status}
+              defaultValue={pessoa.status}
               disabled={salvando}
             >
-              <option value={STATUS_USUARIO.ativo}>Ativo</option>
-              <option value={STATUS_USUARIO.inativo}>Inativo</option>
+              <option value={STATUS_PESSOA.ativo}>Ativo</option>
+              <option value={STATUS_PESSOA.inativo}>Inativo</option>
             </Selecao>
           </div>
         </div>
@@ -770,7 +770,7 @@ function ModalDeEdicao({
           <input
             id="cursos"
             name="cursos"
-            defaultValue={usuario.cursos}
+            defaultValue={pessoa.cursos}
             required
             maxLength={200}
             autoComplete="off"
@@ -808,11 +808,11 @@ function ModalDeInativacao({
   alvo: Inativando | null;
   inativando: boolean;
   onCancelar: () => void;
-  onConfirmar: (usuario: UsuarioDoPainel) => void;
+  onConfirmar: (pessoa: PessoaDoPainel) => void;
 }) {
   if (!alvo) return null;
 
-  const { usuario, emprestimosAbertos, equipamentosEmMaos } = alvo;
+  const { pessoa, emprestimosAbertos, equipamentosEmMaos } = alvo;
   const um = emprestimosAbertos === 1;
 
   return (
@@ -832,7 +832,7 @@ function ModalDeInativacao({
             Cancelar
           </Botao>
           <Botao
-            onClick={() => onConfirmar(usuario)}
+            onClick={() => onConfirmar(pessoa)}
             carregando={inativando}
             className="sm:min-w-40"
           >
@@ -845,20 +845,20 @@ function ModalDeInativacao({
       <div className="flex flex-col gap-4">
         <div className="rounded-2xl border border-borda bg-superficie-2 p-4">
           <span className="block text-lg font-semibold tracking-tight text-tinta">
-            {usuario.nome}
+            {pessoa.nome}
           </span>
           <span className="mt-0.5 block text-base text-tinta-suave">
-            <span className="font-mono font-semibold">{usuario.matricula}</span>
+            <span className="font-mono font-semibold">{pessoa.matricula}</span>
             <span className="mx-1.5" aria-hidden="true">
               ·
             </span>
-            {usuario.cursos}
+            {pessoa.cursos}
           </span>
         </div>
 
         <Alerta
           tom="aviso"
-          mensagem={`${usuario.nome} ainda está com ${um ? "1 equipamento" : `${emprestimosAbertos} equipamentos`}.`}
+          mensagem={`${pessoa.nome} ainda está com ${um ? "1 equipamento" : `${emprestimosAbertos} equipamentos`}.`}
           detalhe={`${equipamentosEmMaos.join(", ")} — ${um ? "esse empréstimo continua" : "esses empréstimos continuam"} aberto${um ? "" : "s"} e ${um ? "aparece" : "aparecem"} em Empréstimos Ativos, mesmo depois da inativação.`}
         />
 

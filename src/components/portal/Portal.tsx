@@ -6,7 +6,7 @@ import {
   confirmarDevolucao,
   confirmarRetirada,
   devolverTudo,
-  identificarUsuario,
+  identificarPessoa,
   listarDisponiveis,
   listarEmprestimosAtivos,
 } from "@/app/actions";
@@ -19,12 +19,12 @@ import { TelaMatricula } from "@/components/portal/TelaMatricula";
 import { TelaSucesso } from "@/components/portal/TelaSucesso";
 import { Notificacao } from "@/components/ui/Notificacao";
 import {
-  STATUS_USUARIO,
+  STATUS_PESSOA,
   type Categoria,
   type EmprestimoAtivo,
   type EquipamentoDisponivel,
   type RetiradaConfirmada,
-  type UsuarioIdentificado,
+  type PessoaIdentificada,
 } from "@/lib/tipos";
 
 /**
@@ -59,7 +59,7 @@ const INATIVIDADE_MS = 120_000;
 export function Portal() {
   const [etapa, setEtapa] = useState<Etapa>({ nome: "matricula" });
   const [matricula, setMatricula] = useState("");
-  const [usuario, setUsuario] = useState<UsuarioIdentificado | null>(null);
+  const [pessoa, setPessoa] = useState<PessoaIdentificada | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [equipamentos, setEquipamentos] = useState<EquipamentoDisponivel[]>([]);
   const [selecionados, setSelecionados] = useState<EquipamentoDisponivel[]>([]);
@@ -91,7 +91,7 @@ export function Portal() {
   const reiniciar = useCallback(() => {
     setEtapa({ nome: "matricula" });
     setMatricula("");
-    setUsuario(null);
+    setPessoa(null);
     setCategorias([]);
     setEquipamentos([]);
     setSelecionados([]);
@@ -138,7 +138,7 @@ export function Portal() {
     setEntrando(true);
     setErroLogin(null);
 
-    const resultado = await identificarUsuario(matricula);
+    const resultado = await identificarPessoa(matricula);
 
     setEntrando(false);
 
@@ -147,7 +147,7 @@ export function Portal() {
       return;
     }
 
-    setUsuario(resultado.dados.usuario);
+    setPessoa(resultado.dados.pessoa);
     setCategorias(resultado.dados.categorias);
     setEmprestimos(resultado.dados.emprestimos);
     setEtapa({ nome: "inicio" });
@@ -333,7 +333,7 @@ export function Portal() {
   return (
     <div className="flex min-h-full flex-1 flex-col">
       <CabecalhoPortal
-        usuario={etapa.nome === "sucesso" ? null : usuario}
+        pessoa={etapa.nome === "sucesso" ? null : pessoa}
         onSair={reiniciar}
       />
 
@@ -348,10 +348,10 @@ export function Portal() {
           />
         ) : null}
 
-        {etapa.nome === "inicio" && usuario ? (
+        {etapa.nome === "inicio" && pessoa ? (
           <TelaInicio
-            nome={usuario.nome}
-            inativo={usuario.status === STATUS_USUARIO.inativo}
+            nome={pessoa.nome}
+            inativo={pessoa.status === STATUS_PESSOA.inativo}
             categorias={categorias}
             selecionadosPorTipo={selecionadosPorTipo}
             onEscolher={abrirCategoria}
@@ -380,7 +380,7 @@ export function Portal() {
 
         {etapa.nome === "sucesso" ? (
           <TelaSucesso
-            nome={etapa.retirada.usuario.nome}
+            nome={etapa.retirada.pessoa.nome}
             itens={etapa.retirada.itens}
             onConcluir={reiniciar}
           />

@@ -1,4 +1,4 @@
-import { PERFIL, STATUS_EQUIPAMENTO, STATUS_USUARIO } from "@/lib/tipos";
+import { PERFIL, STATUS_EQUIPAMENTO, STATUS_PESSOA } from "@/lib/tipos";
 
 /**
  * A situação de um equipamento, em uma palavra.
@@ -71,7 +71,7 @@ export function SeloStatus({ status, className = "" }: Props) {
 }
 
 /**
- * A situação de um **cadastro de usuário** (Tarefa 8).
+ * A situação de um **cadastro de pessoa** (Tarefa 8).
  *
  * Vive neste arquivo, e não no componente da tela, porque "selo" é vocabulário
  * do painel inteiro: a mesma forma, o mesmo raio, a mesma altura de linha nas
@@ -86,21 +86,21 @@ export function SeloStatus({ status, className = "" }: Props) {
  * Ativo é verde, e é o **verde forte** da paleta (5,4:1 sobre branco), não o
  * verde da logo — que dá 3,0:1 e serve para borda e realce, nunca para texto.
  */
-const SELOS_DE_USUARIO: Record<string, { rotulo: string; caixa: string; ponto: string }> = {
-  [STATUS_USUARIO.ativo]: {
+const SELOS_DE_PESSOA: Record<string, { rotulo: string; caixa: string; ponto: string }> = {
+  [STATUS_PESSOA.ativo]: {
     rotulo: "Ativo",
     caixa: "border-sucesso-borda bg-sucesso-fundo text-sucesso",
     ponto: "bg-marca-verde-forte",
   },
-  [STATUS_USUARIO.inativo]: {
+  [STATUS_PESSOA.inativo]: {
     rotulo: "Inativo",
     caixa: "border-borda bg-superficie-2 text-tinta-tenue",
     ponto: "bg-tinta-tenue",
   },
 };
 
-export function SeloStatusUsuario({ status, className = "" }: Props) {
-  const selo = SELOS_DE_USUARIO[status] ?? {
+export function SeloStatusPessoa({ status, className = "" }: Props) {
+  const selo = SELOS_DE_PESSOA[status] ?? {
     rotulo: status,
     caixa: "border-borda bg-superficie-2 text-tinta-suave",
     ponto: "bg-tinta-tenue",
