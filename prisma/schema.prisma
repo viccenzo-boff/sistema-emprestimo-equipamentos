@@ -119,10 +119,30 @@ model Emprestimo {
   pessoa_id      String
   /// FK para Equipamento.id.
   equip_id       String
-  /// Preenchido na criação.
+  /// Preenchido na criação: o aluno tocou "Confirmar" no tablet (Fluxo 1).
   data_retirada  DateTime  @default(now())
-  /// Preenchido quando o ciclo é concluído.
+  /// **A declaração no tablet**: o aluno disse que devolveu e deixou o item na
+  /// bancada (`ATIVO` -> `AGUARDANDO_BAIXA`, Fluxo 2). Não é a hora em que o
+  /// equipamento voltou ao inventário — essa é a `data_baixa`.
+  ///
+  /// Nulo enquanto o empréstimo está `ATIVO`.
   data_devolucao DateTime?
+  /// **A conferência física**: a secretaria recolheu o item da bancada e
+  /// confirmou o recebimento no painel (`AGUARDANDO_BAIXA` -> `CONCLUIDO`,
+  /// Fluxo 3). Terceiro marcador temporal, criado na Tarefa 12.
+  ///
+  /// Existe para medir o gargalo operacional `data_baixa - data_devolucao`: o
+  /// tempo em que o aparelho ficou na bancada, invisível para o tablet e para o
+  /// inventário. Até a Tarefa 12 esse intervalo era incalculável, porque a
+  /// baixa **sobrescrevia** a `data_devolucao` com o próprio instante — os dois
+  /// eventos dividiam um campo só, e o mais recente apagava o outro.
+  ///
+  /// Nulo nos empréstimos concluídos **antes** da Tarefa 12, de propósito: a
+  /// migration não copia a `data_devolucao` deles para cá. O valor seria o
+  /// instante certo da baixa, mas o intervalo resultante seria zero — uma
+  /// prateleira instantânea que ninguém mediu entrando na média como se tivesse
+  /// sido. Nulo se exclui sozinho do cálculo.
+  data_baixa     DateTime?
   /// "ATIVO" | "AGUARDANDO_BAIXA" | "CONCLUIDO".
   status         String    @default("ATIVO")
 
