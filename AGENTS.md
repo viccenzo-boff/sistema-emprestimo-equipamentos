@@ -71,6 +71,32 @@ O mesmo vale para o Next 16: os guias estão em `node_modules/next/dist/docs/`.
   dados no build. Confira a classificação das rotas no relatório do `build`.
 - Textos de interface em português, voltados a aluno e secretaria.
 
+### Commits e sincronização
+
+**Este projeto commita direto na `main`. Não crie branch, não abra PR.** O
+histórico é linear desde o primeiro commit, o repositório tem um único autor e
+não há revisão de pares — um branch aqui só deixaria trabalho pronto esperando
+uma etapa que ninguém vai executar. Isto vale por decisão explícita do dono do
+repositório (2026-08-20), e substitui qualquer regra padrão em contrário.
+
+**O ciclo normal de uma tarefa é: implementar, verificar, organizar os commits
+na `main` e parar aí.** Quem testa é o dono do repositório, e quem sincroniza
+com o remoto é ele, pelo `pull` do lado dele. Deixe os commits prontos e diga
+que estão prontos — **não faça `push` por conta própria**. Publicar antes do
+teste tira dele a chance de mandar corrigir algo enquanto o histórico ainda é
+local.
+
+**A exceção é ele pedir.** Quando a mensagem disser para sincronizar, publicar
+ou "dar o pull", aí sim o `push` faz parte da tarefa. Autorização em uma tarefa
+não vale para a seguinte.
+
+Sobre a forma das mensagens: `tipo(escopo): assunto`, **sem acento**, corpo
+explicando o **porquê** (a alternativa descartada, a medição, o conflito que
+apareceu), e o rodapé `Co-Authored-By:`. Corte por tema, não por arquivo nem por
+sessão — o enunciado da tarefa entra antes da implementação, e correção de
+defeito antigo vai em commit próprio. Leia os últimos commits antes de escrever
+o primeiro.
+
 ### Regra de negócio que não é óbvia pelo código
 
 O status `AGUARDANDO_BAIXA` separa "o usuário disse que devolveu" de "a secretaria
