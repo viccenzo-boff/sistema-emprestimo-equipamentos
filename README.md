@@ -26,7 +26,7 @@ Requer Node.js 20.19+ (desenvolvido com 24.11).
 ```bash
 npm install          # instala dependências e gera o Prisma Client
 npm run db:migrate   # cria/atualiza o banco dev.db
-npm run db:seed      # popula usuários e inventário
+npm run db:seed      # popula pessoas, inventário e administradores
 npm run dev          # http://localhost:3000
 ```
 
@@ -35,7 +35,9 @@ Copie `.env.example` para `.env` e ajuste os valores antes do primeiro uso:
 | Variável         | Função                                                     |
 | ---------------- | ---------------------------------------------------------- |
 | `DATABASE_URL`   | Caminho do arquivo SQLite, relativo à raiz do projeto.     |
-| `ADMIN_PASSWORD` | Senha mestre do painel `/admin`.                           |
+
+Não há senha de painel em variável de ambiente: as contas do `/admin` ficam na tabela
+`Administrador` e nascem com `npm run db:seed` (veja [Acesso ao painel](#acesso-ao-painel-admin)).
 
 ### Scripts
 
@@ -46,13 +48,13 @@ Copie `.env.example` para `.env` e ajuste os valores antes do primeiro uso:
 | `npm start`          | Servidor de produção (usado na máquina da secretaria).      |
 | `npm run lint`       | ESLint.                                                     |
 | `npm run db:migrate` | Cria e aplica migrations.                                   |
-| `npm run db:seed`    | Importa usuários e inventário (idempotente).                |
+| `npm run db:seed`    | Importa pessoas, inventário e administradores (idempotente). |
 | `npm run db:studio`  | Prisma Studio, para inspecionar o banco.                    |
 | `npm run db:reset`   | **Apaga o banco** e reaplica as migrations.                 |
 
 ## Importar a planilha de alunos e professores
 
-Exporte a planilha da coordenação como CSV e salve em `prisma/data/usuarios.csv`:
+Exporte a planilha da coordenação como CSV e salve em `prisma/data/pessoas.csv`:
 
 ```csv
 matricula,nome,perfil,cursos
@@ -60,7 +62,7 @@ matricula,nome,perfil,cursos
 9001,Prof. Daniel Rocha,PROFESSOR,"Sistemas de Informação, Ciência da Computação"
 ```
 
-Formato: veja [`prisma/data/usuarios.example.csv`](prisma/data/usuarios.example.csv). O
+Formato: veja [`prisma/data/pessoas.example.csv`](prisma/data/pessoas.example.csv). O
 importador aceita `,` ou `;` como separador, lida com o BOM que o Excel em pt-BR gera, preserva
 zeros à esquerda na matrícula e reconhece variações do cabeçalho (`Matrícula`, `Nome Completo`).
 Linhas sem matrícula ou sem nome são ignoradas e reportadas.
@@ -71,20 +73,20 @@ sem duplicar registros e sem reverter o status de equipamentos já emprestados.
 Para usar um arquivo em outro caminho:
 
 ```bash
-USUARIOS_CSV=C:/planilhas/alunos.csv npm run db:seed
+PESSOAS_CSV=C:/planilhas/alunos.csv npm run db:seed
 ```
 
-> O arquivo `prisma/data/usuarios.csv` contém dados pessoais e está no `.gitignore`.
+> O arquivo `prisma/data/pessoas.csv` contém dados pessoais e está no `.gitignore`.
 > Não versione a planilha real.
 
 ## Estrutura
 
 ```text
 prisma/
-  schema.prisma              modelos Usuario, Equipamento, Emprestimo
+  schema.prisma              modelos Pessoa, Administrador, Categoria, Equipamento, Emprestimo
   migrations/                histórico de migrations
   seed.ts                    importação da planilha + inventário inicial
-  data/usuarios.example.csv  formato esperado da planilha
+  data/pessoas.example.csv   formato esperado da planilha
 src/
   app/                       rotas (App Router)
   app/actions.ts             Server Actions do portal do tablet
@@ -93,10 +95,10 @@ src/
   app/globals.css            paleta institucional e estilos base
   assets/brand/              identidade visual (logo da Unoesc)
   components/portal/         telas do portal (matrícula, categorias, itens)
-  components/admin/          telas do painel (casca, fila, tabelas, senha)
+  components/admin/          telas do painel (casca, fila, tabelas, login)
   components/ui/             primitivas reutilizadas (Botao, Alerta, ícones)
   lib/prisma.ts              instância única do Prisma Client
-  lib/sessao-admin.ts        senha mestre e cookie de sessão do /admin
+  lib/sessao-admin.ts        login por conta e cookie de sessão do /admin
   lib/consultas-admin.ts     leituras do painel (fila, ativos, inventário)
   lib/tipos.ts               tipos compartilhados entre actions e telas
   lib/texto.ts               ajustes de texto em português
@@ -148,17 +150,39 @@ formato fornecido pela coordenação — se um SVG aparecer, ele substitui o PNG
 
 ## Acesso ao painel `/admin`
 
-O painel é protegido por uma senha mestre única, definida em `ADMIN_PASSWORD` no `.env` — sem
-cadastro de usuários, como pede a spec para o MVP. Quem acerta a senha recebe um cookie de sessão
+O painel pede **usuário e senha** (Tarefa 10). As contas ficam na tabela `Administrador`, com a
+senha guardada como **hash bcrypt** — nunca em texto. Quem acerta recebe um cookie de sessão
 `sessao_admin` que vale **8 horas** (um turno) e é `HttpOnly`.
 
-O cookie não guarda a senha: guarda o prazo de validade e uma assinatura HMAC-SHA256 desse prazo,
-tendo a senha mestre como chave. Na prática:
+As quatro contas padrão nascem com `npm run db:seed`:
 
-- Não dá para forjar uma sessão nem esticar o prazo sem conhecer a senha.
-- Trocar `ADMIN_PASSWORD` invalida todas as sessões abertas.
-- Reiniciar o servidor **não** derruba quem está logado.
-- Depois de 5 tentativas erradas seguidas, novas tentativas ficam bloqueadas por 1 minuto.
+| Usuário      | Nome       |
+| ------------ | ---------- |
+| `secretaria` | Secretaria |
+| `cidi`       | Cidi       |
+| `jeanzao`    | Jeanzão    |
+| `viccenzo`   | Viccenzo   |
+
+Todas com a senha inicial **`Mudar@123`** — troque antes de usar na secretaria.
+
+> Não há tela de cadastro de administrador neste MVP, por decisão da Tarefa 10. Para **trocar uma
+> senha**, edite o hash pelo `npm run db:studio`. Para **recuperar** uma senha esquecida, apague a
+> linha no Studio e rode `npm run db:seed` de novo — ele recria a conta com a senha padrão e
+> **não** mexe na senha das contas que já existem.
+
+O cookie não guarda a senha nem o hash: guarda `id`, `nome` e prazo de validade, mais uma
+assinatura HMAC-SHA256 dos três — cuja **chave é o próprio hash bcrypt daquele administrador**.
+Na prática:
+
+- Não dá para forjar uma sessão, trocar o nome exibido, nem esticar o prazo.
+- Trocar a senha de alguém — ou apagar a conta — derruba a sessão **daquela pessoa, e só dela**.
+- Reiniciar o servidor **não** derruba quem está logado (a chave é o banco, não um segredo sorteado
+  no boot).
+- Não existe segredo de sessão no `.env` para alguém esquecer de configurar.
+- Depois de 5 tentativas erradas seguidas **no mesmo usuário**, a sexta é bloqueada por 1 minuto.
+  O contador é por login: quem erra a própria senha não tranca o painel para os colegas.
+- "Usuário ou senha inválidos" é uma mensagem só, e o tempo de resposta é o mesmo nos dois casos —
+  dizer qual metade errou entregaria metade da credencial.
 
 A verificação é refeita em cada página e em cada Server Action do painel — Server Action é
 endpoint POST público, e esconder o botão na tela não fecha a porta.
@@ -168,15 +192,17 @@ endpoint POST público, e esconder o botão na tela não fecha a porta.
 
 ## Modelo de dados
 
-Três tabelas, conforme a seção 3 de [spec.md](spec.md):
+Conforme a seção 3 de [spec.md](spec.md), mais o que as tarefas 6, 8 e 10 acrescentaram:
 
-- **Usuario** — `matricula` (PK, string para preservar zeros à esquerda), `nome`, `perfil`
-  (`ALUNO` | `PROFESSOR`), `cursos`.
+- **Pessoa** — `matricula` (PK, string para preservar zeros à esquerda), `nome`, `perfil`
+  (`ALUNO` | `PROFESSOR`), `cursos`, `status` (`ATIVO` | `INATIVO`). Chamava-se `Usuario` até a
+  Tarefa 10.
+- **Administrador** — `id`, `nome`, `usuario` (único), `senha` (hash bcrypt). As contas do painel.
 - **Equipamento** — `id` (PK, etiqueta como `NOTE-01`), `tipo`, `status`
   (`DISPONIVEL` | `EMPRESTADO` | `MANUTENCAO`).
-- **Emprestimo** — um registro por item movimentado: `usuario_id`, `equip_id`, `data_retirada`,
+- **Emprestimo** — um registro por item movimentado: `pessoa_id`, `equip_id`, `data_retirada`,
   `data_devolucao`, `status` (`ATIVO` | `AGUARDANDO_BAIXA` | `CONCLUIDO`).
 
-O status `AGUARDANDO_BAIXA` é o que separa "o usuário disse que devolveu" de "a secretaria
+O status `AGUARDANDO_BAIXA` é o que separa "a pessoa disse que devolveu" de "a secretaria
 recolheu o equipamento": enquanto o empréstimo está nesse estado, o equipamento **não** volta a
 ficar disponível.

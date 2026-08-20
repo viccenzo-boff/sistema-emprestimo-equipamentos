@@ -17,12 +17,16 @@ O sistema rodará em uma rede local, hospedado no computador Windows da secretar
 
 O Prisma deve ser configurado com as seguintes tabelas e regras de negócio:
 
-### Tabela: Usuario
+### Tabela: Pessoa
 Armazena estudantes e professores (dados importados inicialmente via planilha).
 * `matricula` (String, PK): Chave primária (string para preservar zeros à esquerda).
 * `nome` (String): Nome completo.
 * `perfil` (String): "ALUNO" ou "PROFESSOR".
 * `cursos` (String): Cursos vinculados (ex: "Sistemas de Informação, Ciência da Computação").
+
+> Chamava-se `Usuario` até a Tarefa 10, que a renomeou para `Pessoa`: com a chegada da tabela
+> `Administrador`, "usuário" passou a querer dizer duas coisas — quem retira equipamento e quem
+> opera o painel. A Tarefa 8 acrescentou a esta tabela o campo `status` ("ATIVO" | "INATIVO").
 
 ### Tabela: Equipamento
 Armazena o inventário físico.
@@ -33,7 +37,7 @@ Armazena o inventário físico.
 ### Tabela: Emprestimo
 Registra os logs de movimentação (um log isolado por item).
 * `id` (Int, PK, Auto-increment): Chave primária.
-* `usuario_id` (String, FK): Relacionamento com `Usuario.matricula`.
+* `pessoa_id` (String, FK): Relacionamento com `Pessoa.matricula`. (Chamava-se `usuario_id` até a Tarefa 10.)
 * `equip_id` (String, FK): Relacionamento com `Equipamento.id`.
 * `data_retirada` (DateTime): Preenchido na criação.
 * `data_devolucao` (DateTime, Nullable): Preenchido quando o ciclo é concluído.
@@ -61,7 +65,13 @@ Registra os logs de movimentação (um log isolado por item).
   4. Ao confirmar, o status do `Emprestimo` muda para `AGUARDANDO_BAIXA`. (O equipamento **não** volta a ficar disponível ainda).
 
 ### Fluxo 3: Painel Administrativo (Rota `/admin` - Desktop)
-* **Segurança:** A rota `/admin` deve ser protegida por uma senha mestre simples (configurada via variável de ambiente `.env`). Não utilizar sistema de autenticação complexo neste MVP.
+* **Segurança:** A rota `/admin` é protegida por **contas individuais de administrador** (tabela `Administrador`, senha em hash bcrypt), criadas pelo `prisma/seed.ts`. Continua valendo a parte de "não utilizar sistema de autenticação complexo": não há cadastro de administrador pela interface, nem papéis, nem recuperação de senha por e-mail.
+
+> Até a Tarefa 10 era uma senha mestre única em `ADMIN_PASSWORD` no `.env`,
+> como esta seção pedia. A troca veio da própria Tarefa 10, pelo princípio de
+> responsabilização: com senha única, "quem confirmou o recebimento deste
+> equipamento?" não tinha resposta possível. A variável `ADMIN_PASSWORD` **não
+> existe mais**.
 * **Funcionalidades:**
   1. **Fila de Devoluções:** Uma visualização em destaque mostrando todos os empréstimos `AGUARDANDO_BAIXA`. A secretária pega o equipamento na bancada e clica em "Confirmar Recebimento". O `Emprestimo` vai para `CONCLUIDO` e o `Equipamento` volta para `DISPONIVEL`.
   2. **Gestão de Inventário:** Mudar o status de equipamentos para `MANUTENCAO` (removendo-os da visão do tablet) ou cadastrar novos.

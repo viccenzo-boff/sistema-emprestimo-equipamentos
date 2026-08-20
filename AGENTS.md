@@ -26,7 +26,7 @@ mexer em qualquer coisa — escopo, fluxos e regras de negócio estão lá.
 npm run dev          # servidor de desenvolvimento
 npm run db:migrate   # cria/aplica migration após mudar o schema
 npm run db:generate  # regenera o Prisma Client (necessário após mudar o schema)
-npm run db:seed      # popula usuários e inventário (idempotente)
+npm run db:seed      # popula pessoas, inventário e administradores
 npm run db:studio    # inspecionar o banco
 npm run lint         # tem que sair em 0
 ```
@@ -55,10 +55,14 @@ O mesmo vale para o Next 16: os guias estão em `node_modules/next/dist/docs/`.
 
 ### Convenções do projeto
 
-- **Schema**: os nomes de campo seguem a spec, em snake_case (`usuario_id`,
+- **Schema**: os nomes de campo seguem a spec, em snake_case (`pessoa_id`,
   `equip_id`, `data_retirada`, `categoria_id`). Não "corrija" para camelCase —
   o enunciado da Tarefa 6 pedia `categoriaId`, e a convenção do projeto venceu
-  por decisão explícita.
+  por decisão explícita. (`pessoa_id` chamava-se `usuario_id` até a Tarefa 10.)
+- **A entidade de quem retira equipamento é `Pessoa`, não `Usuario`** (Tarefa
+  10). "Usuário" agora quer dizer **login de administrador**, e só isso: é o
+  campo `Administrador.usuario`. Se você encontrar "usuário" em algum lugar
+  falando de aluno ou professor, é resíduo — corrija.
 - **Matrícula é `String`**, sempre. Converter para número apaga zeros à esquerda.
 - **Imagens**: componentes usam import estático de `src/assets/<finalidade>/`;
   `public/` só para URL fixa (favicon, ícones PWA). Detalhes na seção "Imagens e
@@ -83,9 +87,9 @@ entra) e continua na lista do inventário, em cinza, com botão de reativar.
 Categoria, ao contrário, pode ser apagada de verdade — nenhum `Emprestimo`
 aponta para ela —, mas só quando está vazia, e quem recusa é o banco.
 
-**`Usuario.status` tem o mesmo nome e uma regra diferente do `Equipamento`.**
-Usuário também nunca é apagado (`Emprestimo.usuario_id` aponta para ele, e o
-banco recusa o DELETE com P2003), mas o `INATIVO` dele é **assimétrico**:
+**`Pessoa.status` tem o mesmo nome e uma regra diferente do `Equipamento`.**
+Pessoa também nunca é apagada (`Emprestimo.pessoa_id` aponta para ela, e o
+banco recusa o DELETE com P2003), mas o `INATIVO` dela é **assimétrico**:
 bloqueia a **retirada** e libera a **devolução**. Quem foi inativado costuma
 estar com um aparelho na mochila, e travar os dois lados faria a inativação
 garantir que o equipamento nunca volta. Por isso a matrícula inativa entra no
@@ -172,12 +176,13 @@ normalização de etiqueta e categoria, e o bloqueio por tentativas.
 
 **Decisões do Fluxo 3** (não refazer sem motivo):
 
-- **A sessão é um HMAC do prazo de validade, com a senha mestre como chave.** O
-  cookie não carrega a senha, não dá para esticar o prazo (ele está dentro da
-  assinatura) e trocar `ADMIN_PASSWORD` derruba todas as sessões. Como a chave é
-  o `.env` e não um segredo sorteado no boot, reiniciar o servidor não desloga
-  ninguém. `secure` fica **falso** de propósito: a rede da secretaria é HTTP, e
-  com a flag ligada o navegador descartaria o cookie.
+- ~~**A sessão é um HMAC do prazo de validade, com a senha mestre como
+  chave.**~~ **Substituída na Tarefa 10**, que trocou a senha mestre por contas
+  individuais: a chave do HMAC passou a ser o hash bcrypt do administrador
+  logado, e a carga passou a levar `id` e `nome`. As propriedades continuam as
+  mesmas, agora por conta em vez de globais — ver as decisões da Tarefa 10. O
+  que **não** mudou: `secure` fica **falso** de propósito, porque a rede da
+  secretaria é HTTP e com a flag ligada o navegador descartaria o cookie.
 - **`temSessaoAdmin()` é chamada em cada página e em cada action**, nunca no
   layout. Layout não re-renderiza entre rotas irmãs e não impede um POST direto
   no endpoint da Server Action — usar layout como porta dá sensação de proteção
@@ -416,7 +421,7 @@ vazio.
 
 **Tarefa 8 — Gestão de usuários e importação de .xlsx (concluída):** os quatro
 itens de [tarefa-08-gestao-usuarios.md](tarefa-08-gestao-usuarios.md) — o campo
-`Usuario.status`, a leitura nativa de planilha do Excel com a biblioteca `xlsx`
+`Usuario.status` (hoje `Pessoa.status`), a leitura nativa de planilha do Excel com `xlsx`
 (SheetJS), a importação com atualização parcial nos três cenários do enunciado,
 e a tela `/admin/usuarios` com busca, filtros, edição por modal e o botão de
 ativar/inativar de um clique. `tsc`, `lint` e `build` em 0, com as **cinco**
@@ -592,14 +597,147 @@ sujo (14 asserções). O banco terminou idêntico à linha de base, com
   assim, exemplo em planilha modelo é dado que alguém esquece de apagar — e
   "Ana Souza" viraria um cadastro real na primeira importação distraída.
 
+**Tarefa 10 — Autenticação real e refatoração de domínio (concluída):** os
+quatro itens de [tarefa-10-autenticacao-admin.md](tarefa-10-autenticacao-admin.md)
+— `Usuario` renomeado para `Pessoa` (com `Emprestimo.pessoa_id`), a tabela
+`Administrador` com senha em hash `bcryptjs`, o seed criando as quatro contas,
+e o login de dois campos substituindo a senha mestre do `.env`. `tsc`, `lint` e
+`build` em 0, com as cinco rotas do painel dinâmicas (`ƒ`) e `/admin/pessoas` no
+lugar de `/admin/usuarios`.
+
+A migration foi escrita à mão e ensaiada em cópia antes do arquivo real.
+Verificação em cinco frentes, com o banco conferido contra a linha de base no
+fim: premissas do bcrypt e do esquema de cookie por script (23 asserções);
+ensaio da migration em cópia com dados realistas e em cópia com órfão plantado
+(17 asserções mais a recusa da guarda); seed e preservação de senha (15);
+planilha modelo indo e voltando depois da renomeação, com o arquivo sujo (22);
+HTTP real contra o servidor, com doze formas de cookie forjado (42); e navegador
+real por CDP, em dois roteiros — o do formulário e das cinco telas (48) e o da
+fronteira exata do freio de tentativas (12).
+
+**Decisões da Tarefa 10** (não refazer sem motivo):
+
+- **A chave que assina o cookie é o hash bcrypt do administrador logado.** O
+  enunciado mandava remover a `ADMIN_PASSWORD` e, na mesma frase, criar a sessão
+  "como já estava sendo feito" — só que era justamente a senha mestre que
+  assinava o cookie. Foi levantado como conflito antes de escrever código, com
+  três saídas; a escolhida não põe segredo nenhum no `.env` e preserva as três
+  propriedades da Tarefa 4, agora **por conta**: reiniciar o servidor não
+  desloga, trocar a senha de alguém derruba a sessão daquela pessoa e só dela, e
+  apagar a conta derruba na hora. Custo aceito: uma leitura de banco por
+  verificação, em SQLite local, numa tela que já consulta o banco a cada render.
+  As três foram exercitadas por HTTP contra o servidor de verdade.
+- **O cookie carrega `id` e `nome`, os dois dentro da assinatura** — e o nome
+  exibido vem do banco, não da carga. Estar assinado é o que impede trocar
+  "Secretaria" por outra coisa no navegador; vir do banco é o que faz um nome
+  corrigido no seed aparecer sem a pessoa precisar sair e entrar.
+- **A migration foi escrita à mão, e a automática era destrutiva.** O que o
+  `prisma migrate diff` propôs para este mesmo schema foi `DROP TABLE "Usuario"`
+  seguido de um `INSERT` na nova `Emprestimo` **sem a coluna `pessoa_id`**. Para
+  o gerador não existe "renomear tabela": uma sumiu e outra apareceu. O segundo
+  defeito é o pior, por ser silencioso ao contrário — com empréstimos na tabela
+  ele estoura no NOT NULL e a migration falha; **sem** empréstimos ele passa, e
+  o que se perdeu (os cadastros) já se perdeu na linha de cima sem erro nenhum.
+- **A migration começa por uma guarda que a faz falhar com o banco intacto.**
+  Uma `CREATE TEMPORARY TABLE` com `CHECK (orfaos = 0)` antes de qualquer coisa
+  destrutiva. É `TEMPORARY` porque o Prisma **não** envolve migration de SQLite
+  em transação (os `PRAGMA` não rodam dentro de uma) — uma tabela comum
+  sobreviveria à reprovação e apareceria no banco de quem foi só conferir.
+  Exercitada nos dois sentidos: cópia limpa passa, cópia com um empréstimo órfão
+  plantado é recusada com `CHECK constraint failed` e o banco fica como estava.
+- **O `id` do `Emprestimo` é copiado explicitamente na migration.** Ele é a
+  chave que a Fila de Devoluções endereça ("confirmar o recebimento do
+  empréstimo 42"); deixar o `AUTOINCREMENT` renumerar trocaria o alvo de
+  qualquer tela aberta no momento da migração.
+- **O seed cria o administrador que falta e NÃO toca na senha do que já
+  existe.** Mesma regra do `status` da pessoa e do equipamento: campo que a
+  origem não menciona é campo que o banco preserva. Sem isso, rodar `db:seed`
+  para importar a planilha de segunda-feira devolveria as quatro senhas ao
+  padrão sem ninguém pedir. O `nome`, esse, continua sendo atualizado — ele
+  **está** no seed. Provado: senha trocada à mão sobrevive à ressemeadura, e o
+  nome corrigido volta ao valor do seed.
+- **Recuperar senha esquecida é apagar a linha no `db:studio` e ressemear.** É a
+  consequência direta de o enunciado não querer CRUD de administrador. Ficou
+  escrito no `README` e no comentário do `schema.prisma`, porque é o tipo de
+  coisa que ninguém deduz sob pressão.
+- **O freio de tentativas é por login digitado, não global.** Com senha única
+  (até a Tarefa 9) não havia escolha; com quatro contas, um contador global faz
+  uma pessoa desastrada no teclado trancar o painel para as outras três. O custo
+  aceito é que revezar entre quatro logins dá quatro vezes mais tentativas por
+  minuto — vinte por minuto continua intratável para qualquer dicionário numa
+  rede fechada. A fronteira foi medida no navegador: **a quinta falha ainda
+  responde "inválidos" e é ela que arma o bloqueio; a sexta é a primeira
+  barrada**, e nesse intervalo a senha certa também não passa.
+- **O mapa do freio tem teto (`MAXIMO_DE_LOGINS_VIGIADOS`).** Sem ele, um POST
+  com um login diferente a cada requisição faria o mapa crescer sem fim — o
+  contador que existe para conter abuso viraria o vetor. Ao encher, esvazia.
+- **"Usuário ou senha inválidos" é uma frase só, e o tempo também.** Dizer qual
+  metade errou entrega a metade cara de descobrir. O tempo é igualado por um
+  `HASH_DE_ISCA` — um bcrypt válido contra o qual o caso "conta não existe"
+  também paga o `compare`. Medido: isca 198ms contra 193ms do caminho real
+  (1,03x); uma string que **não** é hash custa 0ms, que é o vazamento de 1000x
+  que a isca fecha. Um hash inválido escrito ali por engano seria um oráculo
+  silencioso.
+- **bcrypt custo 10, e o número foi medido nesta máquina:** ~209ms para gerar e
+  ~159ms para conferir. O `bcryptjs` é JavaScript puro, e o custo 12 subiu para
+  ~630ms — caro demais para uma tela que a secretaria abre várias vezes por dia,
+  sem ganho proporcional numa rede fechada que já tem freio de tentativas.
+  Também conferido: **bcrypt trunca em 72 bytes** (uma senha de 72 caracteres
+  valida contra uma entrada de 81), e `compare` contra hash corrompido devolve
+  `false` em vez de lançar — uma linha estragada no banco recusa o login em vez
+  de derrubar a tela.
+- **A barra lateral mostra o nome de quem entrou, no lugar do "Secretaria" que
+  era fixo.** É o motivo declarado da tarefa (responsabilização) aparecendo na
+  tela: com senha única, quem estava de pé no balcão não sabia sequer com qual
+  conta o navegador ficou aberto desde o turno anterior.
+- **O campo do login não vem do `CAMPO` de `Campo.tsx`.** Aquele traz
+  `border-borda` fixo, e pintar a borda de vermelho por cima seria somar duas
+  utilidades da mesma propriedade — no Tailwind 4 quem vence é a ordem no CSS
+  gerado, não a ordem no atributo. É a armadilha já registrada para os tamanhos
+  do `Botao` e para o recuo do `CAMPO_SEM_LADOS`. Aqui a cor da borda é
+  escolhida uma vez, em `campoDoLogin(comErro)`, e não corrigida depois.
+- **O erro do login continua inline, e agora há um campo a mais disputando a
+  altura.** Medido de novo no navegador: com o segundo campo, o "Entrar" termina
+  em 568px sem erro e 618px com erro, contra os 536/566 da Tarefa 5 — ainda
+  dentro dos 768px de um notebook pequeno. Um cartão de `Alerta` (~125px) o
+  jogaria para fora.
+- **`existeAdministrador()` só é consultado no caminho de quem NÃO entrou.** É a
+  pergunta "o sistema foi instalado?", e fazê-la a cada render do painel seria
+  uma consulta por acesso para uma resposta que só interessa à tela de login. É
+  ela que substituiu o antigo aviso de `ADMIN_PASSWORD` ausente, agora dizendo o
+  comando que resolve (`npm run db:seed`).
+- **O CSV do seed virou `pessoas.csv`, e `usuarios.csv` continua sendo aceito**
+  (com aviso no console), assim como `USUARIOS_CSV` ao lado de `PESSOAS_CSV`. O
+  arquivo real está no `.gitignore` e mora na máquina da secretaria, onde
+  ninguém vai renomeá-lo por causa de um commit — sem o atalho, o seed não
+  acharia a planilha, cairia nos quatro registros de exemplo e **não daria erro
+  nenhum**. A falha apareceria semanas depois, como um aluno "não cadastrado".
+- **A aba interna da planilha modelo virou "pessoas", e isso é seguro porque o
+  leitor pega `SheetNames[0]`** — planilha de coordenação vem com o nome que o
+  Excel deu ("Planilha1", "Sheet1"). Conferido com a ida e volta completa, e com
+  o arquivo sujo.
+- **`TelaSenha` virou `TelaLogin`.** Um componente chamado "tela de senha" com
+  dois campos manda a próxima pessoa procurar o campo que falta.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
-`public/`), histórico de empréstimos concluídos no painel e um relatório para a
-coordenação. Nada disso está na spec — confirmar antes de construir.
+`public/`), histórico de empréstimos concluídos no painel, um relatório para a
+coordenação e — agora que existe conta individual — registrar **quem** deu baixa
+em cada empréstimo (o `Emprestimo` não tem essa coluna; a Tarefa 10 criou a
+identidade, não o rastro). Nada disso está na spec — confirmar antes de
+construir.
 
 ### Ambiente
 
-- `ADMIN_PASSWORD` no `.env` é um **placeholder** (`unoesc-admin`). Trocar antes
-  de usar na secretaria.
+- **Não existe mais `ADMIN_PASSWORD`** (Tarefa 10). As contas do painel estão na
+  tabela `Administrador` e nascem com `npm run db:seed`, todas com a senha
+  `Mudar@123` — **trocar antes de usar na secretaria**. O `.env` agora só tem
+  `DATABASE_URL`.
+- **`bcryptjs` (não `bcrypt`) e sem `@types/bcryptjs`.** O `bcryptjs` é
+  JavaScript puro, sem compilação nativa — o que importa numa máquina Windows
+  de secretaria sem toolchain de C++. E o pacote `@types/bcryptjs` que o
+  enunciado da Tarefa 10 pedia é um **stub deprecado**: o próprio npm avisa que
+  "bcryptjs provides its own type definitions, so you do not need this
+  installed". Instalá-lo só somaria um pacote inútil.
 - `npm audit` reporta 3 avisos "high" em `deepmerge-ts`, via `@prisma/config` —
   dependência **só de desenvolvimento**, sem exposição no app. **Não rode
   `npm audit fix --force`**: ele rebaixa o Prisma para 6.x e quebra este setup.
