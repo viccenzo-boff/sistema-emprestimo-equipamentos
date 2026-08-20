@@ -39,6 +39,34 @@ export const CAMPO_SEM_LADOS = [
 export const CAMPO = `${CAMPO_SEM_LADOS} px-4`;
 
 /**
+ * O campo com o estado de erro **embutido**, e não sobreposto.
+ *
+ * Não deriva do `CAMPO` acima de propósito: aquele traz `border-borda` fixo, e
+ * pintar a borda de vermelho por cima seria somar duas utilidades da mesma
+ * propriedade — no Tailwind 4 quem vence é a ordem no CSS gerado, não a ordem
+ * no atributo. É a mesma armadilha registrada para os tamanhos do
+ * [Botao](src/components/ui/Botao.tsx) e para o recuo do `CAMPO_SEM_LADOS`.
+ * Aqui a cor da borda é escolhida uma vez, e não corrigida depois.
+ *
+ * Nasceu dentro do [TelaLogin](src/components/admin/TelaLogin.tsx) na Tarefa
+ * 10, quando havia um formulário de senha só. Subiu para cá na Tarefa 11, com
+ * a chegada do segundo (a troca da própria senha) — antes que a segunda cópia
+ * começasse a divergir, que é exatamente como este arquivo nasceu.
+ */
+export function campoComErro(comErro: boolean): string {
+  return [
+    "min-h-14 w-full rounded-2xl border-2 bg-superficie-2 px-4",
+    "text-lg text-tinta placeholder:text-tinta-tenue",
+    "transition-colors duration-150",
+    "hover:border-borda-forte focus:bg-superficie",
+    "disabled:opacity-50",
+    comErro
+      ? "border-erro-borda focus:border-erro"
+      : "border-borda focus:border-marca-azul",
+  ].join(" ");
+}
+
+/**
  * `<select>` com a seta desenhada por nós.
  *
  * `appearance-none` apaga a seta nativa junto com o estilo do sistema, então

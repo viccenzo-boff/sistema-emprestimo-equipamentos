@@ -8,6 +8,7 @@ import { entrarNoAdmin } from "@/app/admin/actions";
 import logoUnoesc from "@/assets/brand/logo-unoesc-colorido.png";
 import { Alerta } from "@/components/ui/Alerta";
 import { Botao } from "@/components/ui/Botao";
+import { campoComErro } from "@/components/ui/Campo";
 import { IconeAlerta, IconeCadeado } from "@/components/ui/icones";
 
 /**
@@ -42,32 +43,6 @@ import { IconeAlerta, IconeCadeado } from "@/components/ui/icones";
  * disputando a mesma altura. O `Alerta` continua onde ele é de fato uma
  * mensagem de página: o aviso de instalação incompleta.
  */
-
-/*
-  As classes do campo, com o estado de erro embutido em vez de sobreposto.
-
-  Não vem do `CAMPO` de [Campo.tsx](src/components/ui/Campo.tsx) de propósito:
-  aquele traz `border-borda` fixo, e pintar a borda de vermelho por cima seria
-  somar duas utilidades da mesma propriedade — no Tailwind 4 quem vence é a
-  ordem no CSS gerado, não a ordem no atributo. É a armadilha já registrada para
-  os tamanhos do `Botao` e para o recuo do `CAMPO_SEM_LADOS`. Aqui a cor da
-  borda é escolhida uma vez, e não corrigida depois.
-
-  Está em uma função, e não copiada nos dois campos, pela regra que criou o
-  próprio `Campo.tsx`: a segunda cópia é onde a divergência começa.
-*/
-function campoDoLogin(comErro: boolean): string {
-  return [
-    "min-h-14 w-full rounded-2xl border-2 bg-superficie-2 px-4",
-    "text-lg text-tinta placeholder:text-tinta-tenue",
-    "transition-colors duration-150",
-    "hover:border-borda-forte focus:bg-superficie",
-    "disabled:opacity-50",
-    comErro
-      ? "border-erro-borda focus:border-erro"
-      : "border-borda focus:border-marca-azul",
-  ].join(" ");
-}
 
 type Props = {
   /**
@@ -141,7 +116,7 @@ export function TelaLogin({ temContas }: Props) {
                   disabled={!temContas}
                   aria-describedby={erro ? "erro-login" : undefined}
                   aria-invalid={erro ? true : undefined}
-                  className={campoDoLogin(Boolean(erro))}
+                  className={campoComErro(Boolean(erro))}
                   placeholder="ex: secretaria"
                 />
               </div>
@@ -161,7 +136,7 @@ export function TelaLogin({ temContas }: Props) {
                   disabled={!temContas}
                   aria-describedby={erro ? "erro-login" : undefined}
                   aria-invalid={erro ? true : undefined}
-                  className={campoDoLogin(Boolean(erro))}
+                  className={campoComErro(Boolean(erro))}
                   placeholder="digite a senha"
                 />
               </div>
