@@ -163,6 +163,13 @@ export type MotivoDeFalha =
   | "PLANILHA_VAZIA"
   | "PLANILHA_SEM_MATRICULA"
   | "PLANILHA_EXCEDIDA"
+  // Troca da própria senha (Tarefa 11)
+  | "SENHA_VAZIA"
+  | "SENHA_NAO_CONFERE"
+  | "SENHA_FRACA"
+  | "SENHA_IGUAL_A_ATUAL"
+  | "SENHA_ATUAL_INCORRETA"
+  | "MUITAS_TENTATIVAS"
   | "FALHA_INTERNA";
 
 export type RetiradaConfirmada = {
@@ -261,6 +268,18 @@ export type EstadoDoLogin = {
   mensagem: string;
   detalhe?: string;
 } | null;
+
+/**
+ * O que a troca de senha devolve quando dá certo (Tarefa 11).
+ *
+ * `nome` volta para o aviso poder dizer de quem é a senha que mudou — na
+ * secretaria há quatro contas e um computador só, e "Senha alterada" sem o nome
+ * é justamente a frase que não resolve a dúvida que a tarefa existe para
+ * resolver.
+ */
+export type SenhaAlterada = {
+  nome: string;
+};
 
 /** Estado do formulário de cadastro de equipamento. */
 export type EstadoDoCadastro =

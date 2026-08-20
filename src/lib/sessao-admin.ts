@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 
 import { prisma } from "@/lib/prisma";
+import { CUSTO_BCRYPT, problemaDaNovaSenha } from "@/lib/senha";
 
 /**
  * Sessão do Painel Administrativo — contas individuais (Tarefa 10).
@@ -152,33 +153,52 @@ const MAXIMO_DE_LOGINS_VIGIADOS = 500;
 
 const globalParaPorteiro = globalThis as unknown as {
   porteirosAdmin?: Map<string, Porteiro>;
+  porteirosDeTroca?: Map<number, Porteiro>;
 };
 
 const porteiros: Map<string, Porteiro> = (globalParaPorteiro.porteirosAdmin ??=
   new Map());
 
-function porteiroDe(usuario: string): Porteiro {
-  const existente = porteiros.get(usuario);
+/**
+ * O segundo freio: a conferência da "Senha Atual" na troca de senha (Tarefa 11).
+ *
+ * É um mapa separado, e **chaveado pelo `id` da conta**, não pelo login. Duas
+ * razões. A primeira é que dentro do painel não existe login digitado — a
+ * sessão só carrega `id` e `nome`. A segunda é que compartilhar o mapa do login
+ * juntaria as duas contagens debaixo de uma chave de texto onde um login
+ * gravado à mão no `db:studio` poderia colidir com o prefixo; um `Map<number>`
+ * não tem esse problema.
+ *
+ * O freio existe porque o campo "Senha Atual" é uma verificação de senha sem
+ * custo para quem senta num navegador deixado logado no balcão. Quem faz isso
+ * já tem acesso ao painel; o que ele **não** tem é acesso persistente — e
+ * adivinhar a senha atual daria exatamente isso, além de trancar o dono da
+ * conta para fora.
+ */
+const porteirosDeTroca: Map<number, Porteiro> =
+  (globalParaPorteiro.porteirosDeTroca ??= new Map());
+
+function porteiroDe<C>(mapa: Map<C, Porteiro>, chave: C): Porteiro {
+  const existente = mapa.get(chave);
   if (existente) return existente;
 
-  if (porteiros.size >= MAXIMO_DE_LOGINS_VIGIADOS) porteiros.clear();
+  if (mapa.size >= MAXIMO_DE_LOGINS_VIGIADOS) mapa.clear();
 
   const novo: Porteiro = { falhas: 0, primeiraFalhaEm: 0, bloqueadoAte: 0 };
-  porteiros.set(usuario, novo);
+  mapa.set(chave, novo);
   return novo;
 }
 
-/** Segundos que faltam para este login poder tentar de novo. Zero se liberado. */
-export function segundosDeBloqueio(usuario: string): number {
-  const porteiro = porteiros.get(usuario);
+function segundosRestantes<C>(mapa: Map<C, Porteiro>, chave: C): number {
+  const porteiro = mapa.get(chave);
   if (!porteiro) return 0;
 
   const restante = porteiro.bloqueadoAte - Date.now();
   return restante > 0 ? Math.ceil(restante / 1000) : 0;
 }
 
-function registrarFalha(usuario: string): void {
-  const porteiro = porteiroDe(usuario);
+function anotarFalha<C>(mapa: Map<C, Porteiro>, chave: C): void {
+  const porteiro = porteiroDe(mapa, chave);
   const agora = Date.now();
 
   if (agora - porteiro.primeiraFalhaEm > JANELA_DE_TENTATIVAS_MS) {
@@ -193,6 +213,15 @@ function registrarFalha(usuario: string): void {
     porteiro.falhas = 0;
     porteiro.primeiraFalhaEm = agora;
   }
+}
+
+/** Segundos que faltam para este login poder tentar de novo. Zero se liberado. */
+export function segundosDeBloqueio(usuario: string): number {
+  return segundosRestantes(porteiros, usuario);
+}
+
+function registrarFalha(usuario: string): void {
+  anotarFalha(porteiros, usuario);
 }
 
 function registrarAcerto(usuario: string): void {
@@ -380,4 +409,106 @@ export async function sessaoAdmin(): Promise<SessaoAdmin | null> {
 /** Atalho para quem só precisa saber se a porta está aberta. */
 export async function temSessaoAdmin(): Promise<boolean> {
   return (await sessaoAdmin()) !== null;
+}
+
+/* ------------------------------------------------------------------------- *
+ * Troca da própria senha (Tarefa 11)
+ * ------------------------------------------------------------------------- */
+
+export type TrocaDeSenha =
+  | { resultado: "ok" }
+  | { resultado: "sem-sessao" }
+  | { resultado: "vazio" }
+  | { resultado: "nao-confere" }
+  | { resultado: "fraca"; motivo: string }
+  | { resultado: "igual-a-atual" }
+  | { resultado: "atual-incorreta" }
+  | { resultado: "bloqueado"; segundos: number };
+
+/**
+ * Troca a senha de quem está logado, e **reemite o cookie da sessão**.
+ *
+ * A REEMISSÃO NÃO É DETALHE — SEM ELA A TELA SE DERRUBA SOZINHA
+ *
+ * A chave que assina o cookie é o hash bcrypt desta conta (ver o cabeçalho
+ * deste arquivo). Gravar um hash novo é, por construção, trocar a chave: a
+ * assinatura que está no navegador para de bater na requisição seguinte e
+ * `sessaoAdmin()` devolve `null`. Sem o `criarSessao` da última linha, a pessoa
+ * seria expulsa para a tela de login **antes** de ver o aviso de sucesso, e a
+ * leitura natural disso é "deu erro".
+ *
+ * Conferido nesta sessão, em cópia do banco: dois `bcrypt.hash` da mesma senha
+ * dão hashes diferentes (o salt é sorteado), a assinatura antiga deixa de bater
+ * com o hash novo, e a refeita com o hash novo bate. Ou seja: a queda acontece
+ * mesmo quando a pessoa "troca" para a mesma senha de antes.
+ *
+ * O efeito colateral joga a favor e é o motivo declarado da Tarefa 11: a sessão
+ * desta conta **em outro computador** cai na hora, porque lá o cookie continua
+ * assinado com o hash velho. Trocar a senha é o gesto que expulsa quem ficou
+ * logado na máquina do turno anterior.
+ *
+ * A ordem das conferências é deliberada: tudo o que dá para responder sem tocar
+ * no banco vem antes do `compare`, que custa ~159ms. E o freio só conta falha
+ * da **senha atual** — errar a confirmação ou escolher uma senha curta é engano
+ * de digitação, não tentativa de adivinhação, e bloquear por isso trancaria a
+ * pessoa fora da própria conta por desastre no teclado.
+ */
+export async function alterarSenha(
+  admin: SessaoAdmin,
+  senhaAtualBruta: unknown,
+  senhaNovaBruta: unknown,
+  confirmacaoBruta: unknown,
+): Promise<TrocaDeSenha> {
+  const senhaAtual =
+    typeof senhaAtualBruta === "string" ? senhaAtualBruta : "";
+  const senhaNova = typeof senhaNovaBruta === "string" ? senhaNovaBruta : "";
+  const confirmacao =
+    typeof confirmacaoBruta === "string" ? confirmacaoBruta : "";
+
+  if (
+    senhaAtual.length === 0 ||
+    senhaNova.length === 0 ||
+    confirmacao.length === 0
+  ) {
+    return { resultado: "vazio" };
+  }
+
+  const segundos = segundosRestantes(porteirosDeTroca, admin.id);
+  if (segundos > 0) return { resultado: "bloqueado", segundos };
+
+  if (senhaNova !== confirmacao) return { resultado: "nao-confere" };
+
+  const problema = problemaDaNovaSenha(senhaNova);
+  if (problema) return { resultado: "fraca", motivo: problema };
+
+  // Compara o que a pessoa digitou nos dois campos, e não contra o banco: é
+  // barato, não vaza nada (são as duas entradas dela mesma) e evita gastar um
+  // `compare` para descobrir que nada mudaria.
+  if (senhaNova === senhaAtual) return { resultado: "igual-a-atual" };
+
+  const registro = await prisma.administrador.findUnique({
+    where: { id: admin.id },
+    select: { senha: true },
+  });
+  // A conta sumiu do banco entre o render e o clique. Do ponto de vista de quem
+  // está na tela é a mesma porta fechada de sempre.
+  if (!registro) return { resultado: "sem-sessao" };
+
+  if (!(await bcrypt.compare(senhaAtual, registro.senha))) {
+    anotarFalha(porteirosDeTroca, admin.id);
+    return { resultado: "atual-incorreta" };
+  }
+
+  await prisma.administrador.update({
+    where: { id: admin.id },
+    data: { senha: await bcrypt.hash(senhaNova, CUSTO_BCRYPT) },
+  });
+
+  porteirosDeTroca.delete(admin.id);
+
+  // Depois do update, e não antes: `criarSessao` relê o hash do banco para
+  // assinar, então é a leitura desta linha que faz o cookie novo valer.
+  await criarSessao(admin);
+
+  return { resultado: "ok" };
 }

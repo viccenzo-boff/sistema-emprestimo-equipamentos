@@ -5,9 +5,11 @@ import { redirect } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
 import {
+  alterarSenha,
   autenticar,
   criarSessao,
   encerrarSessao,
+  sessaoAdmin,
   temSessaoAdmin,
 } from "@/lib/sessao-admin";
 import { semAcento } from "@/lib/texto";
@@ -21,6 +23,7 @@ import {
   type RecebimentoConfirmado,
   type RecebimentoEmLote,
   type Resultado,
+  type SenhaAlterada,
 } from "@/lib/tipos";
 
 /**
@@ -155,6 +158,84 @@ export async function entrarNoAdmin(
 export async function sairDoAdmin(): Promise<void> {
   await encerrarSessao();
   redirect(RAIZ_DO_PAINEL);
+}
+
+/**
+ * "Alterar senha" da barra lateral (Tarefa 11, item 2).
+ *
+ * O alvo é **sempre quem está logado**, lido do cookie aqui dentro — a tela não
+ * manda id nenhum e não teria como. É a mesma regra que faz a devolução do
+ * tablet filtrar pela matrícula em vez de aceitar o id que veio da tela: Server
+ * Action é endpoint POST público, e aceitar "de quem é a senha" como parâmetro
+ * seria oferecer a troca de senha alheia a quem souber montar a chamada.
+ *
+ * O sucesso **não** redireciona, ao contrário do login e da saída: a spec pede
+ * aviso de sucesso e fechar o modal, e a pessoa continua onde estava. Quem
+ * mantém isso possível é o `criarSessao` de dentro de `alterarSenha` — sem ele
+ * a próxima requisição desta aba já cairia na tela de login.
+ *
+ * Não há `revalidatePath`: nada do que as cinco telas mostram depende da senha.
+ * O cookie novo vai na resposta desta própria chamada.
+ */
+export async function alterarSenhaDoAdmin(
+  senhaAtual: string,
+  senhaNova: string,
+  confirmacao: string,
+): Promise<Resultado<SenhaAlterada>> {
+  try {
+    const admin = await sessaoAdmin();
+    if (!admin) return semSessao();
+
+    const troca = await alterarSenha(admin, senhaAtual, senhaNova, confirmacao);
+
+    switch (troca.resultado) {
+      case "ok":
+        return { ok: true, dados: { nome: admin.nome } };
+
+      case "sem-sessao":
+        return semSessao();
+
+      case "vazio":
+        return falha(
+          "SENHA_VAZIA",
+          "Preencha os três campos.",
+          "A senha atual, a nova e a confirmação.",
+        );
+
+      case "nao-confere":
+        return falha(
+          "SENHA_NAO_CONFERE",
+          "A confirmação não bate com a nova senha.",
+          "Digite a nova senha igual nos dois campos de baixo.",
+        );
+
+      case "fraca":
+        return falha("SENHA_FRACA", troca.motivo);
+
+      case "igual-a-atual":
+        return falha(
+          "SENHA_IGUAL_A_ATUAL",
+          "A nova senha é igual à atual.",
+          "Escolha uma senha diferente da que você já usa.",
+        );
+
+      case "atual-incorreta":
+        return falha(
+          "SENHA_ATUAL_INCORRETA",
+          "Senha atual incorreta.",
+          "Confira o teclado e tente novamente.",
+        );
+
+      case "bloqueado":
+        return falha(
+          "MUITAS_TENTATIVAS",
+          "Muitas tentativas seguidas.",
+          `Aguarde ${troca.segundos} segundos antes de tentar de novo.`,
+        );
+    }
+  } catch (erro) {
+    return falhaInterna(erro);
+  }
 }
 
 /* ------------------------------------------------------------------------- *

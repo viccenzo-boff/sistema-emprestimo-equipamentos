@@ -3,17 +3,15 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { sairDoAdmin } from "@/app/admin/actions";
 import logoUnoesc from "@/assets/brand/logo-unoesc-colorido.png";
 import type { SessaoAdmin } from "@/lib/sessao-admin";
-import { Botao } from "@/components/ui/Botao";
+import { ContaDoAdmin } from "@/components/admin/ContaDoAdmin";
 import {
   IconeCaixa,
   IconeEtiquetas,
   IconeFila,
   IconePessoas,
   IconeRelogio,
-  IconeSair,
 } from "@/components/ui/icones";
 
 /**
@@ -46,11 +44,15 @@ type Props = {
   /**
    * Quem está logado agora (Tarefa 10).
    *
-   * O nome aparece embaixo da marca, onde antes havia a palavra "Secretaria"
-   * escrita à mão. Não é enfeite: é o motivo declarado da tarefa. Com senha
-   * única, "quem confirmou o recebimento deste equipamento?" não tinha resposta
-   * possível, e quem está de pé no balcão não tinha como saber sequer com qual
-   * conta o navegador ficou aberto desde o turno anterior.
+   * O nome substituiu a palavra "Secretaria", que era escrita à mão. Não é
+   * enfeite: é o motivo declarado daquela tarefa. Com senha única, "quem
+   * confirmou o recebimento deste equipamento?" não tinha resposta possível, e
+   * quem está de pé no balcão não sabia sequer com qual conta o navegador ficou
+   * aberto desde o turno anterior.
+   *
+   * Ficava embaixo da marca até a Tarefa 11, quando desceu para o
+   * [ContaDoAdmin](src/components/admin/ContaDoAdmin.tsx), no pé da barra —
+   * junto dos dois botões que agem sobre essa conta.
    */
   admin: SessaoAdmin;
   aba: AbaDoPainel;
@@ -116,33 +118,12 @@ export function CascaAdmin({
   return (
     <div className="flex min-h-full flex-1 flex-col lg:flex-row">
       <aside className="flex shrink-0 flex-col gap-8 border-b border-borda bg-superficie p-6 lg:w-72 lg:border-r lg:border-b-0 lg:p-7">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            {/* Import estático: largura e altura vêm do próprio arquivo. */}
-            <Image src={logoUnoesc} alt="Unoesc" className="h-10 w-auto" priority />
-            <p className="mt-3 text-sm leading-tight font-semibold text-tinta">
-              Painel Administrativo
-            </p>
-            {/*
-              O nome de quem entrou, no lugar do "Secretaria" que era fixo.
-
-              `break-words` porque o nome vem do banco e ninguém prometeu que
-              cabe em 18rem: um nome comprido sem quebra empurraria a barra
-              lateral inteira para fora do próprio recuo.
-            */}
-            <p className="text-sm leading-tight break-words text-tinta-tenue">
-              <span className="sr-only">Conectado como </span>
-              {admin.nome}
-            </p>
-          </div>
-
-          {/* Em telas estreitas a saída fica no topo, ao lado da marca. */}
-          <form action={sairDoAdmin} className="lg:hidden">
-            <Botao type="submit" variante="fantasma" tamanho="pequeno">
-              <IconeSair className="size-5" />
-              Sair
-            </Botao>
-          </form>
+        <div>
+          {/* Import estático: largura e altura vêm do próprio arquivo. */}
+          <Image src={logoUnoesc} alt="Unoesc" className="h-10 w-auto" priority />
+          <p className="mt-3 text-sm leading-tight font-semibold text-tinta">
+            Painel Administrativo
+          </p>
         </div>
 
         <nav aria-label="Seções do painel" className="lg:flex-1">
@@ -185,12 +166,7 @@ export function CascaAdmin({
           </ul>
         </nav>
 
-        <form action={sairDoAdmin} className="hidden lg:block">
-          <Botao type="submit" variante="secundario" tamanho="pequeno" larguraTotal>
-            <IconeSair className="size-5" />
-            Sair do painel
-          </Botao>
-        </form>
+        <ContaDoAdmin admin={admin} />
       </aside>
 
       <main className="flex-1 px-6 py-8 lg:px-10 lg:py-10">
