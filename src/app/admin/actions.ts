@@ -247,6 +247,7 @@ export async function alterarSenhaDoAdmin(
  *
  * É aqui — e só aqui — que o ciclo fecha:
  * - `Emprestimo`: `AGUARDANDO_BAIXA` -> `CONCLUIDO`.
+ * - `Emprestimo.data_baixa`: recebe o instante da conferência física.
  * - `Equipamento`: `EMPRESTADO` -> `DISPONIVEL`, voltando à vista do tablet.
  *
  * Os dois na mesma transação, porque metade disso é pior que nada: empréstimo
@@ -325,9 +326,14 @@ async function darBaixa(emprestimoId: number): Promise<RecebimentoConfirmado> {
       where: { id: emprestimoId, status: STATUS_EMPRESTIMO.aguardandoBaixa },
       data: {
         status: STATUS_EMPRESTIMO.concluido,
-        // A data que interessa para o inventário é a da conferência física,
-        // não a da declaração no tablet: é quando o equipamento voltou.
-        data_devolucao: new Date(),
+        // A conferência física entra em `data_baixa`, e a `data_devolucao`
+        // fica **intocada** com a declaração feita no tablet. Até a Tarefa 12
+        // esta linha era `data_devolucao: new Date()`: os dois eventos
+        // dividiam um campo só, e a baixa apagava a declaração. O intervalo
+        // entre os dois — o tempo em que o aparelho ficou na bancada, que é o
+        // gargalo que a secretaria quer enxergar — dava sempre zero, sem que
+        // nada acusasse.
+        data_baixa: new Date(),
       },
     });
 
