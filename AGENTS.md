@@ -730,19 +730,132 @@ fronteira exata do freio de tentativas (12).
 - **`TelaSenha` virou `TelaLogin`.** Um componente chamado "tela de senha" com
   dois campos manda a próxima pessoa procurar o campo que falta.
 
+**Tarefa 11 — Controle de sessão e perfil do admin (concluída):** os dois itens
+de [tarefa-11-sessao-e-perfil.md](tarefa-11-sessao-e-perfil.md) — o Logout com o
+nome de quem está logado e o modal "Alterar senha" com os três campos, validado
+por `bcryptjs.compare` e gravado com `bcryptjs.hash`. `tsc`, `lint` e `build` em
+0, com as cinco rotas do painel dinâmicas (`ƒ`).
+
+**O item 1 já existia desde a Tarefa 10 e não foi reimplementado.** O verbo do
+enunciado era "garanta que exista", que é dúvida declarada e não mudança pedida:
+`sairDoAdmin` já apagava o cookie e redirecionava, e o nome já aparecia na barra.
+O que mudou foi só o arranjo — ver a primeira decisão abaixo.
+
+Verificação em quatro frentes, com o banco comparado com a linha de base no fim:
+premissas do bcrypt e da assinatura do cookie por script, em cópia do `dev.db`
+(17 asserções); HTTP real contra o servidor de produção, com cookie ausente,
+forjado e legítimo (31); navegador real por CDP, cobrindo login, modal, os cinco
+erros, o sucesso e a volta (41); e a medida da faixa horizontal abaixo de `lg`
+(16). Mais a prova do caminho de recuperação documentado — apagar a linha e
+ressemear — em cópia.
+
+**Decisões da Tarefa 11** (não refazer sem motivo):
+
+- **Trocar a senha derruba a própria sessão, e por isso a action reemite o
+  cookie.** A chave que assina o cookie é o hash bcrypt da conta (decisão da
+  Tarefa 10): gravar um hash novo é, por construção, trocar a chave. Sem o
+  `criarSessao` no fim de `alterarSenha`, a pessoa seria expulsa para o login
+  **antes** de ver o aviso de sucesso, e a leitura natural disso é "deu erro" —
+  o enunciado pede exatamente o contrário ("exiba uma notificação de sucesso e
+  feche o modal"). Medido em cópia do banco antes de virar desenho: dois
+  `bcrypt.hash` da mesma senha dão hashes diferentes, a assinatura antiga para
+  de bater, a refeita bate. **O efeito colateral joga a favor e é o motivo
+  declarado da sprint:** a mesma conta aberta em outro computador cai na
+  requisição seguinte — trocar a senha é o gesto que expulsa quem ficou logado
+  na máquina do turno anterior. Exercitado por HTTP: cookie velho volta para o
+  login, cookie novo continua no painel.
+- **O teto da senha é de 72 bytes, e não de caracteres.** O bcrypt trunca em 72
+  bytes e ignora o resto **em silêncio**. Um `maxLength={72}` no `<input>`
+  contaria caracteres: 40 letras acentuadas são 40 caracteres e 80 bytes, então
+  passariam — gravando o hash do pedaço e deixando valer uma senha mais curta do
+  que a escolhida, sem erro em lugar nenhum. Por isso não há `maxLength` no
+  campo e a conta é feita no servidor, com `TextEncoder`. Medido: `"á"` custa 2
+  bytes, um emoji custa 4, e uma senha de 73 caracteres valida contra o hash dos
+  72 primeiros.
+- **Identidade e ação moram no mesmo bloco, no pé da barra.** O nome ficava
+  embaixo da marca desde a Tarefa 10 e desceu para junto dos dois botões. A
+  pergunta que a sprint existe para responder é "quem está logado neste
+  computador, e como eu troco isso?", e ela se responde melhor com as três
+  coisas juntas — que é também o que o enunciado pede ao pé da letra ("botão de
+  Sair acompanhado do nome do administrador logado"). O "Sair" no canto superior
+  das telas estreitas sumiu junto: agora o bloco inteiro vai depois da navegação
+  nos dois layouts. Custo medido: a faixa horizontal abaixo de `lg` passou a
+  364px de altura em 900px de largura, sem rolagem horizontal em nenhuma das
+  sete larguras conferidas.
+- **`ContaDoAdmin` é uma ilha só, montada uma vez.** Duas cópias do bloco (uma
+  para a coluna, outra para a faixa) dariam dois `<dialog>` no documento, e um
+  `showModal()` no elemento errado abre um diálogo vazio. Quem se adapta é o
+  `flex`, não a quantidade de componentes.
+- **O modal é montado sob condição, e não renderizado sempre com
+  `aberto={false}`.** Componente que devolve `null` **não** desmonta: continua
+  na árvore, e o estado junto. Com o modal sempre montado, o "Senha atual
+  incorreta" de ontem estaria esperando na próxima abertura — e a tentativa de
+  limpar isso num efeito é justamente o que o `react-hooks/set-state-in-effect`
+  recusa (a lint pegou). Montar sob condição resolve os dois de uma vez e leva
+  embora, de quebra, os três campos de senha do documento.
+- **O `<form>` do modal NÃO é um `action` de servidor**, ao contrário do login.
+  O React 19 limpa o formulário sozinho quando uma action de formulário termina
+  — inclusive quando ela termina em erro. Com senha isso é cruel: quem errou a
+  confirmação teria de redigitar os três campos. A action é chamada à mão dentro
+  de `useTransition`, e o erro aparece com o que foi digitado ainda na tela.
+  Conferido no navegador: depois da recusa, os três campos seguem com 9, 10 e 11
+  caracteres.
+- **O freio da "Senha atual" é um mapa separado, chaveado pelo `id` da conta.**
+  Dentro do painel não existe login digitado — a sessão só carrega `id` e
+  `nome`. E compartilhar o mapa do login juntaria as duas contagens debaixo de
+  uma chave de texto onde um login gravado à mão no `db:studio` poderia colidir.
+  O freio existe porque "Senha atual" é uma verificação de senha de graça para
+  quem senta num navegador deixado logado: essa pessoa já tem o painel, o que
+  ela **não** tem é acesso persistente — e adivinhar a senha atual daria isso,
+  além de trancar o dono para fora. Medido por HTTP, a mesma fronteira da Tarefa
+  10: a quinta falha responde "incorreta" e arma o bloqueio, a sexta é a
+  primeira barrada, e nesse intervalo nem a senha certa passa.
+- **Só a senha atual errada conta falha no freio.** Errar a confirmação ou
+  escolher uma senha curta é engano de digitação, não tentativa de adivinhação;
+  contar esses bloquearia a pessoa fora da própria conta por desastre no teclado.
+- **A regra da senha nova é só comprimento: mínimo de 8.** O enunciado não define
+  nenhuma. Exigir também número e símbolo criaria quatro maneiras de a troca ser
+  recusada para quem está de pé no balcão, numa rede local fechada que já tem
+  freio — e não existe "esqueci minha senha" neste MVP, então cada recusa a mais
+  é um passo a mais rumo ao `db:studio`. Foi levantado como decisão antes de
+  escrever código.
+- **O modal diz as duas consequências antes do clique, não depois.** Que a conta
+  cai nos outros computadores (é ferramenta, não susto) e que não há recuperação
+  pela tela. A segunda é a resposta da varredura de reversibilidade: o caminho de
+  volta é apagar a linha no `db:studio` e ressemear — exercitado nesta sessão em
+  cópia, com a conta recriada validando `Mudar@123`.
+- **`CUSTO_BCRYPT` mudou de dono para [senha.ts](src/lib/senha.ts).** Estava só
+  no `prisma/seed.ts`; com o painel também gerando hash, seriam duas constantes
+  de mesmo nome em arquivos diferentes — duas regras assim que uma fosse
+  ajustada. O módulo é neutro de propósito (não importa `next/headers`, nem o
+  Prisma, nem `Buffer`), o que o deixa ser lido pelo `tsx` no terminal, pelo
+  servidor e pelo navegador, que precisa do mínimo para escrever a dica embaixo
+  do campo.
+- **`campoComErro` subiu do `TelaLogin` para o `Campo.tsx`.** Mesmo argumento, e
+  a segunda cópia teria nascido nesta tarefa. A função não deriva do `CAMPO`
+  porque aquele traz `border-borda` fixo, e pintar a borda de vermelho por cima
+  seria somar duas utilidades da mesma propriedade — a armadilha de ordem do
+  Tailwind 4 já registrada. O login foi medido de novo depois da extração, e
+  continua cabendo: o "Entrar" termina em 599px sem erro e 629px com erro, em
+  uma janela de 768px.
+- **O aviso de sucesso nomeia a conta** ("Senha da conta Secretaria alterada").
+  São quatro contas e um computador só — "Senha alterada" sem o nome é
+  justamente a frase que não resolve a dúvida que a sprint existe para resolver.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
 coordenação e — agora que existe conta individual — registrar **quem** deu baixa
 em cada empréstimo (o `Emprestimo` não tem essa coluna; a Tarefa 10 criou a
-identidade, não o rastro). Nada disso está na spec — confirmar antes de
-construir.
+identidade, a 11 deu a cada pessoa uma senha própria, e o rastro continua não
+existindo). Nada disso está na spec — confirmar antes de construir.
 
 ### Ambiente
 
 - **Não existe mais `ADMIN_PASSWORD`** (Tarefa 10). As contas do painel estão na
   tabela `Administrador` e nascem com `npm run db:seed`, todas com a senha
-  `Mudar@123` — **trocar antes de usar na secretaria**. O `.env` agora só tem
-  `DATABASE_URL`.
+  `Mudar@123` — **trocar antes de usar na secretaria**, e a partir da Tarefa 11
+  isso se faz pelo próprio painel ("Alterar senha", no rodapé da barra lateral).
+  O `.env` agora só tem `DATABASE_URL`.
 - **`bcryptjs` (não `bcrypt`) e sem `@types/bcryptjs`.** O `bcryptjs` é
   JavaScript puro, sem compilação nativa — o que importa numa máquina Windows
   de secretaria sem toolchain de C++. E o pacote `@types/bcryptjs` que o

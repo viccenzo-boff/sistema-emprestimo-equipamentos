@@ -163,12 +163,15 @@ As quatro contas padrão nascem com `npm run db:seed`:
 | `jeanzao`    | Jeanzão    |
 | `viccenzo`   | Viccenzo   |
 
-Todas com a senha inicial **`Mudar@123`** — troque antes de usar na secretaria.
+Todas com a senha inicial **`Mudar@123`** — troque antes de usar na secretaria. A troca é feita
+pelo próprio painel: **Alterar senha**, no rodapé da barra lateral (Tarefa 11). O modal pede a
+senha atual, a nova e a confirmação; a nova precisa ter **pelo menos 8 caracteres** e no máximo
+72 bytes (é onde o bcrypt trunca — acentos contam 2 e emojis contam 4).
 
-> Não há tela de cadastro de administrador neste MVP, por decisão da Tarefa 10. Para **trocar uma
-> senha**, edite o hash pelo `npm run db:studio`. Para **recuperar** uma senha esquecida, apague a
-> linha no Studio e rode `npm run db:seed` de novo — ele recria a conta com a senha padrão e
-> **não** mexe na senha das contas que já existem.
+> Não há tela de cadastro de administrador neste MVP, por decisão da Tarefa 10 — e, por
+> consequência, **não há "esqueci minha senha"**. Para **recuperar** uma senha esquecida, apague a
+> linha no `npm run db:studio` e rode `npm run db:seed` de novo: ele recria a conta com a senha
+> padrão e **não** mexe na senha das contas que já existem.
 
 O cookie não guarda a senha nem o hash: guarda `id`, `nome` e prazo de validade, mais uma
 assinatura HMAC-SHA256 dos três — cuja **chave é o próprio hash bcrypt daquele administrador**.
@@ -180,7 +183,12 @@ Na prática:
   no boot).
 - Não existe segredo de sessão no `.env` para alguém esquecer de configurar.
 - Depois de 5 tentativas erradas seguidas **no mesmo usuário**, a sexta é bloqueada por 1 minuto.
-  O contador é por login: quem erra a própria senha não tranca o painel para os colegas.
+  O contador é por login: quem erra a própria senha não tranca o painel para os colegas. O campo
+  "Senha atual" do modal de troca tem o mesmo freio, contado **por conta** e separado do login.
+- **Trocar a própria senha reemite o cookie desta aba e derruba as outras.** Quem trocou continua
+  trabalhando; a mesma conta aberta em outro computador cai na requisição seguinte. É consequência
+  direta de a chave da assinatura ser o hash — e é a forma de expulsar quem ficou logado na máquina
+  do turno anterior.
 - "Usuário ou senha inválidos" é uma mensagem só, e o tempo de resposta é o mesmo nos dois casos —
   dizer qual metade errou entregaria metade da credencial.
 - O login **não diferencia maiúscula de minúscula**, e espaços em volta são ignorados. Importa

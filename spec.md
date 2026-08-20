@@ -72,6 +72,12 @@ Registra os logs de movimentação (um log isolado por item).
 > responsabilização: com senha única, "quem confirmou o recebimento deste
 > equipamento?" não tinha resposta possível. A variável `ADMIN_PASSWORD` **não
 > existe mais**.
+>
+> A Tarefa 11 acrescentou o **Logout** e a troca da **própria** senha por um
+> modal no painel. Isso não afrouxa a regra acima: continua não havendo cadastro
+> de administrador pela interface, nem papéis, nem recuperação por e-mail — quem
+> troca a senha precisa saber a senha atual, e senha esquecida ainda se resolve
+> apagando a linha no `db:studio` e ressemeando.
 * **Funcionalidades:**
   1. **Fila de Devoluções:** Uma visualização em destaque mostrando todos os empréstimos `AGUARDANDO_BAIXA`. A secretária pega o equipamento na bancada e clica em "Confirmar Recebimento". O `Emprestimo` vai para `CONCLUIDO` e o `Equipamento` volta para `DISPONIVEL`.
   2. **Gestão de Inventário:** Mudar o status de equipamentos para `MANUTENCAO` (removendo-os da visão do tablet) ou cadastrar novos.
