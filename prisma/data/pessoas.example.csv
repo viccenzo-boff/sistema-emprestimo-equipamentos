@@ -1,5 +1,5 @@
 matricula,nome,perfil,cursos
-0012345,Ana Souza,ALUNO,Sistemas de Informação
-0023456,Bruno Lima,ALUNO,Ciência da Computação
-0034567,Carla Mendes,ALUNO,"Ciência da Computação, Engenharia da Computação"
-9001,Prof. Daniel Rocha,PROFESSOR,"Sistemas de Informação, Ciência da Computação"
+0012345,Ana Souza,Estudante,Sistemas de Informação
+0023456,Bruno Lima,Estudante,Ciência da Computação
+0034567,Carla Mendes,Estudante,"Ciência da Computação, Engenharia da Computação"
+9001,Prof. Daniel Rocha,Professor,"Sistemas de Informação, Ciência da Computação"

@@ -48,13 +48,29 @@ export const STATUS_PESSOA = {
  * Os dois perfis da spec (seção 3).
  *
  * Vira lista fechada aqui porque a importação de planilha precisa **recusar**
- * um valor que não seja um dos dois: "alunos", "estudante" e "prof" chegam de
- * planilha de coordenação o tempo todo, e aceitar cada variante criaria perfis
- * que nenhuma tela sabe exibir.
+ * um valor que não seja um dos dois: "servidor", "terceirizado" e "convidado"
+ * chegam de planilha de coordenação, e aceitar cada variante criaria perfis que
+ * nenhuma tela sabe exibir. As variantes que *são* uma das duas coisas
+ * ("alunos", "prof", "docente") são reconhecidas e convertidas — ver
+ * `normalizarPerfil` em [sanitizacao.ts](src/lib/sanitizacao.ts).
+ *
+ * **Os valores mudaram na Tarefa 8.1**, e mudaram em duas dimensões de uma vez:
+ * "ALUNO" virou `"Estudante"`. O termo é o que a tarefa pede (o vocabulário da
+ * instituição mudou), e a caixa passou a ser a **exibida** porque o enunciado
+ * manda gravar exatamente "Estudante" ou "Professor". A consequência boa é que
+ * a tela não precisa mais de um `de-para`: o valor gravado já é o rótulo, e as
+ * três telas que faziam `perfil === "PROFESSOR" ? "Professor" : "Aluno"` viraram
+ * uma chamada a `rotuloDePerfil`.
+ *
+ * A consequência a conhecer é que `STATUS_PESSOA` e `STATUS_EQUIPAMENTO`
+ * continuam em caixa alta, então **a tabela `Pessoa` tem duas convenções de
+ * caixa lado a lado**. É intencional: nenhum outro campo é exibido cru, e
+ * uniformizar significaria ou gritar "ESTUDANTE" na tabela ou reescrever os
+ * quatro status por simetria.
  */
 export const PERFIL = {
-  aluno: "ALUNO",
-  professor: "PROFESSOR",
+  estudante: "Estudante",
+  professor: "Professor",
 } as const;
 
 /** Teto de itens por retirada. Segura tanto o dedo escorregando quanto POST malicioso. */
@@ -385,7 +401,7 @@ export type PessoaDoPainel = {
 export type ResumoDePessoas = {
   ativos: number;
   inativos: number;
-  alunos: number;
+  estudantes: number;
   professores: number;
   total: number;
 };

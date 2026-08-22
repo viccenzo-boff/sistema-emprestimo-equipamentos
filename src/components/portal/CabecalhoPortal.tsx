@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import logoUnoesc from "@/assets/brand/logo-unoesc-colorido.png";
 import { Botao } from "@/components/ui/Botao";
+import { rotuloDePerfil } from "@/lib/sanitizacao";
 import type { PessoaIdentificada } from "@/lib/tipos";
 
 /**
@@ -37,7 +38,7 @@ export function CabecalhoPortal({ pessoa, onSair }: Props) {
               {pessoa.nome}
             </p>
             <p className="numeros-tabulares text-sm text-tinta-suave">
-              {pessoa.perfil === "PROFESSOR" ? "Professor" : "Aluno"} ·{" "}
+              {rotuloDePerfil(pessoa.perfil)} ·{" "}
               {pessoa.matricula}
             </p>
           </div>

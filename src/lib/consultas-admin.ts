@@ -334,7 +334,7 @@ export async function resumirPessoas(): Promise<ResumoDePessoas> {
   return {
     ativos: status.get(STATUS_PESSOA.ativo) ?? 0,
     inativos: status.get(STATUS_PESSOA.inativo) ?? 0,
-    alunos: perfil.get(PERFIL.aluno) ?? 0,
+    estudantes: perfil.get(PERFIL.estudante) ?? 0,
     professores: perfil.get(PERFIL.professor) ?? 0,
     total,
   };

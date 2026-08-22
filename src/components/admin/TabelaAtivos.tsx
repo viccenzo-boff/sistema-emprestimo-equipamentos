@@ -1,4 +1,5 @@
 import { IconeCategoria, IconeRelogio } from "@/components/ui/icones";
+import { rotuloDePerfil } from "@/lib/sanitizacao";
 import type { EmprestimoEmCurso } from "@/lib/tipos";
 
 /**
@@ -90,7 +91,7 @@ export function TabelaAtivos({ emprestimos }: Props) {
                     {emprestimo.nome}
                   </span>
                   <span className="numeros-tabulares block text-sm text-tinta-suave">
-                    {emprestimo.perfil === "PROFESSOR" ? "Professor" : "Aluno"} ·{" "}
+                    {rotuloDePerfil(emprestimo.perfil)} ·{" "}
                     {emprestimo.matricula}
                   </span>
                 </td>

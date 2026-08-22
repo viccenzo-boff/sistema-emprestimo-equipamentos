@@ -11,18 +11,18 @@ import { PERFIL, STATUS_PESSOA, type ResumoDePessoas } from "@/lib/tipos";
  *
  * **Os números são sempre do cadastro inteiro, e não do que os filtros
  * mostram.** É a mesma regra do inventário e existe pelo mesmo motivo: a
- * pergunta "quantos alunos temos ativos?" não pode mudar de resposta porque
+ * pergunta "quantos estudantes temos ativos?" não pode mudar de resposta porque
  * alguém deixou uma busca digitada na barra abaixo.
  *
  * O cartão de inativos só aparece quando existe algum — um zero permanente
  * ocupa um quarto da faixa para não informar nada. Os de perfil aparecem
- * sempre: a proporção aluno/professor é a leitura que a coordenação faz, e
+ * sempre: a proporção estudante/professor é a leitura que a coordenação faz, e
  * "0 professores" é uma informação de verdade.
  */
 export function ResumoPessoas({
   ativos,
   inativos,
-  alunos,
+  estudantes,
   professores,
   total,
 }: ResumoDePessoas) {
@@ -46,8 +46,8 @@ export function ResumoPessoas({
           </Cartao>
         ) : null}
 
-        <Cartao valor={alunos}>
-          <SeloPerfil perfil={PERFIL.aluno} />
+        <Cartao valor={estudantes}>
+          <SeloPerfil perfil={PERFIL.estudante} />
         </Cartao>
 
         <Cartao valor={professores}>

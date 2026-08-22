@@ -13,6 +13,7 @@ import { Alerta } from "@/components/ui/Alerta";
 import { Botao } from "@/components/ui/Botao";
 import { IconeCategoria, IconeCheck } from "@/components/ui/icones";
 import { Notificacao } from "@/components/ui/Notificacao";
+import { rotuloDePerfil } from "@/lib/sanitizacao";
 import {
   STATUS_EQUIPAMENTO,
   type ItemDaFila,
@@ -221,7 +222,7 @@ export function FilaDeDevolucoes({ itens }: Props) {
                   </p>
 
                   <p className="numeros-tabulares text-base text-tinta-suave">
-                    {item.perfil === "PROFESSOR" ? "Professor" : "Aluno"} ·{" "}
+                    {rotuloDePerfil(item.perfil)} ·{" "}
                     {item.matricula}
                   </p>
 

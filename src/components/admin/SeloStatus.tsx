@@ -1,4 +1,5 @@
-import { PERFIL, STATUS_EQUIPAMENTO, STATUS_PESSOA } from "@/lib/tipos";
+import { rotuloDePerfil } from "@/lib/sanitizacao";
+import { STATUS_EQUIPAMENTO, STATUS_PESSOA } from "@/lib/tipos";
 
 /**
  * A situação de um equipamento, em uma palavra.
@@ -127,12 +128,15 @@ export function SeloStatusPessoa({ status, className = "" }: Props) {
  * O perfil, em uma palavra.
  *
  * Sem cor de estado de propósito: perfil não é situação — professor não é
- * "melhor" nem "pior" que aluno, e pintar os dois com a paleta semântica faria
- * a coluna competir com o selo ao lado, que **é** situação.
+ * "melhor" nem "pior" que estudante, e pintar os dois com a paleta semântica
+ * faria a coluna competir com o selo ao lado, que **é** situação.
+ *
+ * O `de-para` que existia aqui saiu na Tarefa 8.1: o banco agora grava o valor
+ * já na forma exibida, e quem cuida do caso legado ("ALUNO" em caixa alta, de
+ * uma linha que escapou da migration) é o `rotuloDePerfil`.
  */
 export function SeloPerfil({ perfil, className = "" }: { perfil: string; className?: string }) {
-  const rotulo =
-    perfil === PERFIL.aluno ? "Aluno" : perfil === PERFIL.professor ? "Professor" : perfil;
+  const rotulo = rotuloDePerfil(perfil);
 
   return (
     <span

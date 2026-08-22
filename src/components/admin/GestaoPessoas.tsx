@@ -535,7 +535,7 @@ function BarraDeFiltros({
           onChange={(evento) => onPerfil(evento.target.value)}
         >
           <option value="">Todos os perfis</option>
-          <option value={PERFIL.aluno}>Aluno</option>
+          <option value={PERFIL.estudante}>Estudante</option>
           <option value={PERFIL.professor}>Professor</option>
         </Selecao>
 
@@ -742,7 +742,7 @@ function ModalDeEdicao({
               defaultValue={pessoa.perfil}
               disabled={salvando}
             >
-              <option value={PERFIL.aluno}>Aluno</option>
+              <option value={PERFIL.estudante}>Estudante</option>
               <option value={PERFIL.professor}>Professor</option>
             </Selecao>
           </div>

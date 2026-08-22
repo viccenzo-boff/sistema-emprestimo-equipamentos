@@ -11,9 +11,9 @@ import {
   type PessoaExistente,
 } from "@/lib/planilha-pessoas";
 import { prisma } from "@/lib/prisma";
+import { normalizarPerfil } from "@/lib/sanitizacao";
 import { temSessaoAdmin } from "@/lib/sessao-admin";
 import {
-  PERFIL,
   STATUS_EMPRESTIMO,
   STATUS_PESSOA,
   type ImportacaoConcluida,
@@ -443,9 +443,24 @@ export async function editarPessoa(
 
   const matricula = texto(dados.matricula);
   const nome = texto(dados.nome);
-  const perfil = texto(dados.perfil).toUpperCase();
   const cursos = texto(dados.cursos);
   const status = texto(dados.status).toUpperCase();
+
+  /*
+    O perfil passa pelo `normalizarPerfil` da Tarefa 8.1, e não mais por um
+    `.toUpperCase()` comparado com a constante.
+
+    Não é limpeza de estilo: com `PERFIL.estudante` valendo "Estudante", o
+    `.toUpperCase()` produzia "ESTUDANTE" e a comparação seguinte falhava
+    **sempre** — a edição manual inteira passaria a responder "Perfil inválido"
+    para o valor que o próprio `<select>` da tela acabou de enviar. O defeito
+    não apareceria no `tsc` nem no lint, porque os dois lados são `string`.
+
+    De quebra, o campo aceita agora o que a importação aceita: um "ALUNO" antigo
+    reenviado por um POST forjado, ou por uma aba aberta desde antes da
+    migration, é convertido em vez de recusado.
+  */
+  const perfil = normalizarPerfil(texto(dados.perfil));
 
   if (!MATRICULA_VALIDA.test(matricula)) {
     return falha("MATRICULA_INVALIDA", "Matrícula inválida.", AJUDA_DA_MATRICULA);
@@ -459,11 +474,11 @@ export async function editarPessoa(
     );
   }
 
-  if (perfil !== PERFIL.aluno && perfil !== PERFIL.professor) {
+  if (perfil === null) {
     return falha(
       "PERFIL_INVALIDO",
       "Perfil inválido.",
-      "Use Aluno ou Professor.",
+      "Use Estudante ou Professor.",
     );
   }
 

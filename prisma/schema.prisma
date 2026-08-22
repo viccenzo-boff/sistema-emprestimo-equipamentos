@@ -22,11 +22,36 @@ datasource db {
 model Pessoa {
   /// Chave primária. String para preservar zeros à esquerda.
   matricula String @id
-  /// Nome completo.
+  /// Nome completo, em Title Case ("Ana Maria de Souza").
+  ///
+  /// A forma é garantida na escrita, não na leitura: tanto a importação de
+  /// planilha quanto o seed passam o valor por `normalizarNome`
+  /// ([sanitizacao.ts](../src/lib/sanitizacao.ts)) antes de gravar. Sem isso a
+  /// mesma pessoa entrava três vezes com três grafias, e a busca do painel
+  /// achava uma e perdia as outras.
   nome      String
-  /// "ALUNO" ou "PROFESSOR".
+  /// "Estudante" ou "Professor" (Tarefa 8.1).
+  ///
+  /// Eram "ALUNO" e "PROFESSOR" até a Tarefa 8.1, que mudou o termo e a caixa
+  /// de uma vez: o vocabulário da instituição passou a ser "Estudante", e o
+  /// valor é gravado **na forma exibida** porque a tarefa pede exatamente isso.
+  /// A consequência boa é que a tela não tem mais um `de-para` de perfil.
+  ///
+  /// A planilha pode trazer qualquer variante ("aluno", "Alunos", "prof",
+  /// "Docente"): quem converte é `normalizarPerfil`. O que **não** for uma das
+  /// duas coisas reprova a linha na importação — perfil adivinhado errado muda
+  /// quem pode retirar equipamento e não deixa rastro.
   perfil    String
   /// Cursos vinculados (ex: "Sistemas de Informação, Ciência da Computação").
+  ///
+  /// String única separada por ", ", **sempre na ordem hierárquica** de
+  /// `CURSOS_OFICIAIS` (Sistemas de Informação, Ciência da Computação,
+  /// Engenharia da Computação), com os cursos fora dessa lista no fim, em ordem
+  /// alfabética. Siglas e variações ("SI", "ciencia da computacao") são
+  /// convertidas na escrita por `normalizarCursos`.
+  ///
+  /// A ordem fixa é o que faz "EC, SI" e "SI, EC" gravarem a mesma string — sem
+  /// ela, a busca do painel depende de como a coordenação digitou.
   cursos    String
   /// "ATIVO" ou "INATIVO" (Tarefa 8).
   ///

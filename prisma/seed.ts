@@ -13,6 +13,13 @@ import { PrismaClient } from "../src/generated/prisma/client";
 // propósito — não importa `next/headers` nem o Prisma —, e por isso pode ser
 // lido daqui, de dentro do `tsx` no terminal.
 import { CUSTO_BCRYPT } from "../src/lib/senha";
+// Mesmo argumento do `CUSTO_BCRYPT` acima, e o motivo é mais forte aqui: o CSV
+// da coordenação é a **outra** porta de entrada dos mesmos dados que a planilha
+// .xlsx do painel. Sem estas funções, `db:seed` reintroduziria em minutos a
+// sujeira que a Tarefa 8.1 acabou de tirar do banco — "ALUNO" em caixa alta,
+// "SI" em vez do nome do curso, nome todo em maiúscula.
+import { normalizarCursos, normalizarNome, normalizarPerfil } from "../src/lib/sanitizacao";
+import { PERFIL } from "../src/lib/tipos";
 
 /**
  * Seed do Sistema de Empréstimo de Equipamentos (Unoesc).
@@ -91,25 +98,25 @@ const PESSOAS_EXEMPLO: PessoaSeed[] = [
   {
     matricula: "0012345",
     nome: "Ana Souza",
-    perfil: "ALUNO",
+    perfil: PERFIL.estudante,
     cursos: "Sistemas de Informação",
   },
   {
     matricula: "0023456",
     nome: "Bruno Lima",
-    perfil: "ALUNO",
+    perfil: PERFIL.estudante,
     cursos: "Ciência da Computação",
   },
   {
     matricula: "0034567",
     nome: "Carla Mendes",
-    perfil: "ALUNO",
+    perfil: PERFIL.estudante,
     cursos: "Engenharia da Computação",
   },
   {
     matricula: "9001",
     nome: "Prof. Daniel Rocha",
-    perfil: "PROFESSOR",
+    perfil: PERFIL.professor,
     cursos: "Sistemas de Informação, Ciência da Computação",
   },
 ];
@@ -135,7 +142,14 @@ const ADMINISTRADORES: { nome: string; usuario: string }[] = [
 /** Senha inicial das quatro contas. Existe para ser trocada. */
 const SENHA_PADRAO = "Mudar@123";
 
-/** Remove acentos e normaliza para comparar cabeçalhos e o campo perfil. */
+/**
+ * Remove acentos e normaliza para comparar **cabeçalhos**.
+ *
+ * Também servia ao campo perfil até a Tarefa 8.1; hoje quem cuida disso é o
+ * `normalizarPerfil` de [sanitizacao.ts](../src/lib/sanitizacao.ts), que a
+ * importação do painel usa. Esta continua aqui só porque o seed lê CSV e o
+ * leitor de .xlsx lê outra coisa — os cabeçalhos dos dois não são a mesma lista.
+ */
 function normalizar(texto: string): string {
   return texto
     .normalize("NFD")
@@ -217,32 +231,63 @@ function lerPessoasDoCsv(caminho: string): PessoaSeed[] {
 
   const porMatricula = new Map<string, PessoaSeed>();
   const ignoradas: number[] = [];
+  /** Perfis que o mapeamento não reconheceu e que caíram no padrão. */
+  const perfisAdivinhados: string[] = [];
 
   linhas.slice(1).forEach((linha, indice) => {
     const campos = dividirLinha(linha, delimitador);
     // A matrícula é mantida como string para preservar zeros à esquerda.
     const matricula = campos[iMatricula]?.trim() ?? "";
-    const nome = campos[iNome]?.trim() ?? "";
+    // A sanitização vem antes da checagem de vazio: um nome que era só lixo
+    // ("12345", "@@@") sai daqui como "" e a linha é ignorada, em vez de virar
+    // um cadastro com nome impronunciável.
+    const nome = normalizarNome(campos[iNome] ?? "");
 
     if (!matricula || !nome) {
       ignoradas.push(indice + 2); // +2: linha do cabeçalho + índice base 1
       return;
     }
 
-    const perfilBruto = iPerfil >= 0 ? normalizar(campos[iPerfil] ?? "") : "";
-    const perfil = perfilBruto.startsWith("prof") ? "PROFESSOR" : "ALUNO";
+    /*
+      O seed **mantém o padrão permissivo** que sempre teve (o que não é
+      professor é estudante), e nisso difere de propósito da importação do
+      painel, que reprova a linha.
+
+      A diferença é o que cada uma tem à disposição quando erra. A importação
+      tem a prévia: mostra a linha reprovada com o valor que veio, e alguém
+      corrige a planilha antes de qualquer escrita. O seed é um comando de
+      terminal cujo trabalho é deixar o banco utilizável — reprovar linha ali
+      significaria um sistema sem metade dos cadastros e ninguém para ver.
+
+      O que mudou é que agora ele **avisa**: antes, "Servidor" virava aluno em
+      silêncio absoluto.
+    */
+    const perfilBruto = iPerfil >= 0 ? (campos[iPerfil] ?? "").trim() : "";
+    const perfil = normalizarPerfil(perfilBruto) ?? PERFIL.estudante;
+
+    if (perfilBruto.length > 0 && normalizarPerfil(perfilBruto) === null) {
+      perfisAdivinhados.push(perfilBruto);
+    }
 
     porMatricula.set(matricula, {
       matricula,
       nome,
       perfil,
-      cursos: (iCursos >= 0 ? campos[iCursos]?.trim() : "") ?? "",
+      cursos: normalizarCursos(iCursos >= 0 ? (campos[iCursos] ?? "") : ""),
     });
   });
 
   if (ignoradas.length > 0) {
     console.warn(
       `  ${ignoradas.length} linha(s) ignorada(s) por falta de matrícula ou nome: ${ignoradas.join(", ")}`,
+    );
+  }
+
+  if (perfisAdivinhados.length > 0) {
+    const distintos = [...new Set(perfisAdivinhados)];
+    console.warn(
+      `  ${perfisAdivinhados.length} linha(s) com perfil não reconhecido, gravadas como ` +
+        `${PERFIL.estudante}: ${distintos.join(", ")}`,
     );
   }
 

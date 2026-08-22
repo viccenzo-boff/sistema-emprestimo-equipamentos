@@ -1,8 +1,13 @@
 import * as XLSX from "xlsx";
 
+import {
+  normalizarCursos,
+  normalizarNome,
+  normalizarPerfil,
+  normalizarStatusPessoa,
+} from "@/lib/sanitizacao";
 import { semAcento } from "@/lib/texto";
 import {
-  PERFIL,
   STATUS_PESSOA,
   type AcaoDaLinha,
   type LinhaDaImportacao,
@@ -399,6 +404,12 @@ export type OperacaoDaLinha =
  * Escrever como três ramos separados foi tentado e descartado: os ramos
  * repetiam a validação de perfil e status, e a primeira divergência entre as
  * cópias seria silenciosa (uma aceitando "Ativo", outra não).
+ *
+ * **É aqui também que a sanitização da Tarefa 8.1 roda** — nome em Title Case,
+ * perfil mapeado para "Estudante"/"Professor", cursos reconhecidos e ordenados.
+ * A posição não é livre: tem que ser antes de `considerar()`, senão a comparação
+ * com o banco veria o valor cru e marcaria como "atualizar" toda linha de uma
+ * planilha reenviada sem uma única mudança real.
  */
 export function montarPlano(
   linhas: LinhaLida[],
@@ -425,44 +436,81 @@ export function montarPlano(
 
     const atual = existentes.get(linha.matricula);
 
-    // Perfil e status são validados uma vez só, valham eles para criar ou para
-    // atualizar. `null` = veio um valor e ele é inválido.
+    /*
+      A sanitização da Tarefa 8.1 acontece **aqui**, e o lugar é a regra.
+
+      Tem que ser depois da leitura (que distingue "a planilha não disse" de "a
+      planilha disse") e **antes** da comparação com o banco, logo abaixo. Se
+      rodasse depois de `considerar()`, o valor cru é que seria comparado: uma
+      planilha reenviada com "ANA MARIA DE SOUZA" acharia diferente do "Ana
+      Maria de Souza" gravado, e as 180 linhas do semestre inteiro apareceriam
+      como "atualizar" toda vez — o oposto do que a categoria `inalterada`
+      existe para fazer.
+
+      O `undefined` atravessa intacto, porque continua querendo dizer "a
+      planilha não mencionou este campo" — não há o que limpar em silêncio.
+    */
+    const nome = linha.nome === undefined ? undefined : normalizarNome(linha.nome);
+    const cursos = linha.cursos === undefined ? undefined : normalizarCursos(linha.cursos);
     const perfil = linha.perfil === undefined ? undefined : normalizarPerfil(linha.perfil);
-    const status = linha.status === undefined ? undefined : normalizarStatus(linha.status);
+    const status =
+      linha.status === undefined ? undefined : normalizarStatusPessoa(linha.status);
+
+    /*
+      String vazia depois da limpeza **não** é o mesmo que campo ausente: a
+      célula trazia alguma coisa ("12345", "@#$", ";;;") e essa coisa não
+      sobreviveu. Deixar cair para o caminho normal gravaria nome ou curso em
+      branco na atualização — e, na criação, cairia no erro genérico de "campo
+      obrigatório", que manda procurar uma célula vazia que na verdade está
+      preenchida.
+    */
+    if (nome === "") {
+      const erro = `Nome "${linha.nome}" não tem nenhuma letra aproveitável.`;
+      operacoes.push({ tipo: "erro", matricula: linha.matricula, erro });
+      registrar("erro", atual?.nome ?? "", [], erro);
+      continue;
+    }
+
+    if (cursos === "") {
+      const erro = `Cursos "${linha.cursos}" não tem nenhum curso aproveitável.`;
+      operacoes.push({ tipo: "erro", matricula: linha.matricula, erro });
+      registrar("erro", atual?.nome ?? nome ?? "", [], erro);
+      continue;
+    }
 
     if (perfil === null) {
-      const erro = `Perfil "${linha.perfil}" não é válido — use ALUNO ou PROFESSOR.`;
+      const erro = `Perfil "${linha.perfil}" não é válido — use Estudante ou Professor.`;
       operacoes.push({ tipo: "erro", matricula: linha.matricula, erro });
-      registrar("erro", atual?.nome ?? linha.nome ?? "", [], erro);
+      registrar("erro", atual?.nome ?? nome ?? "", [], erro);
       continue;
     }
 
     if (status === null) {
       const erro = `Status "${linha.status}" não é válido — use ATIVO ou INATIVO.`;
       operacoes.push({ tipo: "erro", matricula: linha.matricula, erro });
-      registrar("erro", atual?.nome ?? linha.nome ?? "", [], erro);
+      registrar("erro", atual?.nome ?? nome ?? "", [], erro);
       continue;
     }
 
     /* --------------------------- Cenário C: criar -------------------------- */
     if (!atual) {
       const faltando: string[] = [];
-      if (!linha.nome) faltando.push("nome");
+      if (!nome) faltando.push("nome");
       if (!perfil) faltando.push("perfil");
-      if (!linha.cursos) faltando.push("cursos");
+      if (!cursos) faltando.push("cursos");
 
       if (faltando.length > 0) {
         const erro = `Cadastro novo exige ${faltando.join(", ")} — a matrícula ${linha.matricula} ainda não existe no sistema.`;
         operacoes.push({ tipo: "erro", matricula: linha.matricula, erro });
-        registrar("erro", linha.nome ?? "", [], erro);
+        registrar("erro", nome ?? "", [], erro);
         continue;
       }
 
       const novo: PessoaExistente = {
         matricula: linha.matricula,
-        nome: linha.nome as string,
+        nome: nome as string,
         perfil: perfil as string,
-        cursos: linha.cursos as string,
+        cursos: cursos as string,
         // Status ausente na criação assume o padrão da coluna; "INATIVO" na
         // planilha cadastra já inativo, como a tarefa pede.
         status: status ?? STATUS_PESSOA.ativo,
@@ -493,9 +541,9 @@ export function montarPlano(
       mudancas.push({ campo, de: atual[campo], para: novo });
     };
 
-    considerar("nome", linha.nome);
+    considerar("nome", nome);
     considerar("perfil", perfil);
-    considerar("cursos", linha.cursos);
+    considerar("cursos", cursos);
     considerar("status", status);
 
     if (mudancas.length === 0) {
@@ -511,24 +559,14 @@ export function montarPlano(
   return { operacoes, previa };
 }
 
-/**
- * "aluno", "Aluno", "ALUNO" -> "ALUNO". Qualquer outra coisa -> `null`.
- *
- * Deliberadamente estrito: "prof", "alunos" e "estudante" **não** passam. Um
- * perfil adivinhado errado muda quem pode o quê e não deixa rastro; a prévia
- * mostra a linha reprovada com o valor que veio, e quem corrige é a planilha.
- */
-function normalizarPerfil(bruto: string): string | null {
-  const chave = semAcento(bruto);
-  if (chave === "aluno") return PERFIL.aluno;
-  if (chave === "professor") return PERFIL.professor;
-  return null;
-}
+/*
+  `normalizarPerfil` e `normalizarStatus` moravam aqui até a Tarefa 8.1, e
+  saíram para [sanitizacao.ts](src/lib/sanitizacao.ts) junto com as regras novas
+  de nome e curso.
 
-/** "inativo", "Inativo", "INATIVO" -> "INATIVO". Qualquer outra coisa -> `null`. */
-function normalizarStatus(bruto: string): string | null {
-  const chave = semAcento(bruto);
-  if (chave === "ativo") return STATUS_PESSOA.ativo;
-  if (chave === "inativo") return STATUS_PESSOA.inativo;
-  return null;
-}
+  O motivo é o de sempre neste projeto: ganharam um segundo dono. A edição
+  manual do painel também precisa decidir se "Prof." é um perfil válido, e uma
+  cópia da regra ali dentro divergiria desta na primeira variante nova que
+  alguém aceitasse de um lado só. Além disso, este módulo é sobre **ler a
+  planilha**; o que cada campo pode conter não é assunto do leitor de bytes.
+*/
