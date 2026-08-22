@@ -27,6 +27,7 @@ npm run dev          # servidor de desenvolvimento
 npm run db:migrate   # cria/aplica migration após mudar o schema
 npm run db:generate  # regenera o Prisma Client (necessário após mudar o schema)
 npm run db:seed      # popula pessoas, inventário e administradores
+npm run db:sanear    # prévia da normalização dos cadastros; grava com -- --aplicar
 npm run db:studio    # inspecionar o banco
 npm run lint         # tem que sair em 0
 ```
@@ -59,6 +60,17 @@ O mesmo vale para o Next 16: os guias estão em `node_modules/next/dist/docs/`.
   `equip_id`, `data_retirada`, `categoria_id`). Não "corrija" para camelCase —
   o enunciado da Tarefa 6 pedia `categoriaId`, e a convenção do projeto venceu
   por decisão explícita. (`pessoa_id` chamava-se `usuario_id` até a Tarefa 10.)
+- **`Pessoa.perfil` vale `"Estudante"` ou `"Professor"`** — Title Case, não
+  caixa alta (Tarefa 8.1). É o único campo do banco gravado **na forma
+  exibida**, e por isso a tela não tem `de-para` de perfil: quem escreve o
+  rótulo é `rotuloDePerfil`. Os status continuam em caixa alta; a assimetria é
+  intencional, porque nenhum status é exibido cru.
+- **Nome e cursos também têm forma canônica** (Tarefa 8.1): nome em Title Case
+  com partícula minúscula, cursos na ordem hierárquica SI → CC → EC e o resto
+  em ordem alfabética depois. Quem garante isso é
+  [sanitizacao.ts](src/lib/sanitizacao.ts), na **escrita** — nunca na leitura.
+  Não normalize de novo ao exibir: o banco já está certo, e uma segunda passada
+  é a chance de duas telas discordarem.
 - **A entidade de quem retira equipamento é `Pessoa`, não `Usuario`** (Tarefa
   10). "Usuário" agora quer dizer **login de administrador**, e só isso: é o
   campo `Administrador.usuario`. Se você encontrar "usuário" em algum lugar
@@ -530,11 +542,15 @@ de sessão**, inclusive a de upload multipart (7 asserções).
   mesmo motivo o cabeçalho é a primeira linha que **contém a coluna de
   matrícula**, e não a primeira linha preenchida — planilha de coordenação vem
   com título de relatório em cima da tabela.
-- **`perfil` e `status` são listas fechadas, e a recusa é por linha.** "prof",
-  "alunos" e "estudante" não passam: um perfil adivinhado errado muda quem pode
-  o quê e não deixa rastro. A prévia mostra a linha reprovada com o valor que
-  veio, e quem corrige é a planilha. Uma célula ruim no meio de trezentas não
-  derruba a importação das outras 299.
+- **`perfil` e `status` são listas fechadas, e a recusa é por linha.** Um
+  perfil adivinhado errado muda quem pode o quê e não deixa rastro. A prévia
+  mostra a linha reprovada com o valor que veio, e quem corrige é a planilha.
+  Uma célula ruim no meio de trezentas não derruba a importação das outras 299.
+  **A Tarefa 8.1 afrouxou o que conta como "fora da lista"**: "prof", "alunos" e
+  "estudante" eram recusados aqui e hoje são reconhecidos e convertidos — a
+  recusa ficou para o que não é nenhuma das duas coisas ("Servidor",
+  "Terceirizado"). A regra de *o que fazer com o desconhecido* não mudou; mudou
+  o tamanho do conjunto conhecido.
 - **`inalterada` é uma quarta ação, e existe por causa do reenvio.** A planilha
   da coordenação é reenviada inteira todo semestre; sem essa categoria a prévia
   diria "180 atualizações" quando 178 não mudam um caractere, e ninguém leria a
@@ -563,6 +579,121 @@ de sessão**, inclusive a de upload multipart (7 asserções).
 - **A aba Usuários fica por último no menu.** As quatro acima são o trabalho do
   dia; cadastro é manutenção de início de semestre. Pôr uma tarefa rara no topo
   empurraria para baixo as que acontecem toda hora.
+
+**Tarefa 8.1 — Sanitização e normalização de dados (concluída):** os cinco
+itens de [tarefa-08.1-sanitizacao-dados.md](tarefa-08.1-sanitizacao-dados.md) —
+o módulo [sanitizacao.ts](src/lib/sanitizacao.ts), o Title Case dos nomes, o
+mapeamento de perfis para `Estudante`/`Professor`, o reconhecimento e a
+ordenação hierárquica dos cursos, e a troca do termo "Aluno" em toda a
+interface. `tsc`, `lint` e `build` em 0, com as cinco rotas do painel dinâmicas
+(`ƒ`).
+
+A migration foi escrita à mão e ensaiada em duas cópias do `dev.db` antes do
+arquivo real (11 asserções: conversão, idempotência, ids preservados,
+`foreign_key_check` vazio, e a guarda recusando um perfil desconhecido com o
+banco intacto). Verificação em quatro frentes, com o banco comparado com a linha
+de base no fim — só o `perfil` mudou, e as outras quatro tabelas ficaram
+idênticas: as regras isoladas contra o módulo de produção (77 asserções,
+incluindo idempotência de reenvio); o caminho real da importação, com `.xlsx`
+montado em memória passando por `lerPlanilha` + `montarPlano` (21); o `db:seed`
+contra uma cópia do banco com um CSV sujo de cinco linhas; e navegador real por
+CDP (18), cobrindo os rótulos, os dois `<select>`, o filtro de perfil, o modal
+de edição e o cabeçalho do tablet.
+
+**Decisões da Tarefa 8.1** (não refazer sem motivo):
+
+- **Partícula fica minúscula, contra a letra do enunciado.** Ele escreveu o
+  exemplo como "Nome Do Aluno", mas isso valeria para todo nome importado, e
+  "Ana Maria De Souza" não é como o cartório escreve nem como a secretaria lê o
+  nome na fila. Levantado antes de escrever código; a decisão foi do dono do
+  repositório. A primeira palavra é sempre capitalizada, mesmo sendo partícula —
+  planilha exportada com o sobrenome à frente ("de souza ana") começaria em
+  minúscula, e aí o defeito pareceria ser da limpeza.
+- **"Ciência da Computação" ficou no singular**, embora o enunciado escreva
+  "Ciências" duas vezes. É o singular que está no `dev.db`, no
+  `pessoas.example.csv` e no nome oficial do curso; adotar o plural faria toda
+  pessoa já cadastrada divergir do mapa na primeira importação. Também decisão
+  do dono do repositório.
+- **O ponto de "Prof." e o apóstrofo de "D'Ávila" sobrevivem à limpeza.** A
+  Regra 1 manda manter "apenas letras, espaços e acentos", e ao pé da letra isso
+  apaga o ponto — só que [primeiroNome()](src/lib/texto.ts) trata o primeiro
+  token terminado em ponto como tratamento: sem ele, a saudação do tablet passa
+  de "Prof. Daniel" para só "Prof", cumprimentando um título. O seed do projeto
+  tem exatamente esse caso.
+- **Separador vira espaço; ruído dentro da palavra é apagado.** São duas classes
+  de caractere, e juntá-las foi um defeito real que a prova pegou: com tudo
+  virando espaço, "An@a# S$ouza" saía como "An A S Ouza" — quatro palavras onde
+  havia duas. Hífen, vírgula e barra separam ("nome-do-aluno", "Souza, Ana");
+  arroba, cerquilha, cifrão e dígitos somem sem abrir espaço.
+- **Perfil é reconhecido por prefixo, não por lista de sinônimos.** Uma lista
+  exata teria que prever cada plural e cada gênero — "aluna", "professoras",
+  "Profª" — para errar justamente na variante que ninguém lembrou. `alun`,
+  `estud`, `discen` e `academ` de um lado; `prof` e `docen` do outro.
+- **Perfil irreconhecível reprova a linha na importação; no seed vira
+  `Estudante` com aviso.** O enunciado deixava escolher entre fallback e recusa,
+  e a diferença entre os dois caminhos é o que cada um tem quando erra: a
+  importação tem a prévia, que mostra a linha reprovada antes de qualquer
+  escrita; o `db:seed` é comando de terminal cujo trabalho é deixar o banco
+  utilizável, e reprovar ali daria um sistema sem metade dos cadastros e ninguém
+  para ver. O que mudou no seed é que **agora ele avisa** — antes "Servidor"
+  virava aluno em silêncio absoluto.
+- **Curso fora do mapa é mantido, não descartado nem reprovado.** O enunciado só
+  nomeia três, mas a Unoesc tem dezenas, e o próprio modal de edição sugere
+  "Ex.: Sistemas de Informação, Direito". Descartar é perder dado sem erro
+  nenhum aparecer; reprovar impediria importar qualquer pessoa fora dos três
+  cursos até alguém editar o mapa no código. Vão para o fim, em ordem alfabética
+  entre si.
+- **A ordem hierárquica é a posição no array `CURSOS_OFICIAIS`**, e não uma
+  tabela de prioridade ao lado. É o que faz "EC, SI" e "SI, EC" gravarem a mesma
+  string — sem isso, a busca do painel depende de como a coordenação digitou.
+- **A sanitização roda em `montarPlano`, antes de `considerar()`.** A posição não
+  é livre: depois da comparação, o valor cru é que seria confrontado com o banco,
+  e uma planilha reenviada com "ANA MARIA DE SOUZA" acharia diferente do "Ana
+  Maria de Souza" gravado. As 180 linhas do semestre apareceriam como
+  "atualizar" toda vez — o oposto do que a categoria `inalterada` existe para
+  fazer. Exercitado: o reenvio da mesma planilha em outra grafia volta
+  `inalterada`.
+- **String vazia depois da limpeza não é campo ausente.** `undefined` continua
+  querendo dizer "a planilha não mencionou"; `""` quer dizer "trouxe algo e esse
+  algo era lixo inteiro" — e reprova a linha. Sem a distinção, "12345" no campo
+  nome gravaria nome em branco, ou cairia no erro genérico de campo obrigatório,
+  mandando procurar uma célula vazia que na verdade está preenchida.
+- **`editarPessoa` deixou de fazer `.toUpperCase()` no perfil, e isso era uma
+  quebra silenciosa.** Com `PERFIL.estudante` valendo "Estudante", o
+  `.toUpperCase()` produzia "ESTUDANTE" e a comparação seguinte falhava
+  **sempre**: a edição manual inteira passaria a responder "Perfil inválido"
+  para o valor que o próprio `<select>` da tela acabou de enviar. Nem `tsc` nem
+  `lint` veem — os dois lados são `string`. Exercitado no navegador, que é onde
+  isso aparece.
+- **A migration cuida só do perfil; os cursos vão pelo `npm run db:sanear`.** O
+  perfil é o único cujo valor antigo quebra tela (some do filtro e da contagem
+  do resumo), então tem que estar na migration. Normalizar cursos em SQL exigiria
+  uma segunda implementação de `normalizarCursos` — sem função de split e sem
+  ordenação estável em `group_concat` — destinada a divergir do TypeScript no dia
+  em que um curso entrasse no mapa. O script lê a **mesma função** que a
+  importação usa, o que torna a divergência impossível por construção. Mesmo
+  argumento que tirou `semAcento` das actions na Tarefa 7.
+- **`db:sanear` é prévia por padrão, e grava só com `-- --aplicar`.** Mesma razão
+  da prévia da importação: a operação não tem desfazer, e reescrever o curso de
+  centenas de cadastros a partir de um mapa errado é estrago que só se descobre
+  depois. Sem a bandeira, ele não abre transação nenhuma.
+- **O saneamento retroativo não toca no nome.** Decisão explícita do dono do
+  repositório: o Title Case vale para tudo que entrar daqui para frente, mas
+  reescrever o nome de todo mundo de uma vez muda cada tela do sistema, e um nome
+  já revisado à mão no painel não deve ser desfeito por heurística. Os nomes se
+  ajustam conforme a coordenação reenvia a planilha.
+- **O seed também sanitiza, e isso não é escopo extra.** Ele lê o CSV da
+  coordenação, que é a **outra** porta de entrada dos mesmos dados. Sem as
+  funções ali, `db:seed` reintroduziria em minutos a sujeira que a migration
+  acabou de tirar — e o `db:sanear` viraria um comando que se desfaz sozinho na
+  segunda-feira seguinte.
+- **`rotuloDePerfil` substituiu três comparações com "PROFESSOR" cravadas em
+  string.** Aquela forma transformava **qualquer** valor diferente de
+  "PROFESSOR" em "Aluno", inclusive um valor novo que ninguém previu — e o `tsc`
+  não apontou nenhuma das três quando a constante mudou, porque literal de string
+  não é a constante. Hoje o banco guarda o rótulo, então a função é quase a
+  identidade; o que ela ainda faz é converter o legado ("ALUNO" de uma linha que
+  escapou da migration) em vez de gritar em caixa alta no meio da tabela.
 
 **Tarefa 9 — Planilha modelo para download (concluída):** os dois itens de
 [tarefa-09-planilha-modelo.md](tarefa-09-planilha-modelo.md) — o botão

@@ -49,23 +49,40 @@ Não há senha de painel em variável de ambiente: as contas do `/admin` ficam n
 | `npm run lint`       | ESLint.                                                     |
 | `npm run db:migrate` | Cria e aplica migrations.                                   |
 | `npm run db:seed`    | Importa pessoas, inventário e administradores (idempotente). |
+| `npm run db:sanear`  | Mostra (e com `-- --aplicar`, grava) a normalização dos cadastros já existentes. |
 | `npm run db:studio`  | Prisma Studio, para inspecionar o banco.                    |
 | `npm run db:reset`   | **Apaga o banco** e reaplica as migrations.                 |
 
-## Importar a planilha de alunos e professores
+## Importar a planilha de estudantes e professores
 
 Exporte a planilha da coordenação como CSV e salve em `prisma/data/pessoas.csv`:
 
 ```csv
 matricula,nome,perfil,cursos
-0012345,Ana Souza,ALUNO,Sistemas de Informação
-9001,Prof. Daniel Rocha,PROFESSOR,"Sistemas de Informação, Ciência da Computação"
+0012345,Ana Souza,Estudante,Sistemas de Informação
+9001,Prof. Daniel Rocha,Professor,"Sistemas de Informação, Ciência da Computação"
 ```
 
 Formato: veja [`prisma/data/pessoas.example.csv`](prisma/data/pessoas.example.csv). O
 importador aceita `,` ou `;` como separador, lida com o BOM que o Excel em pt-BR gera, preserva
 zeros à esquerda na matrícula e reconhece variações do cabeçalho (`Matrícula`, `Nome Completo`).
 Linhas sem matrícula ou sem nome são ignoradas e reportadas.
+
+Desde a Tarefa 8.1 os valores passam por uma **sanitização** antes de serem gravados, tanto aqui
+quanto na importação de `.xlsx` pelo painel — as regras vivem em
+[`src/lib/sanitizacao.ts`](src/lib/sanitizacao.ts):
+
+| Campo    | O que a planilha pode trazer            | O que vai para o banco             |
+| -------- | --------------------------------------- | ---------------------------------- |
+| `nome`   | `ANA MARIA DE SOUZA`, `an@a2 souza`     | `Ana Maria de Souza`, `Ana Souza`  |
+| `perfil` | `aluno`, `Alunos`, `prof.`, `Docente`   | `Estudante` ou `Professor`         |
+| `cursos` | `EC, SI`, `ciencia da computacao`       | ordem fixa: SI, CC, EC, resto A–Z  |
+
+As partículas ficam minúsculas (`de`, `da`, `dos`); o ponto de `Prof.` e o apóstrofo de `D'Ávila`
+são preservados. Curso fora do mapa oficial (`Direito`, `Pedagogia`) é mantido, normalizado, no
+fim da lista. Perfil irreconhecível (`Servidor`) **reprova a linha** na importação do painel; no
+`db:seed` ele vira `Estudante` com aviso no console, porque um script de terminal sem prévia não
+pode deixar o banco pela metade.
 
 Depois rode `npm run db:seed`. O script é idempotente: reexecutar atualiza os dados cadastrais
 sem duplicar registros e sem reverter o status de equipamentos já emprestados.
@@ -203,11 +220,12 @@ endpoint POST público, e esconder o botão na tela não fecha a porta.
 
 ## Modelo de dados
 
-Conforme a seção 3 de [spec.md](spec.md), mais o que as tarefas 6, 8 e 10 acrescentaram:
+Conforme a seção 3 de [spec.md](spec.md), mais o que as tarefas 6, 8, 8.1 e 10 acrescentaram:
 
-- **Pessoa** — `matricula` (PK, string para preservar zeros à esquerda), `nome`, `perfil`
-  (`ALUNO` | `PROFESSOR`), `cursos`, `status` (`ATIVO` | `INATIVO`). Chamava-se `Usuario` até a
-  Tarefa 10.
+- **Pessoa** — `matricula` (PK, string para preservar zeros à esquerda), `nome` (Title Case),
+  `perfil` (`Estudante` | `Professor`), `cursos` (em ordem hierárquica), `status`
+  (`ATIVO` | `INATIVO`). Chamava-se `Usuario` até a Tarefa 10; o perfil era `ALUNO`/`PROFESSOR`
+  em caixa alta até a Tarefa 8.1, que passou a gravá-lo já na forma exibida.
 - **Administrador** — `id`, `nome`, `usuario` (único), `senha` (hash bcrypt). As contas do painel.
 - **Equipamento** — `id` (PK, etiqueta como `NOTE-01`), `tipo`, `status`
   (`DISPONIVEL` | `EMPRESTADO` | `MANUTENCAO`).
