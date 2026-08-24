@@ -20,6 +20,10 @@ computador da secretaria. Duas frentes: `/` (tablet, retirada e devolução) e
 **A especificação é [spec.md](spec.md) e ela manda.** Leia por inteiro antes de
 mexer em qualquer coisa — escopo, fluxos e regras de negócio estão lá.
 
+**A wiki tem especificação própria: [spec-wiki.md](spec-wiki.md).** Ela manda
+sobre `docs/` e sobre a série `tarefa-doc-NN`; em conflito, a `spec.md` vence —
+a wiki descreve o sistema, não o define.
+
 ### Comandos
 
 ```bash
