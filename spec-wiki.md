@@ -25,17 +25,17 @@ servir só ao portfólio e piorar o manual, o manual ganha.
 Estas decisões vieram de uma sessão de levantamento e **não devem ser reabertas
 sem motivo novo**. Estão aqui para que a próxima sessão não refaça o debate.
 
-| Decisão | Escolha | Por quê |
-|---|---|---|
-| O que documentar | Este sistema | É código próprio: zero risco de confidencialidade e capturas de tela reais |
-| Onde a wiki mora | Mesmo repositório, `docs/` | Doc e código no mesmo histórico é o que docs-as-code significa |
-| Versão documentada | Tag `v1.0` congelada | Documentar alvo em movimento produz captura de tela vencida |
-| Idioma | Bilíngue PT-BR + EN | PT-BR é o público real; EN é alcance de portfólio |
-| Interface em EN | Não traduzir o sistema | i18n do app é uma semana inteira e não cabe |
-| Fonte dos diagramas | `.bpmn` aberto | ZIP do Bizagi não tem diff no Git nem abre sem instalar nada |
-| Dados nas capturas | Seed de demonstração fictício | Matrícula e nome de estudante real em captura pública é LGPD |
-| Marca | Unoesc mantida | Contextualiza como sistema real — **depende de autorização, ver §8** |
-| Nº de processos | 5 | Cobrem os dois atores e as duas máquinas de estado; o sexto só somaria volume |
+| Decisão             | Escolha                       | Por quê                                                                       |
+| ------------------- | ----------------------------- | ----------------------------------------------------------------------------- |
+| O que documentar    | Este sistema                  | É código próprio: zero risco de confidencialidade e capturas de tela reais    |
+| Onde a wiki mora    | Mesmo repositório, `docs/`    | Doc e código no mesmo histórico é o que docs-as-code significa                |
+| Versão documentada  | Tag `v1.0` congelada          | Documentar alvo em movimento produz captura de tela vencida                   |
+| Idioma              | Bilíngue PT-BR + EN           | PT-BR é o público real; EN é alcance de portfólio                             |
+| Interface em EN     | Não traduzir o sistema        | i18n do app é uma semana inteira e não cabe                                   |
+| Fonte dos diagramas | `.bpmn` aberto                | ZIP do Bizagi não tem diff no Git nem abre sem instalar nada                  |
+| Dados nas capturas  | Seed de demonstração fictício | Matrícula e nome de estudante real em captura pública é LGPD                  |
+| Marca               | Unoesc mantida                | Contextualiza como sistema real — **depende de autorização, ver §8**          |
+| Nº de processos     | 5                             | Cobrem os dois atores e as duas máquinas de estado; o sexto só somaria volume |
 
 ### 2.1 O que a `v1.0` inclui
 
@@ -51,13 +51,13 @@ corrigida.
 
 ### 3.1 Os cinco processos
 
-| # | Processo | Ator | Rota | Regra não óbvia que a página precisa explicar |
-|---|---|---|---|---|
-| 1 | Retirada de equipamento | Aluno/Professor | `/` | Cada item retirado gera um `Emprestimo` **separado** |
-| 2 | Devolução de equipamento | Aluno/Professor | `/` | Devolver é **declarar**; o equipamento não volta a `DISPONIVEL` |
-| 3 | Baixa física | Secretaria | `/admin` | O ciclo só fecha aqui; a diferença de tempo é o tempo de prateleira |
-| 4 | Gestão de inventário | Secretaria | `/admin/inventario` | `INATIVO` é aposentadoria, não exclusão — o histórico aponta para o item |
-| 5 | Gestão de pessoas | Secretaria | `/admin/pessoas` | `INATIVO` de pessoa é **assimétrico**: trava retirada, libera devolução |
+| #   | Processo                 | Ator            | Rota                | Regra não óbvia que a página precisa explicar                            |
+| --- | ------------------------ | --------------- | ------------------- | ------------------------------------------------------------------------ |
+| 1   | Retirada de equipamento  | Aluno/Professor | `/`                 | Cada item retirado gera um `Emprestimo` **separado**                     |
+| 2   | Devolução de equipamento | Aluno/Professor | `/`                 | Devolver é **declarar**; o equipamento não volta a `DISPONIVEL`          |
+| 3   | Baixa física             | Secretaria      | `/admin`            | O ciclo só fecha aqui; a diferença de tempo é o tempo de prateleira      |
+| 4   | Gestão de inventário     | Secretaria      | `/admin/inventario` | `INATIVO` é aposentadoria, não exclusão — o histórico aponta para o item |
+| 5   | Gestão de pessoas        | Secretaria      | `/admin/pessoas`    | `INATIVO` de pessoa é **assimétrico**: trava retirada, libera devolução  |
 
 ### 3.2 Páginas de apoio
 
@@ -81,7 +81,7 @@ corrigida.
 
 ## 4. Arquitetura de informação
 
-```
+```text
 Início
 ├── Guia de Início Rápido
 │   ├── Aluno e Professor
@@ -134,17 +134,17 @@ tela; ela descreve a **decisão de produto**. Exemplo do tom esperado:
 
 ## 6. Stack de documentação
 
-| Peça | Ferramenta | Observação |
-|---|---|---|
-| Gerador | MkDocs Material | Tema já conhecido; não gastar prazo aprendendo outro |
-| Bilíngue | `mkdocs-static-i18n` | PT-BR na raiz, EN em `/en/` |
-| Versionamento | `mike` | `v1.0` publicada; futuras convivem |
-| Modelagem | Camunda Modeler ou bpmn.io | Salva `.bpmn` (XML padrão OMG) |
-| Diagrama publicado | SVG exportado, commitado | O leitor vê sem instalar nada |
-| Linter de texto | Vale | Ver ressalva abaixo |
-| Links quebrados | `lychee` | Roda no CI |
-| Publicação | GitHub Actions → Pages | `push` na `main` publica |
-| Dados de demo | `prisma/seed-demo.ts` | Pessoas fictícias para as capturas |
+| Peça               | Ferramenta                 | Observação                                           |
+| ------------------ | -------------------------- | ---------------------------------------------------- |
+| Gerador            | MkDocs Material            | Tema já conhecido; não gastar prazo aprendendo outro |
+| Bilíngue           | `mkdocs-static-i18n`       | PT-BR na raiz, EN em `/en/`                          |
+| Versionamento      | `mike`                     | `v1.0` publicada; futuras convivem                   |
+| Modelagem          | Camunda Modeler ou bpmn.io | Salva `.bpmn` (XML padrão OMG)                       |
+| Diagrama publicado | SVG exportado, commitado   | O leitor vê sem instalar nada                        |
+| Linter de texto    | Vale                       | Ver ressalva abaixo                                  |
+| Links quebrados    | `lychee`                   | Roda no CI                                           |
+| Publicação         | GitHub Actions → Pages     | `push` na `main` publica                             |
+| Dados de demo      | `prisma/seed-demo.ts`      | Pessoas fictícias para as capturas                   |
 
 ### 6.1 Ressalva sobre o Vale
 
@@ -163,22 +163,33 @@ duas páginas discordarem do nome da mesma coisa.
 
 ### 6.2 Onde ficam os arquivos
 
-```
+```text
 docs/
 ├── index.md
 ├── inicio-rapido/
 ├── portal/
 ├── painel/
 ├── referencia/
+├── contribuir/                 ← guia de estilo e template
 ├── sobre/
 ├── assets/
 │   ├── images/<processo>/     ← capturas de tela
 │   └── diagramas/<processo>.svg
-├── en/                         ← espelho em inglês
+├── en/                         ← espelho, mesma estrutura de pastas
 └── processos-fonte/            ← os .bpmn, versionados
 mkdocs.yml
 .vale.ini
+docs-requirements.txt
+CONTRIBUTING.md                 ← notas de trabalho, fora do site
 ```
+
+O `docs/en/` **repete os nomes de pasta do português**. Traduzir nome de
+diretório quebra o pareamento do `mkdocs-static-i18n` e o seletor de idioma
+perde a página.
+
+Nota de trabalho — receita de captura, como montar o ambiente Python — vai no
+`CONTRIBUTING.md`, que hoje está vazio. Nada disso entra em `docs/`: tudo que
+mora lá vira página publicada.
 
 As capturas seguem a regra de assets que o [README.md](README.md) já estabelece
 para o código: nome descritivo, nunca UUID. O wiki anterior do autor usava UUID e
@@ -202,12 +213,12 @@ isso tornou impossível saber o que uma imagem mostra sem abrir.
 
 ## 8. Pré-requisitos e riscos
 
-| # | Item | Situação | Plano B |
-|---|---|---|---|
-| 1 | **Autorização da Unoesc** para uso público do nome e da logo | **Pendente — bloqueia a D02** | Instituto fictício neutro; custa ~1h de troca de logo e nome |
-| 2 | Seed de demonstração pronto antes da primeira captura | A fazer (D01) | Nenhum: é bloqueante, LGPD não negocia |
-| 3 | Tag `v1.0` criada antes de qualquer captura | A fazer (D01) | Nenhum |
-| 4 | Ferramenta BPMN escolhida e testada | A fazer (D04) | bpmn.io roda no navegador, sem instalação |
+| #   | Item                                                         | Situação                      | Plano B                                                      |
+| --- | ------------------------------------------------------------ | ----------------------------- | ------------------------------------------------------------ |
+| 1   | **Autorização da Unoesc** para uso público do nome e da logo | **Pendente — bloqueia a D02** | Instituto fictício neutro; custa ~1h de troca de logo e nome |
+| 2   | Seed de demonstração pronto antes da primeira captura        | A fazer (D01)                 | Nenhum: é bloqueante, LGPD não negocia                       |
+| 3   | Tag `v1.0` criada antes de qualquer captura                  | A fazer (D01)                 | Nenhum                                                       |
+| 4   | Ferramenta BPMN escolhida e testada                          | A fazer (D04)                 | bpmn.io roda no navegador, sem instalação                    |
 
 O item 1 é o único risco externo do projeto — depende de terceiro. Recomendação:
 pedir a autorização **hoje**, em paralelo com a D01, para que a resposta não
@@ -220,37 +231,37 @@ embaralhar com as tarefas de produto — que já vão na 13.
 
 ### Fase 0 — Fundação
 
-| # | Tarefa | Entrega |
-|---|---|---|
-| D01 | Congelar `v1.0` e semear demo | Tag `v1.0`; `prisma/seed-demo.ts` com pessoas fictícias |
-| D02 | Esqueleto MkDocs + i18n + Pages | Site vazio no ar, PT/EN, deploy a cada push |
-| D03 | Guia de estilo e template | Template de processo, glossário base, `.vale.ini` |
+| #   | Tarefa                          | Entrega                                                 |
+| --- | ------------------------------- | ------------------------------------------------------- |
+| D01 | Congelar `v1.0` e semear demo   | Tag `v1.0`; `prisma/seed-demo.ts` com pessoas fictícias |
+| D02 | Esqueleto MkDocs + i18n + Pages | Site vazio no ar, PT/EN, deploy a cada push             |
+| D03 | Guia de estilo e template       | Template de processo, glossário base, `.vale.ini`       |
 
 ### Fase 1 — Trilha do Portal
 
-| # | Tarefa | Entrega |
-|---|---|---|
-| D04 | Modelagem BPMN dos 5 processos | 5 `.bpmn` + SVG exportado |
-| D05 | Processo 1 — Retirada | Página PT completa, com capturas |
-| D06 | Processo 2 — Devolução | Página PT completa, com capturas |
+| #   | Tarefa                         | Entrega                          |
+| --- | ------------------------------ | -------------------------------- |
+| D04 | Modelagem BPMN dos 5 processos | 5 `.bpmn` + SVG exportado        |
+| D05 | Processo 1 — Retirada          | Página PT completa, com capturas |
+| D06 | Processo 2 — Devolução         | Página PT completa, com capturas |
 
 ### Fase 2 — Trilha do Painel
 
-| # | Tarefa | Entrega |
-|---|---|---|
-| D07 | Processo 3 — Baixa física | Página PT + a regra das duas fases |
-| D08 | Processo 4 — Inventário | Página PT + a regra da aposentadoria |
-| D09 | Processo 5 — Pessoas | Página PT + a regra da inativação assimétrica |
+| #   | Tarefa                    | Entrega                                       |
+| --- | ------------------------- | --------------------------------------------- |
+| D07 | Processo 3 — Baixa física | Página PT + a regra das duas fases            |
+| D08 | Processo 4 — Inventário   | Página PT + a regra da aposentadoria          |
+| D09 | Processo 5 — Pessoas      | Página PT + a regra da inativação assimétrica |
 
 ### Fase 3 — Referência e acabamento
 
-| # | Tarefa | Entrega |
-|---|---|---|
-| D10 | Páginas de referência | Glossário, estados, regras, conta do admin |
-| D11 | Home e guias de início rápido | Duas personas |
-| D12 | Tradução para inglês | Todas as páginas em `/en/` + glossário de UI |
-| D13 | CI de qualidade | Vale + `lychee` + build no Actions |
-| D14 | Estudo de caso | "Como esta wiki foi feita" + seção no README |
+| #   | Tarefa                        | Entrega                                      |
+| --- | ----------------------------- | -------------------------------------------- |
+| D10 | Páginas de referência         | Glossário, estados, regras, conta do admin   |
+| D11 | Home e guias de início rápido | Duas personas                                |
+| D12 | Tradução para inglês          | Todas as páginas em `/en/` + glossário de UI |
+| D13 | CI de qualidade               | Vale + `lychee` + build no Actions           |
+| D14 | Estudo de caso                | "Como esta wiki foi feita" + seção no README |
 
 **Estimativa: ~68h**, ou cerca de 34h por semana em duas semanas.
 
