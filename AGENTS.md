@@ -37,6 +37,16 @@ npm run db:studio    # inspecionar o banco
 npm run lint         # tem que sair em 0
 ```
 
+A wiki (`docs/`) é MkDocs, ou seja **Python**, e por isso não está no
+`package.json`. As ferramentas ficam em `docs-requirements.txt`, com versões
+fixadas, e a receita de ambiente está na seção "Documentação" do
+[CONTRIBUTING.md](CONTRIBUTING.md). Com o ambiente ativado:
+
+```bash
+mkdocs serve            # a wiki com recarga automática
+mkdocs build --strict   # tem que sair em 0; é o portão que a Action roda
+```
+
 ### Prisma 7 — leia antes de escrever qualquer query
 
 Este projeto usa **Prisma 7**, que difere do 6 em pontos que quebram código
@@ -1161,6 +1171,124 @@ fim.
   (o `perfil` ainda gravado como "ALUNO"), o que é anterior a esta tarefa. A
   receita `reset + seed + demo` resolveu junto, porque parte das migrations.
 
+**Tarefa D02 — Esqueleto do MkDocs, bilíngue e publicação automática
+(concluída, menos o passo que é do dono do repositório):** o site vazio no ar,
+com os quatro itens de
+[tarefa-doc-02-esqueleto-mkdocs.md](tarefa-doc-02-esqueleto-mkdocs.md) — o
+`docs-requirements.txt` com as três ferramentas fixadas, o `mkdocs.yml` com a
+paleta da marca e as seis extensões que o template da D03 pede, o
+`mkdocs-static-i18n` em estrutura de pasta (PT na raiz, EN em `docs/en/`), as
+15 páginas do `nav` da §4 da spec-wiki, e o
+[.github/workflows/docs.yml](.github/workflows/docs.yml) publicando com `mike`.
+`mkdocs build --strict` em 0.
+
+**A autorização da Unoesc chegou antes desta tarefa** (2026-08-24, confirmada
+pelo dono do repositório), então o plano B da §8 — instituto fictício neutro —
+não foi usado: o site nasceu com o nome real, a logo no cabeçalho e a nota de
+crédito no rodapé. A §8 da spec-wiki foi atualizada.
+
+Verificação em cinco frentes: a stack instalada de verdade num ambiente novo
+(Python 3.14.0); o `site/` gerado, conferido por script (45 asserções); as seis
+extensões de markdown renderizadas contra o próprio `mkdocs.yml` (8); o `mike`
+ensaiado num repositório descartável **sem remoto e sem `--push`**, do deploy à
+re-execução e ao `mike delete`; e navegador real por CDP contra a árvore
+`gh-pages` que o ensaio produziu, servida por HTTP (26 asserções). Mais o
+`mkdocs serve` exercitado nas seis rotas. Nada saiu desta máquina.
+
+**O que NÃO foi feito, e por quê:** o Pages do repositório **não** foi
+configurado para servir da `gh-pages`. É ajuste no GitHub, a branch só nasce no
+primeiro deploy, e o ciclo do projeto reserva o `push` ao dono. O passo a passo
+(cliques e o `gh api` equivalente) está na seção "Documentação" do
+`CONTRIBUTING.md`. Pelo mesmo motivo, os dois últimos itens da verificação do
+enunciado — "a Action conclui em verde" e "a URL do Pages responde" — **não
+foram vistos acontecer** e continuam pendentes.
+
+**Decisões da Tarefa D02** (não refazer sem motivo):
+
+- **A paleta do sistema INVERTE de papel entre o modo claro e o escuro, e isso
+  foi medido.** A regra dos dois verdes continua valendo, só que o verde que
+  serve muda com o fundo: `#3aaa35` dá 3,01:1 no branco (reprova) e 5,40:1 no
+  fundo escuro do tema (passa); `#1f7a1b` dá 5,44:1 no branco e 2,98:1 no
+  escuro. Por isso `--md-accent-fg-color` tem valor diferente em cada esquema
+  em vez de um só. Trocá-los de lugar reprova nos dois modos ao mesmo tempo.
+- **O link no modo escuro precisa de um tom que não existia na paleta do
+  sistema, e omiti-lo seria um defeito silencioso.** No esquema `slate` o
+  Material define `--md-typeset-a-color: var(--md-primary-fg-color)` — lido no
+  `palette.css` do tema instalado, não suposto —, e o azul da marca sobre o
+  fundo escuro dá **1,38:1**: link invisível, sem erro em lugar nenhum. O tom
+  novo é o mesmo azul com a luminosidade subida na escala oklch da marca
+  (`oklch(75% 0.13 255.2)` = `#74b1ff`, 7,26:1 medido no navegador).
+- **A logo é achatada para branco no cabeçalho, por CSS.** O arquivo tem
+  exatamente duas cores sobre transparência — 18,2% dos pixels em `#023770` e
+  13,0% em `#3aaa35`, contados no PNG. Sobre o cabeçalho azul a parte azul daria
+  1,0:1 e sumiria: some justamente o nome, que é a maior das duas áreas. O
+  arquivo em cores continua intacto para o corpo da página (D11).
+- **`navigation.instant` está proibido nesta wiki.** O `mkdocs-static-i18n`
+  emite um aviso dizendo que o link contextual do seletor de idioma não funciona
+  com ele — e sob `--strict` aviso derruba o build. Conferido na fonte do plugin
+  (`reconfigure.py`), não lido na documentação. Ligar a opção quebra a exigência
+  de o seletor manter a página.
+- **`fallback_to_default` é o que faz o seletor de idioma manter a página.** Com
+  só a home em inglês, sem ele o `/en/` teria uma página e o seletor jogaria o
+  leitor na home a partir de qualquer outra. Com ele, o `/en/` constrói a árvore
+  inteira com o conteúdo em português e o menu traduzido, e a troca de idioma
+  preserva a rota. Exercitado no navegador nos dois sentidos, em página funda.
+- **A busca declara `lang: [pt, en]` à mão.** O plugin de i18n só acrescenta
+  idioma que o lunr.js conhece, e o lunr indexa por código de duas letras: com
+  `pt-BR` ele responde "não suportado" e a busca em português perde a
+  radicalização. Conferido: a lista do lunr instalado tem `pt` e não tem
+  `pt-BR`, e a reconfiguração do plugin **acrescenta** à lista em vez de
+  substituí-la — por isso declarar não conflita.
+- **O `mkdocs build --strict` é um passo próprio do workflow, antes do
+  `mike`.** O `mike deploy` roda o build por dentro mas **não aceita
+  `--strict`** (conferido em `mike deploy --help`): sem o passo separado, link
+  quebrado viraria aviso silencioso e o site subiria com ele — exatamente o
+  passivo que o enunciado manda não deixar para a D13.
+- **O padrão do `mike` aponta para a `v1.0` literal, e não para um alias
+  móvel.** Segue a letra do enunciado. O custo é conhecido e está escrito no
+  CONTRIBUTING: quando a Tarefa 13 virar `v1.1`, alguém roda `mike set-default
+  v1.1` de propósito — em vez de a raiz do site mudar sozinha debaixo de quem
+  guardou o link.
+- **O workflow aceita execução manual (`workflow_dispatch`), e isso não é
+  enfeite.** O Pages só pode ser apontado para a `gh-pages`, e ela só nasce no
+  primeiro deploy: sem o disparo manual, criar a branch exigiria um commit de
+  mentira em `docs/`. Ele também é o caminho de republicação depois de um
+  deploy ruim.
+- **O `docs-requirements.txt` entra nos caminhos que disparam o workflow**, além
+  dos três que o enunciado lista. Sem ele, subir a versão do MkDocs nunca
+  republicaria o site — o build de amanhã seria outro e ninguém veria.
+- **`concurrency` sem `cancel-in-progress`.** Dois deploys disputando a
+  `gh-pages` fariam o segundo perder; mas cancelar o que está em andamento
+  deixaria a branch num estado que ninguém escolheu, no meio de um push.
+- **Ative o ambiente Python; não chame os executáveis pelo caminho.** O `mike`
+  roda o MkDocs como subprocesso pelo nome `mkdocs`, resolvido pelo `PATH`.
+  Chamar `.venv-docs/Scripts/mike.exe` sem ativar faz ele encontrar um `mkdocs`
+  global de outro Python e falhar com *"The `mike` plugin is not installed"* — a
+  mensagem culpa o plugin, e o culpado é qual `mkdocs` rodou. Aconteceu nesta
+  máquina, que tem um MkDocs solto no Python 3.13.
+- **O `mkdocs serve` abre em `/sistema-emprestimo-equipamentos/`, não em `/`.**
+  O `site_url` tem esse prefixo porque é onde o Pages publica, e o servidor de
+  desenvolvimento o respeita. Pedir `/` devolve 302 — não é erro, e custou um
+  diagnóstico até ficar escrito.
+- **O `docs/en/` repete os nomes de pasta do português**, inclusive os
+  acentuados no rótulo e sem acento no arquivo. Traduzir nome de diretório
+  quebraria o pareamento do plugin e o seletor perderia a página. Quem traduz é
+  `nav_translations`, no `mkdocs.yml`.
+- **`docs/contribuir/` não entrou no `nav`.** Ele está na §6.2 da spec-wiki mas
+  não na árvore da §4, e o enunciado manda usar a §4. Quem decide se o guia de
+  estilo é página publicada ou nota de trabalho é a D03.
+- **O `eslint.config.mjs` precisou ignorar `.venv-docs/` e `site/`, e isso não
+  era opcional.** Estar no `.gitignore` não basta: o ESLint 9 de configuração
+  plana **não lê o `.gitignore`**. Sem as duas linhas ele varre o JavaScript
+  que vem dentro do MkDocs Material e o do site gerado, e o `npm run lint`
+  passa de 0 para 2252 problemas em código que não é nosso — medido, foi assim
+  que apareceu. Quem "limpar" essas linhas quebra o portão do projeto sem tocar
+  em uma linha de código do sistema.
+- **Diretório vazio não foi criado.** `docs/assets/images/`,
+  `docs/assets/diagramas/` e `docs/processos-fonte/` estão na §6.2, mas o Git não
+  versiona diretório vazio: criá-los agora só deixaria pasta local que não
+  chega em commit nenhum. Nascem com o primeiro arquivo (D04/D05).
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
 coordenação e — agora que existe conta individual — registrar **quem** deu baixa
@@ -1194,5 +1322,13 @@ construir.
   número da versão na URL dentro do `package.json`.
 - A porta 3000 desta máquina costuma estar ocupada por outro processo; o Next cai
   para 3001+ sozinho.
+- **As ferramentas da wiki são Python e ficam fora do `package.json`** (D02):
+  `mkdocs-material`, `mkdocs-static-i18n` e `mike`, com versões **fixadas** em
+  `docs-requirements.txt` — o site é publicado por uma Action, e faixa de versão
+  faria o build de amanhã ser outro sem que nenhum commit mudasse. O ambiente
+  (`.venv-docs/`) e o `site/` gerado estão no `.gitignore`. Conferido com Python
+  3.14.0, que é a versão que a Action também usa. **Esta máquina tem um MkDocs
+  solto no Python 3.13**, e é ele que o `PATH` acha quando o ambiente não está
+  ativado — ver a decisão da D02 sobre isso.
 - `prisma/data/usuarios.csv` (planilha real, dados pessoais) está no `.gitignore`.
   Versione apenas `usuarios.example.csv`.
