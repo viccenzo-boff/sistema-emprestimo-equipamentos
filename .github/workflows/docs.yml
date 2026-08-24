@@ -1,0 +1,82 @@
+# Publica a wiki (docs/) no GitHub Pages a cada push na main.
+#
+# O Pages deste repositorio serve da branch `gh-pages`, que NAO existe no
+# repositorio de codigo: quem a cria e a mantem e o `mike`, e cada versao
+# publicada vira um diretorio dentro dela. Ver a secao "Documentacao" do
+# CONTRIBUTING.md para o passo a passo da configuracao do Pages e para o
+# caminho de volta (como despublicar).
+
+name: Documentacao
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "mkdocs.yml"
+      - "docs-requirements.txt"
+      - ".github/workflows/docs.yml"
+  # Execucao manual. Existe por dois motivos praticos: o Pages so pode ser
+  # apontado para a `gh-pages` depois que ela existir, e ela so nasce no
+  # primeiro deploy; e republicar depois de um deploy ruim nao deveria exigir
+  # um commit de mentira em docs/.
+  workflow_dispatch:
+
+permissions:
+  contents: write # o mike faz commit e push na branch gh-pages
+
+# Dois deploys simultaneos disputariam a mesma branch e o segundo perderia.
+# Aqui nao se cancela o que esta em andamento: um deploy interrompido no meio
+# do push deixaria a gh-pages num estado que ninguem escolheu.
+concurrency:
+  group: docs-pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obter o repositorio
+        uses: actions/checkout@v4
+        with:
+          # O mike precisa do historico e da branch gh-pages remota; com o
+          # checkout raso ele nao enxerga a versao ja publicada e reescreveria
+          # a branch do zero.
+          fetch-depth: 0
+
+      - name: Instalar o Python
+        uses: actions/setup-python@v5
+        with:
+          # A mesma versao em que a stack foi conferida na maquina de
+          # desenvolvimento (3.14.0).
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: docs-requirements.txt
+
+      - name: Instalar as ferramentas da wiki
+        run: pip install -r docs-requirements.txt
+
+      # Porteiro. O `mike deploy` roda o build por dentro, mas nao aceita
+      # `--strict` (conferido em `mike deploy --help`): sem este passo, link
+      # quebrado viraria aviso silencioso e o site subiria com ele.
+      - name: Construir em modo estrito
+        run: mkdocs build --strict
+
+      - name: Identificar o autor dos commits do mike
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      # A v1.0 e o estado congelado que esta wiki descreve (spec-wiki §2.1).
+      # Quando a Tarefa 13 entrar, ela vira v1.1 e as duas convivem: o mike
+      # publica cada versao num diretorio proprio e o seletor do cabecalho
+      # alterna entre elas.
+      - name: Publicar a versao v1.0
+        run: mike deploy --push --update-aliases v1.0 --title "v1.0"
+
+      # A raiz do site redireciona para a versao padrao. Ela aponta para a
+      # v1.0 por decisao explicita: quando a v1.1 sair, alguem roda
+      # `mike set-default v1.1` de proposito, em vez de a raiz mudar sozinha.
+      - name: Apontar o padrao para a v1.0
+        run: mike set-default --push v1.0
