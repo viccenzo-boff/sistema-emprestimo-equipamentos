@@ -144,7 +144,7 @@ tela; ela descreve a **decisão de produto**. Exemplo do tom esperado:
 | Linter de texto    | Vale                       | Ver ressalva abaixo                                  |
 | Links quebrados    | `lychee`                   | Roda no CI                                           |
 | Publicação         | GitHub Actions → Pages     | `push` na `main` publica                             |
-| Dados de demo      | `prisma/seed-demo.ts`      | Pessoas fictícias para as capturas                   |
+| Dados de demo      | `prisma/demo-estado.ts`    | Pessoas fictícias para as capturas                   |
 
 ### 6.1 Ressalva sobre o Vale
 
@@ -216,8 +216,8 @@ isso tornou impossível saber o que uma imagem mostra sem abrir.
 | #   | Item                                                         | Situação                      | Plano B                                                      |
 | --- | ------------------------------------------------------------ | ----------------------------- | ------------------------------------------------------------ |
 | 1   | **Autorização da Unoesc** para uso público do nome e da logo | **Pendente — bloqueia a D02** | Instituto fictício neutro; custa ~1h de troca de logo e nome |
-| 2   | Seed de demonstração pronto antes da primeira captura        | A fazer (D01)                 | Nenhum: é bloqueante, LGPD não negocia                       |
-| 3   | Tag `v1.0` criada antes de qualquer captura                  | A fazer (D01)                 | Nenhum                                                       |
+| 2   | Seed de demonstração pronto antes da primeira captura        | Feito (D01)                   | Nenhum: é bloqueante, LGPD não negocia                       |
+| 3   | Tag `v1.0` criada antes de qualquer captura                  | Feito (D01), sem publicar     | Nenhum                                                       |
 | 4   | Ferramenta BPMN escolhida e testada                          | A fazer (D04)                 | bpmn.io roda no navegador, sem instalação                    |
 
 O item 1 é o único risco externo do projeto — depende de terceiro. Recomendação:
