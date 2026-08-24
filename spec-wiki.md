@@ -34,7 +34,7 @@ sem motivo novo**. Estão aqui para que a próxima sessão não refaça o debate
 | Interface em EN     | Não traduzir o sistema        | i18n do app é uma semana inteira e não cabe                                   |
 | Fonte dos diagramas | `.bpmn` aberto                | ZIP do Bizagi não tem diff no Git nem abre sem instalar nada                  |
 | Dados nas capturas  | Seed de demonstração fictício | Matrícula e nome de estudante real em captura pública é LGPD                  |
-| Marca               | Unoesc mantida                | Contextualiza como sistema real — **depende de autorização, ver §8**          |
+| Marca               | Unoesc mantida                | Contextualiza como sistema real — autorização concedida, ver §8               |
 | Nº de processos     | 5                             | Cobrem os dois atores e as duas máquinas de estado; o sexto só somaria volume |
 
 ### 2.1 O que a `v1.0` inclui
@@ -173,6 +173,8 @@ docs/
 ├── contribuir/                 ← guia de estilo e template
 ├── sobre/
 ├── assets/
+│   ├── brand/                 ← logo da instituição (autorizada, §8)
+│   ├── stylesheets/marca.css  ← a paleta do sistema aplicada ao tema
 │   ├── images/<processo>/     ← capturas de tela
 │   └── diagramas/<processo>.svg
 ├── en/                         ← espelho, mesma estrutura de pastas
@@ -180,6 +182,7 @@ docs/
 mkdocs.yml
 .vale.ini
 docs-requirements.txt
+.github/workflows/docs.yml      ← publica no Pages a cada push na main
 CONTRIBUTING.md                 ← notas de trabalho, fora do site
 ```
 
@@ -187,8 +190,9 @@ O `docs/en/` **repete os nomes de pasta do português**. Traduzir nome de
 diretório quebra o pareamento do `mkdocs-static-i18n` e o seletor de idioma
 perde a página.
 
-Nota de trabalho — receita de captura, como montar o ambiente Python — vai no
-`CONTRIBUTING.md`, que hoje está vazio. Nada disso entra em `docs/`: tudo que
+Nota de trabalho — receita de captura, como montar o ambiente Python, como
+ligar o Pages — vai no `CONTRIBUTING.md` (aberto pela D01, e com a seção de
+ambiente e publicação escrita pela D02). Nada disso entra em `docs/`: tudo que
 mora lá vira página publicada.
 
 As capturas seguem a regra de assets que o [README.md](README.md) já estabelece
@@ -215,14 +219,18 @@ isso tornou impossível saber o que uma imagem mostra sem abrir.
 
 | #   | Item                                                         | Situação                      | Plano B                                                      |
 | --- | ------------------------------------------------------------ | ----------------------------- | ------------------------------------------------------------ |
-| 1   | **Autorização da Unoesc** para uso público do nome e da logo | **Pendente — bloqueia a D02** | Instituto fictício neutro; custa ~1h de troca de logo e nome |
+| 1   | **Autorização da Unoesc** para uso público do nome e da logo | **Concedida** (2026-08-24)    | Não é mais preciso: o plano B era instituto fictício neutro  |
 | 2   | Seed de demonstração pronto antes da primeira captura        | Feito (D01)                   | Nenhum: é bloqueante, LGPD não negocia                       |
 | 3   | Tag `v1.0` criada antes de qualquer captura                  | Feito (D01), sem publicar     | Nenhum                                                       |
 | 4   | Ferramenta BPMN escolhida e testada                          | A fazer (D04)                 | bpmn.io roda no navegador, sem instalação                    |
 
-O item 1 é o único risco externo do projeto — depende de terceiro. Recomendação:
-pedir a autorização **hoje**, em paralelo com a D01, para que a resposta não
-chegue depois da wiki pronta com a logo errada.
+O item 1 era o único risco externo do projeto — dependia de terceiro. **A
+autorização foi confirmada pelo dono do repositório em 2026-08-24, antes da
+D02**, que é a tarefa que a esperava: por isso o site já nasceu com o nome
+"Sistema de Empréstimo de Equipamentos — Unoesc", com a logo real no cabeçalho
+e com a nota de crédito no rodapé. O plano B (instituto fictício neutro) fica
+registrado apenas como histórico — se um dia a autorização for revogada, o que
+muda é `site_name`, `copyright` e o arquivo em `docs/assets/brand/`.
 
 ## 9. Fases e tarefas
 
