@@ -1,0 +1,13 @@
+# Ferramentas da wiki (docs/). Sao Python e ficam FORA do package.json de
+# proposito: o projeto e Node, e misturar as duas arvores de dependencia faria
+# `npm ci` na maquina da secretaria baixar um gerador de site estatico.
+#
+# Versoes fixadas, sem faixa: o site e publicado por uma Action, e faixa de
+# versao faz o build de amanha ser outro build sem que nenhum commit mude.
+# Conferido nesta maquina com Python 3.14.0.
+#
+# Como montar o ambiente: secao "Documentacao" do CONTRIBUTING.md.
+
+mkdocs-material==9.7.7
+mkdocs-static-i18n==1.3.1
+mike==2.2.0

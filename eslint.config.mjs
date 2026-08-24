@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Ferramentas da wiki (D02). As duas estao no .gitignore, mas o ESLint 9
+    // nao le o .gitignore: sem estas linhas ele varre o JavaScript que vem
+    // dentro do MkDocs Material e o do site gerado, e o `npm run lint` sai de
+    // 0 para milhares de problemas em codigo que nao e nosso.
+    ".venv-docs/**",
+    "site/**",
   ]),
 ]);
 
