@@ -10,6 +10,57 @@ Quem vai mexer no **código** deve ler o [README.md](README.md) e o
 
 ## Documentação
 
+### O ambiente Python da wiki
+
+O site da wiki é gerado pelo MkDocs, que é Python. As ferramentas **não estão
+no `package.json`** de propósito: o projeto é Node, e misturar as duas árvores
+faria um `npm ci` na máquina da secretaria baixar um gerador de site estático.
+Elas vivem em [docs-requirements.txt](docs-requirements.txt), com as versões
+fixadas — o site é publicado por uma Action, e faixa de versão faria o build de
+amanhã ser outro build sem que nenhum commit mudasse.
+
+```bash
+python -m venv .venv-docs
+source .venv-docs/Scripts/activate   # Git Bash no Windows
+# .venv-docs\Scripts\activate        # PowerShell
+pip install -r docs-requirements.txt
+```
+
+O `.venv-docs/` e o `site/` estão no `.gitignore`.
+
+**Ative o ambiente; não chame os executáveis pelo caminho.** O `mike` roda o
+MkDocs como subprocesso pelo nome `mkdocs`, resolvido pelo `PATH`. Se você
+chamar `.venv-docs/Scripts/mike.exe` sem ativar, ele encontra um `mkdocs`
+global de outra instalação de Python e falha com *"The `mike` plugin is not
+installed"* — a mensagem culpa o plugin, mas o problema é qual `mkdocs` foi
+executado. Aconteceu nesta máquina, que tem um MkDocs solto no Python 3.13.
+
+Conferido com Python 3.14.0, que é a versão que a Action também usa.
+
+### Escrever e conferir localmente
+
+```bash
+mkdocs serve            # servidor com recarga automática
+mkdocs build --strict   # o mesmo portão que roda no CI
+```
+
+Duas coisas que economizam um diagnóstico:
+
+- **O `serve` abre em `/sistema-emprestimo-equipamentos/`, não em `/`.** O
+  `site_url` do [mkdocs.yml](mkdocs.yml) tem esse prefixo (é onde o Pages
+  publica), e o servidor de desenvolvimento o respeita. Pedir `/` devolve um
+  302 — não é erro.
+- **O `--strict` não é opcional.** Sem ele, link quebrado vira aviso e o site
+  sobe com o link quebrado. É o mesmo comando que a Action roda antes de
+  publicar, então o que falha aqui falha lá.
+
+O inglês em `docs/en/` repete os **mesmos nomes de pasta** do português.
+Traduzir nome de diretório quebra o pareamento do `mkdocs-static-i18n` e o
+seletor de idioma passa a jogar o leitor na home em vez de manter a página.
+Enquanto a tradução (D12) não chega, o `/en/` mostra o conteúdo em português
+com o menu traduzido — é o `fallback_to_default`, e é ele que mantém o seletor
+funcionando página a página.
+
 ### Reproduzir o estado de demonstração
 
 As capturas de tela da wiki não podem conter dado de pessoa real
@@ -125,3 +176,66 @@ fotografar:
 - **Três empréstimos concluídos com 6 h, 20 h e 48 h de prateleira** — o
   intervalo `data_baixa - data_devolucao` da Tarefa 12. Se as duas datas
   coincidissem, a métrica daria zero e não haveria o que mostrar.
+
+### Como a wiki é publicada
+
+Ninguém publica a wiki à mão. Quem publica é
+[.github/workflows/docs.yml](.github/workflows/docs.yml), a cada `push` na
+`main` que toque `docs/**`, o `mkdocs.yml`, o `docs-requirements.txt` ou o
+próprio workflow. O job instala o Python, roda `mkdocs build --strict` como
+portão e só então chama o `mike`.
+
+O `mike` mantém uma branch `gh-pages` que **não existe no repositório de
+código** — ela só tem o site construído, uma pasta por versão:
+
+```text
+gh-pages/
+├── index.html      ← redireciona para a versão padrão
+├── versions.json   ← o que alimenta o seletor de versão do cabeçalho
+└── v1.0/           ← o site inteiro, PT na raiz e EN em v1.0/en/
+```
+
+A versão publicada é a `v1.0`, que é o estado congelado que esta wiki descreve
+([spec-wiki.md](spec-wiki.md) §2.1). O padrão aponta para ela **por decisão
+explícita**, e não para um alias móvel: quando a Tarefa 13 entrar e virar
+`v1.1`, alguém roda `mike set-default v1.1` de propósito, em vez de a raiz do
+site mudar sozinha debaixo de quem tinha o link.
+
+### Ligar o GitHub Pages (uma vez só)
+
+Isto ainda **não foi feito** e precisa ser feito pelo dono do repositório, uma
+vez. A ordem importa: a branch `gh-pages` nasce no primeiro deploy, e o Pages
+não pode ser apontado para uma branch que não existe.
+
+1. Dê o `push` da `main`. A Action roda e cria a `gh-pages`.
+   (Se preferir criar a branch antes de ter conteúdo novo em `docs/`, rode o
+   workflow pela aba **Actions → Documentacao → Run workflow** — ele aceita
+   execução manual justamente por isso.)
+2. **Settings → Pages → Build and deployment → Source: Deploy from a branch**,
+   branch `gh-pages`, pasta `/ (root)`, e **Save**.
+
+   Pela linha de comando dá no mesmo:
+
+   ```bash
+   gh api -X POST repos/viccenzo-boff/sistema-emprestimo-equipamentos/pages \
+     -f 'source[branch]=gh-pages' -f 'source[path]=/'
+   ```
+
+3. Confira a URL: <https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/>.
+   Ela deve redirecionar para `/v1.0/` e mostrar `v1.0` no seletor de versão,
+   ao lado do nome do site.
+
+### Despublicar, ou voltar atrás
+
+A publicação escreve numa branch própria — o código nunca corre risco. Os
+caminhos de volta, do mais brando ao mais radical:
+
+```bash
+mike set-default --push v1.0   # a raiz voltou a apontar para o lugar errado
+mike delete --push v1.0        # tira uma versão do ar (e do seletor)
+mike delete --all --push       # esvazia a gh-pages
+```
+
+Para tirar o site do ar por inteiro, **Settings → Pages → Source: None**. A
+branch `gh-pages` pode ficar onde está: sem o Pages ligado, ela é só um
+diretório de arquivos no Git.
