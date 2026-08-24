@@ -32,6 +32,7 @@ npm run db:migrate   # cria/aplica migration após mudar o schema
 npm run db:generate  # regenera o Prisma Client (necessário após mudar o schema)
 npm run db:seed      # popula pessoas, inventário e administradores
 npm run db:sanear    # prévia da normalização dos cadastros; grava com -- --aplicar
+npm run db:demo      # estado fictício para as capturas da wiki (recusa banco real)
 npm run db:studio    # inspecionar o banco
 npm run lint         # tem que sair em 0
 ```
@@ -1059,6 +1060,106 @@ banco foi devolvido à linha de base item a item.
   filtrado por `status: AGUARDANDO_BAIXA` que já existia contra duplo-clique, mas
   agora tem uma consequência a mais: o carimbo de auditoria é imutável depois de
   posto. Exercitado — a segunda chamada é recusada e o valor não muda.
+
+**Tarefa D01 — Congelar a v1.0 e criar o estado de demonstração (concluída):**
+a primeira da **série de documentação** (`tarefa-doc-NN`, regida pela
+[spec-wiki.md](spec-wiki.md)), e a única dela que mexe fora de `docs/`. Entrega
+a tag anotada `v1.0`, o `prisma/demo-estado.ts` com o atalho `npm run db:demo`, e
+a seção "Documentação" do [CONTRIBUTING.md](CONTRIBUTING.md), que até aqui tinha
+0 byte. `tsc` e `lint` em 0.
+
+Verificação em quatro frentes: as premissas por script contra o ambiente real
+(10 asserções); a idempotência por execução dupla com comparação estrutural do
+banco (idêntica, mais 6 asserções sobre a estratégia de `upsert`); as travas
+exercitadas até **recusarem** (4, com o banco intacto depois); e navegador real
+por CDP, cobrindo portal, fila, inventário e pessoas (31 asserções). O `dev.db`
+foi copiado antes da primeira escrita e restaurado ao estado da linha de base no
+fim.
+
+**Decisões da Tarefa D01** (não refazer sem motivo):
+
+- **A tag `v1.0` aponta para o HEAD da `main`, e a `main` está 3 commits à
+  frente do remoto.** O enunciado pedia "confirme que a `main` está sincronizada
+  com o remoto", o que só se resolveria com um `push` — que o ciclo do projeto
+  proíbe por conta própria. Conferido antes de decidir: os 3 commits não
+  publicados tocam **só arquivos `.md`** (a spec da wiki, os 14 enunciados e o
+  ponteiro no AGENTS.md), zero linha de código de produto. O estado do produto em
+  `v1.0` é, portanto, idêntico ao do último commit publicado. A tag **não foi
+  publicada** — `git push --tags` é decisão do dono do repositório.
+- **`db:reset` NÃO roda o seed sozinho neste Prisma 7, e isso foi medido.** No
+  Prisma 6 rodava, e a memória de treino diz que roda. Medido aqui: depois do
+  reset, todas as tabelas ficam com zero linha. É por isso que a receita do
+  CONTRIBUTING tem três passos e o segundo não é redundante — se alguém "limpar"
+  a receita achando que o `db:seed` sobra, o `db:demo` seguinte quebra na primeira
+  chave estrangeira.
+- **A trava do `db:demo` é dupla, e a segunda é a que importa.** O enunciado
+  pedia só "recusar se `prisma/data/pessoas.csv` existir". Levantado como conflito
+  antes de escrever código: desde a Tarefa 8 a porta principal de dado real é a
+  importação de `.xlsx` pelo `/admin/pessoas`, que **não deixa arquivo nenhum no
+  disco** — a trava de arquivo protege exatamente a porta que deixou de ser a
+  principal. Somou-se a isso que o seed ainda aceita o nome legado
+  `usuarios.csv`, que o enunciado não menciona. A segunda trava conta os cadastros
+  que o script não reconhece e recusa acima de 4. A decisão foi do dono do
+  repositório.
+- **O teto de 4 é um número, e não uma cópia das quatro matrículas de exemplo.**
+  Copiar os valores do `PESSOAS_EXEMPLO` criaria a segunda lista que diverge em
+  silêncio — o argumento que já tirou `semAcento` das actions na Tarefa 7. Um
+  número não tem como divergir em valor: se o conjunto de exemplo crescer, o
+  script recusa e diz o que fazer. Medida a fronteira: num banco `reset+seed+demo`
+  os "não reconhecidos" são exatamente os 4 do seed e o script **passa**; um
+  cadastro a mais e ele **recusa**.
+- **O `db:demo` restaura o cenário; o `db:seed` preserva a edição. A inversão é
+  deliberada.** No seed, campo que a origem não menciona é campo que o banco
+  preserva, porque os dados são da secretaria. Aqui os dados são cenário de
+  captura: depois de clicar nos botões testando uma tela, rodar de novo tem que
+  devolver o enquadramento. Exercitado — dar baixa pela tela, reativar a pessoa
+  inativa e liberar o equipamento, e a re-execução desfaz os três (inclusive
+  limpando a `data_baixa` residual, que é por que o `update` grava `null`
+  explícito em vez de `undefined`).
+- **A idempotência se apoia em id explícito numa faixa reservada (9001+), porque
+  `Emprestimo` não tem chave natural** — duas retiradas do mesmo item pela mesma
+  pessoa são dois registros legítimos. Conferido nesta máquina antes de virar
+  desenho: id explícito é aceito em PK autoincrement, e `createMany` com
+  `skipDuplicates` **não existe** no SQLite do Prisma 7, então não havia atalho.
+  Efeito colateral conhecido: a sequência do SQLite passa a contar de 9011; em
+  banco de captura não aparece, porque nenhuma tela exibe o id do empréstimo.
+- **"O mesmo estado" quer dizer a mesma estrutura, não os mesmos
+  milissegundos.** Os três carimbos de tempo são recalculados a cada execução, de
+  propósito: a fila precisa dizer "há 3 h" na captura tirada hoje e na tirada em
+  novembro. Datas fixas dariam idempotência byte a byte e uma wiki cujas telas
+  dizem "há 87 dias". A verificação compara a estrutura — pessoas, vínculos e
+  status —, que sai idêntica.
+- **O `EMPRESTADO` do equipamento é derivado dos empréstimos, não escrito numa
+  lista à parte.** Duas listas discordariam no dia em que alguém mexesse numa só,
+  e o resultado seria um cenário impossível — empréstimo aberto apontando para
+  item "disponível" — fotografado e publicado como se fosse o comportamento do
+  sistema. O script também recusa se uma etiqueta aparecer ao mesmo tempo num
+  empréstimo aberto e na lista de fora de circulação.
+- **O `demo-estado.ts` não toca na tabela `Administrador`, e a regra virou
+  procedimento de captura.** O critério do enunciado ("nenhum nome real em
+  `db:studio`") não é alcançável sem alterar o `prisma/seed.ts`, que o próprio
+  enunciado proíbe — duas das quatro contas são de pessoas reais. Levantado como
+  conflito; a decisão foi capturar sempre logado como `secretaria`, a conta
+  neutra, e registrar isso no CONTRIBUTING. Reescrever os nomes pelo demo criaria
+  dois donos para o mesmo campo, e o próximo `db:seed` devolveria os reais em
+  silêncio. Exercitado no navegador: nenhuma das telas do painel mostra
+  "Jeanzão" nem "Viccenzo" quando se entra como `secretaria`.
+- **O elenco tem casos escolhidos, não variedade.** Ana Souza leva dois itens
+  porque o "Devolver tudo" e o "Confirmar Todas as Devoluções" só nascem a partir
+  de dois (Tarefa 5) — com um item só, as duas telas não teriam o botão que a
+  wiki precisa fotografar. Larissa é inativa **e** está na fila, que é a regra
+  assimétrica da Tarefa 8 em imagem. "João Pedro de Almeida" carrega a partícula
+  minúscula da 8.1, e "Direito"/"Administração" são o curso fora do mapa que é
+  mantido. Os três `CONCLUIDO` têm 6 h, 20 h e 48 h de prateleira, porque
+  `data_baixa` colada na `data_devolucao` daria zero e não haveria métrica da
+  Tarefa 12 para mostrar.
+- **O nome do arquivo é `demo-estado.ts`, e a §6 da spec-wiki foi corrigida.**
+  Ela dizia `seed-demo.ts` e o enunciado dizia `demo-estado.ts` — dois donos para
+  o mesmo nome. Venceu o enunciado, por ser mais específico, e o nome lê melhor:
+  não é um segundo seed, é uma camada de estado por cima do seed.
+- **O `dev.db` desta máquina estava com a migration da Tarefa 8.1 por aplicar**
+  (o `perfil` ainda gravado como "ALUNO"), o que é anterior a esta tarefa. A
+  receita `reset + seed + demo` resolveu junto, porque parte das migrations.
 
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
