@@ -1,0 +1,168 @@
+# Configuracao da wiki. A especificacao que manda aqui e a spec-wiki.md;
+# a spec.md manda sobre o sistema. Em conflito, a spec.md vence.
+#
+# Ambiente Python: docs-requirements.txt (fora do package.json de proposito).
+# Receita de montagem e de captura de tela: secao "Documentacao" do CONTRIBUTING.md.
+
+site_name: Sistema de Empréstimo de Equipamentos — Unoesc
+site_description: >-
+  Manual de uso e documentação de processos do sistema de empréstimo de
+  notebooks, tablets e extensões da Unoesc.
+site_author: Viccenzo Boff
+site_url: https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/
+
+repo_url: https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos
+repo_name: viccenzo-boff/sistema-emprestimo-equipamentos
+edit_uri: edit/main/docs/
+
+copyright: >-
+  Nome e logo da Unoesc usados com autorização da instituição.
+
+theme:
+  name: material
+  language: pt-BR
+  logo: assets/brand/logo-unoesc-colorido.png
+  favicon: assets/brand/logo-unoesc-colorido.png
+
+  # Paleta: os mesmos dois tons de marca do sistema (AGENTS.md, "Decisoes de
+  # design ja tomadas"), com `custom` porque os valores da marca nao estao entre
+  # as cores nomeadas do Material. Quem os define e docs/assets/stylesheets/marca.css.
+  #
+  # O sistema e fixado em claro (o tablet fica sob luz forte e tela escura vira
+  # espelho). A wiki nao tem essa restricao: quem le esta no desktop, e por isso
+  # aqui ha alternancia. Os pares de cor dos dois modos foram medidos, nao
+  # estimados -- ver o comentario do marca.css.
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Mudar para o modo escuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Mudar para o modo claro
+
+  # `navigation.instant` esta fora de proposito: o mkdocs-static-i18n avisa que
+  # o link contextual do seletor de idioma nao funciona com ele, e sob
+  # `--strict` esse aviso derruba o build. Conferido na fonte do plugin
+  # (reconfigure.py), nao lido na documentacao.
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - navigation.indexes
+    - toc.follow
+    - content.action.edit
+    - search.highlight
+    - search.suggest
+
+markdown_extensions:
+  # As seis exigidas pelo template de pagina de processo (D03):
+  # admonition e details dao as caixas de "regra que nao e obvia";
+  # attr_list + md_in_html dao a captura de tela clicavel da spec-wiki §7;
+  # superfences segura diagrama e bloco de codigo aninhado;
+  # tasklist com custom_checkbox da a lista de conferencia da secretaria.
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+plugins:
+  # `lang` declarado a mao, e nao deixado para o plugin de i18n preencher. Ele
+  # so acrescenta idioma que o lunr.js conhece, e o lunr indexa por codigo de
+  # duas letras: com `pt-BR` ele diz "nao suportado" e a busca em portugues
+  # perde a radicalizacao -- procurar "emprestimos" nao acha "emprestimo".
+  # Conferido: a lista do lunr instalado tem `pt` e nao tem `pt-BR`, e a
+  # reconfiguracao do plugin ACRESCENTA a esta lista em vez de substitui-la.
+  - search:
+      lang:
+        - pt
+        - en
+  # PT-BR na raiz de docs/, EN em docs/en/ -- estrutura de PASTA, e nao de
+  # sufixo de arquivo. O docs/en/ repete os nomes de pasta do portugues:
+  # traduzir nome de diretorio quebra o pareamento e o seletor de idioma perde
+  # a pagina (spec-wiki §6.2).
+  #
+  # `fallback_to_default` deixa o /en/ construir a arvore inteira usando o
+  # conteudo em portugues enquanto a traducao (D12) nao chega. E o que faz
+  # trocar de idioma MANTER a pagina em vez de cair na home.
+  - i18n:
+      docs_structure: folder
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: pt-BR
+          name: Português (Brasil)
+          default: true
+          build: true
+        - locale: en
+          name: English
+          build: true
+          site_name: Equipment Loan System — Unoesc
+          site_description: >-
+            User manual and process documentation for Unoesc's laptop, tablet
+            and power-strip loan system.
+          nav_translations:
+            Início: Home
+            Guia de Início Rápido: Quick Start
+            Aluno e Professor: Students and Teachers
+            Secretaria: Front Desk
+            Processos do Portal: Portal Processes
+            1. Retirada de equipamento: 1. Equipment pickup
+            2. Devolução de equipamento: 2. Equipment return
+            Processos do Painel: Admin Panel Processes
+            3. Baixa física: 3. Physical check-in
+            4. Gestão de inventário: 4. Inventory management
+            5. Gestão de pessoas: 5. People management
+            Referência: Reference
+            Glossário: Glossary
+            Estados e transições: States and transitions
+            Regras de negócio: Business rules
+            Conta do administrador: Administrator account
+            Sobre: About
+            Arquitetura do sistema: System architecture
+            Como esta wiki foi feita: How this wiki was made
+
+extra_css:
+  - assets/stylesheets/marca.css
+
+extra:
+  # O seletor de versao do mike. A v1.0 e o estado congelado que esta wiki
+  # descreve (spec-wiki §2.1); quando a Tarefa 13 entrar, ela vira v1.1 e as
+  # duas convivem lado a lado.
+  version:
+    provider: mike
+
+# A arvore da §4 da spec-wiki.md, inteira desde o inicio -- com as paginas
+# ainda vazias. E deliberado: nav completo torna visivel o que falta, e um
+# indice que cresce sozinho esconderia o buraco ate a vespera da entrega.
+nav:
+  - Início: index.md
+  - Guia de Início Rápido:
+      - Aluno e Professor: inicio-rapido/aluno-e-professor.md
+      - Secretaria: inicio-rapido/secretaria.md
+  - Processos do Portal:
+      - 1. Retirada de equipamento: portal/retirada-de-equipamento.md
+      - 2. Devolução de equipamento: portal/devolucao-de-equipamento.md
+  - Processos do Painel:
+      - 3. Baixa física: painel/baixa-fisica.md
+      - 4. Gestão de inventário: painel/gestao-de-inventario.md
+      - 5. Gestão de pessoas: painel/gestao-de-pessoas.md
+  - Referência:
+      - Glossário: referencia/glossario.md
+      - Estados e transições: referencia/estados-e-transicoes.md
+      - Regras de negócio: referencia/regras-de-negocio.md
+      - Conta do administrador: referencia/conta-do-administrador.md
+  - Sobre:
+      - Arquitetura do sistema: sobre/arquitetura-do-sistema.md
+      - Como esta wiki foi feita: sobre/como-esta-wiki-foi-feita.md
