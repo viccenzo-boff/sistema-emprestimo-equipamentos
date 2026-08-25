@@ -114,6 +114,73 @@ Quando uma página precisar escrever o termo proibido de propósito, o escape é
 que ser fechado. O [guia de estilo](docs/contribuir/guia-de-estilo.md) usa isso
 nele mesmo.
 
+### Os diagramas BPMN (D04)
+
+A fonte de cada processo é um `.bpmn` em `docs/processos-fonte/` — XML padrão
+OMG, que o Git versiona e faz diff linha a linha. O que a página publica é o SVG
+em `docs/assets/diagramas/`, e ele é **gerado a partir da fonte**, nunca editado
+à mão.
+
+Para editar um diagrama: abra o `.bpmn` em [bpmn.io](https://bpmn.io) (ou no
+Camunda Modeler), mexa, salve por cima do arquivo, e então:
+
+```bash
+npm run docs:diagramas   # regrava os cinco SVG a partir dos cinco .bpmn
+```
+
+O comando não é conveniência: sem ele o SVG commitado começa a divergir da fonte
+**em silêncio**, porque os dois continuam abrindo normalmente e ninguém vê a
+diferença. `npm run docs:diagramas -- --verificar` faz a pergunta inversa e não
+escreve nada — é a forma de o CI (D13) recusar um SVG desatualizado.
+
+O exportador é [scripts/exportar-diagramas.mjs](scripts/exportar-diagramas.mjs).
+Ele usa o **bpmn-js**, que é o motor que roda por dentro do próprio bpmn.io, e
+por isso "importou sem aviso aqui" quer dizer "abre no bpmn.io sem erro de
+validação". Além de exportar, ele recusa:
+
+- diagrama com referência solta (fluxo apontando para elemento que não existe);
+- rótulo de atividade maior que a própria caixa — o bpmn-js quebra a linha
+  sozinho mas **não** aumenta o retângulo, e o texto vaza por cima da seta
+  vizinha sem que nada acuse.
+
+#### Instalar o bpmn-js
+
+Ele é dependência da **wiki**, não do sistema, e por isso não está no
+`package.json` — mesma regra do MkDocs (Python) e do Vale (binário Go). Mora em
+`.tools/`, que está no `.gitignore`:
+
+```bash
+mkdir -p .tools/bpmn-js && cd .tools/bpmn-js
+curl -sSLO https://unpkg.com/bpmn-js@18.6.2/dist/bpmn-viewer.production.min.js
+curl -sSLO https://unpkg.com/bpmn-js@18.6.2/dist/assets/diagram-js.css
+curl -sSLO https://unpkg.com/bpmn-js@18.6.2/dist/assets/bpmn-js.css
+```
+
+O exportador também precisa do **Chrome**, que já é premissa deste repositório —
+é o mesmo binário que as verificações de interface das tarefas anteriores usam,
+por CDP, sem instalar dependência de automação. Em outra máquina, aponte o
+caminho em `CHROME_PATH`.
+
+Quem clonar o repositório e rodar `npm run docs:diagramas` sem baixar o bpmn-js
+não tem erro de configuração: tem ferramenta ausente, e o comando diz isso.
+
+#### Três coisas que economizam um diagnóstico
+
+- **Rótulo externo quebra em 90 px, e a largura do `dc:Bounds` não muda isso.**
+  Ela posiciona o rótulo, não o alarga. Nome de gateway com palavra longa
+  (`AGUARDANDO_BAIXA`) quebra no meio da palavra; a saída é reescrever o nome,
+  não alargar a caixa. Dentro de uma atividade a regra é outra: ali quem manda é
+  a largura da forma.
+- **O nome do gateway sai centrado logo abaixo do losango, que é por onde desce
+  a seta do "não".** A linha corta o texto. O conserto é o `BPMNLabel` com
+  `dc:Bounds` explícito — o mesmo que o bpmn.io grava quando alguém arrasta o
+  rótulo com o mouse.
+- **Acrescentar `.tools/` quebrou o `npm run lint` antes de a D04 mexer em uma
+  linha de produto.** O ESLint 9 não lê o `.gitignore`: com o bundle do bpmn-js
+  no disco, o portão foi de 0 para 2054 problemas. O
+  [eslint.config.mjs](eslint.config.mjs) ignora `.tools/**` por causa disso.
+  Rode os portões do projeto depois de baixar qualquer ferramenta nova.
+
 ### Reproduzir o estado de demonstração
 
 As capturas de tela da wiki não podem conter dado de pessoa real

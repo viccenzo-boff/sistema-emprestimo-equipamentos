@@ -151,7 +151,7 @@ tela; ela descreve a **decisão de produto**. Exemplo do tom esperado:
 | Bilíngue           | `mkdocs-static-i18n`       | PT-BR na raiz, EN em `/en/`                          |
 | Versionamento      | `mike`                     | `v1.0` publicada; futuras convivem                   |
 | Modelagem          | Camunda Modeler ou bpmn.io | Salva `.bpmn` (XML padrão OMG)                       |
-| Diagrama publicado | SVG exportado, commitado   | O leitor vê sem instalar nada                        |
+| Diagrama publicado | SVG gerado do `.bpmn`      | `npm run docs:diagramas`, commitado junto — §6.3     |
 | Linter de texto    | Vale                       | Ver ressalva abaixo                                  |
 | Links quebrados    | `lychee`                   | Roda no CI                                           |
 | Publicação         | GitHub Actions → Pages     | `push` na `main` publica                             |
@@ -216,6 +216,23 @@ mora lá vira página publicada.
 As capturas seguem a regra de assets que o [README.md](README.md) já estabelece
 para o código: nome descritivo, nunca UUID. O wiki anterior do autor usava UUID e
 isso tornou impossível saber o que uma imagem mostra sem abrir.
+
+### 6.3 O diagrama tem uma fonte e um derivado
+
+O `.bpmn` em `docs/processos-fonte/` é a **fonte**; o SVG em
+`docs/assets/diagramas/` é **derivado dela**, e nunca editado à mão. Os dois são
+commitados: o primeiro para o diagrama poder ser reaberto e mexido, o segundo
+para o leitor ver sem instalar nada.
+
+Quem os mantém em sincronia é o `npm run docs:diagramas` (D04). O comando existe
+porque a divergência entre fonte e derivado é **silenciosa** — os dois arquivos
+continuam abrindo normalmente, e a única forma de perceber é comparar os dois na
+tela. `-- --verificar` faz a conferência sem escrever, e é o que a D13 roda no
+CI.
+
+O comando também é o portão de validação: ele importa cada `.bpmn` no bpmn-js —
+o mesmo motor que roda dentro do bpmn.io — e recusa referência solta e rótulo
+maior que a própria caixa.
 
 ## 7. Regras de conteúdo
 
