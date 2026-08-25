@@ -98,14 +98,25 @@ Início
 │   ├── Estados e transições
 │   ├── Regras de negócio
 │   └── Conta do administrador
-└── Sobre
-    ├── Arquitetura do sistema
-    └── Como esta wiki foi feita
+├── Sobre
+│   ├── Arquitetura do sistema
+│   └── Como esta wiki foi feita
+└── Contribuir
+    ├── Guia de estilo
+    └── Template de processo
 ```
 
 A separação Portal / Painel não é organizacional, é **de audiência**: quem opera
 o tablet nunca precisa abrir a trilha do painel, e vice-versa. A home existe para
 mandar cada pessoa para a sua trilha na primeira tela.
+
+**"Contribuir" entrou nesta árvore na D03**, que é a tarefa a quem a D02 deixou
+a decisão. O que decidiu foi a §6.2: tudo que mora em `docs/` vira página
+publicada, e nota de trabalho vai para o `CONTRIBUTING.md`, fora do site. O guia
+de estilo e o template são conteúdo do site — quem escreve a próxima página
+precisa dos dois abertos ao lado, e mandar essa pessoa clonar o repositório para
+ler uma regra de redação é um pedágio sem motivo. A seção fica por último de
+propósito: ela não serve a quem veio operar o sistema.
 
 ## 5. Template de página de processo
 

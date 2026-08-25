@@ -23,6 +23,9 @@ páginas que faltam:
   [conta do administrador](referencia/conta-do-administrador.md)
 - **Sobre** — [arquitetura do sistema](sobre/arquitetura-do-sistema.md) e
   [como esta wiki foi feita](sobre/como-esta-wiki-foi-feita.md)
+- **Contribuir** — o [guia de estilo](contribuir/guia-de-estilo.md) e o
+  [template de processo](contribuir/template-processo.md), para quem escreve
+  página nova
 
 Esta é a documentação da versão **v1.0** do sistema. O seletor de versão fica
 no topo da página.

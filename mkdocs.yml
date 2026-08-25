@@ -132,6 +132,9 @@ plugins:
             Sobre: About
             Arquitetura do sistema: System architecture
             Como esta wiki foi feita: How this wiki was made
+            Contribuir: Contributing
+            Guia de estilo: Style guide
+            Template de processo: Process template
 
 extra_css:
   - assets/stylesheets/marca.css
@@ -166,3 +169,14 @@ nav:
   - Sobre:
       - Arquitetura do sistema: sobre/arquitetura-do-sistema.md
       - Como esta wiki foi feita: sobre/como-esta-wiki-foi-feita.md
+  # "Contribuir" nao esta na arvore da §4 da spec-wiki, e entrou aqui por
+  # decisao da D03 -- que a D02 deixou explicitamente em aberto. O que decidiu
+  # foi a §6.2: tudo que mora em docs/ vira pagina publicada, e as notas de
+  # trabalho vao para o CONTRIBUTING.md, fora do site. Guia de estilo e
+  # template SAO conteudo do site: quem escreve a proxima pagina precisa
+  # deles abertos ao lado, e mandar essa pessoa clonar o repositorio para ler
+  # uma regra de redacao e um pedagio sem motivo. A §4 foi atualizada junto,
+  # para nao ficarem dois donos da mesma arvore.
+  - Contribuir:
+      - Guia de estilo: contribuir/guia-de-estilo.md
+      - Template de processo: contribuir/template-processo.md
