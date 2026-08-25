@@ -68,3 +68,9 @@ next-env.d.ts
 # ambiente Python da wiki (docs-requirements.txt) e o site que o MkDocs gera
 /.venv-docs/
 /site/
+
+# binario do Vale (linter de texto da wiki). E um executavel Go de ~44 MB, e
+# nao cabe em docs-requirements.txt, que e Python. A receita de instalacao
+# esta na secao "Documentacao" do CONTRIBUTING.md; o que E versionado e a
+# configuracao (.vale.ini) e o vocabulario (.vale/styles/).
+/.tools/

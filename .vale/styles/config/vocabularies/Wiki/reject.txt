@@ -1,0 +1,40 @@
+# Grafia proibida. Cada entrada e uma expressao regular, casada com fronteira
+# de palavra (conferido: "alunado" nao dispara "[Aa]lunos?").
+#
+# A distincao de CAIXA e carregada de intencao -- ver o bloco "usuario" abaixo.
+
+# --------------------------------------------------------------------------
+# A regra mais importante: "usuario" nao e sinonimo de estudante nem de
+# professor. Neste sistema "usuario" quer dizer LOGIN DE ADMINISTRADOR, e so
+# isso -- e o campo Administrador.usuario. Quem retira equipamento e uma
+# Pessoa. O codigo levou a Tarefa 10 inteira para desfazer essa ambiguidade
+# (AGENTS.md, "Convencoes do projeto"); a wiki nao pode reintroduzi-la.
+#
+# So a forma MINUSCULA e proibida, e de proposito: na tela de login o rotulo
+# aparece capitalizado, como **Usuario**, e citar rotulo de tela literalmente e
+# obrigatorio pelo guia de estilo. Conferido: reject.txt distingue caixa, entao
+# **Usuario** passa e "o usuario devolveu" nao.
+usuário
+usuários
+
+# "Aluno" saiu da interface na Tarefa 8.1, que trocou o termo por "Estudante"
+# no painel inteiro "para manter a coesao visual". Uma wiki que diz "aluno"
+# manda o leitor procurar um filtro que tem outro nome na tela.
+[Aa]lunos?
+
+# A senha mestre unica do .env deixou de existir na Tarefa 10, substituida por
+# contas individuais. Descrever o sistema com ela e descrever um sistema que
+# nao existe mais.
+[Ss]enha mestre
+
+# Jargao de quem escreve codigo, na pagina de quem opera o balcao.
+[Dd]eletar
+[Ll]ogar
+[Dd]eslogar
+[Pp]rintar
+
+# Voz: segunda pessoa, presente, imperativo direto (spec-wiki §7). O futuro
+# perifrastico empurra a acao para um momento que nunca chega e alonga a linha
+# sem acrescentar informacao.
+[Vv]ocê (deverá|deverão|poderá|irá|terá)
+[Oo] sistema (irá|vai)

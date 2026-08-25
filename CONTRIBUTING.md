@@ -61,6 +61,59 @@ Enquanto a tradução (D12) não chega, o `/en/` mostra o conteúdo em portuguê
 com o menu traduzido — é o `fallback_to_default`, e é ele que mantém o seletor
 funcionando página a página.
 
+### O vocabulário controlado (Vale)
+
+O [Vale](https://vale.sh) confere a grafia dos termos do projeto nas páginas de
+`docs/`. A configuração é o [.vale.ini](.vale.ini) e o vocabulário está em
+`.vale/styles/config/vocabularies/Wiki/` — os dois **são versionados**. O que
+não é versionado é o executável.
+
+**O Vale não entra no `docs-requirements.txt`**: ele é um binário Go de ~44 MB,
+e aquele arquivo é Python. Baixe o release oficial para `.tools/`, que está no
+`.gitignore`:
+
+```bash
+mkdir -p .tools/vale && cd .tools/vale
+curl -sSL -o vale.zip https://github.com/errata-ai/vale/releases/download/v3.18.0/vale_3.18.0_Windows_64-bit.zip
+unzip -o vale.zip && cd ../..
+./.tools/vale/vale.exe --version    # vale version 3.18.0
+```
+
+Quem preferir instalar no `PATH` (`scoop install vale`, `choco install vale`,
+`brew install vale`) roda só `vale docs/`. A versão conferida aqui é a 3.18.0.
+
+```bash
+./.tools/vale/vale.exe docs/    # tem que sair em 0
+```
+
+Três coisas que economizam um diagnóstico:
+
+- **Não existe lint de estilo em português, e isto aqui não é um.** Os estilos
+  prontos do Vale são escritos para inglês. O que roda é um vocabulário
+  próprio, que resolve o problema real: duas páginas discordarem do nome da
+  mesma coisa. O estilo Microsoft para as páginas em inglês entra na D13.
+- **O escopo está preso a `docs/`, e são duas seções no `.vale.ini`.** Não é
+  redundância: medido nesta máquina, `docs/**/*.md` **não** casa
+  `docs/index.md`, e `docs/**.md` **não** casa `docs/referencia/glossario.md`.
+  Com um padrão só, `vale docs/` dizia "0 files" para a árvore inteira abaixo
+  do primeiro nível e **saía com sucesso** — um portão mudo é pior que portão
+  nenhum, porque parece verde.
+- **`Vale.Spelling` está desligado, e tem que ficar.** Ele é um corretor de
+  inglês: numa página de prova com quatro frases em português, 15 dos 19
+  alertas eram *"Did you really mean 'tabela'?"*.
+
+A regra mais importante do vocabulário é que **"usuário" não é sinônimo de
+estudante nem de professor** — neste sistema a palavra quer dizer login de
+administrador, e só isso ([AGENTS.md](AGENTS.md), "Convenções do projeto"). A
+forma minúscula é recusada; o rótulo de tela **Usuário**, capitalizado, passa.
+A lista inteira, com o porquê de cada entrada, está comentada dentro do
+`reject.txt`.
+
+Quando uma página precisar escrever o termo proibido de propósito, o escape é
+`<!-- vale Vale.Avoid = NO -->` … `<!-- vale Vale.Avoid = YES -->`, e ele tem
+que ser fechado. O [guia de estilo](docs/contribuir/guia-de-estilo.md) usa isso
+nele mesmo.
+
 ### Reproduzir o estado de demonstração
 
 As capturas de tela da wiki não podem conter dado de pessoa real

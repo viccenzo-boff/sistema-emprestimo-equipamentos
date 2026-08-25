@@ -1,0 +1,21 @@
+# Grafia aceita: termos cuja CAIXA e obrigatoria em todo lugar. O Vale.Terms
+# acusa quem escrever de outro jeito ("Use 'Unoesc' instead of 'UNOESC'").
+#
+# CUIDADO ao acrescentar: so entra aqui nome proprio que NAO seja tambem
+# palavra comum em portugues. Dois foram tentados e retirados, os dois pegos
+# pela propria ferramenta:
+#
+#   "Estudante" -- e rotulo de tela quando capitalizado (o valor de
+#   Pessoa.perfil) e substantivo comum quando nao e. Com ele na lista, "o
+#   estudante digita a matricula" virava erro.
+#
+#   "Vale" -- o nome da ferramenta e tambem o verbo. Com ele na lista, "o guia
+#   vale para quem escreve pagina nova" virava erro, na primeira frase do
+#   proprio guia de estilo.
+Unoesc
+MkDocs
+SQLite
+Prisma
+GitHub
+Next\.js
+BPMN
