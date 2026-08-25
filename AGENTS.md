@@ -55,6 +55,17 @@ mora em `.tools/` (fora do Git) e a receita de instalação está na mesma seç�
 ./.tools/vale/vale.exe docs/   # tem que sair em 0
 ```
 
+Os **diagramas BPMN** (D04) têm fonte em `docs/processos-fonte/*.bpmn` e SVG
+derivado em `docs/assets/diagramas/`. O SVG **nunca** é editado à mão:
+
+```bash
+npm run docs:diagramas               # regrava os SVG a partir dos .bpmn
+npm run docs:diagramas -- --verificar # confere sem escrever; é o portão do CI
+```
+
+O comando precisa do bpmn-js em `.tools/bpmn-js/` (fora do Git, como o Vale) e
+do Chrome. Receita na seção "Documentação" do [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ### Prisma 7 — leia antes de escrever qualquer query
 
 Este projeto usa **Prisma 7**, que difere do 6 em pontos que quebram código
@@ -1403,6 +1414,108 @@ funda.
   âncoras para a forma acentuada por causa do aviso do editor: isso quebraria as
   17 de uma vez.
 
+**Tarefa D04 — Modelagem BPMN dos cinco processos (concluída):** os cinco
+`.bpmn` em `docs/processos-fonte/` e os cinco SVG derivados em
+`docs/assets/diagramas/`, mais o exportador
+[scripts/exportar-diagramas.mjs](scripts/exportar-diagramas.mjs) por trás de
+`npm run docs:diagramas`. Nenhuma página de processo foi escrita — não era desta
+tarefa. `tsc`, `lint`, `mkdocs build --strict` e `vale docs/` em 0, com o Vale
+declarando 17 arquivos lidos.
+
+Verificação em seis frentes: os cinco importados no **bpmn-js** (o motor do
+próprio bpmn.io) com **zero aviso** de validação; a ida e volta pelo modelador,
+provando que o arquivo sobrevive a ser aberto, mexido e salvo no bpmn.io (26
+asserções, nenhum elemento perdido); a medida de corte no SVG publicado, texto a
+texto, no tamanho intrínseco; os cinco abertos em Chrome real e conferidos a
+olho, o que achou quatro defeitos de legibilidade que nenhum portão pegou; os 22
+gateways confrontados um a um com o `if` correspondente no código; e o
+`git diff --numstat`, que devolve número de linhas nos dez arquivos — se
+aparecesse `- -`, o formato estaria errado.
+
+**Decisões da D04** (não refazer sem motivo):
+
+- **"Aluno" não entra na raia; quem retira equipamento é "Estudante e
+  Professor".** O enunciado escreve "Aluno/Professor" nas cinco linhas da tabela,
+  mas a D03 tirou "aluno" do vocabulário da wiki e a §3.1 da spec-wiki já foi
+  corrigida. O detalhe que torna isto perigoso: **o Vale só lê `.md`** — o termo
+  proibido dentro de um `.svg` passaria calado pelo portão, em cinco diagramas
+  publicados. Levantado como conflito antes da primeira edição; a decisão foi do
+  dono do repositório.
+- **Os `.bpmn` foram escritos à mão, e o bpmn-js é quem valida.** O enunciado
+  manda usar bpmn.io ou Camunda Modeler, que são interfaces gráficas; o formato
+  de saída é o mesmo XML padrão OMG. O que substitui o clique não é confiança: é
+  o `importXML` do **mesmo motor que o bpmn.io roda por dentro**, com a regra de
+  que aviso de importação derruba o comando. Aviso ali é o que o bpmn.io mostraria
+  no painel lateral — referência solta, atributo fora do esquema —, e nada disso
+  impede o arquivo de abrir, que é justamente por que precisa reprovar.
+- **O exportador ficou versionado, e o SVG deixou de poder divergir da fonte.**
+  A alternativa era um script descartável mais uma receita manual no CONTRIBUTING
+  ("abra o bpmn.io, importe, baixe o SVG, renomeie") — quatro passos que alguém
+  pula. `--verificar` faz a pergunta inversa para o CI da D13. Decisão do dono do
+  repositório.
+- **O SVG do bpmn-js NÃO é reproduzível, e isso quase passou batido.** Cada
+  instância do visualizador sorteia um id novo para as pontas de seta
+  (`marker-33wm49p9tx0n17ty4dyeh0hc8` numa execução, outro na seguinte): exportar
+  o mesmo `.bpmn` duas vezes dava dois arquivos diferentes. As consequências eram
+  as duas piores possíveis — o `git diff` acusaria os cinco SVG a cada
+  `npm run docs:diagramas`, sem ninguém conseguir separar mudança de ruído, e o
+  `--verificar` reprovaria arquivos recém-gerados. Foi descoberto porque o portão
+  **reprovou os cinco na primeira vez que rodou**. `idsEstaveis()` renumera os
+  marcadores; provado com duas execuções seguidas e `md5sum` idêntico.
+- **A comparação do `--verificar` normaliza a quebra de linha.** Esta máquina tem
+  `core.autocrlf=true` e o repositório não tem `.gitattributes` (conferido, não
+  suposto): o SVG é gravado com LF e o Git o devolve com CRLF no próximo
+  checkout. Byte a byte, o portão acusaria os cinco diagramas em qualquer clone
+  novo — inclusive o do CI — sem uma linha de conteúdo ter mudado.
+- **O portão mede duas coisas, e a segunda é a que pega defeito.** A primeira —
+  todo texto dentro da área visível do SVG — quase nunca falha, porque o
+  `saveSVG` **cresce** para incluir rótulo externo que transborda a raia (medido:
+  700x360 virou 714x418 com um evento encostado no canto). Ela fica como prova de
+  que a leitura aconteceu. A segunda — rótulo de atividade maior que a própria
+  caixa — falha de verdade: o bpmn-js quebra a linha sozinho mas **não** aumenta
+  o retângulo, e o texto vaza por cima da seta vizinha. Exercitada nos dois
+  sentidos antes de virar regra.
+- **Nenhum portão pega diagrama feio, e por isso os cinco foram olhados.** O
+  navegador real achou quatro defeitos que `tsc`, `lint`, `mkdocs` e o próprio
+  exportador atravessaram sem piscar: a seta do "não" cortando o nome do gateway
+  ao meio, `AGUARDANDO_BAIXA` quebrado como `AGUARDANDO_/BAIXA`, o rótulo
+  "cadastrar um equipamento" por cima da caixa seguinte, e o texto da baixa em
+  lote encostando no marcador de repetição. Legibilidade é requisito do enunciado
+  ("legíveis a 100% de zoom"), e não sai de asserção de DOM.
+- **Rótulo externo quebra em 90 px, e `dc:Bounds` não muda isso** — ele posiciona,
+  não alarga. Foi por isso que o gateway virou "Ainda está aguardando baixa?" em
+  vez de nomear o status: alargar a caixa não resolvia. Dentro de uma atividade a
+  regra é outra (quem manda é a largura da forma), e lá o nome do status ficou.
+- **O 02 termina em evento intermediário de mensagem e o 03 começa com o evento
+  de início que o consome**, os dois chamados "Devolução declarada". É o que a §3
+  do enunciado pede, e é o que impede o erro que a regra de negócio existe para
+  impedir: o 02 **não** termina em "equipamento disponível", termina em "o
+  equipamento segue EMPRESTADO e espera a secretaria".
+- **Não existe sexto diagrama de visão geral.** O enunciado deixa opcional; a D10
+  já reserva as duas máquinas de estado para Mermaid, em `docs/referencia/`,
+  dizendo "não force BPMN onde ele não é a notação certa". Um BPMN de visão geral
+  seria a terceira representação da mesma coisa, para manter em sincronia.
+- **O tempo limite de inatividade do tablet (2 min) não está no diagrama 01.** Ele
+  é comportamento de sessão, não etapa do processo: em BPMN honesto seria um
+  subprocesso de evento, que pesa mais na leitura do que informa. Fica para o
+  passo a passo da D05.
+- **A gestão de categorias não está no diagrama 04.** Ela é outra tela
+  (`/admin/categorias`) e não é um dos cinco processos da §3.1 da spec-wiki; o
+  que o 04 mostra é o cadastro de equipamento **escolhendo** uma categoria que já
+  existe.
+- **Os 22 gateways foram confrontados com o código, um a um.** Os que não são
+  óbvios: "Cadastro ativo?" mora em dois lugares (a tela troca a grade por uma
+  explicação, e `confirmarRetirada` recusa no servidor); "Até 10 itens?" é
+  `MAXIMO_ITENS_POR_RETIRADA`, **que a tela não impede** — é recusa só do
+  servidor, e por isso entrou no diagrama; "A pessoa está com equipamento?" é o
+  `emprestimosAbertos === 0` que decide entre gravar direto e abrir o aviso; e
+  "O item estava EMPRESTADO?" é o `liberados.count === 1` que distingue o ciclo
+  que devolve o aparelho à prateleira do que o mantém em manutenção.
+- **A baixa em lote é uma atividade com marcador de repetição sequencial**, e a
+  avulsa não. Não é enfeite de notação: é a decisão da Tarefa 5 desenhada — o
+  lote é melhor-esforço item a item porque o gesto físico já aconteceu, e o
+  diagrama tinha que mostrar que uma linha fora da fila não derruba as outras.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
 coordenação e — agora que existe conta individual — registrar **quem** deu baixa
@@ -1452,5 +1565,18 @@ construir.
   [CONTRIBUTING.md](CONTRIBUTING.md). Quem clonar o repositório e rodar
   `vale docs/` sem baixar o binário não tem erro de configuração — tem
   ferramenta ausente.
+- **O bpmn-js também mora em `.tools/`, e pela mesma regra** (D04): é dependência
+  da wiki, não do sistema, então não entra no `package.json`. O que é versionado
+  é o [exportador](scripts/exportar-diagramas.mjs), as fontes `.bpmn` e os SVG.
+  Conferido com a v18.6.2. Ele precisa do Chrome, que já é premissa deste
+  repositório desde a Tarefa 2 (as verificações de interface usam o mesmo binário
+  por CDP); em outra máquina, aponte o caminho em `CHROME_PATH`.
+- **`.tools/**` está nos `globalIgnores` do ESLint, e isso não é higiene.** O
+  ESLint 9 de configuração plana **não lê o `.gitignore`**: no instante em que o
+  bundle minificado do bpmn-js apareceu em `.tools/`, o `npm run lint` foi de 0
+  para **2054 problemas** em código que não é nosso — medido, foi assim que
+  apareceu. É a mesma armadilha que a D02 já tinha registrado para `.venv-docs/`
+  e `site/`. Rode os portões do projeto **depois** de baixar qualquer ferramenta
+  nova, mesmo que a tarefa não fale deles.
 - `prisma/data/usuarios.csv` (planilha real, dados pessoais) está no `.gitignore`.
   Versione apenas `usuarios.example.csv`.
