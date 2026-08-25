@@ -1516,6 +1516,121 @@ aparecesse `- -`, o formato estaria errado.
   lote é melhor-esforço item a item porque o gesto físico já aconteceu, e o
   diagrama tinha que mostrar que uma linha fora da fila não derruba as outras.
 
+**Tarefa D05 — Processo 1, Retirada de equipamento (concluída):** a primeira
+página de processo da wiki, em [docs/portal/retirada.md](docs/portal/retirada.md),
+com as oito seções do template da D03, o diagrama BPMN embutido, as nove capturas
+em `docs/assets/images/retirada/` e as ramificações no formato "Se SIM → / Se
+NÃO →". Junto vieram as quatro renomeações de página que o enunciado pedia e as
+correções que o **primeiro uso real** do ferramental da D03 revelou.
+`mkdocs build --strict`, `vale docs/` (17 arquivos), `npm run docs:diagramas --
+--verificar`, `tsc` e `lint` em 0.
+
+Verificação em quatro frentes, com o `dev.db` do dono do repositório **conferido
+byte a byte** contra a linha de base no fim (md5 idêntico — ele nunca foi
+tocado): o Fluxo 1 inteiro no navegador real por CDP, em 1280x800, do teclado da
+matrícula à tela de sucesso, com as três ramificações do enunciado (22
+asserções); a categoria esgotada, montada e desfeita pelo próprio roteiro, nas
+duas formas em que ela aparece (7); a corrida de dois tablets pelo mesmo aparelho,
+com a asserção **negativa** de que nada foi gravado (6); e as duas recusas que o
+cenário de nove unidades livres não alcança pela tela, por HTTP real contra o
+servidor (6). Mais a conferência dos 38 links e recursos relativos da página
+publicada, e a leitura visual das nove capturas e da página montada.
+
+**Decisões da D05** (não refazer sem motivo):
+
+- **O nome do arquivo veio do enunciado, e as quatro páginas foram renomeadas de
+  uma vez.** A D02 tinha criado `retirada-de-equipamento.md`,
+  `devolucao-de-equipamento.md`, `gestao-de-inventario.md` e
+  `gestao-de-pessoas.md` a partir dos rótulos da §4 da spec-wiki; os enunciados
+  da D05, D06, D08 e D09 dizem `retirada.md`, `devolucao.md`, `inventario.md` e
+  `pessoas.md` (só a D07 já casava). Mesmo precedente da D01, em que
+  `demo-estado.ts` venceu o `seed-demo.ts` da spec por ser mais específico — e
+  aqui há um argumento a mais: o slug da página passa a bater com os outros três
+  artefatos do mesmo processo (`01-retirada.bpmn`, `01-retirada.svg`,
+  `images/retirada/`). Levantado como conflito antes da primeira edição; a
+  decisão de renomear as quatro juntas foi do dono do repositório, para o `nav`
+  não ficar misturado por quatro tarefas.
+- **O passo a passo NÃO pode ser cortado por subtítulo, e o `--strict` não
+  acusa.** Um `###` no meio da lista numerada a fecha e abre outra, e o
+  Python-Markdown escreve a segunda **sem o atributo `start`**: os doze passos
+  saíam 1‑4, 1‑4, 1‑4 na página publicada. O build saiu em 0 aviso com o defeito
+  no ar — só ler o HTML gerado pegou. A regra virou comentário na §6 do
+  [template](docs/contribuir/template-processo.md), porque quatro páginas ainda
+  vão ser escritas a partir dele.
+- **O diagrama BPMN é clicável, e isso também é do template agora.** Medido na
+  página publicada: o SVG tem 1980px de largura e entra na coluna de texto com
+  **688px**, ou 0,35 do tamanho — nenhum rótulo se lê. A regra 5 do guia de
+  estilo (captura clicável, abrindo em tamanho cheio) vale igual para o diagrama,
+  e sem ela a §5 vira uma mancha cinza. O template da D03 mostrava a forma não
+  clicável; foi corrigido.
+- **Caixa de admonição não gera âncora.** A pré-condição linkava
+  `#por-que-eu-consigo-entrar-mas-nao-consigo-retirar`, esperando que o título
+  do `!!! question` virasse `id` — não vira, e nem o `--strict` nem o Vale dizem
+  nada. Conferido no HTML gerado e trocado pela âncora da seção. Quem for linkar
+  uma regra específica precisa de um `##` de verdade, não de uma caixa.
+- **"bpmn.io" entrou no `accept.txt` do Vale.** Sem a entrada, a primeira página
+  a linkar o modelador reprova com *"Use 'BPMN' instead of 'bpmn'"* — o termo
+  canônico casa **dentro** do nome próprio. A entrada mais longa vence, e as duas
+  grafias passam a conviver: a notação em caixa alta, a ferramenta em caixa
+  baixa. Exercitado nos dois sentidos depois da mudança, com um arquivo
+  descartável: as quatro regras de grafia proibida continuam acusando, e
+  `bpmn.io`, `BPMN`, `Unoesc` e `MkDocs` passam.
+- **A quarta ramificação entrou no passo a passo, e ela não está na §2 do
+  enunciado.** O enunciado lista três decisões; o diagrama da D04 tem quatro
+  gateways, e o que faltava — "Todos ainda estavam livres?" — é a corrida de dois
+  tablets pelo mesmo aparelho. Deixá-la de fora faria a página contradizer o
+  diagrama que ela mesma publica. Exercitada de verdade: o `NOTE-06` sai do
+  inventário no intervalo entre o toque e a confirmação, e a asserção que importa
+  é a **negativa** — nada foi gravado, nem o `NOTE-05`, que continuava livre.
+- **A página diz que a retirada não tem desfazer, e essa pergunta é a quarta
+  caixa da §7.** É o resultado da varredura de reversibilidade: o enunciado
+  descreve o gesto de ida e não o de volta. A resposta honesta não é "não dá" —
+  é o processo seguinte, a devolução, e o texto manda para lá.
+- **A recusa por teto de 10 itens foi provada por HTTP, não pela tela.** O
+  cenário do `db:demo` tem nove unidades livres no total, então não há como
+  selecionar onze pelo tablet — e a tela não impede a seleção, a recusa é só do
+  servidor (decisão registrada na D04). Sem o degrau de protocolo, a linha da §8
+  seria escrita de memória. O identificador da action foi **sondado**, e a
+  primeira assinatura tentada ("Sessão perdida. Informe a matrícula novamente.")
+  é respondida por **quatro** das seis actions: o roteiro ficava com a última e
+  reprovava falando de empréstimo. A assinatura boa é "Selecione pelo menos um
+  equipamento.", e o casamento único passou a ser exigido em vez de suposto.
+- **A captura foi feita contra um banco separado, e o `dev.db` não foi tocado.**
+  A receita do CONTRIBUTING manda `db:reset`, que apaga o banco de trabalho do
+  dono do repositório. Apontar `DATABASE_URL` para `./dev-demo.db` resolve — o
+  `dotenv` não sobrescreve variável já definida no ambiente. A receita ganhou
+  essa variante, junto com duas armadilhas medidas: o `next dev` **recusa** subir
+  um segundo servidor do mesmo projeto (o antigo serve o banco antigo, e precisa
+  ser encerrado), e o indicador "Rendering …" do modo de desenvolvimento aparece
+  em **toda** captura — ele mora num `<nextjs-portal>` fora da aplicação, não
+  entra em asserção nenhuma, e some com uma linha antes de fotografar.
+- **O `db:demo` não desfaz uma retirada feita pela tela**, e a afirmação
+  contrária estava escrita no CONTRIBUTING. Ele faz `upsert` nos dez ids da faixa
+  reservada e reescreve o status de todo equipamento, mas o `Emprestimo` que o
+  tablet criou nasce com id próprio (9011+) e sobrevive. Metade se desfaz, que é
+  o pior caso: o equipamento volta a `DISPONIVEL`, o empréstimo fica, e a captura
+  seguinte mostra a pessoa com item na mão — com o `h1` trocando de "O que você
+  vai levar?" para "O que você quer fazer?". Foi assim que apareceu. O texto foi
+  corrigido, com a receita de recriar o banco.
+- **O elenco das capturas foi escolhido, não sorteado.** "João Pedro de Almeida"
+  é o caso da partícula minúscula da Tarefa 8.1 e não tem empréstimo aberto — o
+  que dá o `h1` "O que você vai levar?" e a grade de três colunas limpa. Larissa
+  Coutinho é inativa e tem só um item em `AGUARDANDO_BAIXA`, que **não** aparece
+  em "Meus equipamentos": é a única forma de fotografar a tela de cadastro
+  inativo sem uma lista ao lado disputando a atenção.
+- **A categoria esgotada não existe no `db:demo`, e é montada pelo roteiro.**
+  Nenhuma das três categorias fica sem unidade livre no cenário da D01. As duas
+  unidades de Tablet vão para `MANUTENCAO`, a captura é tirada, e o mesmo script
+  as devolve. Acrescentá-la ao `demo-estado.ts` foi descartado: o cenário é
+  compartilhado pelas cinco páginas, e uma categoria permanentemente vazia
+  estragaria a grade de todas as outras.
+- **A ramificação da categoria esgotada tem duas formas, e as duas foram
+  exercitadas.** A normal é o cartão que já nasce cinza, porque a contagem vem do
+  login. A outra é a mesma decisão meio segundo depois: a contagem da grade
+  envelhece, o cartão continua clicável, e a lista chega vazia com "Nenhuma
+  unidade de Tablet está livre agora." A página documenta a primeira como passo e
+  a segunda na §8, que é onde o leitor vai procurar pela frase que está na tela.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
 coordenação e — agora que existe conta individual — registrar **quem** deu baixa
