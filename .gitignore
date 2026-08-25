@@ -60,6 +60,9 @@ next-env.d.ts
 
 # log de observacoes de skill (meta-trabalho, nao faz parte do sistema)
 /skill-observations/
+# versoes de skill preparadas pela revisao semanal, com backup do estado
+# anterior. Mesmo motivo: meta-trabalho, e o destino real delas e ~/.claude/
+/skill-updates/
 
 # symlinks locais para .agents/skills (o git no Windows os copiaria por inteiro)
 /.claude/skills/
