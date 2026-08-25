@@ -47,6 +47,14 @@ mkdocs serve            # a wiki com recarga automática
 mkdocs build --strict   # tem que sair em 0; é o portão que a Action roda
 ```
 
+O **Vale** confere o vocabulário controlado das páginas (D03). Ele é binário Go,
+mora em `.tools/` (fora do Git) e a receita de instalação está na mesma seção do
+[CONTRIBUTING.md](CONTRIBUTING.md):
+
+```bash
+./.tools/vale/vale.exe docs/   # tem que sair em 0
+```
+
 ### Prisma 7 — leia antes de escrever qualquer query
 
 Este projeto usa **Prisma 7**, que difere do 6 em pontos que quebram código
@@ -1289,6 +1297,112 @@ foram vistos acontecer** e continuam pendentes.
   versiona diretório vazio: criá-los agora só deixaria pasta local que não
   chega em commit nenhum. Nascem com o primeiro arquivo (D04/D05).
 
+**Tarefa D03 — Guia de estilo, template de processo e glossário base
+(concluída):** os quatro itens de
+[tarefa-doc-03-guia-de-estilo-e-template.md](tarefa-doc-03-guia-de-estilo-e-template.md)
+— o [guia de estilo](docs/contribuir/guia-de-estilo.md) com as sete regras da §7
+da spec-wiki em pares de certo e errado, o
+[template de processo](docs/contribuir/template-processo.md) com as oito seções
+da §5 comentadas uma a uma, o [glossário](docs/referencia/glossario.md) com os
+quatorze verbetes exigidos mais "cadastro inativo" e "fila de devoluções", e o
+[.vale.ini](.vale.ini) com o vocabulário em `.vale/styles/`. Nenhuma página de
+processo foi escrita — não era desta tarefa.
+
+`mkdocs build --strict` e `vale docs/` em 0, com as três páginas no `nav` e
+servindo 200 por HTTP. Verificação em 40 asserções, com linha de base de `docs/`
+antes da primeira escrita e comparação no fim: os dois portões, as três páginas
+geradas e linkadas, os quatorze verbetes conferidos pelo `id` gerado, o template
+copiado para `docs/painel/` construindo com as oito seções, e a **recusa** do
+Vale em um arquivo descartável com as quatro formas proibidas. Mais o servidor
+real, onde a rota antiga responde 404 e o seletor de idioma mantém a página
+funda.
+
+**Decisões da Tarefa D03** (não refazer sem motivo):
+
+- **"Aluno" saiu do vocabulário da wiki; quem retira equipamento é
+  "estudante".** A spec-wiki dizia "Aluno/Professor" em §3.1, §3.2 e na árvore
+  da §4, e o `nav` da D02 tinha nascido assim — mas a interface diz **Estudante**
+  desde a Tarefa 8.1, que trocou o termo no painel inteiro "para manter a coesão
+  visual", e é esse o valor de `Pessoa.perfil`. Nascer com duas palavras para a
+  mesma coisa é exatamente o que esta tarefa existe para impedir. Levantado como
+  conflito antes da primeira edição; a decisão foi do dono do repositório. O item
+  do `nav`, o arquivo `inicio-rapido/estudante-e-professor.md`, a
+  `nav_translations` e **as oito ocorrências na spec-wiki** foram corrigidos
+  juntos, para não ficarem dois donos da mesma regra.
+- **`docs/contribuir/` entrou no `nav`, e a §4 da spec-wiki foi atualizada.** A
+  D02 deixou a decisão explicitamente em aberto. Quem decidiu foi a §6.2: tudo
+  que mora em `docs/` vira página publicada, e nota de trabalho vai para o
+  `CONTRIBUTING.md`, fora do site. Quem escreve a próxima página precisa do guia
+  e do template abertos ao lado — mandar essa pessoa clonar o repositório para
+  ler uma regra de redação é pedágio sem motivo. A seção fica por último: não
+  serve a quem veio operar o sistema.
+- **O Vale não entra no `docs-requirements.txt`, e não é distração:** ele é um
+  binário Go de ~44 MB e aquele arquivo é Python. Fica em `.tools/`, no
+  `.gitignore`, com a receita no CONTRIBUTING. **O que é versionado é a
+  configuração e o vocabulário** — que é a parte que tem valor e que a D13 vai
+  rodar no CI.
+- **O escopo do Vale são DUAS seções no `.vale.ini`, e a segunda não é
+  redundância.** Medido nesta máquina: `docs/**.md` casa `docs/index.md` e
+  **não** casa `docs/referencia/glossario.md`; `docs/**/*.md` faz o inverso. Com
+  um padrão só, `vale docs/` dizia **"0 files"** para a árvore inteira abaixo do
+  primeiro nível e **saía com sucesso**. É a pior classe de defeito de portão: o
+  verde de um linter que não olhou nada. Só apareceu porque a verificação exigia
+  ver a ferramenta **acusar**, e ela não acusava o que devia.
+- **`Vale.Spelling` está desligado, e a medição está no comentário do arquivo.**
+  Ele é corretor de inglês: numa página de prova com quatro frases em português,
+  **15 dos 19 alertas** eram "Did you really mean 'tabela'?". É a §6.1 da
+  spec-wiki confirmada por medição em vez de leitura.
+- **Só a forma MINÚSCULA de "usuário" é proibida, e a caixa carrega a
+  intenção.** Conferido antes de virar desenho: o `reject.txt` distingue caixa.
+  Na tela de login o rótulo é **Usuário**, capitalizado, e citar rótulo
+  literalmente é obrigatório pelo próprio guia — então o rótulo passa e "o
+  usuário devolveu" não. Uma proibição indiscriminada tornaria impossível
+  documentar a tela de login, e a página de conta do administrador (D10) nasceria
+  com o lint desligado.
+- **`accept.txt` só recebe nome próprio que não seja também palavra comum em
+  português.** Dois foram tentados e **retirados pela própria ferramenta**:
+  "Estudante" (que é rótulo de tela quando capitalizado e substantivo comum
+  quando não é — com ele na lista, "o estudante digita a matrícula" virava erro)
+  e "Vale" (o nome da ferramenta é também o verbo — ele reprovou a **primeira
+  frase do próprio guia de estilo**). `Vale.Terms` não sabe distinguir os dois
+  usos, e não há como ensiná-lo.
+- **O `reject.txt` aceita expressão regular e frase de várias palavras, com
+  fronteira de palavra** — conferido, "alunado" não dispara `[Aa]lunos?`. É o que
+  permitiu ao vocabulário cobrir também as **regras de voz** da §7 ("você
+  deverá", "o sistema irá"), e não só grafia de termo. Sem essa prova, o
+  vocabulário teria nascido como lista de palavras soltas.
+- **Comentário com `#` em arquivo de vocabulário é ignorado** — conferido com um
+  termo plantado dentro de um comentário, que não disparou nem escrito por
+  extenso. É o que permite o porquê de cada entrada morar ao lado dela, em vez de
+  numa documentação à parte que ninguém abre ao editar a lista.
+- **A porta de saída do lint é obrigatória, e o guia usa nela mesma.** Uma regra
+  de erro sem escape vira parede sem porta: a página que precisa **explicar** o
+  termo proibido não teria como. O escape é
+  `<!-- vale Vale.Avoid = NO -->` … `= YES`, exercitado nos dois sentidos antes
+  de virar regra escrita, e o guia de estilo o aplica em dois parágrafos —
+  documentar usando é o que impede a instrução de envelhecer errada.
+- **Todo link do template começa por `../`, e isso foi medido.** A primeira
+  versão usava `guia-de-estilo.md`, que passa de dentro de `docs/contribuir/` e
+  **quebra ao ser copiado** para `docs/painel/` — derrubando o
+  `mkdocs build --strict` de quem só queria começar uma página. Reprovou na
+  verificação, que é onde tinha que reprovar: o defeito só existe no gesto que o
+  template existe para fazer.
+- **O template ganhou um bloco visível de "como usar", e o comentário HTML do
+  topo foi reduzido a um ponteiro.** Comentário HTML **atravessa** para o HTML
+  gerado e fica invisível ao leitor (conferido): como a página agora é publicada,
+  sem o bloco visível ela seria oito títulos e nada mais. As instruções ficam num
+  lugar só, pelo mesmo motivo de sempre.
+- **Página fora do `nav` é `INFO`, não `WARNING`, e o `--strict` passa.** Medido
+  antes de decidir onde pôr `contribuir/`. É também o que faz o template copiado
+  construir sem estar no índice — quem começa uma página não precisa editar o
+  `mkdocs.yml` antes de escrever a primeira linha.
+- **As âncoras do glossário são ASCII, e o markdownlint do editor acusa errado.**
+  Ele usa um algoritmo de slug que preserva acento; o Python-Markdown normaliza
+  para ASCII, então `## Baixa física` vira `#baixa-fisica`. As 17 âncoras
+  internas foram conferidas contra o **HTML gerado**, uma a uma. Não "corrija" as
+  âncoras para a forma acentuada por causa do aviso do editor: isso quebraria as
+  17 de uma vez.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
 coordenação e — agora que existe conta individual — registrar **quem** deu baixa
@@ -1330,5 +1444,13 @@ construir.
   3.14.0, que é a versão que a Action também usa. **Esta máquina tem um MkDocs
   solto no Python 3.13**, e é ele que o `PATH` acha quando o ambiente não está
   ativado — ver a decisão da D02 sobre isso.
+- **O Vale é a exceção: não é Python e não está no `docs-requirements.txt`**
+  (D03). É um binário Go de ~44 MB, baixado do release oficial para `.tools/`,
+  que está no `.gitignore`. O que **é** versionado é o [.vale.ini](.vale.ini) e o
+  vocabulário em `.vale/styles/config/vocabularies/Wiki/`. Conferido com a
+  v3.18.0; a receita está na seção "Documentação" do
+  [CONTRIBUTING.md](CONTRIBUTING.md). Quem clonar o repositório e rodar
+  `vale docs/` sem baixar o binário não tem erro de configuração — tem
+  ferramenta ausente.
 - `prisma/data/usuarios.csv` (planilha real, dados pessoais) está no `.gitignore`.
   Versione apenas `usuarios.example.csv`.
