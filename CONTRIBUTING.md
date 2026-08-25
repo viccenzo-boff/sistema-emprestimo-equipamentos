@@ -215,6 +215,46 @@ nos botões testando uma tela, rodá-lo de novo devolve tudo ao enquadramento
 original. Não é preciso resetar o banco entre uma captura e outra — só entre
 sessões, se algo tiver saído do lugar de vez.
 
+**Com uma exceção, medida na D05: o `db:demo` não desfaz uma retirada feita pelo
+tablet.** Ele faz `upsert` nos dez empréstimos da faixa de ids reservada
+(9001–9010) e reescreve o status de todo equipamento — mas um `Emprestimo` novo,
+criado pela tela, nasce com id próprio (9011 em diante) e ele não apaga. O efeito
+é traiçoeiro justamente porque metade se desfaz: o equipamento volta a
+`DISPONIVEL`, o empréstimo fica, e a pessoa aparece com item na mão na captura
+seguinte — trocando o título da tela inicial de "O que você vai levar?" para "O
+que você quer fazer?". Depois de exercitar o Fluxo 1, recrie o banco:
+
+```bash
+npm run db:reset && npm run db:seed && npm run db:demo
+```
+
+### Capturar sem mexer no seu `dev.db`
+
+O `db:reset` apaga o banco de desenvolvimento. Para não perder o estado com que
+você vinha trabalhando, aponte o `DATABASE_URL` para um arquivo separado — o
+`.env` não sobrescreve variável já definida no ambiente, e o `.gitignore` já
+cobre `*.db`:
+
+```bash
+export DATABASE_URL="file:./dev-demo.db"
+npx prisma migrate deploy   # cria o arquivo com as migrations aplicadas
+npx tsx prisma/seed.ts
+npx tsx prisma/demo-estado.ts
+npx next dev -p 3100
+```
+
+Duas coisas que custaram diagnóstico na D05:
+
+- **O `next dev` recusa subir um segundo servidor do mesmo projeto.** Ele
+  responde mandando usar o que já está de pé — que aponta para o outro banco.
+  Encerre o servidor antigo antes; a mensagem dele traz o `taskkill` pronto.
+- **O indicador de desenvolvimento do Next aparece em toda captura**, no canto
+  inferior esquerdo ("Rendering …"). Ele vive num `<nextjs-portal>` pendurado no
+  `body` e não aparece em asserção nenhuma — some com
+  `document.querySelectorAll('nextjs-portal').forEach(e => e.remove())` antes de
+  fotografar. Não mexa no `next.config.ts` por causa disso: necessidade da wiki
+  não muda o comportamento de quem desenvolve.
+
 ### Voltar atrás
 
 Não existe "desfazer" no `db:demo` — ele escreve direto. O caminho de volta é
