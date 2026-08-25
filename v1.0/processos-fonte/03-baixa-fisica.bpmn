@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definicoes_baixa" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:message id="Mensagem_devolucao_declarada" name="Devolução declarada" />
+  <bpmn:collaboration id="Colaboracao_baixa">
+    <bpmn:participant id="Participante_baixa" name="Baixa física" processRef="Processo_baixa" />
+  </bpmn:collaboration>
+  <bpmn:process id="Processo_baixa" isExecutable="false">
+    <bpmn:laneSet id="Raias_baixa">
+      <bpmn:lane id="Raia_secretaria" name="Secretaria">
+        <bpmn:flowNodeRef>RecolheDaBancada</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EscolheModo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ConfirmaUm</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ConfirmaTodos</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Raia_sistema" name="Sistema">
+        <bpmn:flowNodeRef>InicioDeclaracao</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>MostraNaFila</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>AindaNaFila</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimForaDaFila</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FechaEmprestimo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>LiberaEquipamento</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EstavaEmprestado</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimRetidoEmManutencao</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimDisponivel</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>BaixaEmLote</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimResumoDoLote</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="InicioDeclaracao" name="Devolução declarada no tablet">
+      <bpmn:outgoing>Fluxo_ate_fila</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="Definicao_declaracao_recebida" messageRef="Mensagem_devolucao_declarada" />
+    </bpmn:startEvent>
+    <bpmn:task id="MostraNaFila" name="Põe o empréstimo na Fila de Devoluções com o tempo de espera">
+      <bpmn:incoming>Fluxo_ate_fila</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_recolhe</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="RecolheDaBancada" name="Recolhe o equipamento da bancada e confere a etiqueta">
+      <bpmn:incoming>Fluxo_ate_recolhe</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_modo</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="EscolheModo" name="Um item ou a fila inteira?">
+      <bpmn:incoming>Fluxo_ate_modo</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_um_item</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_fila_inteira</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="ConfirmaUm" name="Confirma o recebimento físico na linha">
+      <bpmn:incoming>Fluxo_um_item</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_ainda_na_fila</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="ConfirmaTodos" name="Confirma todas as devoluções, botão que só existe a partir de 2 itens">
+      <bpmn:incoming>Fluxo_fila_inteira</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_lote</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="AindaNaFila" name="Ainda está aguardando baixa?">
+      <bpmn:incoming>Fluxo_ate_ainda_na_fila</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_fora_da_fila</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_na_fila</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="FimForaDaFila" name="Esse item já saiu da fila; outra aba confirmou antes">
+      <bpmn:incoming>Fluxo_fora_da_fila</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="FechaEmprestimo" name="Fecha o empréstimo: CONCLUIDO e carimba a data da baixa">
+      <bpmn:incoming>Fluxo_na_fila</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_libera</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="LiberaEquipamento" name="Tenta devolver o equipamento a DISPONIVEL">
+      <bpmn:incoming>Fluxo_ate_libera</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_estava_emprestado</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="EstavaEmprestado" name="O item estava EMPRESTADO?">
+      <bpmn:incoming>Fluxo_ate_estava_emprestado</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_retido</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_liberado</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="FimRetidoEmManutencao" name="Ciclo fechado; o item fica em manutenção">
+      <bpmn:incoming>Fluxo_retido</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="FimDisponivel" name="Ciclo fechado; o equipamento volta ao tablet">
+      <bpmn:incoming>Fluxo_liberado</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="BaixaEmLote" name="Dá baixa item a item; quem saiu da fila não derruba os outros">
+      <bpmn:incoming>Fluxo_ate_lote</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_resumo</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics isSequential="true" />
+    </bpmn:task>
+    <bpmn:endEvent id="FimResumoDoLote" name="Resumo: confirmados, presos em manutenção e fora da fila">
+      <bpmn:incoming>Fluxo_ate_resumo</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Fluxo_ate_fila" sourceRef="InicioDeclaracao" targetRef="MostraNaFila" />
+    <bpmn:sequenceFlow id="Fluxo_ate_recolhe" sourceRef="MostraNaFila" targetRef="RecolheDaBancada" />
+    <bpmn:sequenceFlow id="Fluxo_ate_modo" sourceRef="RecolheDaBancada" targetRef="EscolheModo" />
+    <bpmn:sequenceFlow id="Fluxo_um_item" name="um item" sourceRef="EscolheModo" targetRef="ConfirmaUm" />
+    <bpmn:sequenceFlow id="Fluxo_fila_inteira" name="a fila inteira" sourceRef="EscolheModo" targetRef="ConfirmaTodos" />
+    <bpmn:sequenceFlow id="Fluxo_ate_ainda_na_fila" sourceRef="ConfirmaUm" targetRef="AindaNaFila" />
+    <bpmn:sequenceFlow id="Fluxo_fora_da_fila" name="não" sourceRef="AindaNaFila" targetRef="FimForaDaFila" />
+    <bpmn:sequenceFlow id="Fluxo_na_fila" name="sim" sourceRef="AindaNaFila" targetRef="FechaEmprestimo" />
+    <bpmn:sequenceFlow id="Fluxo_ate_libera" sourceRef="FechaEmprestimo" targetRef="LiberaEquipamento" />
+    <bpmn:sequenceFlow id="Fluxo_ate_estava_emprestado" sourceRef="LiberaEquipamento" targetRef="EstavaEmprestado" />
+    <bpmn:sequenceFlow id="Fluxo_retido" name="não" sourceRef="EstavaEmprestado" targetRef="FimRetidoEmManutencao" />
+    <bpmn:sequenceFlow id="Fluxo_liberado" name="sim" sourceRef="EstavaEmprestado" targetRef="FimDisponivel" />
+    <bpmn:sequenceFlow id="Fluxo_ate_lote" sourceRef="ConfirmaTodos" targetRef="BaixaEmLote" />
+    <bpmn:sequenceFlow id="Fluxo_ate_resumo" sourceRef="BaixaEmLote" targetRef="FimResumoDoLote" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="Diagrama_baixa">
+    <bpmndi:BPMNPlane id="Plano_baixa" bpmnElement="Colaboracao_baixa">
+      <bpmndi:BPMNShape id="Participante_baixa_di" bpmnElement="Participante_baixa" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1530" height="840" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Raia_secretaria_di" bpmnElement="Raia_secretaria" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1500" height="320" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Raia_sistema_di" bpmnElement="Raia_sistema" isHorizontal="true">
+        <dc:Bounds x="190" y="400" width="1500" height="520" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="InicioDeclaracao_di" bpmnElement="InicioDeclaracao">
+        <dc:Bounds x="252" y="482" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="MostraNaFila_di" bpmnElement="MostraNaFila">
+        <dc:Bounds x="360" y="460" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RecolheDaBancada_di" bpmnElement="RecolheDaBancada">
+        <dc:Bounds x="510" y="130" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EscolheModo_di" bpmnElement="EscolheModo" isMarkerVisible="true">
+        <dc:Bounds x="695" y="145" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="565" y="215" width="145" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ConfirmaUm_di" bpmnElement="ConfirmaUm">
+        <dc:Bounds x="810" y="130" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ConfirmaTodos_di" bpmnElement="ConfirmaTodos">
+        <dc:Bounds x="810" y="250" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="AindaNaFila_di" bpmnElement="AindaNaFila" isMarkerVisible="true">
+        <dc:Bounds x="995" y="475" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="865" y="530" width="145" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimForaDaFila_di" bpmnElement="FimForaDaFila">
+        <dc:Bounds x="1002" y="622" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FechaEmprestimo_di" bpmnElement="FechaEmprestimo">
+        <dc:Bounds x="1110" y="460" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="LiberaEquipamento_di" bpmnElement="LiberaEquipamento">
+        <dc:Bounds x="1260" y="460" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EstavaEmprestado_di" bpmnElement="EstavaEmprestado" isMarkerVisible="true">
+        <dc:Bounds x="1445" y="475" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1315" y="545" width="145" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimRetidoEmManutencao_di" bpmnElement="FimRetidoEmManutencao">
+        <dc:Bounds x="1452" y="622" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimDisponivel_di" bpmnElement="FimDisponivel">
+        <dc:Bounds x="1602" y="482" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BaixaEmLote_di" bpmnElement="BaixaEmLote">
+        <dc:Bounds x="960" y="740" width="120" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimResumoDoLote_di" bpmnElement="FimResumoDoLote">
+        <dc:Bounds x="1152" y="772" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Fluxo_ate_fila_di" bpmnElement="Fluxo_ate_fila">
+        <di:waypoint x="288" y="500" />
+        <di:waypoint x="360" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_recolhe_di" bpmnElement="Fluxo_ate_recolhe">
+        <di:waypoint x="480" y="500" />
+        <di:waypoint x="495" y="500" />
+        <di:waypoint x="495" y="170" />
+        <di:waypoint x="510" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_modo_di" bpmnElement="Fluxo_ate_modo">
+        <di:waypoint x="630" y="170" />
+        <di:waypoint x="695" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_um_item_di" bpmnElement="Fluxo_um_item">
+        <di:waypoint x="745" y="170" />
+        <di:waypoint x="810" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_fila_inteira_di" bpmnElement="Fluxo_fila_inteira">
+        <di:waypoint x="720" y="195" />
+        <di:waypoint x="720" y="290" />
+        <di:waypoint x="810" y="290" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="225" width="90" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_ainda_na_fila_di" bpmnElement="Fluxo_ate_ainda_na_fila">
+        <di:waypoint x="930" y="170" />
+        <di:waypoint x="1020" y="170" />
+        <di:waypoint x="1020" y="475" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_fora_da_fila_di" bpmnElement="Fluxo_fora_da_fila">
+        <di:waypoint x="1020" y="525" />
+        <di:waypoint x="1020" y="622" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1030" y="540" width="45" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_na_fila_di" bpmnElement="Fluxo_na_fila">
+        <di:waypoint x="1045" y="500" />
+        <di:waypoint x="1110" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_libera_di" bpmnElement="Fluxo_ate_libera">
+        <di:waypoint x="1230" y="500" />
+        <di:waypoint x="1260" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_estava_emprestado_di" bpmnElement="Fluxo_ate_estava_emprestado">
+        <di:waypoint x="1380" y="500" />
+        <di:waypoint x="1445" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_retido_di" bpmnElement="Fluxo_retido">
+        <di:waypoint x="1470" y="525" />
+        <di:waypoint x="1470" y="622" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1480" y="555" width="45" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_liberado_di" bpmnElement="Fluxo_liberado">
+        <di:waypoint x="1495" y="500" />
+        <di:waypoint x="1602" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_lote_di" bpmnElement="Fluxo_ate_lote">
+        <di:waypoint x="930" y="290" />
+        <di:waypoint x="940" y="290" />
+        <di:waypoint x="940" y="790" />
+        <di:waypoint x="960" y="790" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_resumo_di" bpmnElement="Fluxo_ate_resumo">
+        <di:waypoint x="1080" y="790" />
+        <di:waypoint x="1152" y="790" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

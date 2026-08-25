@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definicoes_devolucao" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:message id="Mensagem_devolucao_declarada" name="Devolução declarada" />
+  <bpmn:collaboration id="Colaboracao_devolucao">
+    <bpmn:participant id="Participante_devolucao" name="Devolução de equipamento" processRef="Processo_devolucao" />
+  </bpmn:collaboration>
+  <bpmn:process id="Processo_devolucao" isExecutable="false">
+    <bpmn:laneSet id="Raias_devolucao">
+      <bpmn:lane id="Raia_pessoa" name="Estudante e Professor">
+        <bpmn:flowNodeRef>Chegada</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>DigitaMatricula</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EscolheAlvo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>DevolveUm</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>DevolveTudo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ConfirmaNoAviso</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Raia_sistema" name="Sistema">
+        <bpmn:flowNodeRef>ListaAtivos</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>TemEquipamento</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimNadaADevolver</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>AindaAtivo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimJaSaiu</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GravaDeclaracao</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>DeclaraDevolucao</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimAguardandoBaixa</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="Chegada" name="Chega na bancada com o equipamento">
+      <bpmn:outgoing>Fluxo_chegada</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="DigitaMatricula" name="Digita a matrícula no teclado do tablet">
+      <bpmn:incoming>Fluxo_chegada</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_lista</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="ListaAtivos" name="Lista os empréstimos ATIVO da matrícula">
+      <bpmn:incoming>Fluxo_ate_lista</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_tem</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="TemEquipamento" name="Tem equipamento com você?">
+      <bpmn:incoming>Fluxo_ate_tem</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_nada</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_tem</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="FimNadaADevolver" name="Nada a devolver; a tela é só a da retirada">
+      <bpmn:incoming>Fluxo_nada</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="EscolheAlvo" name="Um item ou a lista inteira?">
+      <bpmn:incoming>Fluxo_tem</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_um_item</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_lista_inteira</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="DevolveUm" name="Toca em Devolver na linha do item">
+      <bpmn:incoming>Fluxo_um_item</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_um_ate_aviso</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="DevolveTudo" name="Toca em Devolver tudo, que só existe a partir de 2 itens">
+      <bpmn:incoming>Fluxo_lista_inteira</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_tudo_ate_aviso</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="ConfirmaNoAviso" name="Confirma no aviso: deixa o equipamento na bancada">
+      <bpmn:incoming>Fluxo_um_ate_aviso</bpmn:incoming>
+      <bpmn:incoming>Fluxo_tudo_ate_aviso</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_ainda_ativo</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="AindaAtivo" name="Empréstimo ainda está ATIVO?">
+      <bpmn:incoming>Fluxo_ate_ainda_ativo</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ja_saiu</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_ainda_ativo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="FimJaSaiu" name="Esse item já não consta como emprestado para você">
+      <bpmn:incoming>Fluxo_ja_saiu</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="GravaDeclaracao" name="Marca AGUARDANDO_BAIXA e grava a data da declaração">
+      <bpmn:incoming>Fluxo_ainda_ativo</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_declara</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="DeclaraDevolucao" name="Devolução declarada">
+      <bpmn:incoming>Fluxo_ate_declara</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_fim</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="Definicao_devolucao_declarada" messageRef="Mensagem_devolucao_declarada" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:endEvent id="FimAguardandoBaixa" name="O equipamento segue EMPRESTADO e espera a secretaria">
+      <bpmn:incoming>Fluxo_ate_fim</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Fluxo_chegada" sourceRef="Chegada" targetRef="DigitaMatricula" />
+    <bpmn:sequenceFlow id="Fluxo_ate_lista" sourceRef="DigitaMatricula" targetRef="ListaAtivos" />
+    <bpmn:sequenceFlow id="Fluxo_ate_tem" sourceRef="ListaAtivos" targetRef="TemEquipamento" />
+    <bpmn:sequenceFlow id="Fluxo_nada" name="não" sourceRef="TemEquipamento" targetRef="FimNadaADevolver" />
+    <bpmn:sequenceFlow id="Fluxo_tem" name="sim" sourceRef="TemEquipamento" targetRef="EscolheAlvo" />
+    <bpmn:sequenceFlow id="Fluxo_um_item" name="um item" sourceRef="EscolheAlvo" targetRef="DevolveUm" />
+    <bpmn:sequenceFlow id="Fluxo_lista_inteira" name="a lista inteira" sourceRef="EscolheAlvo" targetRef="DevolveTudo" />
+    <bpmn:sequenceFlow id="Fluxo_um_ate_aviso" sourceRef="DevolveUm" targetRef="ConfirmaNoAviso" />
+    <bpmn:sequenceFlow id="Fluxo_tudo_ate_aviso" sourceRef="DevolveTudo" targetRef="ConfirmaNoAviso" />
+    <bpmn:sequenceFlow id="Fluxo_ate_ainda_ativo" sourceRef="ConfirmaNoAviso" targetRef="AindaAtivo" />
+    <bpmn:sequenceFlow id="Fluxo_ja_saiu" name="não" sourceRef="AindaAtivo" targetRef="FimJaSaiu" />
+    <bpmn:sequenceFlow id="Fluxo_ainda_ativo" name="sim" sourceRef="AindaAtivo" targetRef="GravaDeclaracao" />
+    <bpmn:sequenceFlow id="Fluxo_ate_declara" sourceRef="GravaDeclaracao" targetRef="DeclaraDevolucao" />
+    <bpmn:sequenceFlow id="Fluxo_ate_fim" sourceRef="DeclaraDevolucao" targetRef="FimAguardandoBaixa" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="Diagrama_devolucao">
+    <bpmndi:BPMNPlane id="Plano_devolucao" bpmnElement="Colaboracao_devolucao">
+      <bpmndi:BPMNShape id="Participante_devolucao_di" bpmnElement="Participante_devolucao" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1680" height="720" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Raia_pessoa_di" bpmnElement="Raia_pessoa" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1650" height="340" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Raia_sistema_di" bpmnElement="Raia_sistema" isHorizontal="true">
+        <dc:Bounds x="190" y="420" width="1650" height="380" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Chegada_di" bpmnElement="Chegada">
+        <dc:Bounds x="252" y="152" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DigitaMatricula_di" bpmnElement="DigitaMatricula">
+        <dc:Bounds x="360" y="130" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ListaAtivos_di" bpmnElement="ListaAtivos">
+        <dc:Bounds x="510" y="480" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TemEquipamento_di" bpmnElement="TemEquipamento" isMarkerVisible="true">
+        <dc:Bounds x="695" y="495" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="648" y="447" width="145" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimNadaADevolver_di" bpmnElement="FimNadaADevolver">
+        <dc:Bounds x="702" y="682" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EscolheAlvo_di" bpmnElement="EscolheAlvo" isMarkerVisible="true">
+        <dc:Bounds x="845" y="145" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="600" y="205" width="145" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DevolveUm_di" bpmnElement="DevolveUm">
+        <dc:Bounds x="960" y="130" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DevolveTudo_di" bpmnElement="DevolveTudo">
+        <dc:Bounds x="960" y="270" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ConfirmaNoAviso_di" bpmnElement="ConfirmaNoAviso">
+        <dc:Bounds x="1140" y="130" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="AindaAtivo_di" bpmnElement="AindaAtivo" isMarkerVisible="true">
+        <dc:Bounds x="1325" y="495" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1278" y="447" width="145" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimJaSaiu_di" bpmnElement="FimJaSaiu">
+        <dc:Bounds x="1332" y="682" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GravaDeclaracao_di" bpmnElement="GravaDeclaracao">
+        <dc:Bounds x="1440" y="480" width="150" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DeclaraDevolucao_di" bpmnElement="DeclaraDevolucao">
+        <dc:Bounds x="1632" y="502" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimAguardandoBaixa_di" bpmnElement="FimAguardandoBaixa">
+        <dc:Bounds x="1752" y="502" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Fluxo_chegada_di" bpmnElement="Fluxo_chegada">
+        <di:waypoint x="288" y="170" />
+        <di:waypoint x="360" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_lista_di" bpmnElement="Fluxo_ate_lista">
+        <di:waypoint x="480" y="170" />
+        <di:waypoint x="495" y="170" />
+        <di:waypoint x="495" y="520" />
+        <di:waypoint x="510" y="520" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_tem_di" bpmnElement="Fluxo_ate_tem">
+        <di:waypoint x="630" y="520" />
+        <di:waypoint x="695" y="520" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_nada_di" bpmnElement="Fluxo_nada">
+        <di:waypoint x="720" y="545" />
+        <di:waypoint x="720" y="682" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="555" width="45" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_tem_di" bpmnElement="Fluxo_tem">
+        <di:waypoint x="745" y="520" />
+        <di:waypoint x="790" y="520" />
+        <di:waypoint x="790" y="170" />
+        <di:waypoint x="845" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_um_item_di" bpmnElement="Fluxo_um_item">
+        <di:waypoint x="895" y="170" />
+        <di:waypoint x="960" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_lista_inteira_di" bpmnElement="Fluxo_lista_inteira">
+        <di:waypoint x="870" y="195" />
+        <di:waypoint x="870" y="310" />
+        <di:waypoint x="960" y="310" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="880" y="205" width="90" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_um_ate_aviso_di" bpmnElement="Fluxo_um_ate_aviso">
+        <di:waypoint x="1080" y="170" />
+        <di:waypoint x="1140" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_tudo_ate_aviso_di" bpmnElement="Fluxo_tudo_ate_aviso">
+        <di:waypoint x="1080" y="310" />
+        <di:waypoint x="1110" y="310" />
+        <di:waypoint x="1110" y="170" />
+        <di:waypoint x="1140" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_ainda_ativo_di" bpmnElement="Fluxo_ate_ainda_ativo">
+        <di:waypoint x="1260" y="170" />
+        <di:waypoint x="1350" y="170" />
+        <di:waypoint x="1350" y="495" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ja_saiu_di" bpmnElement="Fluxo_ja_saiu">
+        <di:waypoint x="1350" y="545" />
+        <di:waypoint x="1350" y="682" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1360" y="555" width="45" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ainda_ativo_di" bpmnElement="Fluxo_ainda_ativo">
+        <di:waypoint x="1375" y="520" />
+        <di:waypoint x="1440" y="520" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_declara_di" bpmnElement="Fluxo_ate_declara">
+        <di:waypoint x="1590" y="520" />
+        <di:waypoint x="1632" y="520" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_fim_di" bpmnElement="Fluxo_ate_fim">
+        <di:waypoint x="1668" y="520" />
+        <di:waypoint x="1752" y="520" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

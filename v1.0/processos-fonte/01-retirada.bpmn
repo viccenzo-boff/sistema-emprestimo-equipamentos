@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definicoes_retirada" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:collaboration id="Colaboracao_retirada">
+    <bpmn:participant id="Participante_retirada" name="Retirada de equipamento" processRef="Processo_retirada" />
+  </bpmn:collaboration>
+  <bpmn:process id="Processo_retirada" isExecutable="false">
+    <bpmn:laneSet id="Raias_retirada">
+      <bpmn:lane id="Raia_pessoa" name="Estudante e Professor">
+        <bpmn:flowNodeRef>Chegada</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>DigitaMatricula</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EscolheCategoria</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SelecionaItens</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Retirado</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Raia_sistema" name="Sistema">
+        <bpmn:flowNodeRef>ProcuraCadastro</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>MatriculaExiste</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CadastroAtivo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>AbreSessao</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ListaDisponiveis</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>AteDezItens</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GravaRetirada</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>TodosLivres</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimNaoEncontrada</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExplicaInativo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimInativo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimExcedido</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>DesfazTransacao</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="Chegada" name="Chega na bancada">
+      <bpmn:outgoing>Fluxo_chegada</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="DigitaMatricula" name="Digita a matrícula no teclado do tablet">
+      <bpmn:incoming>Fluxo_chegada</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_procura</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="ProcuraCadastro" name="Procura a matrícula no cadastro">
+      <bpmn:incoming>Fluxo_procura</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_existe</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="MatriculaExiste" name="Matrícula encontrada?">
+      <bpmn:incoming>Fluxo_ate_existe</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_nao_existe</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_existe</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="FimNaoEncontrada" name="Matrícula não encontrada">
+      <bpmn:incoming>Fluxo_nao_existe</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="CadastroAtivo" name="Cadastro ativo?">
+      <bpmn:incoming>Fluxo_existe</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_inativo</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_ativo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="ExplicaInativo" name="Troca a grade de categorias por uma explicação">
+      <bpmn:incoming>Fluxo_inativo</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_fim_inativo</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="FimInativo" name="Retirada bloqueada; devolução segue liberada">
+      <bpmn:incoming>Fluxo_ate_fim_inativo</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="AbreSessao" name="Abre a sessão e lista as categorias com unidades livres">
+      <bpmn:incoming>Fluxo_ativo</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_categoria</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="EscolheCategoria" name="Escolhe a categoria na grade">
+      <bpmn:incoming>Fluxo_ate_categoria</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_lista</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="ListaDisponiveis" name="Relê o inventário e lista as unidades livres">
+      <bpmn:incoming>Fluxo_ate_lista</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_selecao</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="SelecionaItens" name="Seleciona os equipamentos e confirma">
+      <bpmn:incoming>Fluxo_ate_selecao</bpmn:incoming>
+      <bpmn:incoming>Fluxo_repete_selecao</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_teto</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="AteDezItens" name="Até 10 itens?">
+      <bpmn:incoming>Fluxo_ate_teto</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_excedeu</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_dentro_do_teto</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="FimExcedido" name="Seleção recusada: no máximo 10 por retirada">
+      <bpmn:incoming>Fluxo_excedeu</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="GravaRetirada" name="Marca cada item EMPRESTADO e cria um empréstimo ATIVO por item">
+      <bpmn:incoming>Fluxo_dentro_do_teto</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_corrida</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="TodosLivres" name="Todos ainda estavam livres?">
+      <bpmn:incoming>Fluxo_ate_corrida</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_alguem_chegou_antes</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_gravou</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="DesfazTransacao" name="Desfaz a transação inteira e tira o item da lista">
+      <bpmn:incoming>Fluxo_alguem_chegou_antes</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_repete_selecao</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="Retirado" name="Sai com o equipamento">
+      <bpmn:incoming>Fluxo_gravou</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Fluxo_chegada" sourceRef="Chegada" targetRef="DigitaMatricula" />
+    <bpmn:sequenceFlow id="Fluxo_procura" sourceRef="DigitaMatricula" targetRef="ProcuraCadastro" />
+    <bpmn:sequenceFlow id="Fluxo_ate_existe" sourceRef="ProcuraCadastro" targetRef="MatriculaExiste" />
+    <bpmn:sequenceFlow id="Fluxo_nao_existe" name="não" sourceRef="MatriculaExiste" targetRef="FimNaoEncontrada" />
+    <bpmn:sequenceFlow id="Fluxo_existe" name="sim" sourceRef="MatriculaExiste" targetRef="CadastroAtivo" />
+    <bpmn:sequenceFlow id="Fluxo_inativo" name="não" sourceRef="CadastroAtivo" targetRef="ExplicaInativo" />
+    <bpmn:sequenceFlow id="Fluxo_ate_fim_inativo" sourceRef="ExplicaInativo" targetRef="FimInativo" />
+    <bpmn:sequenceFlow id="Fluxo_ativo" name="sim" sourceRef="CadastroAtivo" targetRef="AbreSessao" />
+    <bpmn:sequenceFlow id="Fluxo_ate_categoria" sourceRef="AbreSessao" targetRef="EscolheCategoria" />
+    <bpmn:sequenceFlow id="Fluxo_ate_lista" sourceRef="EscolheCategoria" targetRef="ListaDisponiveis" />
+    <bpmn:sequenceFlow id="Fluxo_ate_selecao" sourceRef="ListaDisponiveis" targetRef="SelecionaItens" />
+    <bpmn:sequenceFlow id="Fluxo_ate_teto" sourceRef="SelecionaItens" targetRef="AteDezItens" />
+    <bpmn:sequenceFlow id="Fluxo_excedeu" name="não" sourceRef="AteDezItens" targetRef="FimExcedido" />
+    <bpmn:sequenceFlow id="Fluxo_dentro_do_teto" name="sim" sourceRef="AteDezItens" targetRef="GravaRetirada" />
+    <bpmn:sequenceFlow id="Fluxo_ate_corrida" sourceRef="GravaRetirada" targetRef="TodosLivres" />
+    <bpmn:sequenceFlow id="Fluxo_alguem_chegou_antes" name="não" sourceRef="TodosLivres" targetRef="DesfazTransacao" />
+    <bpmn:sequenceFlow id="Fluxo_repete_selecao" sourceRef="DesfazTransacao" targetRef="SelecionaItens" />
+    <bpmn:sequenceFlow id="Fluxo_gravou" name="sim" sourceRef="TodosLivres" targetRef="Retirado" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="Diagrama_retirada">
+    <bpmndi:BPMNPlane id="Plano_retirada" bpmnElement="Colaboracao_retirada">
+      <bpmndi:BPMNShape id="Participante_retirada_di" bpmnElement="Participante_retirada" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1980" height="700" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Raia_pessoa_di" bpmnElement="Raia_pessoa" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1950" height="220" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Raia_sistema_di" bpmnElement="Raia_sistema" isHorizontal="true">
+        <dc:Bounds x="190" y="300" width="1950" height="480" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Chegada_di" bpmnElement="Chegada">
+        <dc:Bounds x="252" y="172" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DigitaMatricula_di" bpmnElement="DigitaMatricula">
+        <dc:Bounds x="360" y="150" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ProcuraCadastro_di" bpmnElement="ProcuraCadastro">
+        <dc:Bounds x="510" y="360" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="MatriculaExiste_di" bpmnElement="MatriculaExiste" isMarkerVisible="true">
+        <dc:Bounds x="695" y="375" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimNaoEncontrada_di" bpmnElement="FimNaoEncontrada">
+        <dc:Bounds x="702" y="602" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CadastroAtivo_di" bpmnElement="CadastroAtivo" isMarkerVisible="true">
+        <dc:Bounds x="845" y="375" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExplicaInativo_di" bpmnElement="ExplicaInativo">
+        <dc:Bounds x="810" y="580" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimInativo_di" bpmnElement="FimInativo">
+        <dc:Bounds x="1002" y="602" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="AbreSessao_di" bpmnElement="AbreSessao">
+        <dc:Bounds x="960" y="360" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EscolheCategoria_di" bpmnElement="EscolheCategoria">
+        <dc:Bounds x="1110" y="150" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ListaDisponiveis_di" bpmnElement="ListaDisponiveis">
+        <dc:Bounds x="1260" y="360" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SelecionaItens_di" bpmnElement="SelecionaItens">
+        <dc:Bounds x="1410" y="150" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="AteDezItens_di" bpmnElement="AteDezItens" isMarkerVisible="true">
+        <dc:Bounds x="1595" y="375" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimExcedido_di" bpmnElement="FimExcedido">
+        <dc:Bounds x="1602" y="602" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GravaRetirada_di" bpmnElement="GravaRetirada">
+        <dc:Bounds x="1710" y="360" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TodosLivres_di" bpmnElement="TodosLivres" isMarkerVisible="true">
+        <dc:Bounds x="1895" y="375" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DesfazTransacao_di" bpmnElement="DesfazTransacao">
+        <dc:Bounds x="1860" y="580" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Retirado_di" bpmnElement="Retirado">
+        <dc:Bounds x="2052" y="172" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Fluxo_chegada_di" bpmnElement="Fluxo_chegada">
+        <di:waypoint x="288" y="190" />
+        <di:waypoint x="360" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_procura_di" bpmnElement="Fluxo_procura">
+        <di:waypoint x="480" y="190" />
+        <di:waypoint x="495" y="190" />
+        <di:waypoint x="495" y="400" />
+        <di:waypoint x="510" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_existe_di" bpmnElement="Fluxo_ate_existe">
+        <di:waypoint x="630" y="400" />
+        <di:waypoint x="695" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_nao_existe_di" bpmnElement="Fluxo_nao_existe">
+        <di:waypoint x="720" y="425" />
+        <di:waypoint x="720" y="602" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_existe_di" bpmnElement="Fluxo_existe">
+        <di:waypoint x="745" y="400" />
+        <di:waypoint x="845" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_inativo_di" bpmnElement="Fluxo_inativo">
+        <di:waypoint x="870" y="425" />
+        <di:waypoint x="870" y="580" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_fim_inativo_di" bpmnElement="Fluxo_ate_fim_inativo">
+        <di:waypoint x="930" y="620" />
+        <di:waypoint x="1002" y="620" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ativo_di" bpmnElement="Fluxo_ativo">
+        <di:waypoint x="895" y="400" />
+        <di:waypoint x="960" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_categoria_di" bpmnElement="Fluxo_ate_categoria">
+        <di:waypoint x="1080" y="400" />
+        <di:waypoint x="1095" y="400" />
+        <di:waypoint x="1095" y="190" />
+        <di:waypoint x="1110" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_lista_di" bpmnElement="Fluxo_ate_lista">
+        <di:waypoint x="1230" y="190" />
+        <di:waypoint x="1245" y="190" />
+        <di:waypoint x="1245" y="400" />
+        <di:waypoint x="1260" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_selecao_di" bpmnElement="Fluxo_ate_selecao">
+        <di:waypoint x="1380" y="400" />
+        <di:waypoint x="1395" y="400" />
+        <di:waypoint x="1395" y="190" />
+        <di:waypoint x="1410" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_teto_di" bpmnElement="Fluxo_ate_teto">
+        <di:waypoint x="1530" y="190" />
+        <di:waypoint x="1620" y="190" />
+        <di:waypoint x="1620" y="375" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_excedeu_di" bpmnElement="Fluxo_excedeu">
+        <di:waypoint x="1620" y="425" />
+        <di:waypoint x="1620" y="602" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_dentro_do_teto_di" bpmnElement="Fluxo_dentro_do_teto">
+        <di:waypoint x="1645" y="400" />
+        <di:waypoint x="1710" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_corrida_di" bpmnElement="Fluxo_ate_corrida">
+        <di:waypoint x="1830" y="400" />
+        <di:waypoint x="1895" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_alguem_chegou_antes_di" bpmnElement="Fluxo_alguem_chegou_antes">
+        <di:waypoint x="1920" y="425" />
+        <di:waypoint x="1920" y="540" />
+        <di:waypoint x="1920" y="580" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_repete_selecao_di" bpmnElement="Fluxo_repete_selecao">
+        <di:waypoint x="1920" y="660" />
+        <di:waypoint x="1920" y="720" />
+        <di:waypoint x="1470" y="720" />
+        <di:waypoint x="1470" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_gravou_di" bpmnElement="Fluxo_gravou">
+        <di:waypoint x="1945" y="400" />
+        <di:waypoint x="2070" y="400" />
+        <di:waypoint x="2070" y="208" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
