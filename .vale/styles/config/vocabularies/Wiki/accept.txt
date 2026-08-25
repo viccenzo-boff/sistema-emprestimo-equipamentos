@@ -19,3 +19,10 @@ Prisma
 GitHub
 Next\.js
 BPMN
+
+# "bpmn.io" e o nome do modelador, e ele e MINUSCULO -- ao contrario da notacao
+# BPMN, logo acima. Sem esta entrada, a primeira pagina de processo que linka a
+# ferramenta reprova ("Use 'BPMN' instead of 'bpmn'"), porque o termo canonico
+# casa dentro do nome proprio. A entrada mais longa vence, e as duas grafias
+# passam a conviver: a notacao em caixa alta, a ferramenta em caixa baixa.
+bpmn\.io
