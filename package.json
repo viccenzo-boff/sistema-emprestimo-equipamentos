@@ -13,6 +13,7 @@
     "db:demo": "tsx prisma/demo-estado.ts",
     "db:reset": "prisma migrate reset",
     "db:studio": "prisma studio",
+    "docs:diagramas": "node scripts/exportar-diagramas.mjs",
     "db:generate": "prisma generate",
     "postinstall": "prisma generate"
   },

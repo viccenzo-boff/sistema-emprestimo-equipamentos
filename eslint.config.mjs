@@ -18,6 +18,11 @@ const eslintConfig = defineConfig([
     // 0 para milhares de problemas em codigo que nao e nosso.
     ".venv-docs/**",
     "site/**",
+    // Mesma armadilha, medida de novo na D04: o bpmn-js baixado para `.tools/`
+    // e um bundle minificado de ~730 KB, e o `npm run lint` foi de 0 para 2054
+    // problemas assim que ele apareceu no disco. `.tools/**` cobre tambem o
+    // binario do Vale e a proxima ferramenta que for parar ali.
+    ".tools/**",
   ]),
 ]);
 
