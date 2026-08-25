@@ -10,7 +10,7 @@ Publicar a documentação oficial do sistema como um site versionado, bilíngue 
 construído no mesmo repositório do código, servindo a dois propósitos ao mesmo
 tempo:
 
-1. **Uso real:** a secretaria e os alunos precisam de um manual. Hoje o
+1. **Uso real:** a secretaria e os estudantes precisam de um manual. Hoje o
    conhecimento operacional está espalhado entre o [AGENTS.md](AGENTS.md), os
    enunciados de tarefa e a cabeça de quem construiu.
 2. **Portfólio:** demonstrar, num artefato público e verificável, quatro
@@ -53,16 +53,16 @@ corrigida.
 
 | #   | Processo                 | Ator            | Rota                | Regra não óbvia que a página precisa explicar                            |
 | --- | ------------------------ | --------------- | ------------------- | ------------------------------------------------------------------------ |
-| 1   | Retirada de equipamento  | Aluno/Professor | `/`                 | Cada item retirado gera um `Emprestimo` **separado**                     |
-| 2   | Devolução de equipamento | Aluno/Professor | `/`                 | Devolver é **declarar**; o equipamento não volta a `DISPONIVEL`          |
+| 1   | Retirada de equipamento  | Estudante/Professor | `/`                 | Cada item retirado gera um `Emprestimo` **separado**                     |
+| 2   | Devolução de equipamento | Estudante/Professor | `/`                 | Devolver é **declarar**; o equipamento não volta a `DISPONIVEL`          |
 | 3   | Baixa física             | Secretaria      | `/admin`            | O ciclo só fecha aqui; a diferença de tempo é o tempo de prateleira      |
 | 4   | Gestão de inventário     | Secretaria      | `/admin/inventario` | `INATIVO` é aposentadoria, não exclusão — o histórico aponta para o item |
 | 5   | Gestão de pessoas        | Secretaria      | `/admin/pessoas`    | `INATIVO` de pessoa é **assimétrico**: trava retirada, libera devolução  |
 
 ### 3.2 Páginas de apoio
 
-- **Início** — porta de entrada com escolha de perfil (aluno / secretaria)
-- **Guia de Início Rápido do Aluno e Professor** — o tablet em 5 minutos
+- **Início** — porta de entrada com escolha de perfil (estudante / secretaria)
+- **Guia de Início Rápido do Estudante e Professor** — o tablet em 5 minutos
 - **Guia de Início Rápido da Secretaria** — o painel em 10 minutos
 - **Glossário** — matrícula, etiqueta, baixa, prateleira, categoria, perfil
 - **Estados e transições** — as duas máquinas de estado, com diagrama
@@ -84,7 +84,7 @@ corrigida.
 ```text
 Início
 ├── Guia de Início Rápido
-│   ├── Aluno e Professor
+│   ├── Estudante e Professor
 │   └── Secretaria
 ├── Processos do Portal
 │   ├── 1. Retirada de equipamento
@@ -129,7 +129,7 @@ tela; ela descreve a **decisão de produto**. Exemplo do tom esperado:
 > Porque devolver no tablet é uma declaração, não uma conferência. Enquanto o
 > empréstimo está em `AGUARDANDO_BAIXA`, o aparelho está fisicamente na bancada
 > mas ninguém da secretaria o recolheu ainda. Se ele voltasse para `DISPONIVEL`
-> nesse momento, o tablet ofereceria a outro aluno um equipamento que continua
+> nesse momento, o tablet ofereceria a outro estudante um equipamento que continua
 > em cima da bancada.
 
 ## 6. Stack de documentação
@@ -155,11 +155,18 @@ existe estilo pronto de qualidade para PT-BR.** Portanto:
 - **Nas páginas em português:** apenas um `Vocab` próprio, garantindo grafia
   consistente dos termos do projeto (matrícula, baixa, empréstimo, etiqueta,
   prateleira) e proibindo os sinônimos que confundem — "usuário" para falar de
-  aluno, por exemplo, que o [AGENTS.md](AGENTS.md) já proíbe no código.
+  estudante, por exemplo, que o [AGENTS.md](AGENTS.md) já proíbe no código.
 
 Prometer lint de estilo em português seria inventar capacidade que a ferramenta
 não tem. O vocabulário controlado é real e resolve o problema que importa:
 duas páginas discordarem do nome da mesma coisa.
+
+**A D03 escreveu esse vocabulário e ele decidiu uma palavra desta spec:** quem
+retira equipamento é **estudante**, nunca "aluno". O motivo é de tela — a
+Tarefa 8.1 trocou "Aluno" por "Estudante" no painel inteiro, e é "Estudante" o
+valor de `Pessoa.perfil`. Uma wiki que dissesse "aluno" mandaria o leitor
+procurar um filtro que tem outro nome. As ocorrências desta spec foram
+corrigidas junto, e "aluno" está na lista de grafias proibidas.
 
 ### 6.2 Onde ficam os arquivos
 

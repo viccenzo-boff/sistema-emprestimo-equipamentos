@@ -115,7 +115,7 @@ plugins:
           nav_translations:
             Início: Home
             Guia de Início Rápido: Quick Start
-            Aluno e Professor: Students and Teachers
+            Estudante e Professor: Students and Teachers
             Secretaria: Front Desk
             Processos do Portal: Portal Processes
             1. Retirada de equipamento: 1. Equipment pickup
@@ -149,7 +149,7 @@ extra:
 nav:
   - Início: index.md
   - Guia de Início Rápido:
-      - Aluno e Professor: inicio-rapido/aluno-e-professor.md
+      - Estudante e Professor: inicio-rapido/estudante-e-professor.md
       - Secretaria: inicio-rapido/secretaria.md
   - Processos do Portal:
       - 1. Retirada de equipamento: portal/retirada-de-equipamento.md
