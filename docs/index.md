@@ -12,11 +12,11 @@ páginas que faltam:
 
 - **Guia de Início Rápido** — [Estudante e Professor](inicio-rapido/estudante-e-professor.md)
   e [Secretaria](inicio-rapido/secretaria.md)
-- **Processos do Portal** — [retirada](portal/retirada-de-equipamento.md) e
-  [devolução](portal/devolucao-de-equipamento.md), no tablet
+- **Processos do Portal** — [retirada](portal/retirada.md) e
+  [devolução](portal/devolucao.md), no tablet
 - **Processos do Painel** — [baixa física](painel/baixa-fisica.md),
-  [inventário](painel/gestao-de-inventario.md) e
-  [pessoas](painel/gestao-de-pessoas.md), na secretaria
+  [inventário](painel/inventario.md) e
+  [pessoas](painel/pessoas.md), na secretaria
 - **Referência** — [glossário](referencia/glossario.md),
   [estados e transições](referencia/estados-e-transicoes.md),
   [regras de negócio](referencia/regras-de-negocio.md) e

@@ -155,12 +155,12 @@ nav:
       - Estudante e Professor: inicio-rapido/estudante-e-professor.md
       - Secretaria: inicio-rapido/secretaria.md
   - Processos do Portal:
-      - 1. Retirada de equipamento: portal/retirada-de-equipamento.md
-      - 2. Devolução de equipamento: portal/devolucao-de-equipamento.md
+      - 1. Retirada de equipamento: portal/retirada.md
+      - 2. Devolução de equipamento: portal/devolucao.md
   - Processos do Painel:
       - 3. Baixa física: painel/baixa-fisica.md
-      - 4. Gestão de inventário: painel/gestao-de-inventario.md
-      - 5. Gestão de pessoas: painel/gestao-de-pessoas.md
+      - 4. Gestão de inventário: painel/inventario.md
+      - 5. Gestão de pessoas: painel/pessoas.md
   - Referência:
       - Glossário: referencia/glossario.md
       - Estados e transições: referencia/estados-e-transicoes.md
