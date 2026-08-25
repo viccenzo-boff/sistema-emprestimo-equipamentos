@@ -103,7 +103,12 @@ Diga também o que cada papel NÃO faz — é a metade que evita a pergunta
 SVG exportado e commitado, com link para o .bpmn fonte. O leitor vê o
 diagrama sem instalar nada; quem for editar baixa o XML.
 
-    ![Diagrama BPMN do processo](../assets/diagramas/<processo>.svg)
+O DIAGRAMA É CLICÁVEL, pela mesma regra 5 do guia de estilo que vale para a
+captura de tela — e aqui ela pesa mais. Medido na D05: um BPMN de 1980px de
+largura entra na coluna de texto a 688px, ou 0,35 do tamanho, e nenhum
+rótulo se lê. Sem o link para si mesmo, a seção 5 vira uma mancha cinza.
+
+    [![Diagrama BPMN do processo](../assets/diagramas/<processo>.svg)](../assets/diagramas/<processo>.svg)
 
     [Baixar o arquivo .bpmn](../processos-fonte/<processo>.bpmn)
 
@@ -117,6 +122,13 @@ um SVG sem alternativo é uma imagem vazia para quem usa leitor de tela.
 
 <!--
 Numerado. UM PASSO, UMA AÇÃO — passo com "e então" vira dois passos.
+
+NÃO CORTE A LISTA COM SUBTÍTULOS. Um `###` no meio do passo a passo fecha a
+lista e abre outra, e o Python-Markdown escreve a segunda sem o atributo
+`start` — os passos saem 1, 2, 3, 4, 1, 2, 3, 4 na página publicada. O
+`mkdocs build --strict` passa em 0 do mesmo jeito; foi preciso ler o HTML
+gerado para ver. Se a seção ficar longa, agrupe pelo texto do próprio passo,
+nunca por título.
 
 Ramificação SEMPRE explícita:
 
