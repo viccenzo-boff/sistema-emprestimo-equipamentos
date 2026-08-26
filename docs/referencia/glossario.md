@@ -44,6 +44,17 @@ passa de `AGUARDANDO_BAIXA` para `CONCLUIDO`, e a hora fica em
 É aqui — e só aqui — que o equipamento volta a ficar disponível para outra
 pessoa retirar. A [devolução](#devolucao) no tablet não faz isso.
 
+## Bancada
+
+O balcão físico onde o equipamento é entregue e recolhido. Não é uma tela nem um
+campo do sistema — é o único lugar do processo que o sistema **não** consegue
+verificar.
+
+É a ela que a [devolução](#devolucao) se refere: quem devolve deixa o aparelho na
+bancada e avisa no tablet. Entre esse gesto e a [baixa física](#baixa-fisica), o
+aparelho está na bancada e em lugar nenhum do inventário — é o
+[tempo de prateleira](#tempo-de-prateleira).
+
 ## Cadastro inativo (pessoa)
 
 Um cadastro que saiu de circulação — quem trancou a matrícula, quem se formou,
@@ -78,6 +89,20 @@ Devolver **não** libera o equipamento para outra pessoa. Quem faz isso é a
 [baixa física](#baixa-fisica), na secretaria. A diferença entre os dois
 momentos é o [tempo de prateleira](#tempo-de-prateleira).
 
+## Emprestado
+
+A [situação](#situacao) de um equipamento que está fora da prateleira porque
+alguém o retirou (`Equipamento.status = EMPRESTADO`).
+
+O que não é óbvio: **ele continua `EMPRESTADO` depois da
+[devolução](#devolucao)**. Declarar a devolução no tablet muda o
+[empréstimo](#emprestimo), não o aparelho — quem devolve o aparelho à prateleira
+é a [baixa física](#baixa-fisica).
+
+`EMPRESTADO` não é um botão do [painel](#painel): ele entra e sai sozinho, pelos
+dois gestos que envolvem alguém carregando o equipamento. A linha de um item
+emprestado mostra o nome de quem está com ele no lugar do botão.
+
 ## Empréstimo
 
 O registro de um equipamento na mão de uma pessoa, com as horas de
@@ -91,6 +116,16 @@ momentos diferentes.
 Um empréstimo passa por três situações: `ATIVO` (está com a pessoa),
 `AGUARDANDO_BAIXA` (foi declarado devolvido, aguarda a secretaria) e
 `CONCLUIDO` (encerrado).
+
+## Empréstimos ativos
+
+A aba do [painel](#painel) que lista tudo o que está com alguém agora — os
+empréstimos em `ATIVO`, com o nome de quem está com o aparelho e desde quando.
+
+É **somente leitura**: não há botão nenhum nela. Quem devolve é a pessoa, no
+[portal](#portal); quem encerra é a [baixa física](#baixa-fisica), na
+[fila de devoluções](#fila-de-devolucoes). Esta aba responde "onde está o
+`NOTE-04`?", e nada mais.
 
 ## Etiqueta
 
@@ -107,6 +142,33 @@ A lista de empréstimos que estão em `AGUARDANDO_BAIXA`, esperando a
 [baixa física](#baixa-fisica). É a primeira tela do [painel](#painel), e cada
 linha é uma tarefa física: pegar o aparelho da bancada e conferir a
 [etiqueta](#etiqueta).
+
+## Inventário
+
+Todo o equipamento cadastrado, uma linha por aparelho, agrupado por
+[categoria](#categoria) — e a aba do [painel](#painel) que o mostra.
+
+O inventário lista **tudo**, inclusive o que está em
+[manutenção](#manutencao), o que está [emprestado](#emprestado) e o que foi
+[aposentado](#aposentadoria-item-inativo). É a diferença dele para o
+[portal](#portal), que só mostra o que dá para levar agora.
+
+## Lote
+
+Um gesto que trata vários itens de uma vez. Existem dois, e eles se comportam de
+forma diferente de propósito:
+
+* **"Devolver tudo"**, no [portal](#portal): tudo ou nada. Os aparelhos vão
+  juntos para a [bancada](#bancada), e devolver metade faria a pessoa sair
+  achando que entregou tudo.
+* **"Confirmar Todas as Devoluções"**, no [painel](#painel): item a item, e uma
+  linha que falha não derruba as outras. O gesto físico já aconteceu — a
+  secretaria recolheu a pilha —, e uma linha que saiu da fila em outra aba não
+  pode desfazer a conferência das demais. O resumo diz o que fechou e o que não
+  fechou.
+
+Os dois só aparecem **a partir de dois itens**. Com um só, cada um duplicaria o
+botão da linha logo abaixo.
 
 ## Manutenção
 
@@ -164,6 +226,38 @@ equipamento passando para `EMPRESTADO`).
 
 O caminho é matrícula → [categoria](#categoria) → item → confirmação. Só
 aparecem itens disponíveis, e só para cadastro ativo.
+
+## Sessão
+
+O período em que a tela sabe com quem está falando. As duas frentes do sistema
+tratam isso de forma oposta:
+
+* **No [portal](#portal)** não há login: a sessão começa quando a
+  [matrícula](#matricula) é digitada e termina no botão **Sair** ou sozinha,
+  depois de dois minutos sem nenhum toque. O tablet é compartilhado, e uma tela
+  esquecida aberta deixaria a próxima pessoa retirar equipamento em nome de
+  outra.
+* **No [painel](#painel)** a sessão vem do login do
+  [administrador](#administrador) e dura oito horas — um turno. Ela sobrevive a
+  reiniciar o computador, e é encerrada pelo botão **Sair do painel**.
+
+## Situação
+
+A coluna que diz onde algo está na vida dele. **A palavra tem dois donos**, e o
+que ela quer dizer depende da tela:
+
+| Onde | Valores possíveis |
+| --- | --- |
+| Aba **Inventário** — de um equipamento | **Disponível**, **Emprestado**, **Manutenção** ou **Inativo** |
+| Aba **Pessoas** — de um cadastro | **Ativo** ou **Inativo** |
+
+Os dois **Inativo** têm o mesmo nome e regras diferentes: no equipamento é
+[aposentadoria](#aposentadoria-item-inativo) e trava enquanto houver empréstimo
+aberto; na pessoa é [cadastro inativo](#cadastro-inativo-pessoa), é permitido com
+empréstimo aberto, e bloqueia só a [retirada](#retirada).
+
+O passeio completo entre as situações está em
+[Estados e transições](estados-e-transicoes.md).
 
 ## Tempo de prateleira
 
