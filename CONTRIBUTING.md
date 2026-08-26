@@ -265,6 +265,57 @@ Duas coisas que custaram diagnóstico na D05:
   fotografar. Não mexa no `next.config.ts` por causa disso: necessidade da wiki
   não muda o comportamento de quem desenvolve.
 
+E uma terceira, medida na D09: **o servidor segura o arquivo do banco.** Um
+`rm dev-demo.db` com o `next dev` de pé responde `Device or resource busy` no
+Windows. Encerre o servidor, recrie o banco, suba de novo — nessa ordem.
+
+### Fotografar diálogo e aviso flutuante
+
+O `<dialog>` aberto por `showModal()` e o aviso de sucesso vivem no **top
+layer**: `getBoundingClientRect()` devolve coordenada de **janela**, e o recorte
+de captura do Chrome é sempre em coordenada de **documento**. Os dois só
+coincidem com a página rolada até o topo.
+
+Isso produziu dois modos de errar na D09, e nenhum deles falha — os dois
+entregam uma imagem plausível:
+
+- somar `scrollY` ao retângulo fotografa **a página que está atrás** do diálogo
+  (com a rolagem em 1019px, saiu a tabela);
+- desligar `captureBeyondViewport` fotografa **o topo do documento** (saiu uma
+  imagem em branco).
+
+A receita é rolar até o topo antes de medir, e conferir que `scrollY` é mesmo 0
+antes de disparar. O elemento fixo não se move com a rolagem, então o
+enquadramento não muda.
+
+### Ler o aviso de sucesso em roteiro de captura
+
+O aviso fica ~6 segundos na tela e **persiste entre ações**. Lê-lo "assim que o
+elemento existir" devolve a mensagem da ação **anterior** — na D09 isso fez duas
+asserções seguidas reprovarem falando de um evento que já tinha acontecido, e o
+diagnóstico natural é culpar o produto.
+
+Feche o aviso (`button[aria-label="Fechar aviso"]`) antes de cada ação, e só
+então espere um novo aparecer. A âncora é esse botão, e não `[role="status"]`:
+o painel tem **três** elementos com esse papel, e o primeiro do DOM está sempre
+vazio.
+
+### Depois de exercitar a importação, recrie o banco
+
+A importação da D09 **cria cadastros**, e a segunda trava do `db:demo` conta os
+cadastros que o script não reconhece. Um cadastro criado pela tela — ou uma
+matrícula corrigida para um número fora do elenco — passa do teto de 4, e a
+próxima execução do `db:demo` é recusada:
+
+```text
+Recusado: o banco tem 6 cadastros que este script não reconhece.
+```
+
+Não é defeito: é a trava fazendo o trabalho dela, porque um banco com cadastro
+que ela não conhece é indistinguível de um banco com dado real. O caminho é a
+receita de três passos (`reset` + `seed` + `demo`), com o servidor encerrado
+antes.
+
 ### Voltar atrás
 
 Não existe "desfazer" no `db:demo` — ele escreve direto. O caminho de volta é
