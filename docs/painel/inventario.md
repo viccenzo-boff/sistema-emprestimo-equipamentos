@@ -328,7 +328,7 @@ emprestado não tem botão nenhum.
     mais provável do painel inteiro, porque a mesma palavra — inativar — produz
     resultados diferentes nas duas telas:
 
-    | | Equipamento (esta página) | Pessoa ([Gestão de pessoas](pessoas.md)) |
+    | | Equipamento (esta página) | Pessoa ([Gestão de pessoas](pessoas.md#por-que-o-equipamento-trava-e-a-pessoa-nao)) |
     | --- | --- | --- |
     | Com um empréstimo aberto | A situação **trava**: não dá para inativar | Inativar é **permitido**, com um aviso |
     | Por quê | O aparelho está fora do armário; o registro tem que dizer a verdade | Quem sai da instituição costuma estar com um aparelho na mochila |
