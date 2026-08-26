@@ -1542,12 +1542,21 @@ um SVG sem alternativo é uma imagem vazia para quem usa leitor de tela.
 <!--
 Numerado. UM PASSO, UMA AÇÃO — passo com "e então" vira dois passos.
 
-NÃO CORTE A LISTA COM SUBTÍTULOS. Um `###` no meio do passo a passo fecha a
-lista e abre outra, e o Python-Markdown escreve a segunda sem o atributo
-`start` — os passos saem 1, 2, 3, 4, 1, 2, 3, 4 na página publicada. O
-`mkdocs build --strict` passa em 0 do mesmo jeito; foi preciso ler o HTML
-gerado para ver. Se a seção ficar longa, agrupe pelo texto do próprio passo,
-nunca por título.
+NÃO CORTE UMA SEQUÊNCIA COM SUBTÍTULOS. Um `###` no meio do passo a passo
+fecha a lista e abre outra, e o Python-Markdown escreve a segunda sem o
+atributo `start` — os passos saem 1, 2, 3, 4, 1, 2, 3, 4 na página publicada.
+O `mkdocs build --strict` passa em 0 do mesmo jeito; foi preciso ler o HTML
+gerado para ver. Se UMA sequência ficar longa, agrupe pelo texto do próprio
+passo, nunca por título.
+
+A exceção é a página que cobre VÁRIOS PROCEDIMENTOS independentes (a D08 tem
+cinco, a D09 tem quatro). Aí cada procedimento é uma sequência própria que
+COMEÇA EM 1 de propósito, e o `###` é o que separa uma da outra — recomeçar é
+o comportamento desejado, não o defeito. A diferença entre os dois casos é se
+o leitor executa tudo de uma vez ou escolhe um caminho.
+
+Nos dois casos, confira no HTML gerado: cada `<ol>` da seção 6 tem que ter o
+número de `<li>` que você escreveu, e nenhum deve carregar `start=`.
 
 Ramificação SEMPRE explícita:
 
@@ -1580,6 +1589,22 @@ explica a razão. Não é "o botão X faz Y": é "por que o botão X não faz Z"
 O teste: se a resposta pode ser deduzida olhando a tela, ela não pertence a
 esta seção. Se a resposta explica algo que a tela esconde de propósito, ela
 pertence.
+
+CAIXA DE ADMONIÇÃO NÃO GERA ÂNCORA. Um `!!! question "Por que X?"` não vira
+um `id` no HTML, então `[ver a regra](#por-que-x)` é um link quebrado — e o
+`mkdocs build --strict` PASSA EM 0 assim mesmo, porque o aviso sai como INFO,
+não como WARNING. Isso derrubou a D05 e derrubou a D08 de novo.
+
+Se outra seção precisa apontar para uma pergunta específica, plante o âncora
+à mão, na linha de cima e com uma linha em branco no meio:
+
+    <a id="por-que-x-nao-faz-y"></a>
+
+    !!! question "Por que X não faz Y?"
+
+Sem isso, o alvo possível é só a seção inteira (`#7-regras-que-nao-sao-obvias`).
+Nos dois casos, confira o link no HTML gerado — o aviso do markdownlint sobre
+âncora acentuada no editor é falso positivo, e a saída do build não basta.
 
 A fonte destas regras é a seção "Regra de negócio que não é óbvia pelo
 código" do AGENTS.md e a spec.md. NÃO INVENTE — traduzir para linguagem de
