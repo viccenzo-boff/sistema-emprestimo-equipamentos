@@ -228,6 +228,16 @@ que você quer fazer?". Depois de exercitar o Fluxo 1, recrie o banco:
 npm run db:reset && npm run db:seed && npm run db:demo
 ```
 
+**E uma segunda exceção, medida na D06: o `db:demo` não restaura o `status` de
+quem veio do seed.** Ele faz `upsert` nas suas **onze** pessoas fictícias, e só
+nelas; as quatro do `PESSOAS_EXEMPLO` do seed — entre elas a Ana Souza
+(`0012345`), que é quem tem "Meus equipamentos" cheio — ele não menciona. E o
+seed também não reescreve `status` de cadastro que já existe, por decisão da
+Tarefa 8 ("campo que a origem não menciona é campo que o banco preserva"). Ou
+seja: se você inativar a Ana à mão para fotografar a trava assimétrica, **nada
+a reativa sozinho** — nem `db:demo`, nem `db:seed`. Desfaça no mesmo gesto em
+que fizer, ou recrie o banco com a receita de três passos acima.
+
 ### Capturar sem mexer no seu `dev.db`
 
 O `db:reset` apaga o banco de desenvolvimento. Para não perder o estado com que
