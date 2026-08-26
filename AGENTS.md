@@ -1714,6 +1714,109 @@ com a linha de base ao fim de cada cenário e voltou idêntico nas três vezes.
   declarado (levar o aparelho à bancada) e retirar de novo depois da baixa. Mesma
   varredura que produziu a quarta caixa da página da retirada.
 
+**Tarefa D07 — Processo 3, Baixa física (concluída):** a primeira página da
+trilha do painel, em [docs/painel/baixa-fisica.md](docs/painel/baixa-fisica.md),
+com as oito seções do template, o diagrama BPMN embutido, as oito capturas em
+`docs/assets/images/baixa-fisica/` e a conferência física como passo numerado.
+`mkdocs build --strict`, `vale docs/` (17 arquivos), `npm run docs:diagramas --
+--verificar` (5 diagramas), `tsc` e `lint` em 0.
+
+Verificação em cinco frentes, com o `dev.db` do dono do repositório **conferido
+por md5** contra a linha de base no fim (idêntico — nunca foi tocado): a baixa
+avulsa no navegador real por CDP, em 1440x900, do login ao aviso verde (19
+asserções); a prova de banco confrontada com a linha de base, item a item, nas
+quatro baixas (16 e 28 asserções, em duas rodadas); o degrau de protocolo por
+HTTP real contra as duas Server Actions, com as recusas e as duas pontas do teto
+de 50 (13); o lote, a corrida e a fila vazia no navegador (15); e a página
+publicada conferida contra o próprio código (104), mais a leitura visual dela
+servida por HTTP (13). O cenário do `db:demo` foi restaurado ao fim de cada
+rodada.
+
+**Decisões da D07** (não refazer sem motivo):
+
+- **A escolha entre um item e o lote entrou no passo a passo, e ela não está na
+  §2 do enunciado.** O enunciado descreve quatro passos e não menciona o
+  "Confirmar Todas as Devoluções"; o gateway "Um item ou a fila inteira?" está no
+  diagrama que a própria página publica. Mesmo precedente da D05 e da D06:
+  omiti-lo faria o texto contradizer a figura ao lado. A ramificação usa "Se for
+  UM → / Se forem TODOS →" em vez de SIM/NÃO, porque escolher entre dois caminhos
+  não é pergunta de sim ou não.
+- **Duas palavras do enunciado não sobreviveram ao vocabulário da wiki.** Ele
+  escreve "a declaração do usuário" e "a secretária"; `usuário` em minúscula é
+  grafia proibida desde a D03 (naquele vocabulário a palavra quer dizer **login
+  de administrador**), e neste projeto "a secretaria" é o setor, não a pessoa. O
+  Vale pega a primeira e não pega a segunda — a segunda é convenção do
+  [AGENTS.md](AGENTS.md), lida à mão.
+- **A pergunta da reversibilidade é a quarta caixa da §7, e o enunciado não a
+  pedia.** Ele cobre o clique repetido ("pode clicar sem medo") e não cobre o
+  **item errado** — que é o gesto sem volta: confirmar o recebimento de um
+  aparelho que não está na bancada encerra o empréstimo e o devolve à prateleira,
+  e **não existe tela que reabra empréstimo encerrado**. A resposta honesta são
+  três passos (achar o aparelho, mandar retirar de novo no tablet, ou marcar
+  manutenção), e é o que justifica a existência do passo 7: conferir a etiqueta é
+  mais barato que qualquer um dos três.
+- **A nota de regressão da Tarefa 12 ficou NESTA página, num bloco recolhido.**
+  A D07 manda pô-la aqui "ou na página de regras de negócio da D10", e a D10
+  manda pô-la lá "se ela não tiver ficado" aqui — as duas devolvem a escolha uma
+  para a outra, e a D10 ainda é um arquivo de uma linha. Link para página vazia
+  não entrega nada ao leitor. O bloco é `???` (nasce fechado): a secretaria não
+  esbarra nele, e quem for mexer no `darBaixa` acha. **A D10 não deve duplicá-la.**
+- **A tela avisa "Continua em manutenção" e a página NÃO documenta esse caso,
+  porque a interface da v1.0 não consegue produzi-lo.** O `darBaixa` tem o ramo
+  (`liberados.count !== 1`) e o resumo do lote tem o campo `presas`, mas o
+  `ORIGENS_PERMITIDAS` só deixa `MANUTENCAO` vir de `DISPONIVEL`: equipamento
+  `EMPRESTADO` não tem botão nenhum no inventário. Documentar mandaria a
+  secretaria procurar um caso que não acontece. Se um dia a Tarefa 13 (ou outra)
+  abrir esse caminho, a linha entra na §8.
+- **A prova de que só a baixa devolve o aparelho ao estoque é a contagem do
+  tablet, não a linha do inventário.** Ler `Equipamento.status` prova a linha; a
+  grade de categorias prova o que a próxima pessoa vê. Medido: "Notebooks — 4 de
+  9 disponíveis" antes, **5 de 9** depois, com um novo login no portal entre as
+  duas leituras (o `Portal.tsx` não relê as categorias sozinho — afirmar sobre
+  elas na mesma sessão mediria o cliente, e não o servidor). Mesmo argumento da
+  D06, do outro lado do ciclo.
+- **A asserção que pegaria a regressão é NEGATIVA, e sai do enunciado.** "A
+  `data_devolucao` permanece intacta" não tem linha de código para apontar: se
+  alguém reintroduzir o `data_devolucao: new Date()` que a Tarefa 12 removeu,
+  tudo continua verde — o empréstimo vai a `CONCLUIDO`, a `data_baixa` é
+  preenchida, o equipamento é liberado. O script compara os dois carimbos com a
+  linha de base tirada **antes** da primeira escrita. As quatro baixas desta
+  sessão deram 304, 180, 120 e 60 min de prateleira; com a regressão dariam zero.
+- **`querySelector('[role="status"]')` pega o gêmeo errado no painel.** São
+  **duas** `Notificacao` no documento: uma no `ContaDoAdmin` da barra lateral
+  (Tarefa 11) e outra na fila. A da barra vem antes no DOM e está sempre vazia,
+  então a leitura "assim que o elemento existir" devolve string em branco — e o
+  diagnóstico natural é culpar o produto. A âncora certa é `main [role="status"]`.
+- **A recusa "Esse item já saiu da fila." aparece por ~241 ms, e isso foi
+  medido.** O componente grava a mensagem na linha **e** chama `router.refresh()`
+  na mesma transição; a mensagem pinta (69 de 91 leituras a viram) e some junto
+  com a linha quando a árvore revalidada chega. A primeira medição disse "0
+  leituras" e estava errada: a pausa de 250 ms que o driver dá depois do clique
+  engolia a janela inteira. Por isso a página descreve o caso em texto e **não
+  tem captura dele** — imagem de algo que dura um quarto de segundo prometeria
+  ao leitor uma tela que ele não vai ver.
+- **A recusa que FICA na linha é a de sessão encerrada**, e é ela que ilustra a
+  §8. `SEM_SESSAO` não dispara releitura, então o alerta vermelho permanece
+  embaixo do botão com a linha ainda na fila — que é exatamente o sinal que a
+  secretaria precisa ler: nada foi conferido.
+- **A tabela de erros é conferida EXTRAINDO as frases do código**, como a da D06,
+  e a extração tem duas armadilhas que produziram falso negativo antes de virar
+  regra: o texto de JSX chega **quebrado em várias linhas** (comparar byte a byte
+  reprova frase que está na tela), e uma das mensagens é template com constante
+  interpolada — `São no máximo ${MAXIMO_DE_BAIXAS_EM_LOTE} baixas por vez.` A
+  conferência normaliza espaços e resolve a constante lendo o valor dela.
+- **O formulário de login é `useActionState`, e os campos ocultos dele não são o
+  `$ACTION_ID_<hash>` do caso simples.** São quatro — `$ACTION_REF_1`,
+  `$ACTION_1:0`, `$ACTION_1:1` e `$ACTION_KEY`. Entrar por HTTP exige
+  **reenviá-los como o HTML os traz**, e não montar o formato de memória. Os ids
+  das duas actions de baixa vieram do manifesto do servidor no ar, e cada um foi
+  confirmado por uma assinatura única antes de virar asserção ("Registro
+  inválido." contra "Nada para confirmar.").
+- **O teto de 50 do lote foi medido nos dois sentidos**: 51 ids são recusados com
+  "São no máximo 50 baixas por vez.", 50 ids passam pela validação. A fronteira é
+  só do servidor — a tela manda uma rodada de cada vez para a fila gigante
+  encolher a cada clique, em vez de devolver o mesmo erro para sempre.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
 coordenação e — agora que existe conta individual — registrar **quem** deu baixa
