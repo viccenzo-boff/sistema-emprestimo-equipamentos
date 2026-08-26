@@ -1631,6 +1631,89 @@ publicada, e a leitura visual das nove capturas e da página montada.
   unidade de Tablet está livre agora." A página documenta a primeira como passo e
   a segunda na §8, que é onde o leitor vai procurar pela frase que está na tela.
 
+**Tarefa D06 — Processo 2, Devolução de equipamento (concluída):** a segunda
+página de processo, em [docs/portal/devolucao.md](docs/portal/devolucao.md), com
+as oito seções do template, o diagrama BPMN embutido, as nove capturas em
+`docs/assets/images/devolucao/` e as ramificações no formato "Se SIM → / Se
+NÃO →". `mkdocs build --strict`, `vale docs/` (17 arquivos), `npm run
+docs:diagramas -- --verificar` (5 diagramas), `tsc` e `lint` em 0.
+
+Verificação em cinco frentes, com o `dev.db` do dono do repositório **conferido
+por md5** contra a linha de base no fim (idêntico — nunca foi tocado): o Fluxo 2
+inteiro no navegador real por CDP, em 1280x800, nos três cenários — avulso (18
+asserções), lote (10) e cadastro inativo (7); a corrida do modal aberto, em que o
+empréstimo sai de `ATIVO` por fora da tela entre o toque e a confirmação (5); as
+recusas por HTTP real contra as Server Actions (10), com o estado do banco
+conferido **depois** para provar que nenhuma delas escreveu; e a página publicada
+conferida contra o próprio sistema (29), com as mensagens de erro **extraídas** de
+`src/app/actions.ts` em vez de digitadas. O banco de demonstração foi comparado
+com a linha de base ao fim de cada cenário e voltou idêntico nas três vezes.
+
+**Decisões da D06** (não refazer sem motivo):
+
+- **A prova de que o equipamento não volta para a prateleira é a contagem da
+  grade de categorias, lida depois de sair e entrar de novo.** Ler
+  `Equipamento.status` no banco prova a linha; a contagem prova o que a próxima
+  pessoa vê. E a releitura **tem que passar por um novo login**: o `Portal.tsx`
+  não relê as categorias depois da devolução de propósito (a contagem não mudou),
+  então afirmar sobre elas na mesma sessão mediria o cliente que não recarregou,
+  e não o servidor. Medido: "Notebooks — 4 de 9 disponíveis" antes e depois, com
+  o `NOTE-01` declarado devolvido no meio. A captura do passo 8 mostra isso na
+  mesma imagem em que o aviso verde confirma a devolução, e a página aponta para
+  ela — é o argumento inteiro em uma figura.
+- **O passo "deixe o aparelho na bancada" é um passo do processo, e vem antes da
+  confirmação.** Ele não está na sequência de telas do enunciado (que tem quatro
+  cliques), mas é o único gesto que o sistema **não** consegue verificar: o modal
+  existe para dizer que ele já aconteceu. Documentar só os cliques faria a página
+  descrever a interface e perder o processo.
+- **A escolha "um item ou todos" entrou no passo a passo, e ela não está na §2 do
+  enunciado.** Mesmo precedente da D05: o gateway "Um item ou a lista inteira?"
+  está no diagrama que a própria página publica, e omiti-lo faria o texto
+  contradizer a figura. A ramificação usa "**Se for UM item** → / **Se forem
+  TODOS** →" em vez de SIM/NÃO — a regra 3 do guia de estilo pede decisão
+  explícita e nunca embutida na prosa, e uma escolha entre dois caminhos não é
+  uma pergunta de sim ou não.
+- **As duas capturas que sobraram viraram conteúdo, e a numeração foi refeita.**
+  O modal do lote e o erro da corrida tinham sido tirados para asserção e não
+  estavam na página; imagem órfã é exatamente o que a regra 7 do guia de estilo
+  existe para impedir (ninguém sabe procurar por ela depois). As nove foram
+  renumeradas para a **ordem de aparição na página**, que não é a ordem em que os
+  roteiros rodaram.
+- **A conferência final extrai as mensagens de erro do `src/app/actions.ts` em
+  vez de compará-las com uma lista digitada.** Uma lista digitada envelhece em
+  silêncio: alguém reescreve a frase no código, a tabela da §8 continua com a
+  antiga, e o leitor que chegou buscando pela frase da tela não acha a linha. Com
+  a extração, quem muda o código quebra a conferência. Mesmo argumento que fez o
+  gerador da planilha modelo consumir `COLUNAS_CANONICAS` na Tarefa 9.
+- **O degrau de protocolo não prova que a recusa chega à tela.** As dez chamadas
+  por HTTP provaram que o servidor recusa; **quem decide em qual lugar da tela a
+  mensagem aparece é o `Portal.tsx`** (o modal fecha, a lista é relida, e o erro
+  vai para o alerta da seção), e isso só existe no navegador. Por isso a corrida
+  do modal aberto é um degrau próprio, e não redundância: ela é a única
+  verificação que cobre o roteamento do erro.
+- **Os identificadores das Server Actions vieram do manifesto do servidor em
+  execução, com o `exportedName` junto** — `.next/dev/server/server-reference-manifest.json`
+  mapeia id para nome de função, o que dispensa a sondagem às cegas que a D05
+  precisou fazer. A sondagem ficou mesmo assim, como asserção: cada id é
+  confirmado por uma assinatura **única** antes de virar recusa, porque o
+  manifesto pode estar defasado em relação ao processo no ar.
+- **O `db:demo` não restaura o `status` de quem veio do seed**, e isso custou
+  uma linha de restauração explícita. Ele faz `upsert` só nas suas onze pessoas;
+  a Ana Souza (`0012345`), que é quem tem "Meus equipamentos" cheio, é do
+  `PESSOAS_EXEMPLO` do seed — e o seed também não reescreve `status` de cadastro
+  existente (regra da Tarefa 8). Inativá-la para fotografar a trava assimétrica é
+  uma mudança que **nada desfaz sozinho**. Está escrito no CONTRIBUTING, ao lado
+  da exceção irmã que a D05 mediu.
+- **Nenhuma captura foi tirada contra o `dev.db`.** A receita da D05 (banco
+  separado em `DATABASE_URL`, servidor na 3100) foi seguida, e o md5 do `dev.db`
+  no fim é o mesmo do começo. É o que permite exercitar devolução de verdade sem
+  esvaziar a lista de quem estava trabalhando no banco.
+- **A §7 tem seis perguntas, e a sexta é a da reversibilidade.** "Cliquei em
+  Devolver no item errado" não tem desfazer pelo tablet — o item sai da lista e
+  entra na fila. A resposta honesta não é "não dá": é fazer valer o que foi
+  declarado (levar o aparelho à bancada) e retirar de novo depois da baixa. Mesma
+  varredura que produziu a quarta caixa da página da retirada.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
 coordenação e — agora que existe conta individual — registrar **quem** deu baixa
