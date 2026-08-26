@@ -72,7 +72,16 @@ markdown_extensions:
   - attr_list
   - md_in_html
   - pymdownx.details
-  - pymdownx.superfences
+  # O `custom_fences` do mermaid chegou na D10, com as duas maquinas de estado.
+  # Sem ele o bloco ```mermaid vira bloco de codigo colorido: o diagrama
+  # "renderiza no editor" e NAO renderiza no site publicado -- e o
+  # `mkdocs build --strict` sai em 0 aviso com o defeito no ar, porque para o
+  # gerador nao ha nada de errado com um bloco de codigo.
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tasklist:
       custom_checkbox: true
 
@@ -138,6 +147,24 @@ plugins:
 
 extra_css:
   - assets/stylesheets/marca.css
+
+# O Mermaid das duas maquinas de estado (D10), com a VERSAO FIXADA.
+#
+# O Material 9.7.7 nao empacota o Mermaid: o bundle dele busca
+# `https://unpkg.com/mermaid@11/dist/mermaid.min.js` -- uma FAIXA de versao
+# maior, resolvida no navegador de quem le. Isso contraria a regra que o
+# docs-requirements.txt registra para as ferramentas desta wiki, e contraria
+# pior: uma 11.x nova redesenharia os dois diagramas sem nenhum commit aqui.
+#
+# A guarda do proprio tema e o ponto de extensao, e foi lida no bundle, nao
+# suposta: `typeof mermaid=="undefined" ? busca_do_CDN : nao_faz_nada`. O
+# arquivo do unpkg termina em `globalThis["mermaid"] = ...`, entao carrega-lo
+# aqui define o global e o tema deixa de buscar a faixa. O `extra_javascript`
+# entra logo depois do bundle no base.html do tema, e os dois sao scripts
+# classicos: executam em ordem, antes do DOMContentLoaded em que o tema
+# processa os blocos. Conferido no navegador -- ver as decisoes da D10.
+extra_javascript:
+  - https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js
 
 extra:
   # O seletor de versao do mike. A v1.0 e o estado congelado que esta wiki
