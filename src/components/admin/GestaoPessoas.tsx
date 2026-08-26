@@ -697,13 +697,19 @@ function ModalDeEdicao({
           <label htmlFor="matricula" className="text-base font-semibold text-tinta">
             Matrícula
           </label>
+          {/*
+            `maxLength` é 15, e não 20: é o mesmo teto que `MATRICULA_VALIDA`
+            aplica no servidor. Com 20, dava para digitar 16 dígitos e só
+            descobrir a recusa no Salvar — a tela prometendo um formato que a
+            regra não aceita. Achado na D09, ao documentar esta tela.
+          */}
           <input
             ref={campoRef}
             id="matricula"
             name="matricula"
             defaultValue={pessoa.matricula}
             required
-            maxLength={20}
+            maxLength={15}
             autoComplete="off"
             spellCheck={false}
             disabled={salvando}
