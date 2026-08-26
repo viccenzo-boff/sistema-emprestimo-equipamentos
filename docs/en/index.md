@@ -1,7 +1,8 @@
 # Equipment Loan System
 
-User manual and process documentation for Unoesc's laptop, tablet and
-power-strip loan system.
+This system records the loan of Unoesc's laptops, tablets and power strips: who
+took each device, when they declared it returned, and when the front desk
+confirmed receiving it.
 
 !!! note "About this translation"
 
@@ -11,12 +12,74 @@ power-strip loan system.
     follows in parentheses — for example, click **Devolver** (Return). Look for
     the Portuguese word on screen.
 
-This home page has not been written yet: it will send each reader down their
-own track — people at the tablet never need the admin panel track, and vice
-versa (task D11).
+    Pages that still show Portuguese content are not yet translated.
 
-Pages that still show Portuguese content are not yet translated; the
-translation is task D12.
+## Where to start
 
-This is the documentation for version **v1.0** of the system. The version
-selector is at the top of the page.
+<div class="grid cards" markdown>
+
+-   **I am a student or a teacher**
+
+    You use the tablet at the front desk to pick up and return equipment.
+
+    [**The tablet in 5 minutes →**](inicio-rapido/estudante-e-professor.md)
+
+-   **I work at the front desk**
+
+    You use the admin panel to check returns in and to look after the inventory
+    and the people records.
+
+    [**The admin panel in 10 minutes →**](inicio-rapido/secretaria.md)
+
+</div>
+
+The two tracks are independent. People working at the tablet never need to open
+an admin panel page, and the other way round as well.
+
+## Shortcuts
+
+<div class="grid" markdown>
+
+<div markdown>
+
+**At the tablet**
+
+- [Pick up equipment](portal/retirada.md)
+- [Return equipment](portal/devolucao.md)
+
+</div>
+
+<div markdown>
+
+**In the admin panel**
+
+- [Check returned devices in](painel/baixa-fisica.md)
+- [Register equipment and manage the inventory](painel/inventario.md)
+- [Import the people spreadsheet](painel/pessoas.md)
+- [Sign in, sign out, change your password](referencia/conta-do-administrador.md)
+
+</div>
+
+</div>
+
+## The version this wiki describes
+
+!!! info "This wiki describes version v1.0 of the system"
+
+    If the screen in front of you has a button no page here mentions, check the
+    version selector at the top: `v1.0` is the frozen state this wiki
+    documents, and newer versions are published next to it.
+
+## Where to ask for help
+
+**At the tablet**, the front desk is who solves it — an enrolment number that
+will not go through, an inactive record, a device missing from the list, all
+need somebody with the admin panel open.
+
+**In the admin panel**, start with the
+[Reference](referencia/regras-de-negocio.md) pages: most of what looks like a
+defect is a deliberate business rule, and it is explained there.
+
+**If the system really is wrong** — the screen contradicts this wiki, or this
+wiki is out of date — the place to report it is the
+[project repository](https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/issues).
