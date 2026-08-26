@@ -875,6 +875,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#bancada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bancada
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cadastro-inativo-pessoa" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -908,10 +919,32 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#emprestado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Emprestado
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#emprestimo" class="md-nav__link">
     <span class="md-ellipsis">
       
         Empréstimo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#emprestimos-ativos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Empréstimos ativos
       
     </span>
   </a>
@@ -934,6 +967,28 @@
     <span class="md-ellipsis">
       
         Fila de devoluções
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inventario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inventário
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lote" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lote
       
     </span>
   </a>
@@ -1000,6 +1055,28 @@
     <span class="md-ellipsis">
       
         Retirada
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sessao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sessão
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#situacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Situação
       
     </span>
   </a>
@@ -1419,6 +1496,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#bancada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bancada
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cadastro-inativo-pessoa" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1452,10 +1540,32 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#emprestado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Emprestado
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#emprestimo" class="md-nav__link">
     <span class="md-ellipsis">
       
         Empréstimo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#emprestimos-ativos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Empréstimos ativos
       
     </span>
   </a>
@@ -1478,6 +1588,28 @@
     <span class="md-ellipsis">
       
         Fila de devoluções
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inventario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inventário
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lote" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lote
       
     </span>
   </a>
@@ -1551,6 +1683,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#sessao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sessão
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#situacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Situação
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tempo-de-prateleira" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1617,6 +1771,14 @@ passa de <code>AGUARDANDO_BAIXA</code> para <code>CONCLUIDO</code>, e a hora fic
 <code>Emprestimo.data_baixa</code>).</p>
 <p>É aqui — e só aqui — que o equipamento volta a ficar disponível para outra
 pessoa retirar. A <a href="#devolucao">devolução</a> no tablet não faz isso.</p>
+<h2 id="bancada">Bancada</h2>
+<p>O balcão físico onde o equipamento é entregue e recolhido. Não é uma tela nem um
+campo do sistema — é o único lugar do processo que o sistema <strong>não</strong> consegue
+verificar.</p>
+<p>É a ela que a <a href="#devolucao">devolução</a> se refere: quem devolve deixa o aparelho na
+bancada e avisa no tablet. Entre esse gesto e a <a href="#baixa-fisica">baixa física</a>, o
+aparelho está na bancada e em lugar nenhum do inventário — é o
+<a href="#tempo-de-prateleira">tempo de prateleira</a>.</p>
 <h2 id="cadastro-inativo-pessoa">Cadastro inativo (pessoa)</h2>
 <p>Um cadastro que saiu de circulação — quem trancou a matrícula, quem se formou,
 quem deixou a instituição (<code>Pessoa.status = INATIVO</code>).</p>
@@ -1640,6 +1802,16 @@ equipamento e o deixou na bancada (<code>Emprestimo.status</code> passa de <code
 <p>Devolver <strong>não</strong> libera o equipamento para outra pessoa. Quem faz isso é a
 <a href="#baixa-fisica">baixa física</a>, na secretaria. A diferença entre os dois
 momentos é o <a href="#tempo-de-prateleira">tempo de prateleira</a>.</p>
+<h2 id="emprestado">Emprestado</h2>
+<p>A <a href="#situacao">situação</a> de um equipamento que está fora da prateleira porque
+alguém o retirou (<code>Equipamento.status = EMPRESTADO</code>).</p>
+<p>O que não é óbvio: <strong>ele continua <code>EMPRESTADO</code> depois da
+<a href="#devolucao">devolução</a></strong>. Declarar a devolução no tablet muda o
+<a href="#emprestimo">empréstimo</a>, não o aparelho — quem devolve o aparelho à prateleira
+é a <a href="#baixa-fisica">baixa física</a>.</p>
+<p><code>EMPRESTADO</code> não é um botão do <a href="#painel">painel</a>: ele entra e sai sozinho, pelos
+dois gestos que envolvem alguém carregando o equipamento. A linha de um item
+emprestado mostra o nome de quem está com ele no lugar do botão.</p>
 <h2 id="emprestimo">Empréstimo</h2>
 <p>O registro de um equipamento na mão de uma pessoa, com as horas de
 <a href="#retirada">retirada</a>, de <a href="#devolucao">devolução</a> e de
@@ -1650,6 +1822,13 @@ momentos diferentes.</p>
 <p>Um empréstimo passa por três situações: <code>ATIVO</code> (está com a pessoa),
 <code>AGUARDANDO_BAIXA</code> (foi declarado devolvido, aguarda a secretaria) e
 <code>CONCLUIDO</code> (encerrado).</p>
+<h2 id="emprestimos-ativos">Empréstimos ativos</h2>
+<p>A aba do <a href="#painel">painel</a> que lista tudo o que está com alguém agora — os
+empréstimos em <code>ATIVO</code>, com o nome de quem está com o aparelho e desde quando.</p>
+<p>É <strong>somente leitura</strong>: não há botão nenhum nela. Quem devolve é a pessoa, no
+<a href="#portal">portal</a>; quem encerra é a <a href="#baixa-fisica">baixa física</a>, na
+<a href="#fila-de-devolucoes">fila de devoluções</a>. Esta aba responde "onde está o
+<code>NOTE-04</code>?", e nada mais.</p>
 <h2 id="etiqueta">Etiqueta</h2>
 <p>O código colado no aparelho, como <code>NOTE-01</code> ou <code>EXT-05</code> (<code>Equipamento.id</code>). É o
 que identifica o item físico — dois notebooks do mesmo modelo têm etiquetas
@@ -1661,6 +1840,28 @@ precisa bater caractere a caractere com o adesivo do aparelho.</p>
 <a href="#baixa-fisica">baixa física</a>. É a primeira tela do <a href="#painel">painel</a>, e cada
 linha é uma tarefa física: pegar o aparelho da bancada e conferir a
 <a href="#etiqueta">etiqueta</a>.</p>
+<h2 id="inventario">Inventário</h2>
+<p>Todo o equipamento cadastrado, uma linha por aparelho, agrupado por
+<a href="#categoria">categoria</a> — e a aba do <a href="#painel">painel</a> que o mostra.</p>
+<p>O inventário lista <strong>tudo</strong>, inclusive o que está em
+<a href="#manutencao">manutenção</a>, o que está <a href="#emprestado">emprestado</a> e o que foi
+<a href="#aposentadoria-item-inativo">aposentado</a>. É a diferença dele para o
+<a href="#portal">portal</a>, que só mostra o que dá para levar agora.</p>
+<h2 id="lote">Lote</h2>
+<p>Um gesto que trata vários itens de uma vez. Existem dois, e eles se comportam de
+forma diferente de propósito:</p>
+<ul>
+<li><strong>"Devolver tudo"</strong>, no <a href="#portal">portal</a>: tudo ou nada. Os aparelhos vão
+  juntos para a <a href="#bancada">bancada</a>, e devolver metade faria a pessoa sair
+  achando que entregou tudo.</li>
+<li><strong>"Confirmar Todas as Devoluções"</strong>, no <a href="#painel">painel</a>: item a item, e uma
+  linha que falha não derruba as outras. O gesto físico já aconteceu — a
+  secretaria recolheu a pilha —, e uma linha que saiu da fila em outra aba não
+  pode desfazer a conferência das demais. O resumo diz o que fechou e o que não
+  fechou.</li>
+</ul>
+<p>Os dois só aparecem <strong>a partir de dois itens</strong>. Com um só, cada um duplicaria o
+botão da linha logo abaixo.</p>
 <h2 id="manutencao">Manutenção</h2>
 <p>O afastamento <strong>temporário</strong> de um equipamento para conserto
 (<code>Equipamento.status = MANUTENCAO</code>). O item some do <a href="#portal">portal</a> e volta
@@ -1698,6 +1899,46 @@ atendimento.</p>
 equipamento passando para <code>EMPRESTADO</code>).</p>
 <p>O caminho é matrícula → <a href="#categoria">categoria</a> → item → confirmação. Só
 aparecem itens disponíveis, e só para cadastro ativo.</p>
+<h2 id="sessao">Sessão</h2>
+<p>O período em que a tela sabe com quem está falando. As duas frentes do sistema
+tratam isso de forma oposta:</p>
+<ul>
+<li><strong>No <a href="#portal">portal</a></strong> não há login: a sessão começa quando a
+  <a href="#matricula">matrícula</a> é digitada e termina no botão <strong>Sair</strong> ou sozinha,
+  depois de dois minutos sem nenhum toque. O tablet é compartilhado, e uma tela
+  esquecida aberta deixaria a próxima pessoa retirar equipamento em nome de
+  outra.</li>
+<li><strong>No <a href="#painel">painel</a></strong> a sessão vem do login do
+  <a href="#administrador">administrador</a> e dura oito horas — um turno. Ela sobrevive a
+  reiniciar o computador, e é encerrada pelo botão <strong>Sair do painel</strong>.</li>
+</ul>
+<h2 id="situacao">Situação</h2>
+<p>A coluna que diz onde algo está na vida dele. <strong>A palavra tem dois donos</strong>, e o
+que ela quer dizer depende da tela:</p>
+<table>
+<thead>
+<tr>
+<th>Onde</th>
+<th>Valores possíveis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aba <strong>Inventário</strong> — de um equipamento</td>
+<td><strong>Disponível</strong>, <strong>Emprestado</strong>, <strong>Manutenção</strong> ou <strong>Inativo</strong></td>
+</tr>
+<tr>
+<td>Aba <strong>Pessoas</strong> — de um cadastro</td>
+<td><strong>Ativo</strong> ou <strong>Inativo</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Os dois <strong>Inativo</strong> têm o mesmo nome e regras diferentes: no equipamento é
+<a href="#aposentadoria-item-inativo">aposentadoria</a> e trava enquanto houver empréstimo
+aberto; na pessoa é <a href="#cadastro-inativo-pessoa">cadastro inativo</a>, é permitido com
+empréstimo aberto, e bloqueia só a <a href="#retirada">retirada</a>.</p>
+<p>O passeio completo entre as situações está em
+<a href="../estados-e-transicoes/">Estados e transições</a>.</p>
 <h2 id="tempo-de-prateleira">Tempo de prateleira</h2>
 <p>O intervalo entre a <a href="#devolucao">devolução</a> declarada no tablet e a
 <a href="#baixa-fisica">baixa física</a> feita na secretaria — o tempo em que o aparelho
@@ -1807,6 +2048,8 @@ equipamento fisicamente livre que ninguém consegue pegar.</p>
     
     
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js"></script>
       
     
   </body>
