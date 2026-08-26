@@ -2000,6 +2000,119 @@ de base ao fim e voltou idêntico.
   D05, 0,35x — copiar o número da página anterior passa por todos os portões e
   mente para o leitor.
 
+**Tarefa D10 — Páginas de referência (concluída):** as três páginas que ensinam
+a *entender*, mais o completamento do glossário — [estados e
+transições](docs/referencia/estados-e-transicoes.md) com as duas máquinas de
+estado em Mermaid e a tabela cruzada, [regras de
+negócio](docs/referencia/regras-de-negocio.md) com as dez regras em três partes
+cada, [conta do administrador](docs/referencia/conta-do-administrador.md), e
+sete verbetes novos no [glossário](docs/referencia/glossario.md) (16 → 23). O
+`mkdocs.yml` ganhou o `custom_fences` do Mermaid e o `extra_javascript` com a
+versão fixada. `mkdocs build --strict`, `vale docs/` (17 arquivos),
+`npm run docs:diagramas -- --verificar` (5 diagramas), `tsc` e `lint` em 0.
+
+Verificação em quatro frentes: os dois portões com a **cobertura conferida**, e
+não só o código de saída; 90 asserções contra o **HTML gerado** (as 30 âncoras
+das páginas de processo, as 12 células da tabela cruzada, os três itens de cada
+regra, os sete verbetes e o critério que os promoveu); 11 asserções em navegador
+real por CDP contra o site construído e servido por HTTP, incluindo a asserção
+**negativa** de que a faixa `mermaid@11/` não é buscada; e a leitura visual dos
+dois diagramas em recorte ampliado, que achou o defeito de legibilidade que
+nenhum portão pegou. Nenhum processo ficou de pé e o repositório terminou com os
+cinco arquivos pretendidos.
+
+**Decisões da D10** (não refazer sem motivo):
+
+- **Os nomes de arquivo do enunciado NÃO venceram, ao contrário da D05.** A D10
+  escreve `estados.md` e `conta-administrador.md`; o repositório tem
+  `estados-e-transicoes.md` e `conta-do-administrador.md` desde a D02. O que
+  decidiu a D05 foi o slug casar com os artefatos irmãos do mesmo processo
+  (`.bpmn`, `.svg`, pasta de imagens) — aqui não existe artefato irmão, os nomes
+  atuais casam exatamente com o rótulo do `nav`, e **cinco páginas já linkavam**
+  para `conta-do-administrador.md`. Renomear custaria reescrever cinco links por
+  zero ganho de leitura. Levantado como conflito antes da primeira edição; a
+  decisão foi do dono do repositório. **A D14 tem a mesma divergência em aberto**
+  (ela diz `sobre/arquitetura.md`, o arquivo é `arquitetura-do-sistema.md`).
+- **A regra "todo termo em negrito ou entre aspas tem verbete" é uma consulta, e
+  foi executada antes de ser obedecida.** A varredura devolveu ~140 candidatos,
+  e a composição do conjunto é que revelou o conflito: a maioria era ênfase de
+  frase (**não**, **três**) e rótulo de botão (**Salvar**, **Cancelar**), e entre
+  eles estavam os termos que a §3 do template e a primeira linha do próprio
+  glossário mandam ficar na página de origem. O critério adotado é **termo de
+  domínio presente em duas ou mais páginas de processo** — sete promovidos, com
+  a contagem de páginas afirmada no roteiro para a próxima sessão não promover
+  termo de página única. Rótulo de tela é o "glossário de UI" que a §9 da
+  spec-wiki já atribui à **D12**.
+- **O Material 9.7.7 NÃO empacota o Mermaid, e a URL embutida nele é uma faixa
+  de versão.** Lido no bundle do tema, não suposto:
+  `typeof mermaid=="undefined" ? _t("https://unpkg.com/mermaid@11/dist/mermaid.min.js") : $(void 0)`.
+  A faixa `@11` é resolvida **no navegador de quem lê** (o unpkg dá 302 com cache
+  de borda de 60 s), o que contraria frontalmente a regra de versão fixada do
+  `docs-requirements.txt` — e contraria pior, porque uma 11.x nova redesenharia
+  os dois diagramas sem nenhum commit aqui. A guarda do próprio tema é o ponto de
+  extensão: o arquivo do unpkg termina em `globalThis["mermaid"] = ...`, então
+  carregá-lo por `extra_javascript` define o global e o tema deixa de buscar a
+  faixa. Custo aceito: ainda depende do unpkg no momento da leitura. Baixar os
+  **3,41 MB** para dentro do repositório foi a alternativa descartada — é o único
+  caminho que sobrevive ao unpkg sair do ar, e caro demais para dois diagramas.
+- **A asserção que prova isso é NEGATIVA, e sem ela a mudança seria decorativa.**
+  Ligar o `extra_javascript` e ver o diagrama aparecer não distingue "carregou a
+  fixada" de "carregou as duas". O roteiro grava todas as requisições e afirma
+  que **nenhuma** casa `mermaid@11/`. Exercitado: 1 requisição para a fixada, 0
+  para a faixa.
+- **"Renderiza" não se afirma pelo `<svg>`: o Material o põe em shadow root
+  FECHADO** (`attachShadow({mode:"closed"})`, lido no bundle). Nada enxerga lá de
+  dentro, e um roteiro que procurasse o SVG reprovaria um diagrama perfeito. O
+  sinal honesto é o ciclo da operação — o `<pre class="mermaid">` é substituído
+  por um `<div class="mermaid">` que passa a ter altura e largura.
+- **O piso da asserção de altura é 150px, e o número veio de um defeito real.**
+  Com `direction LR`, a máquina do empréstimo saiu com **47px** de altura numa
+  coluna de 688px: o Mermaid encolhe para caber na largura, e quatro estados em
+  linha viraram uma tira ilegível. `mkdocs build --strict`, o Vale e as 90
+  asserções de HTML atravessaram isso sem piscar — o diagrama *estava* lá. Só a
+  leitura visual pegou, que é a mesma lição que a D04 registrou para os BPMN.
+  Sem `direction`, o mesmo diagrama dá 464px e se lê inteiro.
+- **Os rótulos do diagrama do equipamento foram encurtados por medição, não por
+  gosto.** "enviar para conserto" e "conserto pronto" se sobrepunham no par
+  bidirecional `DISPONIVEL` ↔ `MANUTENCAO`; com "conserto" e "pronto" os oito
+  rótulos ficam legíveis. `EMPRESTADO → DISPONIVEL` ficou "baixa física" e não
+  "baixa" de propósito — "baixa" sozinha é ambígua com o verbete.
+- **A nota de regressão do tempo de prateleira continua só na D07, e a D10
+  linka.** O enunciado manda incluí-la "se ela não tiver ficado na página da
+  D07"; ela ficou, e o AGENTS.md já registrava que a D10 não deve duplicá-la.
+  Dizer a mesma coisa em dois lugares é como as duas versões passam a discordar.
+- **A tabela cruzada tem 12 linhas, e o "sem lacuna" é afirmado por
+  construção.** O roteiro monta o produto cartesiano dos três estados de
+  empréstimo aberto (mais "Nenhum") pelas quatro situações do equipamento e
+  compara com o que a tabela publica — em vez de contar linhas, que passaria com
+  uma combinação repetida e outra faltando. `CONCLUIDO` **não** é uma linha: ele
+  quer dizer "não há empréstimo aberto", e virou uma caixa explicando isso, que
+  era a pergunta que a tabela deixava no ar.
+- **A tabela de erros da conta roda com o escape do Vale, e o escape vale para a
+  tabela inteira.** A citação literal "Informe o usuário e a senha." tem a
+  palavra proibida em minúscula, e a regra 1 do guia de estilo manda transcrever
+  a tela — é por essa frase que o leitor chega à linha. Comentário HTML **no
+  meio** de uma tabela a encerra no Python-Markdown, então o escape não pode
+  envolver uma linha só. Exercitado nos dois sentidos: o Vale acusou antes do
+  escape, e uma violação plantada **depois** do `= YES` foi acusada de novo — o
+  escopo fecha.
+- **O botão é "Sair do painel", não "Sair".** Lido no componente, não de memória.
+- **As duas armadilhas de captura foram reencontradas, e elas JÁ ESTAVAM
+  escritas** na seção "Documentação" do [CONTRIBUTING.md](CONTRIBUTING.md)
+  (linhas 276–284, registradas pela D09): o `clip` do Chrome é em coordenada de
+  **documento** e o `getBoundingClientRect` é de **viewport**; e sem
+  `captureBeyondViewport` o recorte abaixo da dobra sai **em branco no tamanho
+  certo**, que se parece exatamente com "o diagrama não renderizou". Custaram
+  dois falsos negativos seguidos aqui porque o roteiro de captura foi escrito do
+  zero sem abrir aquela seção. **Antes de escrever qualquer roteiro de captura
+  novo, leia a seção de captura do CONTRIBUTING** — a falha não foi de
+  conhecimento, foi de consulta, e é a que mais se repete entre sessões.
+- **"Renderizam no site publicado" foi verificado contra o site CONSTRUÍDO e
+  servido por HTTP, e não contra o GitHub Pages.** O Pages nunca foi apontado
+  para a `gh-pages` — é o item que a D02 deixou pendente por ser ajuste no
+  GitHub e decisão do dono do repositório. O que se provou é que o artefato que a
+  Action publica renderiza; que a URL do Pages responde continua **não visto**.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
 coordenação e — agora que existe conta individual — registrar **quem** deu baixa
@@ -2061,6 +2174,16 @@ real. Ver as decisões da D08 para o porquê de a correção não ter entrado al
   Conferido com a v18.6.2. Ele precisa do Chrome, que já é premissa deste
   repositório desde a Tarefa 2 (as verificações de interface usam o mesmo binário
   por CDP); em outra máquina, aponte o caminho em `CHROME_PATH`.
+- **O Mermaid não está no `docs-requirements.txt`, e não está lá porque não é
+  Python nem fica no repositório** (D10): ele é JavaScript e roda no navegador de
+  quem lê. O Material **não o empacota** — o bundle do tema busca
+  `https://unpkg.com/mermaid@11/...`, uma **faixa** de versão maior resolvida na
+  hora da leitura. Por isso o `mkdocs.yml` carrega a versão exata
+  (`mermaid@11.17.2`) por `extra_javascript`: o arquivo termina em
+  `globalThis["mermaid"] = ...`, e a guarda do próprio tema
+  (`typeof mermaid=="undefined"`) então não busca a faixa. **Ao subir o
+  `mkdocs-material`, confira se essa URL mudou de versão maior dentro do bundle**
+  — se mudar e o pino ficar para trás, o tema volta a buscar as duas.
 - **`.tools/**` está nos `globalIgnores` do ESLint, e isso não é higiene.** O
   ESLint 9 de configuração plana **não lê o `.gitignore`**: no instante em que o
   bundle minificado do bpmn-js apareceu em `.tools/`, o `npm run lint` foi de 0
