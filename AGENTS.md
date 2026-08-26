@@ -1903,6 +1903,103 @@ comparado com a linha de base ao fim e voltou idêntico nas quatro tabelas.
   estrangeira receber "A etiqueta NOTE-11 já existe." em vez da recusa esperada.
   Estado sujo se disfarça de defeito de produto.
 
+**Tarefa D09 — Processo 5, Gestão de pessoas (concluída):** a última página de
+processo e a terceira da trilha do painel, em
+[docs/painel/pessoas.md](docs/painel/pessoas.md), com as oito seções do template,
+o diagrama BPMN embutido, as onze capturas em `docs/assets/images/pessoas/` e
+**quatro** procedimentos, cada um com a sua sequência numerada. Junto veio a
+correção de um descasamento entre tela e servidor que a leitura do código
+revelou — ver a primeira decisão abaixo. `mkdocs build --strict`,
+`vale docs/` (17 arquivos), `npm run docs:diagramas -- --verificar` (5
+diagramas), `tsc`, `lint` e `build` em 0, com as cinco rotas do painel ainda
+dinâmicas (`ƒ`).
+
+Verificação em seis frentes, com o `dev.db` do dono do repositório **conferido
+por md5** contra a linha de base no fim (idêntico — nunca foi tocado): a planilha
+suja passando pelos **módulos de produção** (`lerPlanilha` + `montarPlano`) em
+Node, contra o banco de demonstração, com a asserção negativa de que a prévia não
+escreve (é de lá que sai a tabela de antes/depois da §7); a importação inteira
+pelo navegador real por CDP, em 1440x900, do arquivo à gravação (6 asserções); a
+prova de banco confrontando o resultado com o que a prévia prometeu; a edição, a
+troca de matrícula e o par inativar/reativar no navegador (13 asserções); a
+página publicada conferida contra o **HTML gerado** — âncoras, listas numeradas,
+imagens órfãs, as oito seções e o vocabulário (14 asserções); e a página servida
+por HTTP e lida no navegador, incluindo a navegação pelos links da comparação nos
+dois sentidos (10 asserções). O banco de demonstração foi comparado com a linha
+de base ao fim e voltou idêntico.
+
+**Decisões da D09** (não refazer sem motivo):
+
+- **O campo Matrícula do diálogo de edição passou de `maxLength={20}` para
+  `{15}`, e esta é a única tarefa da série de documentação que mexe em `src/`.**
+  O servidor recusa acima de 15 (`MATRICULA_VALIDA`), então dava para digitar 16
+  dígitos e só descobrir no **Salvar** — a tela prometendo um formato que a regra
+  não aceita. Levantado como conflito antes da primeira edição, com a alternativa
+  de só documentar (o precedente da D08); a decisão de corrigir foi do dono do
+  repositório, e ela é a certa aqui porque o valor correto já estava escrito do
+  outro lado — ao contrário do defeito da D08, que exige decidir o que a frase
+  deveria dizer. Vai em commit próprio, como manda a regra de correção de defeito
+  antigo.
+- **`maxLength` não limita atribuição programática, e isso reprovou a primeira
+  medição.** Escrever no `value` pelo setter nativo entrega 19 caracteres num
+  campo de 15: o atributo só age no caminho de digitação de verdade. A asserção
+  passou a usar `Input.insertText`, tecla a tecla, e aí o campo para em 15. Quem
+  for medir teto de campo por roteiro precisa do caminho do teclado, senão mede o
+  próprio roteiro.
+- **A tabela de antes/depois da §7 saiu de uma execução, não de leitura do
+  código.** As doze linhas são a saída real de `normalizarNome`,
+  `normalizarPerfil`, `normalizarCursos` e `normalizarStatusPessoa` rodando
+  contra o banco de demonstração. É o que o enunciado pede ("execute a importação
+  suja e copie o resultado"), e é o que impede a tabela de envelhecer numa
+  direção que ninguém percebe.
+- **A planilha suja foi desenhada linha a linha, e cada uma prova uma regra.**
+  Título de relatório na linha 1 e branco na 2 (o cabeçalho é achado na 3, e a
+  numeração continua batendo com a do Excel); nome em caixa alta com partícula;
+  perfil feminino e abreviado; curso invertido; cadastro novo; perfil fora da
+  lista; matrícula com letra; matrícula **digitada como número** (o caso do zero à
+  esquerda); e linha em branco no rodapé. O resultado tem os quatro contadores
+  diferentes de zero — 1 cadastrar, 2 atualizar, 3 sem mudança, 3 com erro —, que
+  é o que faz a captura da prévia ensinar a tela inteira em uma imagem.
+- **A linha `inalterada` é o argumento da página, e não um detalhe.** Uma linha
+  suja nos quatro campos (`JOÃO PEDRO DE ALMEIDA` / `ALUNO` / `ec, si`) volta como
+  "sem mudança", porque o banco já guarda a forma canônica. É a prova de que
+  reenviar a planilha do semestre não gera 180 atualizações — e virou uma pergunta
+  própria da §7, porque quem vê "quase nada muda" desconfia que o arquivo não foi
+  lido.
+- **A comparação com o equipamento existe nas DUAS páginas, cada uma da sua
+  ótica, e elas se cruzam por âncora.** A da D08 lidera pelo equipamento, a desta
+  lidera pela pessoa; a linha final das duas é a mesma regra ("o registro tem que
+  dizer a verdade sobre onde o aparelho está"). Levantado como conflito antes da
+  primeira edição — duas tabelas são dois donos da mesma regra —, e a decisão foi
+  do dono do repositório: quem lê a trilha do inventário não pode ser mandado
+  para outra trilha para entender a dúvida que nasce ali. **Corrigir uma exige
+  corrigir a outra.** A navegação nos dois sentidos foi exercitada no navegador.
+- **Baixar a planilha modelo é procedimento, e não está no diagrama.** Ele é
+  preparação, acontece antes de o processo começar e do lado da coordenação — o
+  BPMN da D04 tem três caminhos e este não é um deles. A §5 diz isso, pelo mesmo
+  motivo que a D08 declara a ausência da gestão de categorias: página não pode
+  contradizer a figura que ela mesma publica, nem deixar o leitor procurando.
+- **A pergunta da reversibilidade é "confirmei uma importação errada", e a
+  resposta tem três casos com conselhos diferentes.** O enunciado cobre a prévia
+  (o gesto de ida) e não cobre o de volta. O terceiro caso é o que ninguém
+  deduz: campo que o arquivo **certo** não menciona não volta ao valor anterior,
+  porque a importação só escreve nas colunas que o arquivo traz — e a lista "O que
+  vai mudar" é a única vez em que o valor antigo aparece na tela.
+- **Só onze capturas, e duas foram descartadas.** O recorte isolado da lista de
+  erros e o da lista de mudanças eram pedaços da mesma tela que a captura da
+  prévia já mostra inteira e legível. Imagem que repete outra custa rolagem e não
+  informa; a regra 7 do guia de estilo existe para o caso inverso (imagem órfã),
+  e as duas saem do mesmo princípio.
+- **O `<code>` sai antes da asserção de vocabulário, como o Vale faz.** As três
+  ocorrências de "ALUNO" na página estão entre crases — são o valor que a
+  coordenação digita na planilha, e citá-las é o que faz a tabela de antes/depois
+  ensinar alguma coisa. Uma asserção que só tirasse as tags reprovaria justamente
+  a regra que o guia de estilo permite.
+- **O diagrama entra a 0,50x, e o número foi medido nesta página.** O
+  `05-pessoas.svg` tem 1380px e a coluna de texto tem 688px. A D08 media 0,56x e a
+  D05, 0,35x — copiar o número da página anterior passa por todos os portões e
+  mente para o leitor.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
 coordenação e — agora que existe conta individual — registrar **quem** deu baixa
