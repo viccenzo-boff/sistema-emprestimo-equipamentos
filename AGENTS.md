@@ -1817,6 +1817,92 @@ rodada.
   só do servidor — a tela manda uma rodada de cada vez para a fila gigante
   encolher a cada clique, em vez de devolver o mesmo erro para sempre.
 
+**Tarefa D08 — Processo 4, Gestão de inventário (concluída):** a segunda página
+da trilha do painel, em [docs/painel/inventario.md](docs/painel/inventario.md),
+com as oito seções do template, o diagrama BPMN embutido, as doze capturas em
+`docs/assets/images/inventario/` e **cinco** procedimentos, cada um com a sua
+sequência numerada. `mkdocs build --strict`, `vale docs/` (17 arquivos),
+`npm run docs:diagramas -- --verificar` (5 diagramas), `tsc` e `lint` em 0.
+
+Verificação em seis frentes, com o `dev.db` do dono do repositório **conferido
+por md5** contra a linha de base no fim (idêntico — nunca foi tocado): as
+premissas da exclusão de categoria por script, em cópia (10 asserções); os cinco
+procedimentos no navegador real por CDP, em 1440x900, do login às capturas (43);
+o degrau de protocolo por HTTP real contra as seis Server Actions, com e sem
+cookie (44); a corrida que produz a recusa ao apagar categoria em uso, montada e
+desfeita (9); a página publicada conferida contra o próprio código, com as
+mensagens **extraídas** de `src/app/admin/actions.ts` e dos componentes (47); e a
+página servida por HTTP e olhada no navegador (11). O banco de demonstração foi
+comparado com a linha de base ao fim e voltou idêntico nas quatro tabelas.
+
+**Decisões da D08** (não refazer sem motivo):
+
+- **A tela dá um conselho que não funciona, e a página diz isso.** O detalhe da
+  recusa ao apagar categoria em uso é "Inative os equipamentos dessa categoria
+  antes de excluí-la" — e inativar **não** libera a exclusão: a contagem inclui
+  o item inativo e o banco recusa igual (`P2003`). Medido nas duas camadas, por
+  script e pelo transporte. Como não existe tela que mova um equipamento de
+  categoria, e equipamento nunca é apagado, **categoria com equipamento é
+  indeletável pelo painel**. A página cita a mensagem exata (é a chave de busca
+  do leitor, e a regra 1 do guia de estilo manda citar a tela mesmo errada) e
+  desmente o conselho na §7. Levantado como conflito antes da primeira edição; a
+  decisão de documentar em vez de corrigir o produto foi do dono do repositório
+  — **consertar a frase continua sendo tarefa de produto, e está em aberto.**
+- **A página tem CINCO procedimentos, e o enunciado pedia quatro.** O diagrama
+  `04-inventario.svg` que ela publica tem um ramo — "corrigir a etiqueta" — que
+  os quatro do enunciado não cobrem. Mesmo precedente da D05, D06 e D07: página
+  não pode contradizer a figura que ela mesma publica. Pelo lado inverso, a
+  gestão de categorias **não** está no diagrama (decisão da D04), e a §5 diz isso
+  em vez de deixar o leitor procurar.
+- **Os cinco procedimentos são cinco listas que recomeçam em 1, e isso foi
+  conferido no HTML gerado.** O comentário do template proíbe cortar a lista com
+  subtítulo justamente porque o Python-Markdown escreve a segunda lista **sem**
+  `start` — mas aqui as cinco são intencionais, e a §5 do enunciado pede
+  "sequência numerada própria" para cada procedimento. A conferência mede o que
+  o navegador pinta: cinco `<ol>`, nenhum com `start=`, começando em 1.
+- **Caixa de admonição não gera âncora — e cinco links dependiam disso.** A regra
+  já estava registrada na D05 e a página caiu nela mesmo assim: o
+  `mkdocs build --strict` **passa em 0** com os links quebrados, porque o aviso é
+  `INFO`. A solução foi plantar `<a id="..."></a>` antes de cada caixa que outra
+  seção aponta; exercitado, o verificador de âncoras do MkDocs aceita. O `<a>`
+  vira filho de um `<p>`, então o `nextElementSibling` **dele** é nulo — quem
+  procurar a caixa na asserção precisa subir ao parágrafo.
+- **A captura da lista é o grupo Notebook, e não a tabela inteira.** Os quatro
+  status convivem nas dez linhas de `NOTE-01` a `NOTE-10` do `db:demo`, e a
+  tabela completa dava 2515px de altura sem acrescentar informação. Foi preciso
+  estender o recorte do driver para um intervalo de linhas.
+- **A etiqueta e os botões quebram em duas linhas na tela real, em toda
+  largura.** Medido em 1280, 1366, 1440, 1536, 1600, 1680 e 1920: a tabela trava
+  em 1022px (o contêiner tem largura máxima), então a quebra não é artefato do
+  recorte nem some em monitor maior. As capturas mostram a tela como ela é.
+- **A ordem das categorias é a de criação, e apagar e recriar move a categoria
+  para o fim.** `Categoria.id` é autoincremento e a grade do tablet ordena por
+  ele: medido, uma categoria excluída e recriada com o mesmo nome voltou com id
+  novo e depois de todas as outras. Virou pergunta da §7 — é o tipo de efeito que
+  parece defeito para quem não sabe.
+- **A recusa ao apagar categoria em uso só é alcançável pela corrida.** A tela
+  não oferece o botão quando a categoria tem equipamento: no lugar dele aparece
+  "11 equipamentos vinculados". A captura exigiu montar o cenário — categoria
+  vazia no render, equipamento cadastrado por fora, clique na tela velha. E
+  revelou um detalhe que a página documenta: **o diálogo continua aberto depois
+  da recusa**, ainda dizendo que a categoria está vazia, porque o texto é do
+  render anterior; o motivo fica na linha, atrás dele.
+- **O toast tem três gêmeos com `role="status"` no painel, e o primeiro é o
+  errado.** Além do da `ContaDoAdmin` que a D07 já registrou, o inventário tem o
+  `<p role="status" sr-only>` da contagem de filtros — que vem antes no DOM e
+  está **vazio** fora de filtro. `main [role='status']` produziu cinco falsos
+  negativos seguidos. A âncora exclusiva é o botão "Fechar aviso", que só o toast
+  com mensagem renderiza.
+- **O número do diagrama foi medido, e não copiado da D07.** Lá o SVG tinha
+  1980px e entrava a 0,35x; o `04-inventario.svg` tem 1230px e entra a **0,56x**
+  em uma coluna de 688px. A frase da §5 foi corrigida — repetir o número da
+  página anterior teria passado por todos os portões.
+- **O `NOTE-11` que a verificação cadastra fica no cenário até a limpeza, e
+  envenenou uma asserção.** O roteiro de navegador o cria para a captura do aviso
+  verde; rodar o degrau de protocolo em seguida, sem limpar, fez o teste de chave
+  estrangeira receber "A etiqueta NOTE-11 já existe." em vez da recusa esperada.
+  Estado sujo se disfarça de defeito de produto.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
 coordenação e — agora que existe conta individual — registrar **quem** deu baixa
@@ -1826,6 +1912,12 @@ senha própria, a 12 passou a registrar **quando** a baixa aconteceu — e o
 administrador). O relatório de tempo de prateleira também não existe: a Tarefa 12
 criou o dado, e ninguém ainda o lê. Nada disso está na spec — confirmar antes de
 construir.
+
+**Defeito de produto conhecido e ainda em aberto:** o detalhe da recusa ao
+excluir categoria em uso (`AJUDA_DA_CATEGORIA_EM_USO`, em
+[actions.ts](src/app/admin/actions.ts)) manda inativar os equipamentos, e isso
+não libera a exclusão — medido na D08, cuja página documenta o comportamento
+real. Ver as decisões da D08 para o porquê de a correção não ter entrado ali.
 
 ### Ambiente
 
