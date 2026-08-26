@@ -2113,6 +2113,102 @@ cinco arquivos pretendidos.
   GitHub e decisão do dono do repositório. O que se provou é que o artefato que a
   Action publica renderiza; que a URL do Pages responde continua **não visto**.
 
+**Tarefa D11 — Home e guias de início rápido (concluída):** a porta de entrada
+da wiki e as duas trilhas de persona — a [home](docs/index.md) com a escolha de
+perfil em cartões, os atalhos das duas trilhas, a declaração de versão e onde
+pedir ajuda; o [guia do estudante e professor](docs/inicio-rapido/estudante-e-professor.md)
+(o tablet em cinco minutos, com as três dúvidas mais prováveis); e o
+[guia da secretaria](docs/inicio-rapido/secretaria.md) (o painel em dez minutos,
+com as duas inativações lado a lado). A home em inglês perdeu o parágrafo que
+anunciava esta tarefa como pendente. `mkdocs build --strict` e `vale docs/` (17
+arquivos) em 0.
+
+Verificação em três frentes: 89 asserções contra o **HTML gerado** (a estrutura
+do grid, os 48 links internos e 6 externos com as âncoras resolvidas uma a uma,
+o teste de caminho e a declaração de versão no corpo da página); 30 asserções em
+navegador real por CDP contra o site construído e servido por HTTP, em 1366x768;
+e a leitura visual das quatro telas, mais a medida da tabela comparativa. O
+conferidor de links foi **exercitado até reprovar** antes de ser aceito.
+
+**Decisões da D11** (não refazer sem motivo):
+
+- **A terceira dúvida do guia do estudante descrevia uma tela que o sistema não
+  produz, e o título foi corrigido.** O enunciado prescreve, palavra por palavra,
+  *"devolvi e o sistema ainda mostra o item comigo"* — mas `listarEmprestimosAtivos`
+  filtra por `ATIVO`, então o item **sai** de "Meus equipamentos" no instante da
+  declaração. O sintoma real é o vizinho e oposto: some da tela de quem devolveu
+  e **permanece** na do painel, onde o inventário mostra "Devolução informada por
+  … — aguarda conferência" (lido no `GestaoInventario.tsx`, não de memória). A
+  seção virou **"Devolvi e o aparelho ainda consta comigo"** e abre desfazendo as
+  duas metades, porque as duas leituras chegam ali. Escrever ao pé da letra teria
+  publicado um manual mandando procurar na tela um item que não está lá — e
+  nenhum portão acusaria: o texto está certo, o link resolve, o vocabulário passa.
+- **O rótulo da home é "Sou estudante ou professor", contra a letra do
+  enunciado, e o arquivo continua `estudante-e-professor.md`.** O enunciado
+  escreve "Sou aluno ou professor" e nomeia `aluno-professor.md`; "aluno" é
+  grafia proibida pelo vocabulário da D03. **Medido antes de decidir:** a frase
+  exata do enunciado reprova no Vale (`3:5 error Avoid using 'aluno'`) e a
+  corrigida passa — ou seja, obedecer derrubaria um portão do projeto. Vale
+  também o precedente da D10: o nome do repositório vence quando casa com o
+  rótulo do `nav` e não há artefato irmão que peça outro slug (ao contrário da
+  D05). Levantado como conflito antes da primeira edição; a decisão foi do dono
+  do repositório.
+- **O `mkdocs build --strict` sai em 0 com âncora quebrada, e isso foi provado
+  nesta sessão.** A D08 já tinha registrado que o aviso é `INFO`; aqui a regra
+  foi exercitada de propósito — com `#ancora-que-nao-existe` plantada na home, o
+  build saiu **0** e só o conferidor de HTML acusou. É por isso que a D11 tem um
+  script que resolve os 48 links internos **contra os `id` do HTML gerado**, e
+  não contra o markdown. Um portão que nunca negou nada não é portão.
+- **O grid de cartões do Material se prova pelo estilo COMPUTADO, não pela
+  classe.** Markdown certo com o CSS ausente vira lista comum, e o build sai em
+  0 — a mesma armadilha do Mermaid na D10. As asserções leem `border-width`,
+  `border-radius` e `display` do `li` no navegador. Detalhe que custou uma
+  asserção errada: quem impede o marcador de lista **não** é `list-style-type`
+  (que continua `disc`), é o `display:contents` na `<ul>` mais o `display:block`
+  no `<li>`, que deixa de ser *list-item*. Conferido no CSS do tema instalado.
+- **Nenhum atalho de ícone (`:material-…:`) foi usado, e há asserção contra
+  isso.** O `pymdownx.emoji` **não** está no `mkdocs.yml`, então o atalho
+  apareceria como texto literal na página publicada, com o build em 0. Ligar a
+  extensão por causa de dois cartões seria acrescentar dependência de sintaxe a
+  17 páginas que não pediram.
+- **"Acima da dobra" foi medido, não estimado.** Em 1366x768: os cartões
+  terminam em **500px** na home em português e **678px** na inglesa (que tem a
+  caixa da nota de tradução antes), e os dois links de trilha em 479px e 657px.
+  A folga da versão em inglês é menor de propósito — ela paga a caixa que a §7
+  da spec-wiki exige — e é ela que precisa ser remedida se a D12 acrescentar
+  texto acima dos cartões.
+- **A home em inglês foi corrigida agora, embora `docs/en/` seja escopo da
+  D12.** Ela dizia "This home page has not been written yet … (task D11)", o que
+  vira mentira publicada no instante em que esta tarefa termina — e a D12 é a
+  **tarefa de corte** da §9 da spec-wiki, então pode nunca acontecer. O que
+  entrou é o mínimo: a escolha de perfil, os atalhos e a versão. A nota "About
+  this translation", que a §7 exige na home em inglês, ficou intacta. Decisão do
+  dono do repositório.
+- **A cobertura do conferidor é derivada da árvore de origem, e não um número
+  cravado.** A primeira versão exigia "pelo menos 34 páginas" e reprovou um site
+  correto: são 16 `.md` em português, cada um gerando a página no PT e outra no
+  `/en/` pelo `fallback_to_default`, mais o `404.html` do tema — 33. Número
+  cravado envelhece na primeira página nova e vira falso negativo que se disfarça
+  de defeito.
+- **O teste de caminho passa com folga, e não por causa da home.** As cinco
+  páginas de processo estão a **um** clique de qualquer lugar, pelo menu lateral
+  — o `navigation.sections` da D02 deixa as três seções abertas. Os atalhos da
+  home linkam para as cinco de novo, o que é redundância deliberada: quem chega
+  pela home lê o corpo, não a barra.
+- **Não há captura de tela nova.** O enunciado não pede nenhuma, e o guia rápido
+  que repetisse as telas do passo a passo estaria repetindo o passo a passo — que
+  é justamente o que a §4 manda não fazer. Por isso esta tarefa não encostou no
+  `dev.db` nem no banco de demonstração, e não precisou da receita de captura do
+  CONTRIBUTING.
+- **A tabela das duas inativações fica no guia da secretaria, e não em
+  Referência.** Ela já existe, mais completa, em
+  [regras-de-negocio.md](docs/referencia/regras-de-negocio.md) — mas o enunciado
+  pede as duas confusões "ditas lado a lado" para quem assumiu a função esta
+  semana, e mandar essa pessoa para outra trilha no terceiro dia é o pedágio que
+  o guia rápido existe para não cobrar. A versão daqui é a tabela de três
+  colunas mais o *porquê* em uma frase; o resto está a um link. **Corrigir uma
+  exige olhar a outra**, como já vale para a comparação da D08 e da D09.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
 coordenação e — agora que existe conta individual — registrar **quem** deu baixa
