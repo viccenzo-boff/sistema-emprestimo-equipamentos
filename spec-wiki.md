@@ -361,17 +361,50 @@ qualquer outra tarefa deixa lacuna visível.
 
 A wiki está pronta quando:
 
-- [ ] As 5 páginas de processo têm as 8 seções, com diagrama BPMN e capturas
-- [ ] Nenhuma captura de tela contém dado pessoal real
+- [x] As 5 páginas de processo têm as 8 seções, com diagrama BPMN e capturas
+- [x] Nenhuma captura de tela contém dado pessoal real
 - [ ] O site publica sozinho a cada `push` na `main`
-- [ ] `lychee` não encontra link quebrado
-- [ ] O Vale passa nas páginas em inglês e o vocabulário passa nas em português
-- [ ] A versão `v1.0` está publicada pelo `mike` e declarada na home
-- [ ] Os 5 `.bpmn` estão versionados e abrem no bpmn.io
-- [ ] O estudo de caso explica as decisões, não só o resultado
+- [x] `lychee` não encontra link quebrado
+- [x] O Vale passa nas páginas em inglês e o vocabulário passa nas em português
+- [x] A versão `v1.0` está publicada pelo `mike` e declarada na home
+- [x] Os 5 `.bpmn` estão versionados e abrem no bpmn.io
+- [x] O estudo de caso explica as decisões, não só o resultado
 - [ ] Um leitor que nunca viu o sistema consegue fazer uma retirada só com a wiki
 
 O último critério é o único que importa de verdade. Os outros são meios.
+
+### O que a D14 conferiu, e o que ficou pendente
+
+A conferência foi por comando, item a item, e não por memória. Os números:
+
+| Critério | Como foi conferido |
+| --- | --- |
+| 8 seções, diagrama e capturas | As 10 páginas de processo (5 em cada idioma) têm 8 seções `##`, referência ao SVG, link para o `.bpmn` e de 16 a 24 referências de captura |
+| Sem dado pessoal real | Os 4 nomes de administrador do `seed.ts` foram extraídos e procurados nas 31 páginas: nenhuma ocorrência. As 196 referências de captura apontam para os 49 arquivos existentes |
+| `lychee` | 34 páginas, 2709 referências, **nenhuma quebrada** — e ele **reprovou** durante a tarefa, numa âncora que o `--strict` deixou passar em 0 |
+| Vale | **0 erros** em **31 arquivos**, que é o total de `.md` em `docs/` — a cobertura foi conferida, não suposta |
+| `v1.0` pelo `mike` | O `versions.json` da `gh-pages` traz `v1.0`, e as duas homes declaram a versão |
+| Os 5 `.bpmn` | Cinco fontes versionadas, e `npm run docs:diagramas -- --verificar` confere as cinco no bpmn-js |
+| Estudo de caso | 8 decisões, cada uma com **A decisão / A alternativa descartada / O motivo** — conferido por contagem nas duas versões |
+
+**Os dois itens sem marca, e o que falta em cada um:**
+
+1. **O site publica sozinho a cada `push`.** A parte automática funciona e está
+   provada: as 5 últimas execuções da Action saíram verdes, e a `gh-pages`
+   carrega o commit atual da `main`. O que falta é **ligar o GitHub Pages**
+   apontando para a `gh-pages` — um ajuste de uma vez só, no `Settings` do
+   repositório, que só o dono pode fazer. Enquanto ele não for feito, a URL
+   responde 404 e a wiki não chega a ninguém. A receita está na seção
+   "Documentação" do [CONTRIBUTING.md](CONTRIBUTING.md).
+2. **O leitor que nunca viu o sistema.** Foi feita uma passada por procuração:
+   seguir a página da retirada ao pé da letra, fazendo apenas o que ela manda,
+   contra o sistema rodando. Os 17 pontos bateram e ela achou uma lacuna real —
+   a página prometia a grade de categorias sem dizer que a tela é outra para
+   quem já está com um aparelho —, que virou uma ramificação nova no passo a
+   passo. **Isso não substitui o critério.** Quem seguiu a página foi quem
+   escreveu o sistema, e essa pessoa acha rótulo errado e passo faltando, mas
+   não acha o pressuposto que ela mesma não sabe que tem. O critério continua
+   dependendo de uma pessoa de fora.
 
 ## 11. Diretrizes para a IA
 
