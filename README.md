@@ -7,7 +7,7 @@ O escopo, os fluxos de usuário e as regras de negócio estão em [spec.md](spec
 
 O sistema roda em rede local, hospedado no computador da secretaria, com duas frentes de acesso:
 
-- **`/`** — Portal do Aluno/Professor (tablet): retirada e devolução na bancada.
+- **`/`** — Portal do Estudante/Professor (tablet): retirada e devolução na bancada.
 - **`/admin`** — Painel Administrativo (desktop): fila de devoluções e gestão de inventário.
 
 ## Stack
@@ -227,8 +227,14 @@ Conforme a seção 3 de [spec.md](spec.md), mais o que as tarefas 6, 8, 8.1 e 10
   (`ATIVO` | `INATIVO`). Chamava-se `Usuario` até a Tarefa 10; o perfil era `ALUNO`/`PROFESSOR`
   em caixa alta até a Tarefa 8.1, que passou a gravá-lo já na forma exibida.
 - **Administrador** — `id`, `nome`, `usuario` (único), `senha` (hash bcrypt). As contas do painel.
-- **Equipamento** — `id` (PK, etiqueta como `NOTE-01`), `tipo`, `status`
-  (`DISPONIVEL` | `EMPRESTADO` | `MANUTENCAO`).
+- **Categoria** — `id`, `nome` (único). Virou tabela na Tarefa 6: enquanto era uma String no
+  `Equipamento`, cada grafia ("notebook", "Notebook") abria uma categoria nova no tablet. A
+  ordem dos cartões no portal é a ordem do `id`, e não uma lista no código.
+- **Equipamento** — `id` (PK, etiqueta como `NOTE-01`), `categoria_id` (FK obrigatória, com
+  `onDelete: Restrict` — é o banco que recusa apagar categoria em uso), `status`
+  (`DISPONIVEL` | `EMPRESTADO` | `MANUTENCAO` | `INATIVO`). O `INATIVO` chegou na Tarefa 6 e é
+  aposentadoria, não exclusão: o item some do tablet e continua na lista do inventário, com
+  botão de reativar.
 - **Emprestimo** — um registro por item movimentado: `pessoa_id`, `equip_id`, `data_retirada`,
   `data_devolucao`, `data_baixa`, `status` (`ATIVO` | `AGUARDANDO_BAIXA` | `CONCLUIDO`). Os três
   marcadores de tempo têm donos distintos: a retirada no tablet, a **declaração** da devolução no
