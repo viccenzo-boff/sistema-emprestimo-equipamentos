@@ -153,7 +153,7 @@ tela; ela descreve a **decisão de produto**. Exemplo do tom esperado:
 | Modelagem          | Camunda Modeler ou bpmn.io | Salva `.bpmn` (XML padrão OMG)                       |
 | Diagrama publicado | SVG gerado do `.bpmn`      | `npm run docs:diagramas`, commitado junto — §6.3     |
 | Linter de texto    | Vale                       | Ver ressalva abaixo                                  |
-| Links quebrados    | `lychee`                   | Roda no CI                                           |
+| Links quebrados    | `lychee`                   | `npm run docs:links`, sobre o site construído — §6.4 |
 | Publicação         | GitHub Actions → Pages     | `push` na `main` publica                             |
 | Dados de demo      | `prisma/demo-estado.ts`    | Pessoas fictícias para as capturas                   |
 
@@ -162,7 +162,17 @@ tela; ela descreve a **decisão de produto**. Exemplo do tom esperado:
 Os estilos prontos do Vale (Microsoft, Google) são escritos para inglês. **Não
 existe estilo pronto de qualidade para PT-BR.** Portanto:
 
-- **Nas páginas em inglês:** Vale com o estilo Microsoft, completo.
+- **Nas páginas em inglês:** Vale com o estilo Microsoft — 44 das 47 regras.
+  Esta linha dizia "completo" até a D13, e perdeu para a medição: com as 47
+  ligadas eram **570 erros** em 15 páginas, dos quais **569 vinham de três
+  regras de voz** que contrariam decisões já publicadas da wiki — `Dashes` (203,
+  o travessão com espaço é a pontuação das 31 páginas), `Contractions` (350, o
+  registro formal escolhido na D12) e `Quotes` (16, a pontuação dentro das aspas
+  altera o texto citado, contra a regra 1 do guia de estilo). As três estão
+  desligadas com o motivo ao lado no [.vale.ini](.vale.ini); as outras 44 ficam
+  em força total, que é o que faz "erro" continuar querendo dizer alguma coisa.
+  O vocabulário controlado vale **também** aqui: estas páginas citam rótulo de
+  tela em português o tempo todo, e é ali que um "aluno" passaria calado.
 - **Nas páginas em português:** apenas um `Vocab` próprio, garantindo grafia
   consistente dos termos do projeto (matrícula, baixa, empréstimo, etiqueta,
   prateleira) e proibindo os sinônimos que confundem — "usuário" para falar de
@@ -233,6 +243,32 @@ CI.
 O comando também é o portão de validação: ele importa cada `.bpmn` no bpmn-js —
 o mesmo motor que roda dentro do bpmn.io — e recusa referência solta e rótulo
 maior que a própria caixa.
+
+### 6.4 O verificador de links olha o site, não o markdown
+
+O `lychee` roda sobre o **site construído**, e não sobre `docs/`. É contra a
+letra do enunciado da D13, e foi decidido por medição: sobre o markdown de
+origem ele produz 60 falsos positivos estruturais.
+
+**57 são de âncora.** O `lychee` recalcula o identificador de cada título com um
+algoritmo que **preserva o acento**; o Python-Markdown normaliza para ASCII.
+Provado nos dois sentidos com um arquivo descartável — ele **aceita**
+`#baixa-física` e **recusa** `#baixa-fisica`, e é a segunda que o site gera.
+Obedecer ao portão quebraria os links no site de verdade.
+
+**3 são de arquivo.** `docs/en/contribuir/*` não existe como markdown: a página
+vem do `fallback_to_default` do i18n (§6.2). Excluí-los exigiria uma lista que
+cresce a cada página não traduzida.
+
+No HTML gerado o identificador está **escrito**, não deduzido, e as páginas do
+`fallback` existem. É o mesmo argumento da §6.3, do outro lado: fonte e derivado
+respondem perguntas diferentes, e "o leitor consegue clicar nisto?" só o
+derivado responde.
+
+E é ele, não o `mkdocs build --strict`, que fecha o furo da âncora: o MkDocs
+classifica "o doc não contém a âncora `#x`" como `INFO`, e `--strict` só promove
+`WARNING` a erro — o build **sai em 0** com a âncora quebrada impressa na saída.
+Medido na D08, na D11, na D12 e de novo na D13.
 
 ## 7. Regras de conteúdo
 
