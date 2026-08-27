@@ -41,18 +41,27 @@ Conferido com Python 3.14.0, que é a versão que a Action também usa.
 
 ```bash
 mkdocs serve            # servidor com recarga automática
-mkdocs build --strict   # o mesmo portão que roda no CI
+
+# Os três portões, na mesma ordem em que a Action os roda:
+mkdocs build --strict           # 1. build estrito
+./.tools/vale/vale.exe docs/    # 2. vocabulário + estilo Microsoft no inglês
+npm run docs:links              # 3. links e âncoras
 ```
 
-Duas coisas que economizam um diagnóstico:
+Os três precisam sair em 0. Rodá-los aqui é literalmente rodar o CI: são os
+mesmos comandos, nas mesmas versões.
+
+Três coisas que economizam um diagnóstico:
 
 - **O `serve` abre em `/sistema-emprestimo-equipamentos/`, não em `/`.** O
   `site_url` do [mkdocs.yml](mkdocs.yml) tem esse prefixo (é onde o Pages
   publica), e o servidor de desenvolvimento o respeita. Pedir `/` devolve um
   302 — não é erro.
-- **O `--strict` não é opcional.** Sem ele, link quebrado vira aviso e o site
-  sobe com o link quebrado. É o mesmo comando que a Action roda antes de
-  publicar, então o que falha aqui falha lá.
+- **O `--strict` não é opcional.** Sem ele, link para arquivo inexistente vira
+  aviso e o site sobe com ele.
+- **E o `--strict` sozinho não basta.** Ele promove `WARNING` a erro, e âncora
+  quebrada é `INFO` — o build sai em **0** com a âncora quebrada impressa na
+  saída. Quem fecha esse furo é o portão 3.
 
 O inglês em `docs/en/` repete os **mesmos nomes de pasta** do português.
 Traduzir nome de diretório quebra o pareamento do `mkdocs-static-i18n` e o
@@ -61,12 +70,15 @@ Enquanto a tradução (D12) não chega, o `/en/` mostra o conteúdo em portuguê
 com o menu traduzido — é o `fallback_to_default`, e é ele que mantém o seletor
 funcionando página a página.
 
-### O vocabulário controlado (Vale)
+### O vocabulário controlado e o estilo Microsoft (Vale)
 
-O [Vale](https://vale.sh) confere a grafia dos termos do projeto nas páginas de
-`docs/`. A configuração é o [.vale.ini](.vale.ini) e o vocabulário está em
+O [Vale](https://vale.sh) confere as páginas de `docs/` em duas camadas: o
+**vocabulário controlado do projeto** em todas elas, e o **estilo Microsoft
+completo** só nas que estão em inglês (D13). A configuração é o
+[.vale.ini](.vale.ini) e o vocabulário está em
 `.vale/styles/config/vocabularies/Wiki/` — os dois **são versionados**. O que
-não é versionado é o executável.
+não é versionado é o executável nem o pacote do estilo Microsoft, que o
+`vale sync` baixa na versão fixada dentro do `.vale.ini`.
 
 **O Vale não entra no `docs-requirements.txt`**: ele é um binário Go de ~44 MB,
 e aquele arquivo é Python. Baixe o release oficial para `.tools/`, que está no
@@ -80,27 +92,57 @@ unzip -o vale.zip && cd ../..
 ```
 
 Quem preferir instalar no `PATH` (`scoop install vale`, `choco install vale`,
-`brew install vale`) roda só `vale docs/`. A versão conferida aqui é a 3.18.0.
+`brew install vale`) roda só `vale sync` e `vale docs/`. A versão conferida
+aqui é a 3.18.0.
 
 ```bash
+./.tools/vale/vale.exe sync     # uma vez: baixa o estilo Microsoft fixado
 ./.tools/vale/vale.exe docs/    # tem que sair em 0
 ```
 
-Três coisas que economizam um diagnóstico:
+O `sync` grava em `.vale/styles/Microsoft/`, que está no `.gitignore` pela mesma
+regra do executável. **Sem rodar o `sync` antes, o Vale reclama que o estilo não
+existe** — não é configuração quebrada, é pacote ausente.
 
-- **Não existe lint de estilo em português, e isto aqui não é um.** Os estilos
-  prontos do Vale são escritos para inglês. O que roda é um vocabulário
-  próprio, que resolve o problema real: duas páginas discordarem do nome da
-  mesma coisa. O estilo Microsoft para as páginas em inglês entra na D13.
-- **O escopo está preso a `docs/`, e são duas seções no `.vale.ini`.** Não é
-  redundância: medido nesta máquina, `docs/**/*.md` **não** casa
-  `docs/index.md`, e `docs/**.md` **não** casa `docs/referencia/glossario.md`.
-  Com um padrão só, `vale docs/` dizia "0 files" para a árvore inteira abaixo
-  do primeiro nível e **saía com sucesso** — um portão mudo é pior que portão
-  nenhum, porque parece verde.
-- **`Vale.Spelling` está desligado, e tem que ficar.** Ele é um corretor de
-  inglês: numa página de prova com quatro frases em português, 15 dos 19
-  alertas eram *"Did you really mean 'tabela'?"*.
+Cinco coisas que economizam um diagnóstico:
+
+- **Não existe lint de estilo em português, e o `.vale.ini` não tem um.** Os
+  estilos prontos do Vale são escritos para inglês. Nas páginas em português o
+  que roda é um vocabulário próprio, que resolve o problema real: duas páginas
+  discordarem do nome da mesma coisa.
+- **A ordem das seções do `.vale.ini` é load-bearing, e errar não dá erro.**
+  Medido na D13: quando duas seções casam o mesmo arquivo, a de baixo
+  **substitui** a de cima — não soma —, e quem desempata é a **ordem no
+  arquivo**, não a especificidade. Invertendo os blocos, as páginas em inglês
+  perdem o Microsoft; a ferramenta sai em 0, informa o número certo de arquivos,
+  e o conjunto de regras aplicado é o errado. Por isso as seções de `docs/en/`
+  ficam **por último** e repetem o `Vale` na lista: `BasedOnStyles = Vale,
+  Microsoft` é a forma explícita de somar.
+- **O escopo está preso a `docs/`, e são duas seções por idioma.** Não é
+  redundância: medido, `docs/**/*.md` **não** casa `docs/index.md`, e
+  `docs/*.md` **não** casa `docs/referencia/glossario.md`. Com um padrão só,
+  `vale docs/` dizia "0 files" para a árvore inteira abaixo do primeiro nível e
+  **saía com sucesso** — um portão mudo é pior que portão nenhum, porque parece
+  verde. **Confira o rodapé da saída:** hoje ele tem que dizer `in 31 files`.
+- **`Vale.Spelling` está desligado nos dois idiomas, e tem que ficar.** Em
+  português ele é um corretor de inglês lendo português: numa página de prova
+  com quatro frases, 15 dos 19 alertas eram *"Did you really mean 'tabela'?"*.
+  Em inglês o motivo é o inverso e igualmente forte — ligado, ele acusa **676
+  erros** nas 15 páginas, todos rótulos de tela em português (*"Did you really
+  mean 'Continuar'?"*) que a regra 1 do guia de estilo obriga a citar.
+- **Aviso não quebra o build; erro sim — e isso é nativo, não configurado.**
+  Medido: o Vale sai em 1 quando existe pelo menos um alerta de nível `error`, e
+  em 0 com qualquer quantidade de `warning` e `suggestion`, **independentemente
+  do `MinAlertLevel`** (que controla só o que é exibido). Hoje as páginas em
+  inglês somam 104 avisos e 354 sugestões do estilo Microsoft e o comando sai em
+  0: são apontamentos para ler, não passivo a zerar.
+
+Três regras do Microsoft estão desligadas de propósito, cada uma com o motivo ao
+lado no `.vale.ini`. Com as três ligadas eram **570 erros** em 15 arquivos, dos
+quais 569 eram delas — `Dashes` (203, o travessão com espaço é a pontuação da
+wiki inteira), `Contractions` (350, o registro formal da D12) e `Quotes` (16, a
+pontuação dentro das aspas altera o texto citado). As outras 44 regras ficam em
+força total, que é o que faz "erro" continuar querendo dizer alguma coisa.
 
 A regra mais importante do vocabulário é que **"usuário" não é sinônimo de
 estudante nem de professor** — neste sistema a palavra quer dizer login de
@@ -113,6 +155,59 @@ Quando uma página precisar escrever o termo proibido de propósito, o escape é
 `<!-- vale Vale.Avoid = NO -->` … `<!-- vale Vale.Avoid = YES -->`, e ele tem
 que ser fechado. O [guia de estilo](docs/contribuir/guia-de-estilo.md) usa isso
 nele mesmo.
+
+### O verificador de links (lychee, D13)
+
+```bash
+npm run docs:links      # constrói o site e confere; tem que sair em 0
+```
+
+O comando é o mesmo que a Action roda. Ele constrói a wiki em `.site-links/`
+(fora do Git) e passa o resultado ao [lychee](https://lychee.cli.rs), com as
+âncoras internas incluídas. Precisa do ambiente Python ativado, como todo o
+resto da wiki.
+
+O binário mora em `.tools/lychee/`, pela mesma regra do Vale e do bpmn-js — não
+é Python, não é do sistema, não entra em `package.json`. A versão conferida é a
+0.24.2, a mesma que o workflow instala:
+
+```bash
+mkdir -p .tools/lychee && cd .tools/lychee
+curl -sSL -o lychee.zip https://github.com/lycheeverse/lychee/releases/download/lychee-v0.24.2/lychee-x86_64-pc-windows-msvc.zip
+unzip -oj lychee.zip '*/lychee.exe' && rm lychee.zip && cd ../..
+./.tools/lychee/lychee.exe --version    # lychee 0.24.2
+```
+
+Quem instalar no `PATH` não precisa de nada: o script procura primeiro
+`LYCHEE_PATH`, depois `.tools/`, depois o `PATH`.
+
+Quatro coisas que economizam um diagnóstico:
+
+- **O alvo é o site construído, e não `docs/`.** Contra a letra do enunciado da
+  D13, e por medição. Sobre o markdown de origem o lychee dá 60 falsos
+  positivos: **57 âncoras**, porque ele recalcula o identificador de cada título
+  com um algoritmo que **preserva o acento**, enquanto o Python-Markdown
+  normaliza para ASCII (provado nos dois sentidos — ele aceita `#baixa-física` e
+  recusa `#baixa-fisica`, e é a segunda que o site gera); e **3 arquivos** de
+  `docs/en/contribuir/`, que não existem como markdown porque a página vem do
+  `fallback_to_default` do i18n. No HTML gerado o identificador está escrito, e
+  as páginas do fallback existem. O porquê inteiro está no cabeçalho de
+  [scripts/verificar-links.mjs](scripts/verificar-links.mjs).
+- **Ele é o único portão que pega âncora quebrada.** O `mkdocs build --strict`
+  classifica "o doc não contém a âncora `#x`" como `INFO`, e `--strict` só
+  promove `WARNING` a erro: o build **sai em 0** com a âncora quebrada impressa
+  na saída. Medido na D08, na D11, na D12 e de novo na D13.
+- **A mensagem aponta o HTML gerado, não o `.md`.** É o preço de conferir o
+  artefato publicado. O script devolve o caminho de volta: cada erro sai com uma
+  linha `origem:` apontando o arquivo de `docs/` que se edita.
+- **Os links externos não são conferidos (`--offline`), e isso é medido.** A
+  wiki tem 109 links para o github.com, e o host devolve limite de taxa com
+  recuo de 5 minutos: a execução não terminou em 2 minutos e duas seguidas
+  discordaram. O portão existe para pegar o que **este repositório** quebra —
+  página renomeada, âncora movida, imagem apagada. Site de terceiro fora do ar
+  não é defeito da wiki, e CI vermelho que ninguém consegue consertar é o que
+  todo mundo aprende a ignorar. O link canônico do próprio site também falharia
+  enquanto o Pages não estiver ligado.
 
 ### Os diagramas BPMN (D04)
 
@@ -402,9 +497,27 @@ fotografar:
 
 Ninguém publica a wiki à mão. Quem publica é
 [.github/workflows/docs.yml](.github/workflows/docs.yml), a cada `push` na
-`main` que toque `docs/**`, o `mkdocs.yml`, o `docs-requirements.txt` ou o
-próprio workflow. O job instala o Python, roda `mkdocs build --strict` como
-portão e só então chama o `mike`.
+`main` que toque `docs/**`, o `mkdocs.yml`, o `docs-requirements.txt`, a
+configuração do Vale, o verificador de links ou o próprio workflow.
+
+**São dois jobs no mesmo workflow, e o segundo depende do primeiro** (D13):
+
+| Job         | O que faz                                                             |
+| ----------- | --------------------------------------------------------------------- |
+| `qualidade` | `mkdocs build --strict`, depois o Vale, depois o `npm run docs:links` |
+| `publicar`  | `needs: qualidade` — só então instala o Python e chama o `mike`       |
+
+A linha `needs: qualidade` **é** o portão. Sem ela os dois jobs correriam em
+paralelo e a wiki subiria antes de qualquer conferência — o mesmo efeito de ter
+dois workflows separados, que é o que a D13 existe para impedir.
+
+O `mike deploy` roda o build por dentro mas **não aceita `--strict`** (conferido
+em `mike deploy --help`), e é por isso que o build estrito é um passo próprio do
+job de qualidade em vez de estar no de publicação.
+
+As versões do Vale e do lychee ficam em `env:` no topo do workflow, fixadas, e
+são as mesmas da receita de instalação local acima. Ao subir uma delas, suba nos
+dois lugares — senão o portão da sua máquina deixa de ser o portão do CI.
 
 O `mike` mantém uma branch `gh-pages` que **não existe no repositório de
 código** — ela só tem o site construído, uma pasta por versão:

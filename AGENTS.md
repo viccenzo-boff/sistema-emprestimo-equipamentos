@@ -44,16 +44,29 @@ fixadas, e a receita de ambiente está na seção "Documentação" do
 
 ```bash
 mkdocs serve            # a wiki com recarga automática
-mkdocs build --strict   # tem que sair em 0; é o portão que a Action roda
 ```
 
-O **Vale** confere o vocabulário controlado das páginas (D03). Ele é binário Go,
-mora em `.tools/` (fora do Git) e a receita de instalação está na mesma seção do
-[CONTRIBUTING.md](CONTRIBUTING.md):
+**São três portões, e a Action roda os três** (D13), em jobs separados do
+workflow de publicação — o deploy só acontece se os três passarem. Rodá-los
+aqui é literalmente rodar o CI:
 
 ```bash
-./.tools/vale/vale.exe docs/   # tem que sair em 0
+mkdocs build --strict          # 1. tem que sair em 0
+./.tools/vale/vale.exe docs/   # 2. tem que sair em 0
+npm run docs:links             # 3. tem que sair em 0
 ```
+
+O **Vale** confere o vocabulário controlado em todas as páginas (D03) e, nas em
+inglês, o **estilo Microsoft completo** (D13). Ele é binário Go, mora em
+`.tools/` (fora do Git) e a receita de instalação está na mesma seção do
+[CONTRIBUTING.md](CONTRIBUTING.md). O pacote do estilo Microsoft vem do
+`./.tools/vale/vale.exe sync`, uma vez, na versão fixada dentro do
+[.vale.ini](.vale.ini).
+
+O **lychee** confere links e âncoras (D13), sobre o site construído — não sobre
+`docs/`. Ele também mora em `.tools/`, e o `npm run docs:links` constrói e
+confere numa linha só. **Ele é o único dos três que pega âncora quebrada:** o
+`--strict` classifica isso como `INFO` e sai em 0.
 
 Os **diagramas BPMN** (D04) têm fonte em `docs/processos-fonte/*.bpmn` e SVG
 derivado em `docs/assets/diagramas/`. O SVG **nunca** é editado à mão:
@@ -2300,6 +2313,149 @@ plantados de propósito — antes de ser aceito.
   `id` do **HTML gerado**, e não contra o markdown. Quem escrever a D13 precisa
   disto: o `lychee` é que vai fechar essa porta no CI.
 
+**Tarefa D13 — CI de qualidade da documentação (concluída, menos o verde do
+Actions, que depende de um `push`):** os três portões ligados no mesmo workflow
+da publicação, em jobs separados, com o deploy dependendo da qualidade passar —
+`mkdocs build --strict`, o Vale (vocabulário controlado em tudo, estilo
+Microsoft completo nas páginas em inglês) e o `lychee` sobre o site construído,
+com as âncoras internas. Junto vieram o
+[scripts/verificar-links.mjs](scripts/verificar-links.mjs) por trás de
+`npm run docs:links`, o `.site-links/` nos `globalIgnores` do ESLint, e a
+correção do único erro real que o estilo Microsoft encontrou. `tsc`, `lint`,
+`mkdocs build --strict`, `vale docs/` (31 arquivos) e
+`npm run docs:diagramas -- --verificar` (5 diagramas) em 0.
+
+Verificação com **cada portão provocado até reprovar, e desfeito** — 31
+asserções, com `docs/` e o `mkdocs.yml` conferidos por md5 contra a linha de
+base no fim (idênticos): link para arquivo inexistente derruba o `--strict`
+apontando o arquivo; âncora quebrada **passa** no `--strict` e derruba o
+`lychee`, que aponta o HTML gerado, a linha e o arquivo de origem em `docs/`;
+"usuário" e "aluno" numa página em português derrubam o Vale; `e.g.` numa
+página em inglês derruba o Vale por `Microsoft.Foreign`; e uma página fantasma
+no `nav` derruba o `--strict`. Mais duas asserções que provam a **separação por
+camada**: na mesma linha, uma página em inglês recebe a regra do Microsoft **e**
+a do vocabulário; e o mesmo `e.g.` que reprova em inglês passa em português.
+
+**O que NÃO foi feito, e por quê:** o último item da §5 do enunciado — "o CI
+passa inteiro em verde e o deploy acontece" — **não foi visto acontecer**. Ele
+só existe depois de um `push`, e o ciclo do projeto reserva o `push` ao dono do
+repositório. Os cinco itens foram provados localmente com os mesmos comandos,
+nas mesmas versões, mas o verde do Actions continua pendente. Continua pendente
+também o Pages, da D02: a `gh-pages` existe e a Action vem publicando nela desde
+a D04, mas o Pages do repositório **nunca foi apontado para ela** (conferido:
+`gh api …/pages` devolve 404), então a URL do site ainda não responde.
+
+**Decisões da D13** (não refazer sem motivo):
+
+- **O `lychee` roda sobre o SITE CONSTRUÍDO, e não sobre `docs/`, contra a letra
+  do enunciado.** Medido antes de decidir: sobre o markdown de origem ele produz
+  60 falsos positivos, de duas naturezas estruturais. **57 são de âncora** — ele
+  recalcula o identificador de cada título com um algoritmo que **preserva o
+  acento**, enquanto o Python-Markdown normaliza para ASCII. Provado nos dois
+  sentidos com um arquivo descartável: o `lychee` **aceita** `#baixa-física` e
+  **recusa** `#baixa-fisica`, e é a segunda que o site gera — ou seja, obedecer
+  ao portão quebraria os links no site de verdade. **3 são de arquivo**:
+  `docs/en/contribuir/*` não existe como markdown porque a página vem do
+  `fallback_to_default` (decisão da D12), e excluí-los exigiria uma lista que
+  cresce a cada página não traduzida — o depósito que o próprio enunciado manda
+  não criar. No HTML gerado o identificador está **escrito**, não deduzido.
+  Levantado como conflito antes da primeira edição; a decisão foi do dono do
+  repositório. Preço aceito: a mensagem aponta o HTML gerado, e o script devolve
+  o caminho de volta numa linha `origem:`.
+- **O prefixo do `site_url` é derivado, não cravado no script.** O tema gera
+  link absoluto (`/sistema-emprestimo-equipamentos/en/`) no seletor de idioma e
+  no canônico, e o `lychee` só os resolve se o site estiver construído **dentro**
+  de uma pasta com esse nome, com `--root-dir` no pai. Sem `--index-files
+  index.html` são 180 erros (o MkDocs publica com URL de diretório); sem o
+  `--root-dir` no lugar certo, mais 38. Repetir o nome do repositório no script
+  criaria o segundo dono de um valor que já tem dono no `mkdocs.yml`.
+- **`--offline`, e o número é medido.** A wiki tem 109 links para o github.com, e
+  o host devolve limite de taxa com recuo de **5 minutos**: a execução não
+  terminou em 2 minutos e duas seguidas discordaram entre si. O portão existe
+  para pegar o que **este repositório** quebra — página renomeada, âncora movida,
+  imagem apagada. Site de terceiro fora do ar não é defeito da wiki, e o
+  preâmbulo da própria D13 manda evitar "um CI vermelho que ninguém consegue
+  consertar e todo mundo aprende a ignorar". O link canônico do próprio site
+  também falharia enquanto o Pages não estiver ligado. Uma bandeira com o motivo
+  escrito é melhor que uma lista de exceções que ninguém revisa.
+- **"Aviso não quebra o build, erro sim" é comportamento NATIVO do Vale, e não
+  configuração.** Medido: ele sai em 1 quando existe pelo menos um alerta de
+  nível `error`, e em 0 com qualquer quantidade de `warning` e `suggestion` —
+  **independentemente do `MinAlertLevel`**, que controla só o que é exibido. Por
+  isso o `MinAlertLevel` continua em `suggestion` (a execução manual mostra tudo)
+  e não há bandeira de severidade no workflow. Hoje o comando sai em 0 com 104
+  avisos e 354 sugestões na tela.
+- **Três regras do Microsoft estão desligadas, e o que decidiu foi a
+  decomposição dos erros.** Com o estilo completo eram **570 erros** em 15
+  arquivos: `Contractions` 350, `Dashes` 203, `Quotes` 16, `HeadingColons` 1. Ou
+  seja **569 de três regras de voz** que contrariam decisões já publicadas da
+  wiki — o travessão com espaço é a pontuação das 31 páginas, o registro formal
+  em inglês é escolha da D12, e pontuação dentro das aspas altera o texto citado,
+  contra a regra 1 do guia de estilo. As três saíram com o motivo ao lado, no
+  mesmo padrão do `Vale.Spelling = NO`; as outras **44 regras ficam em força
+  total**, que é o que faz "erro" continuar querendo dizer alguma coisa. A
+  alternativa de rebaixá-las a aviso foi levantada e descartada pelo dono do
+  repositório: 569 linhas por execução sobre decisões já tomadas soterram o erro
+  real, e é assim que a próxima pessoa desliga o linter inteiro. O 1 erro real
+  (`Microsoft.HeadingColons`, em
+  [secretaria.md](docs/en/inicio-rapido/secretaria.md)) foi corrigido no texto.
+- **As páginas em inglês recebem o vocabulário controlado TAMBÉM, e isso não é
+  redundância.** Elas citam rótulo de tela em português o tempo todo (a regra da
+  spec-wiki §7, `**Devolver** (Return)`), e sem o vocabulário um "aluno" ou um
+  "usuário" em minúscula passaria calado justamente onde ninguém procura — o
+  mesmo tipo de furo que a D04 registrou para o SVG. Custo medido: **zero
+  alertas** hoje, e a prova de que a camada está ativa é uma asserção que planta
+  as duas violações na mesma linha.
+- **A ordem das seções do `.vale.ini` é load-bearing, e errar não dá erro.**
+  Medido: quando duas seções casam o mesmo arquivo, a de baixo **substitui** a de
+  cima — não soma —, e quem desempata é a **ordem no arquivo**, não a
+  especificidade. Com os blocos invertidos, as páginas em inglês perdem o
+  Microsoft inteiro; a ferramenta sai em 0, informa o número certo de arquivos
+  lidos, e o conjunto de regras aplicado é o errado. `BasedOnStyles = Vale,
+  Microsoft` é a forma explícita de somar. Cobertura conferida: **31 arquivos**,
+  que é o total de `.md` em `docs/`.
+- **`Vale.Spelling` continua desligado nas páginas em INGLÊS, e o motivo é o
+  inverso do de português.** Ligado, ele acusa **676 erros** nas 15 páginas —
+  "Did you really mean 'Continuar'?", "'Confirmar'", "'Meus'". São os rótulos de
+  tela em português que a regra 1 do guia de estilo **obriga** a citar. Um
+  corretor de inglês lendo o único português que aquelas páginas têm que ter.
+- **O estilo Microsoft é fixado pela URL do release, não pelo apelido
+  `Microsoft`.** Com o apelido, o `vale sync` de amanhã traria outra versão e o
+  CI passaria a reprovar (ou a deixar passar) texto que ninguém tocou. Mesma
+  razão das versões presas do `docs-requirements.txt` e do Mermaid. O pacote
+  baixado vai para `.vale/styles/Microsoft/`, no `.gitignore`, pela mesma regra
+  do executável — o que este repositório versiona é a configuração e o
+  vocabulário.
+- **`.site-links/` precisou entrar nos `globalIgnores` do ESLint, e a medição é a
+  terceira da mesma família.** O ESLint 9 de configuração plana não lê o
+  `.gitignore`: no instante em que o diretório do site de conferência apareceu, o
+  `npm run lint` foi de 0 para **863 problemas (42 erros)** em código do tema
+  MkDocs. A D02 mediu isso com `site/` e `.venv-docs/`, a D04 com `.tools/`.
+  **Rode os portões do projeto depois de acrescentar qualquer diretório novo,
+  mesmo que a tarefa não fale deles.**
+- **O tarball do lychee tem diretório de topo e o do Vale não.** Conferido
+  listando os dois antes de escrever o passo do workflow: `vale` está na raiz do
+  arquivo, `lychee` está dentro de `lychee-x86_64-unknown-linux-gnu/`. Sem o
+  `--strip-components`, a instalação do lychee falharia na primeira execução da
+  Action — e o diagnóstico natural seria culpar a URL.
+- **Os dois jobs vivem no mesmo workflow, e a linha `needs: qualidade` É o
+  portão.** Sem ela os dois correriam em paralelo e a wiki subiria antes de
+  qualquer conferência — o mesmo efeito de ter dois workflows separados, que é o
+  que a tarefa existe para impedir. O `mkdocs build --strict` saiu do job de
+  publicação: o `mike deploy` roda o build por dentro mas não aceita `--strict`,
+  e agora quem faz o build estrito é o job do qual ele depende.
+- **`.vale.ini`, `.vale/**`, o verificador de links e o `package.json` entraram
+  nos caminhos que disparam o workflow.** Sem isso, mexer no vocabulário nunca
+  reexecutaria o portão que aquela mudança configura. Mesmo argumento que colocou
+  o `docs-requirements.txt` nessa lista na D02.
+- **Não há gatilho de `pull_request`.** Este projeto commita direto na `main` por
+  decisão explícita do dono do repositório, e não abre PR; um gatilho que nunca
+  dispara é configuração morta que a próxima pessoa vai tentar entender.
+- **Os binários não são cacheados na Action.** Vale e lychee somam ~63 MB de
+  download por execução, contra execuções que hoje levam ~25 s. Cache traria
+  chave, invalidação e um caminho a mais para falhar, em troca de segundos.
+  Reavaliar se o tempo do job incomodar.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
 coordenação e — agora que existe conta individual — registrar **quem** deu baixa
@@ -2354,7 +2510,19 @@ real. Ver as decisões da D08 para o porquê de a correção não ter entrado al
   v3.18.0; a receita está na seção "Documentação" do
   [CONTRIBUTING.md](CONTRIBUTING.md). Quem clonar o repositório e rodar
   `vale docs/` sem baixar o binário não tem erro de configuração — tem
-  ferramenta ausente.
+  ferramenta ausente. **O estilo Microsoft (D13) também não é versionado:** ele
+  vem do `vale sync`, na versão fixada pela URL dentro do `.vale.ini`, e cai em
+  `.vale/styles/Microsoft/`, no `.gitignore`. Sem o `sync` o Vale reclama de
+  estilo inexistente — de novo, pacote ausente e não configuração quebrada.
+- **O lychee mora em `.tools/lychee/`, pela mesma regra** (D13): binário Rust,
+  não é Python nem Node, não entra em `package.json` nem em
+  `docs-requirements.txt`. O que é versionado é o
+  [verificador](scripts/verificar-links.mjs), que é quem guarda os argumentos —
+  duplicá-los no workflow criaria a segunda cópia que diverge em silêncio.
+  Conferido com a v0.24.2. `LYCHEE_PATH` sobrescreve o caminho; sem ele o script
+  procura `.tools/` e depois o `PATH`. **A versão aparece em dois lugares** — a
+  receita do CONTRIBUTING e o `env:` do workflow —, e o mesmo vale para o Vale:
+  ao subir uma, suba as duas, senão o portão da máquina deixa de ser o do CI.
 - **O bpmn-js também mora em `.tools/`, e pela mesma regra** (D04): é dependência
   da wiki, não do sistema, então não entra no `package.json`. O que é versionado
   é o [exportador](scripts/exportar-diagramas.mjs), as fontes `.bpmn` e os SVG.
@@ -2376,7 +2544,9 @@ real. Ver as decisões da D08 para o porquê de a correção não ter entrado al
   bundle minificado do bpmn-js apareceu em `.tools/`, o `npm run lint` foi de 0
   para **2054 problemas** em código que não é nosso — medido, foi assim que
   apareceu. É a mesma armadilha que a D02 já tinha registrado para `.venv-docs/`
-  e `site/`. Rode os portões do projeto **depois** de baixar qualquer ferramenta
-  nova, mesmo que a tarefa não fale deles.
+  e `site/`, e que a D13 mediu pela terceira vez: assim que o `.site-links/`
+  passou a existir, o lint foi de 0 para **863 problemas (42 erros)**. Rode os
+  portões do projeto **depois** de baixar qualquer ferramenta nova ou de
+  acrescentar qualquer diretório gerado, mesmo que a tarefa não fale deles.
 - `prisma/data/usuarios.csv` (planilha real, dados pessoais) está no `.gitignore`.
   Versione apenas `usuarios.example.csv`.
