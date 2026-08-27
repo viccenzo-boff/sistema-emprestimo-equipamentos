@@ -23,7 +23,7 @@ button sits next to the name.
 [Administrator account](../referencia/conta-do-administrador.md) — signing in,
 signing out, changing the password, and what to do when nobody remembers it.
 
-## The daily routine: check the queue and check devices in
+## The daily routine: Check the queue and check devices in
 
 This is the only task in the admin panel with a deadline. While a device is in
 the queue it is physically on the counter and is **not** offered to anybody else
