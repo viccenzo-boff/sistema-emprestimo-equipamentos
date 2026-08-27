@@ -2044,8 +2044,9 @@ cinco arquivos pretendidos.
   atuais casam exatamente com o rótulo do `nav`, e **cinco páginas já linkavam**
   para `conta-do-administrador.md`. Renomear custaria reescrever cinco links por
   zero ganho de leitura. Levantado como conflito antes da primeira edição; a
-  decisão foi do dono do repositório. **A D14 tem a mesma divergência em aberto**
-  (ela diz `sobre/arquitetura.md`, o arquivo é `arquitetura-do-sistema.md`).
+  decisão foi do dono do repositório. **A D14 teve a mesma divergência e a
+  resolveu do mesmo jeito** (ela diz `sobre/arquitetura.md`, o arquivo continua
+  `arquitetura-do-sistema.md`) — ver as decisões da D14.
 - **A regra "todo termo em negrito ou entre aspas tem verbete" é uma consulta, e
   foi executada antes de ser obedecida.** A varredura devolveu ~140 candidatos,
   e a composição do conjunto é que revelou o conflito: a maioria era ênfase de
@@ -2336,14 +2337,19 @@ no `nav` derruba o `--strict`. Mais duas asserções que provam a **separação 
 camada**: na mesma linha, uma página em inglês recebe a regra do Microsoft **e**
 a do vocabulário; e o mesmo `e.g.` que reprova em inglês passa em português.
 
-**O que NÃO foi feito, e por quê:** o último item da §5 do enunciado — "o CI
-passa inteiro em verde e o deploy acontece" — **não foi visto acontecer**. Ele
-só existe depois de um `push`, e o ciclo do projeto reserva o `push` ao dono do
-repositório. Os cinco itens foram provados localmente com os mesmos comandos,
-nas mesmas versões, mas o verde do Actions continua pendente. Continua pendente
-também o Pages, da D02: a `gh-pages` existe e a Action vem publicando nela desde
-a D04, mas o Pages do repositório **nunca foi apontado para ela** (conferido:
-`gh api …/pages` devolve 404), então a URL do site ainda não responde.
+**O último item da §5 — "o CI passa inteiro em verde e o deploy acontece" — não
+foi visto na sessão da D13, e ACONTECEU depois.** Ele só existe depois de um
+`push`, que o ciclo do projeto reserva ao dono do repositório; o `push` veio, e
+a conferência da D14 achou a execução `33072345826` em `success`, com a
+`gh-pages` carregando o commit `3a4b74a` (o da própria D13). Como o job de
+publicação depende do de qualidade, o verde do deploy **é** a prova de que os
+três portões passaram no CI. Este parágrafo dizia "continua pendente" e foi
+corrigido pela D14 — não reabra o item.
+
+**Continua pendente o Pages, da D02:** a `gh-pages` existe e a Action vem
+publicando nela desde a D04, mas o Pages do repositório **nunca foi apontado
+para ela** (conferido de novo na D14: `gh api …/pages` devolve 404, e a URL
+responde 404), então o site ainda não chega a ninguém.
 
 **Decisões da D13** (não refazer sem motivo):
 
@@ -2455,6 +2461,115 @@ a D04, mas o Pages do repositório **nunca foi apontado para ela** (conferido:
   download por execução, contra execuções que hoje levam ~25 s. Cache traria
   chave, invalidação e um caminho a mais para falhar, em troca de segundos.
   Reavaliar se o tempo do job incomodar.
+
+**Tarefa D14 — Estudo de caso e fechamento (concluída, e ela encerra a série):**
+as quatro páginas de "Sobre" — [arquitetura do
+sistema](docs/sobre/arquitetura-do-sistema.md) e [como esta wiki foi
+feita](docs/sobre/como-esta-wiki-foi-feita.md), nos dois idiomas —, a seção
+"Documentação" no [README.md](README.md) apontando para a wiki publicada, e a
+conferência item a item dos critérios da §10 da [spec-wiki.md](spec-wiki.md).
+Junto vieram a ramificação que a leitura fria revelou na [página da
+retirada](docs/portal/retirada.md) e a correção do modelo de dados do README, que
+descrevia um campo apagado na Tarefa 6. `mkdocs build --strict`, `vale docs/`
+(31 arquivos, 0 erro), `npm run docs:links` (34 páginas, 2709 referências) e
+`npm run docs:diagramas -- --verificar` (5 diagramas) em 0.
+
+Verificação em cinco frentes, com o `dev.db` do dono do repositório **conferido
+por md5** contra a linha de base no fim: a leitura fria da página da retirada em
+navegador real por CDP, seguindo-a ao pé da letra (17 pontos, todos os rótulos
+citados batendo com a tela); a medida da lacuna nas duas orientações do tablet;
+os critérios da §10 conferidos por script (28 asserções, incluindo a extração dos
+nomes reais do `seed.ts` e a busca deles nas 31 páginas); o diagrama Mermaid
+conferido no site construído e servido por HTTP, com a asserção **negativa** de
+que a faixa `mermaid@11/` não é buscada; e a leitura visual do diagrama em
+recorte ampliado. O banco de demonstração voltou idêntico à linha de base.
+
+**Decisões da D14** (não refazer sem motivo):
+
+- **O nome do arquivo do enunciado NÃO venceu, pelo precedente da D10.** A D14
+  escreve `sobre/arquitetura.md`; o repositório tem `arquitetura-do-sistema.md`
+  desde a D02. Vale o mesmo desempate: não existe artefato irmão pedindo outro
+  slug (ao contrário da D05, em que o `.bpmn`, o `.svg` e a pasta de imagens
+  casavam), o nome atual casa exatamente com o rótulo do `nav`, e **as duas
+  homes já linkavam para ele**. O `como-esta-wiki-foi-feita.md` já batia.
+- **As duas páginas de "Sobre" foram escritas nos DOIS idiomas, e a D12 tinha
+  deixado isso em aberto.** Ela traduziu as duas como marcador e escreveu que "a
+  D14 é quem escreve as duas", sem dizer em qual idioma. Escrever só em português
+  transformaria o marcador em inglês em **mentira publicada** no instante em que
+  esta tarefa terminasse — exatamente o que a D11 corrigiu na home em inglês. A
+  alternativa considerada era apagar os marcadores e deixar o `/en/` cair no
+  `fallback_to_default`, como a D12 fez de propósito com `contribuir/`; ela foi
+  descartada porque `contribuir/` tem um motivo que estas não têm (ensina a
+  escrever **em português**), e porque o estudo de caso é a página de portfólio —
+  e a §1 da spec-wiki diz que o inglês existe justamente por alcance de
+  portfólio. Deixá-lo só em português o poria fora do alcance da razão de existir.
+- **O link entre idiomas NÃO resolve, e o `--strict` reprova.** A página em
+  português linkava `../en/referencia/glossario-ui.md`; o `mkdocs-static-i18n`
+  constrói as duas árvores separadas, então o alvo "não está entre os arquivos de
+  documentação" e o build **aborta**. Foi o único aviso da tarefa. O conserto foi
+  descrever o glossário de interface sem linkar — quem lê em português não
+  precisa dele. **Não tente linkar de uma árvore de idioma para a outra.**
+- **A âncora de um link entre idiomas é a do idioma de destino, e quem pegou foi
+  o `lychee`.** A página em inglês linkava `glossario.md#tempo-de-prateleira`, que
+  é a âncora do glossário **em português**; no glossário em inglês o título é
+  `## Shelf time`, e a âncora é `#shelf-time`. O `mkdocs build --strict` saiu em
+  **0** com o link quebrado — a quinta vez que isso é medido nesta série (D08,
+  D11, D12, D13 e agora). O portão 3 é quem reprovou, apontando o HTML gerado e o
+  arquivo de origem. É a demonstração mais direta de por que ele existe.
+- **A leitura fria foi feita por procuração, e o critério continua sem marca.** A
+  §5 do enunciado manda entregar a wiki a alguém que nunca viu o sistema. Não há
+  como recrutar essa pessoa aqui; o substituto foi seguir a página da retirada ao
+  pé da letra contra o sistema rodando, fazendo **apenas** o que ela manda e
+  usando **apenas** os rótulos que ela cita. Os 17 pontos bateram. Isso acha
+  rótulo errado e passo faltando — **não** acha o pressuposto que quem escreveu
+  não sabe que tem —, e por isso o critério da §10 ficou **sem marca**, com o que
+  falta nomeado.
+- **A lacuna que a leitura fria achou é de reconhecimento, e o número é o que
+  separa isso de bloqueio.** O passo 4 prometia que "a grade de categorias
+  aparece"; para quem **já está com um aparelho** a tela é outra — o `h1` passa de
+  "O que você vai levar?" para "O que você quer fazer?", a seção **Meus
+  equipamentos** entra, e a grade ganha o título **Retirar equipamento**. Medido
+  nas duas orientações do tablet: a grade continua **visível sem rolar** (318px de
+  800 em paisagem, 752px de 1280 em retrato), então ninguém trava. Virou uma
+  ramificação nova (passo 5), e não uma reescrita. Os três rótulos novos entraram
+  no glossário de interface, como a D12 exige.
+- **A primeira leitura fria fez uma retirada de VERDADE, e envenenou a medição
+  seguinte.** O roteiro completou o Fluxo 1 com o João Pedro; na medição das
+  orientações ele apareceu com aparelho em mãos, contradizendo a asserção
+  anterior. É a armadilha que a D05 já tinha registrado — **o `db:demo` não
+  desfaz uma retirada feita pela tela**, porque o empréstimo novo nasce fora da
+  faixa de ids reservada. Duas asserções vizinhas se contradizendo é defeito de
+  roteiro, não de produto. A receita de três passos resolveu.
+- **O modelo de dados do README descrevia um campo que não existe.** Ele listava
+  `Equipamento` com o campo `tipo`, apagado na Tarefa 6 em favor de
+  `categoria_id`, omitia o status `INATIVO` e não mencionava a tabela
+  `Categoria` — enquanto a seção "Estrutura", logo acima, já a citava. A tarefa
+  pedia que a página de arquitetura linkasse o README "para profundidade", e
+  mandar o leitor para uma descrição de esquema errada é pior que não mandar.
+  Corrigido em commit próprio, como manda a regra de defeito antigo.
+- **O diagrama do modelo é Mermaid, e não um SVG exportado.** Os cinco diagramas
+  BPMN têm fonte e derivado porque são desenho posicional; um diagrama de
+  entidades é texto, e mantê-lo como texto no meio da página faz a próxima coluna
+  do schema entrar por edição de uma linha, sem passar por ferramenta nenhuma. A
+  infraestrutura já existia desde a D10 (versão fixada, guarda do tema). Conferido
+  no site construído, com o piso de altura da D10: **688x947px**, e a busca pela
+  faixa `mermaid@11/` não acontece.
+- **O conteúdo de um diagrama Mermaid não se afere pelo DOM.** A primeira versão
+  do roteiro lia `div.mermaid.textContent` e voltava vazio, reprovando as cinco
+  tabelas — o Material o põe em **shadow root fechado**, que é o que a própria D10
+  registrou. Quem responde "as cinco tabelas estão lá?" é o markdown de origem; o
+  navegador responde outra pergunta, que é "renderizou, e com altura útil?".
+- **A verificação de "nenhum dado pessoal real" extrai os nomes do `seed.ts`, e a
+  primeira versão acusou uma pessoa fictícia.** Ela pegava todo `nome:` do
+  arquivo, o que inclui o `PESSOAS_EXEMPLO` — e "Ana Souza", que é o elenco de
+  demonstração, apareceu como suspeita. O recorte certo é o bloco
+  `ADMINISTRADORES`, onde estão os nomes reais. A prova de que a leitura acontece
+  é imprimir os quatro nomes extraídos, e não só o veredito.
+- **Bloco cercado por crases é exemplo de sintaxe, não referência.** O guia de
+  estilo mostra a forma da captura clicável dentro de um bloco de código, e o
+  conferidor de imagens contou aquilo como duas referências quebradas — o
+  `--strict` e o `lychee` ignoram, com razão, por não serem links. Conferidor que
+  varre markdown precisa tirar os blocos antes de contar.
 
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
