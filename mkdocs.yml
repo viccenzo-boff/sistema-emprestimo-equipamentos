@@ -121,6 +121,12 @@ plugins:
           site_description: >-
             User manual and process documentation for Unoesc's laptop, tablet
             and power-strip loan system.
+          # O rodape tambem e por idioma (D12). Sem esta linha, a nota de
+          # credito da marca aparece em portugues no pe de TODA pagina em
+          # ingles -- o `mkdocs build --strict` sai em 0 e o Vale nao olha
+          # template de tema, entao so a leitura visual pega.
+          copyright: >-
+            Unoesc name and logo used with the institution's permission.
           nav_translations:
             Início: Home
             Guia de Início Rápido: Quick Start

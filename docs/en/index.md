@@ -12,7 +12,8 @@ confirmed receiving it.
     follows in parentheses — for example, click **Devolver** (Return). Look for
     the Portuguese word on screen.
 
-    Pages that still show Portuguese content are not yet translated.
+    Every label is listed in one place, in the
+    [interface glossary](referencia/glossario-ui.md).
 
 ## Where to start
 
@@ -46,6 +47,8 @@ an admin panel page, and the other way round as well.
 
 - [Pick up equipment](portal/retirada.md)
 - [Return equipment](portal/devolucao.md)
+- [I returned it and the device still shows as mine](inicio-rapido/estudante-e-professor.md#i-returned-it-and-the-device-still-shows-as-mine)
+- [The enrollment number was not found](inicio-rapido/estudante-e-professor.md#the-enrollment-number-was-not-found)
 
 </div>
 
@@ -62,6 +65,22 @@ an admin panel page, and the other way round as well.
 
 </div>
 
+## What else is here
+
+- **[Reference](referencia/glossario.md)** — the
+  [glossary](referencia/glossario.md), the
+  [interface glossary](referencia/glossario-ui.md), the two
+  [state machines](referencia/estados-e-transicoes.md) and the
+  [business rules](referencia/regras-de-negocio.md) behind the way the screens
+  behave.
+- **[About](sobre/arquitetura-do-sistema.md)** — the
+  [system architecture](sobre/arquitetura-do-sistema.md) and
+  [how this wiki was made](sobre/como-esta-wiki-foi-feita.md).
+- **[Contributing](contribuir/guia-de-estilo.md)** — the
+  [style guide](contribuir/guia-de-estilo.md) and the
+  [process template](contribuir/template-processo.md), for whoever writes a new
+  page. These two are in Portuguese.
+
 ## The version this wiki describes
 
 !!! info "This wiki describes version v1.0 of the system"
@@ -72,13 +91,18 @@ an admin panel page, and the other way round as well.
 
 ## Where to ask for help
 
-**At the tablet**, the front desk is who solves it — an enrolment number that
+**At the tablet**, the front desk is who solves it — an enrollment number that
 will not go through, an inactive record, a device missing from the list, all
-need somebody with the admin panel open.
+need somebody with the admin panel open. The error table of each process says
+what to do before you leave the counter:
+[pickup](portal/retirada.md#8-common-errors-and-what-to-do) and
+[return](portal/devolucao.md#8-common-errors-and-what-to-do).
 
 **In the admin panel**, start with the
 [Reference](referencia/regras-de-negocio.md) pages: most of what looks like a
-defect is a deliberate business rule, and it is explained there.
+defect is a deliberate business rule, and it is explained there. A forgotten
+password has a [procedure of its own](referencia/conta-do-administrador.md#forgotten-password)
+and is not solved from the screen.
 
 **If the system really is wrong** — the screen contradicts this wiki, or this
 wiki is out of date — the place to report it is the
