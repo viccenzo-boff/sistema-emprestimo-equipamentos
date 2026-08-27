@@ -77,3 +77,8 @@ next-env.d.ts
 # esta na secao "Documentacao" do CONTRIBUTING.md; o que E versionado e a
 # configuracao (.vale.ini) e o vocabulario (.vale/styles/).
 /.tools/
+
+# estilo Microsoft do Vale, baixado pelo `vale sync` com a versao fixada no
+# .vale.ini (D13). Mesma regra do executavel: artefato de terceiro nao entra no
+# historico deste repositorio.
+/.vale/styles/Microsoft/
