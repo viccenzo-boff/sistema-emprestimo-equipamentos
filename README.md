@@ -10,6 +10,29 @@ O sistema roda em rede local, hospedado no computador da secretaria, com duas fr
 - **`/`** — Portal do Estudante/Professor (tablet): retirada e devolução na bancada.
 - **`/admin`** — Painel Administrativo (desktop): fila de devoluções e gestão de inventário.
 
+## Documentação
+
+**A wiki do sistema está em <https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/>.**
+
+Ela é o manual de quem **opera** o sistema, e cobre os cinco processos — retirada e devolução
+no tablet, baixa física, inventário e cadastros no painel — cada um com diagrama BPMN, passo a
+passo com capturas de tela e uma seção que explica **por que** o sistema se comporta daquele
+jeito. Tem ainda glossário, as duas máquinas de estado, as regras de negócio consolidadas e dois
+guias de início rápido, em português e inglês.
+
+A wiki descreve a versão **`v1.0`**; a `main` pode estar à frente dela. A fonte fica em
+[`docs/`](docs/), é construída com MkDocs Material e publicada por
+[uma Action](.github/workflows/docs.yml) a cada `push` na `main`, depois de três portões de
+qualidade. Quem for escrever uma página nova começa pelo
+[guia de estilo](docs/contribuir/guia-de-estilo.md) e pelo
+[template de processo](docs/contribuir/template-processo.md); a receita de ambiente e a de
+captura de tela estão na seção "Documentação" do [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Duas páginas falam com quem chega pelo GitHub:
+[Arquitetura do sistema](docs/sobre/arquitetura-do-sistema.md) e
+[Como esta wiki foi feita](docs/sobre/como-esta-wiki-foi-feita.md) — o estudo de caso, com a
+alternativa descartada em cada decisão.
+
 ## Stack
 
 | Camada        | Tecnologia                                  |
