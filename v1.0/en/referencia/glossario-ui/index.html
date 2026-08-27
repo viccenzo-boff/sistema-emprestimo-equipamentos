@@ -1,46 +1,42 @@
 
 <!doctype html>
-<html lang="pt" class="no-js">
+<html lang="en" class="no-js">
   <head>
     
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Manual de uso e documentação de processos do sistema de empréstimo de notebooks, tablets e extensões da Unoesc.">
+        <meta name="description" content="User manual and process documentation for Unoesc's laptop, tablet and power-strip loan system.">
       
       
         <meta name="author" content="Viccenzo Boff">
       
       
-        <link rel="canonical" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.0/sobre/arquitetura-do-sistema/">
+        <link rel="canonical" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.0/en/referencia/glossario-ui/">
       
       
-        <link rel="prev" href="../../referencia/conta-do-administrador/">
-      
-      
-        <link rel="next" href="../como-esta-wiki-foi-feita/">
       
       
         
-          <link rel="alternate" href="./" hreflang="pt-BR">
+          <link rel="alternate" href="/sistema-emprestimo-equipamentos/v1.0/" hreflang="pt-BR">
         
-          <link rel="alternate" href="../../en/sobre/arquitetura-do-sistema/" hreflang="en">
+          <link rel="alternate" href="./" hreflang="en">
         
       
       
-      <link rel="icon" href="../../assets/brand/logo-unoesc-colorido.png">
+      <link rel="icon" href="../../../assets/brand/logo-unoesc-colorido.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Arquitetura do sistema - Sistema de Empréstimo de Equipamentos — Unoesc</title>
+        <title>Interface glossary - Equipment Loan System — Unoesc</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -59,9 +55,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/marca.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/marca.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -86,8 +82,8 @@
     <div data-md-component="skip">
       
         
-        <a href="#arquitetura-do-sistema" class="md-skip">
-          Pular para conteúdo
+        <a href="#interface-glossary" class="md-skip">
+          Skip to content
         </a>
       
     </div>
@@ -105,10 +101,10 @@
   
 
 <header class="md-header md-header--shadow" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
-    <a href="../.." title="Sistema de Empréstimo de Equipamentos — Unoesc" class="md-header__button md-logo" aria-label="Sistema de Empréstimo de Equipamentos — Unoesc" data-md-component="logo">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../" title="Equipment Loan System — Unoesc" class="md-header__button md-logo" aria-label="Equipment Loan System — Unoesc" data-md-component="logo">
       
-  <img src="../../assets/brand/logo-unoesc-colorido.png" alt="logo">
+  <img src="../../../assets/brand/logo-unoesc-colorido.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -119,13 +115,13 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Sistema de Empréstimo de Equipamentos — Unoesc
+            Equipment Loan System — Unoesc
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Arquitetura do sistema
+              Interface glossary
             
           </span>
         </div>
@@ -165,20 +161,20 @@
       <div class="md-header__option">
   <div class="md-select">
     
-    <button class="md-header__button md-icon" aria-label="Selecione o idioma">
+    <button class="md-header__button md-icon" aria-label="Select language">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
     </button>
     <div class="md-select__inner">
       <ul class="md-select__list">
         
           <li class="md-select__item">
-            <a href="./" hreflang="pt-BR" class="md-select__link">
+            <a href="/sistema-emprestimo-equipamentos/v1.0/" hreflang="pt-BR" class="md-select__link">
               Português (Brasil)
             </a>
           </li>
         
           <li class="md-select__item">
-            <a href="../../en/sobre/arquitetura-do-sistema/" hreflang="en" class="md-select__link">
+            <a href="./" hreflang="en" class="md-select__link">
               English
             </a>
           </li>
@@ -199,16 +195,16 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
-      <nav class="md-search__options" aria-label="Pesquisar">
+      <nav class="md-search__options" aria-label="Search">
         
-        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
@@ -221,7 +217,7 @@
       <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
-            Inicializando busca
+            Initializing search
           </div>
           <ol class="md-search-result__list" role="presentation"></ol>
         </div>
@@ -233,7 +229,7 @@
     
     
       <div class="md-header__source">
-        <a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos" title="Ir para repositório" class="md-source" data-md-component="source">
+        <a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
@@ -267,18 +263,18 @@
 
 
 
-<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Sistema de Empréstimo de Equipamentos — Unoesc" class="md-nav__button md-logo" aria-label="Sistema de Empréstimo de Equipamentos — Unoesc" data-md-component="logo">
+    <a href="../../" title="Equipment Loan System — Unoesc" class="md-nav__button md-logo" aria-label="Equipment Loan System — Unoesc" data-md-component="logo">
       
-  <img src="../../assets/brand/logo-unoesc-colorido.png" alt="logo">
+  <img src="../../../assets/brand/logo-unoesc-colorido.png" alt="logo">
 
     </a>
-    Sistema de Empréstimo de Equipamentos — Unoesc
+    Equipment Loan System — Unoesc
   </label>
   
     <div class="md-nav__source">
-      <a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos" title="Ir para repositório" class="md-source" data-md-component="source">
+      <a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
@@ -298,14 +294,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Início
+    Home
   
 
     
@@ -354,7 +350,7 @@
   <span class="md-ellipsis">
     
   
-    Guia de Início Rápido
+    Quick Start
   
 
     
@@ -370,7 +366,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Guia de Início Rápido
+    Quick Start
   
 
           </label>
@@ -390,7 +386,7 @@
   <span class="md-ellipsis">
     
   
-    Estudante e Professor
+    Students and Teachers
   
 
     
@@ -418,7 +414,7 @@
   <span class="md-ellipsis">
     
   
-    Secretaria
+    Front Desk
   
 
     
@@ -475,7 +471,7 @@
   <span class="md-ellipsis">
     
   
-    Processos do Portal
+    Portal Processes
   
 
     
@@ -491,7 +487,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Processos do Portal
+    Portal Processes
   
 
           </label>
@@ -511,7 +507,7 @@
   <span class="md-ellipsis">
     
   
-    1. Retirada de equipamento
+    1. Equipment pickup
   
 
     
@@ -539,7 +535,7 @@
   <span class="md-ellipsis">
     
   
-    2. Devolução de equipamento
+    2. Equipment return
   
 
     
@@ -598,7 +594,7 @@
   <span class="md-ellipsis">
     
   
-    Processos do Painel
+    Admin Panel Processes
   
 
     
@@ -614,7 +610,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Processos do Painel
+    Admin Panel Processes
   
 
           </label>
@@ -634,7 +630,7 @@
   <span class="md-ellipsis">
     
   
-    3. Baixa física
+    3. Physical check-in
   
 
     
@@ -662,7 +658,7 @@
   <span class="md-ellipsis">
     
   
-    4. Gestão de inventário
+    4. Inventory management
   
 
     
@@ -690,7 +686,7 @@
   <span class="md-ellipsis">
     
   
-    5. Gestão de pessoas
+    5. People management
   
 
     
@@ -751,7 +747,7 @@
   <span class="md-ellipsis">
     
   
-    Referência
+    Reference
   
 
     
@@ -767,7 +763,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Referência
+    Reference
   
 
           </label>
@@ -780,14 +776,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../referencia/glossario/" class="md-nav__link">
+      <a href="../glossario/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Glossário
+    Glossary
   
 
     
@@ -808,14 +804,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../referencia/estados-e-transicoes/" class="md-nav__link">
+      <a href="../estados-e-transicoes/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Estados e transições
+    States and transitions
   
 
     
@@ -836,14 +832,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../referencia/regras-de-negocio/" class="md-nav__link">
+      <a href="../regras-de-negocio/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Regras de negócio
+    Business rules
   
 
     
@@ -864,14 +860,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../referencia/conta-do-administrador/" class="md-nav__link">
+      <a href="../conta-do-administrador/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Conta do administrador
+    Administrator account
   
 
     
@@ -896,10 +892,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -916,11 +910,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
@@ -930,7 +924,7 @@
   <span class="md-ellipsis">
     
   
-    Sobre
+    About
   
 
     
@@ -941,12 +935,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Sobre
+    About
   
 
           </label>
@@ -956,26 +950,17 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../sobre/arquitetura-do-sistema/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Arquitetura do sistema
+    System architecture
   
 
     
@@ -984,7 +969,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -997,14 +981,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../como-esta-wiki-foi-feita/" class="md-nav__link">
+      <a href="../../sobre/como-esta-wiki-foi-feita/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Como esta wiki foi feita
+    How this wiki was made
   
 
     
@@ -1061,7 +1045,7 @@
   <span class="md-ellipsis">
     
   
-    Contribuir
+    Contributing
   
 
     
@@ -1077,7 +1061,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Contribuir
+    Contributing
   
 
           </label>
@@ -1097,7 +1081,7 @@
   <span class="md-ellipsis">
     
   
-    Guia de estilo
+    Style guide
   
 
     
@@ -1125,7 +1109,7 @@
   <span class="md-ellipsis">
     
   
-    Template de processo
+    Process template
   
 
     
@@ -1159,12 +1143,136 @@
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="Índice">
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
   
     
   
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-portal-the-tablet-at-the-counter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The portal (the tablet at the counter)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#everywhere-in-the-admin-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Everywhere in the admin panel
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#return-queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Return queue
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inventory-and-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inventory and categories
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#people" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        People
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="People">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-spreadsheet-column-headers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The spreadsheet column headers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status names
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#profiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Profiles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error messages
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-the-interface-was-not-translated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the interface was not translated
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -1181,7 +1289,7 @@
 
 
   
-    <a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/edit/main/docs/sobre/arquitetura-do-sistema.md" title="Editar esta página" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/edit/main/docs/en/referencia/glossario-ui.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -1189,8 +1297,535 @@
   
 
 
-<h1 id="arquitetura-do-sistema">Arquitetura do sistema</h1>
-<p>Esta página ainda não foi escrita: ela vai descrever a stack, o modelo de dados e as decisões estruturais do sistema (tarefa D14).</p>
+<h1 id="interface-glossary">Interface glossary</h1>
+<p><strong>The system's interface is only available in Portuguese</strong>, and it will not be
+translated — the decision and its reason are on the
+<a href="../../">home page</a>. This page is the bridge: every screen label these
+English pages quote, with what it means.</p>
+<p>Use it the way you would use a phrasebook. The word in the left column is what
+is printed on the screen in front of you; the one in the right column is what it
+does.</p>
+<div class="admonition info">
+<p class="admonition-title">How labels are written on these pages</p>
+<p>The real Portuguese label comes in bold and the English meaning follows in
+parentheses: <em>tap </em><em>Devolver</em><em> (Return)</em>. The bold half is always the half
+you look for on screen.</p>
+</div>
+<p>Terms that describe the system rather than label a control — loan, shelf time,
+physical check-in — are in the <a href="../glossario/">Glossary</a> instead.</p>
+<h2 id="the-portal-the-tablet-at-the-counter">The portal (the tablet at the counter)</h2>
+<table>
+<thead>
+<tr>
+<th>On screen</th>
+<th>In English</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Continuar</strong></td>
+<td>Continue</td>
+</tr>
+<tr>
+<td><strong>Limpar</strong></td>
+<td>Clear (the enrollment number keypad)</td>
+</tr>
+<tr>
+<td><strong>Sair</strong></td>
+<td>Exit — ends the visit and returns to the enrollment number screen</td>
+</tr>
+<tr>
+<td><strong>Concluir</strong></td>
+<td>Finish — closes the pickup confirmed screen</td>
+</tr>
+<tr>
+<td><strong>Meus equipamentos</strong></td>
+<td>My equipment — the list of what is in your name right now</td>
+</tr>
+<tr>
+<td><strong>Confirmar retirada</strong></td>
+<td>Confirm pickup</td>
+</tr>
+<tr>
+<td><strong>Devolver</strong></td>
+<td>Return — the button on one row</td>
+</tr>
+<tr>
+<td><strong>Devolver tudo</strong></td>
+<td>Return all — the shortcut above the list, from two items upwards</td>
+</tr>
+<tr>
+<td><strong>Devolver equipamento</strong></td>
+<td>Return equipment — the dialog title for one item</td>
+</tr>
+<tr>
+<td><strong>Devolver todos os equipamentos</strong></td>
+<td>Return all equipment — the dialog title for a batch</td>
+</tr>
+<tr>
+<td><strong>Confirmar devolução</strong></td>
+<td>Confirm return</td>
+</tr>
+<tr>
+<td><strong>Confirmar devolução de N itens</strong></td>
+<td>Confirm return of N items — the batch button</td>
+</tr>
+<tr>
+<td><strong>Cancelar</strong></td>
+<td>Cancel</td>
+</tr>
+<tr>
+<td>"4 de 9 disponíveis"</td>
+<td>4 of 9 available — the count on a category card</td>
+</tr>
+<tr>
+<td>"Nenhum disponível agora"</td>
+<td>None available right now — a category with no free unit</td>
+</tr>
+</tbody>
+</table>
+<h2 id="everywhere-in-the-admin-panel">Everywhere in the admin panel</h2>
+<table>
+<thead>
+<tr>
+<th>On screen</th>
+<th>In English</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Painel</strong></td>
+<td>Admin panel</td>
+</tr>
+<tr>
+<td><strong>Usuário</strong></td>
+<td>Username — the administrator login field</td>
+</tr>
+<tr>
+<td><strong>Senha</strong></td>
+<td>Password</td>
+</tr>
+<tr>
+<td><strong>Entrar</strong></td>
+<td>Sign in</td>
+</tr>
+<tr>
+<td><strong>Sair do painel</strong></td>
+<td>Sign out of the panel</td>
+</tr>
+<tr>
+<td><strong>Alterar senha</strong></td>
+<td>Change password</td>
+</tr>
+<tr>
+<td><strong>Senha atual</strong></td>
+<td>Current password</td>
+</tr>
+<tr>
+<td><strong>Nova senha</strong></td>
+<td>New password</td>
+</tr>
+<tr>
+<td><strong>Confirmar nova senha</strong></td>
+<td>Confirm new password</td>
+</tr>
+<tr>
+<td><strong>Editar</strong></td>
+<td>Edit</td>
+</tr>
+<tr>
+<td><strong>Salvar</strong></td>
+<td>Save</td>
+</tr>
+<tr>
+<td><strong>Excluir</strong></td>
+<td>Delete</td>
+</tr>
+<tr>
+<td><strong>Situação</strong></td>
+<td>Status — of a device or of a record, depending on the tab</td>
+</tr>
+</tbody>
+</table>
+<h2 id="return-queue">Return queue</h2>
+<table>
+<thead>
+<tr>
+<th>On screen</th>
+<th>In English</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fila de Devoluções</strong></td>
+<td>Return queue — the first tab of the panel</td>
+</tr>
+<tr>
+<td><strong>Confirmar Recebimento Físico</strong></td>
+<td>Confirm physical receipt — the button on one row</td>
+</tr>
+<tr>
+<td><strong>Confirmar Todas as Devoluções</strong></td>
+<td>Confirm all returns — the batch button, from two items upwards</td>
+</tr>
+<tr>
+<td><strong>Devolução informada em</strong></td>
+<td>Return declared at</td>
+</tr>
+<tr>
+<td>"Nenhuma devolução esperando"</td>
+<td>No returns waiting — the empty queue</td>
+</tr>
+<tr>
+<td><strong>Empréstimos Ativos</strong></td>
+<td>Active loans — the read-only tab of what is out right now</td>
+</tr>
+</tbody>
+</table>
+<h2 id="inventory-and-categories">Inventory and categories</h2>
+<table>
+<thead>
+<tr>
+<th>On screen</th>
+<th>In English</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Inventário</strong></td>
+<td>Inventory</td>
+</tr>
+<tr>
+<td><strong>Etiqueta</strong></td>
+<td>Asset tag</td>
+</tr>
+<tr>
+<td><strong>Nova etiqueta</strong></td>
+<td>New asset tag</td>
+</tr>
+<tr>
+<td><strong>Categoria</strong></td>
+<td>Category</td>
+</tr>
+<tr>
+<td><strong>Categorias</strong></td>
+<td>Categories — the tab where categories are created and deleted</td>
+</tr>
+<tr>
+<td><strong>Cadastrar</strong></td>
+<td>Register</td>
+</tr>
+<tr>
+<td><strong>Gerenciar</strong></td>
+<td>Manage — the link from the category field to the Categories tab</td>
+</tr>
+<tr>
+<td><strong>Nome</strong></td>
+<td>Name — of a category</td>
+</tr>
+<tr>
+<td><strong>Manutenção</strong></td>
+<td>Maintenance</td>
+</tr>
+<tr>
+<td><strong>Inativar</strong></td>
+<td>Deactivate</td>
+</tr>
+<tr>
+<td><strong>Reativar</strong></td>
+<td>Reactivate — brings a retired device back as <strong>Disponível</strong></td>
+</tr>
+<tr>
+<td><strong>Equipamentos vinculados</strong></td>
+<td>Linked equipment — the count shown instead of the delete button</td>
+</tr>
+<tr>
+<td>"Situação travada até a devolução"</td>
+<td>Status locked until the return</td>
+</tr>
+<tr>
+<td>"Devolução informada por … — aguarda conferência"</td>
+<td>Return declared by … — awaiting checking</td>
+</tr>
+<tr>
+<td>"Não aparece no tablet enquanto estiver vazia"</td>
+<td>Does not appear on the tablet while empty</td>
+</tr>
+<tr>
+<td>"No tablet: Projetores"</td>
+<td>On the tablet: Projetores — the plural the portal will show</td>
+</tr>
+</tbody>
+</table>
+<h2 id="people">People</h2>
+<table>
+<thead>
+<tr>
+<th>On screen</th>
+<th>In English</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Pessoas</strong></td>
+<td>People</td>
+</tr>
+<tr>
+<td><strong>Importar planilha</strong></td>
+<td>Import spreadsheet</td>
+</tr>
+<tr>
+<td><strong>Baixar planilha modelo</strong></td>
+<td>Download the template spreadsheet</td>
+</tr>
+<tr>
+<td><strong>Analisar planilha</strong></td>
+<td>Analyze spreadsheet — builds the preview; writes nothing</td>
+</tr>
+<tr>
+<td><strong>Trocar arquivo</strong></td>
+<td>Change file</td>
+</tr>
+<tr>
+<td><strong>Confirmar importação</strong></td>
+<td>Confirm import</td>
+</tr>
+<tr>
+<td><strong>Cadastrar</strong></td>
+<td>Register — the preview counter of records about to be created</td>
+</tr>
+<tr>
+<td><strong>Atualizar</strong></td>
+<td>Update — the preview counter of records that will change</td>
+</tr>
+<tr>
+<td><strong>Sem mudança</strong></td>
+<td>No change — records already exactly as the spreadsheet describes them</td>
+</tr>
+<tr>
+<td><strong>Com erro</strong></td>
+<td>Error — rows that will be skipped</td>
+</tr>
+<tr>
+<td><strong>Colunas lidas</strong></td>
+<td>Columns read</td>
+</tr>
+<tr>
+<td><strong>O que vai mudar</strong></td>
+<td>What will change — the field-by-field list</td>
+</tr>
+<tr>
+<td><strong>Matrícula</strong></td>
+<td>Enrollment number</td>
+</tr>
+<tr>
+<td><strong>Ativar</strong></td>
+<td>Activate</td>
+</tr>
+<tr>
+<td><strong>Limpar filtros</strong></td>
+<td>Clear filters</td>
+</tr>
+<tr>
+<td>"Mostrando 9 de 15 cadastros"</td>
+<td>Showing 9 of 15 records</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-spreadsheet-column-headers">The spreadsheet column headers</h3>
+<p>These are not screen labels: they are the headers the import reads inside the
+<code>.xlsx</code> file, and they must be written exactly like this.</p>
+<table>
+<thead>
+<tr>
+<th>In the file</th>
+<th>What it holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>matricula</code></td>
+<td>Enrollment number — digits only, up to 15. The only required column</td>
+</tr>
+<tr>
+<td><code>nome</code></td>
+<td>Full name</td>
+</tr>
+<tr>
+<td><code>perfil</code></td>
+<td>Profile — <code>Estudante</code> or <code>Professor</code></td>
+</tr>
+<tr>
+<td><code>cursos</code></td>
+<td>Courses, separated by commas</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td><code>ATIVO</code> or <code>INATIVO</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="status-names">Status names</h2>
+<p>The badges on screen are in Portuguese; the values stored in the database are in
+capitals, and the pages of this wiki quote both.</p>
+<table>
+<thead>
+<tr>
+<th>On screen</th>
+<th>In the database</th>
+<th>In English</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Disponível</strong></td>
+<td><code>DISPONIVEL</code></td>
+<td>Available — on the shelf, offered on the tablet</td>
+</tr>
+<tr>
+<td><strong>Emprestado</strong></td>
+<td><code>EMPRESTADO</code></td>
+<td>On loan — somebody has it, or has declared it returned and it is not checked yet</td>
+</tr>
+<tr>
+<td><strong>Manutenção</strong></td>
+<td><code>MANUTENCAO</code></td>
+<td>Maintenance — temporarily out for repair</td>
+</tr>
+<tr>
+<td><strong>Inativo</strong> (device)</td>
+<td><code>INATIVO</code></td>
+<td>Inactive — retired, kept only for the history</td>
+</tr>
+<tr>
+<td><strong>Ativo</strong> (record)</td>
+<td><code>ATIVO</code></td>
+<td>Active — the person can pick equipment up</td>
+</tr>
+<tr>
+<td><strong>Inativo</strong> (record)</td>
+<td><code>INATIVO</code></td>
+<td>Inactive — the person can return but not pick up</td>
+</tr>
+<tr>
+<td>(not shown)</td>
+<td><code>ATIVO</code> (loan)</td>
+<td>The loan is open; the person has the device</td>
+</tr>
+<tr>
+<td>(not shown)</td>
+<td><code>AGUARDANDO_BAIXA</code></td>
+<td>Return declared, awaiting the front desk check</td>
+</tr>
+<tr>
+<td>(not shown)</td>
+<td><code>CONCLUIDO</code></td>
+<td>The loan is closed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Database status names are never translated</strong>, on these pages or anywhere
+else — <code>AGUARDANDO_BAIXA</code> stays <code>AGUARDANDO_BAIXA</code>, because that is the name
+anybody looking at the data will see.</p>
+<h2 id="profiles">Profiles</h2>
+<table>
+<thead>
+<tr>
+<th>On screen</th>
+<th>In English</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Estudante</strong></td>
+<td>Student</td>
+</tr>
+<tr>
+<td><strong>Professor</strong></td>
+<td>Teacher</td>
+</tr>
+</tbody>
+</table>
+<p>There are only these two, and a spreadsheet row carrying anything else is
+rejected by the preview.</p>
+<h2 id="error-messages">Error messages</h2>
+<!--
+  A coluna da esquerda e citacao literal de mensagem de tela. Uma delas diz
+  "Informe o usuario e a senha.", com a palavra proibida em minuscula, e a regra
+  1 do guia de estilo manda transcreve-la assim -- e por essa frase que o leitor
+  chega ate aqui.
+
+  O escape vale para a tabela inteira, e nao para a linha: comentario no meio de
+  uma tabela a encerra no Python-Markdown, e o resto viraria paragrafo solto.
+  Mesma solucao da tabela de erros da pagina Conta do administrador.
+-->
+<!-- vale Vale.Avoid = NO -->
+
+<p>The messages that appear on more than one screen. The ones specific to a single
+process are translated in the error table of that process page, which is where
+you should look for them: <a href="../../portal/retirada/#8-common-errors-and-what-to-do">pickup</a>,
+<a href="../../portal/devolucao/#8-common-errors-and-what-to-do">return</a>,
+<a href="../../painel/baixa-fisica/#8-common-errors-and-what-to-do">physical check-in</a>,
+<a href="../../painel/inventario/#8-common-errors-and-what-to-do">inventory</a>,
+<a href="../../painel/pessoas/#8-common-errors-and-what-to-do">people</a> and
+<a href="../conta-do-administrador/#common-errors-and-what-to-do">administrator account</a>.</p>
+<table>
+<thead>
+<tr>
+<th>On screen</th>
+<th>In English</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Matrícula 9999999 não encontrada."</td>
+<td>Enrollment number 9999999 not found.</td>
+</tr>
+<tr>
+<td>"Este cadastro está inativo e não pode retirar equipamento."</td>
+<td>This record is inactive and cannot pick equipment up.</td>
+</tr>
+<tr>
+<td>"Sessão encerrada."</td>
+<td>Session ended.</td>
+</tr>
+<tr>
+<td>"Usuário ou senha inválidos."</td>
+<td>Invalid username or password.</td>
+</tr>
+<tr>
+<td>"Informe o usuário e a senha."</td>
+<td>Enter the username and the password.</td>
+</tr>
+<tr>
+<td>"Muitas tentativas seguidas."</td>
+<td>Too many attempts in a row.</td>
+</tr>
+<tr>
+<td>"Nenhum administrador cadastrado."</td>
+<td>No administrator registered.</td>
+</tr>
+<tr>
+<td>"Não foi possível concluir a operação."</td>
+<td>Could not complete the operation.</td>
+</tr>
+<tr>
+<td>"Não foi possível falar com o sistema agora."</td>
+<td>Could not reach the system right now.</td>
+</tr>
+</tbody>
+</table>
+<!-- vale Vale.Avoid = YES -->
+
+<h2 id="why-the-interface-was-not-translated">Why the interface was not translated</h2>
+<p>Translating the system would mean internationalizing the application itself —
+every screen, every message, every error — and keeping the two versions in step
+from then on. The people who use it are all Portuguese speakers at a Brazilian
+university, so that work would serve nobody who actually stands at the counter.</p>
+<p>This wiki exists in English for a different audience: people reading about how
+the system works. Giving them the real labels beside the English meaning costs
+one page and keeps the screenshots honest — they show the screen as it is,
+which is the only version that exists.</p>
 
 
 
@@ -1214,7 +1849,7 @@
           <button type="button" class="md-top md-icon" data-md-component="top" hidden>
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
-  Voltar para o topo
+  Back to top
 </button>
         
       </main>
@@ -1222,51 +1857,13 @@
         <footer class="md-footer">
   
     
-      
-      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
-        
-          
-          <a href="../../referencia/conta-do-administrador/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Conta do administrador">
-            <div class="md-footer__button md-icon">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-            </div>
-            <div class="md-footer__title">
-              <span class="md-footer__direction">
-                Anterior
-              </span>
-              <div class="md-ellipsis">
-                Conta do administrador
-              </div>
-            </div>
-          </a>
-        
-        
-          
-          <a href="../como-esta-wiki-foi-feita/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Como esta wiki foi feita">
-            <div class="md-footer__title">
-              <span class="md-footer__direction">
-                Próximo
-              </span>
-              <div class="md-ellipsis">
-                Como esta wiki foi feita
-              </div>
-            </div>
-            <div class="md-footer__button md-icon">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
-            </div>
-          </a>
-        
-      </nav>
-    
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Nome e logo da Unoesc usados com autorização da instituição.
+      Unoesc name and logo used with the institution's permission.
     </div>
   
   
@@ -1290,10 +1887,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "toc.follow", "content.action.edit", "search.highlight", "search.suggest"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "toc.follow", "content.action.edit", "search.highlight", "search.suggest"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js"></script>
       
