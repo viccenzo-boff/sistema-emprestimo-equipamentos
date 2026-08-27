@@ -2209,6 +2209,97 @@ conferidor de links foi **exercitado até reprovar** antes de ser aceito.
   colunas mais o *porquê* em uma frase; o resto está a um link. **Corrigir uma
   exige olhar a outra**, como já vale para a comparação da D08 e da D09.
 
+**Tarefa D12 — Tradução para inglês (concluída):** a wiki espelhada em
+`docs/en/` — a home, os dois guias de início rápido, as cinco páginas de
+processo, as quatro de referência e os dois marcadores de "Sobre", mais o
+[glossário de interface](docs/en/referencia/glossario-ui.md), que é a única
+página que existe **só** em inglês. Nenhuma imagem foi duplicada: as 54
+referências de captura e de diagrama apontam para `docs/assets/`, o mesmo
+arquivo que o lado português usa. `mkdocs build --strict` e `vale docs/` em 0,
+com o Vale declarando **31 arquivos** — que é o total de `.md` em `docs/`, ou
+seja, a cobertura foi conferida e não suposta.
+
+Verificação em três frentes: 478 asserções contra o **HTML gerado** (a árvore
+item por item contra o `nav`, os 294 links e recursos internos com as âncoras
+resolvidas uma a uma, as 54 imagens, os 40 rótulos de tela citados conferidos
+contra o glossário de interface, e as oito seções do template nas cinco páginas
+de processo); 27 asserções em navegador real por CDP contra o site construído e
+servido por HTTP, em 1366x768; e a leitura visual das quatro telas novas, com
+recorte ampliado dos dois diagramas Mermaid. O conferidor foi **exercitado até
+reprovar** — âncora quebrada, rótulo fora do glossário e imagem duplicada
+plantados de propósito — antes de ser aceito.
+
+**Decisões da D12** (não refazer sem motivo):
+
+- **A citação de rótulo é `**Devolver** (Return)`, e a spec-wiki foi corrigida
+  para isso.** A §7 da [spec-wiki.md](spec-wiki.md) e o enunciado da D12 mandavam
+  o inverso — `**Return** (Devolver)` —, mas a regra 1 do
+  [guia de estilo](docs/contribuir/guia-de-estilo.md) (D03) e a nota da home em
+  inglês (D11) já tinham publicado a forma invertida, **concordando entre si**. O
+  argumento delas é de ergonomia: quem lê está com a tela em português na frente,
+  e o negrito tem que ser a palavra que ele procura no botão. Levantado como
+  conflito antes da primeira tradução; a decisão foi do dono do repositório, e a
+  §7 da spec mais o enunciado foram corrigidos junto — dois donos da mesma regra
+  de forma é como doze páginas nascem contradizendo o guia que elas mandam
+  obedecer, sem nenhum portão acusar.
+- **`contribuir/` NÃO foi traduzido, e fica no `fallback_to_default`.** A §3 do
+  enunciado não lista as duas páginas; a §4 manda conferir o `nav` item por item,
+  e elas estão lá. O desempate: o guia de estilo ensina a escrever **em
+  português** (as grafias que o Vale proíbe, o vocabulário controlado) e o
+  template é o esqueleto de página em português. Uma cópia em inglês seria o
+  segundo dono da mesma regra de redação, e ela envelheceria sem ninguém notar.
+  A home em inglês declara isso em uma linha, para o leitor não achar que faltou.
+- **O glossário de interface fica FORA do `nav`, e isso foi medido.** Ele é a
+  única página sem par em português, e o plugin aceitaria um `nav:` próprio para
+  o locale `en` — ao custo de a árvore de 16 itens passar a existir em dois
+  lugares no `mkdocs.yml`. Medido antes de decidir: página fora do `nav` é
+  **INFO** e o `--strict` sai em 0; e o seletor de idioma dela degrada bem — o
+  lado português aponta para a home, e não para uma URL inexistente, então não há
+  link quebrado para o `lychee` da D13 achar. Ela é alcançada pela home e pelo
+  glossário geral.
+- **As páginas de "Sobre" foram traduzidas como marcador, e continuam
+  marcadores.** A D14 é quem escreve as duas; traduzir as três linhas custa nada
+  e evita duas páginas em português no meio da trilha inglesa. O número da tarefa
+  no marcador em português dizia "D10" e estava errado desde a D02 — foi
+  corrigido para D14 no mesmo passo, em commit próprio.
+- **O rodapé é por idioma, e só a leitura visual pega isso.** O `copyright` do
+  `mkdocs.yml` é global por padrão, então a nota de crédito da marca aparecia em
+  português no pé de **toda** página em inglês. O `mkdocs build --strict` sai em
+  0 e o Vale não olha template de tema — nenhuma das 478 asserções de HTML
+  perguntava pelo rodapé. O plugin aceita `copyright` dentro do bloco do locale.
+- **O diagrama BPMN é o mesmo arquivo, com a legenda em um bloco recolhido.** O
+  enunciado recomendava não exportar um segundo SVG por processo, e a legenda
+  resolve o resto: cada página de processo em inglês traz um `???` com a tabela
+  rótulo → inglês, extraída dos **textos reais do SVG** e não escrita de memória.
+  Nasce fechado, então não empurra o passo a passo para baixo.
+- **O glossário de interface foi montado a partir dos rótulos extraídos das
+  páginas, e o conferidor faz a pergunta inversa.** Uma lista escrita à mão
+  divergiria na primeira página nova. A extração devolveu 40 rótulos distintos e
+  **nenhum com duas traduções diferentes** — que é a prova de consistência que a
+  §4 do enunciado pede, feita por construção em vez de por revisão.
+- **Inglês americano, e não britânico.** A D11 tinha escrito "enrolment" na home;
+  a D13 vai ligar o estilo Microsoft do Vale nas páginas em inglês, e aquele
+  estilo é escrito para o americano. Deixar britânico agora é criar um passivo
+  previsível para a tarefa seguinte. A ocorrência da D11 foi corrigida junto.
+- **As mensagens de erro específicas de um processo NÃO são repetidas no
+  glossário de interface.** Ele lista as nove que aparecem em mais de uma tela e
+  aponta para a tabela §8 de cada página para o resto — mesma regra que o
+  glossário geral já aplica ("termo que só aparece em uma página mora no
+  glossário daquela página"). Duplicar as ~45 mensagens criaria dois donos de
+  cada frase.
+- **A folga da home em inglês foi consumida e teve que ser devolvida.** A D11
+  mediu que ela era a página com menor margem acima da dobra (678px de 768) e
+  registrou que a D12 precisaria remedi-la se acrescentasse texto acima dos
+  cartões. Acrescentei dois parágrafos e o roteiro reprovou em **711px**; a nota
+  foi encolhida e voltou a **657px**, o mesmo valor que a D11 media para os links
+  de trilha. O aviso da sessão anterior é o que fez a correção ser encolher o
+  texto em vez de afrouxar o limiar.
+- **O `mkdocs build --strict` saiu em 0 com âncora quebrada, pela terceira vez.**
+  A D08 registrou, a D11 provou de propósito, e aqui foi provado de novo com uma
+  âncora plantada. É por isso que a conferência resolve os 294 links contra os
+  `id` do **HTML gerado**, e não contra o markdown. Quem escrever a D13 precisa
+  disto: o `lychee` é que vai fechar essa porta no CI.
+
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
 `public/`), histórico de empréstimos concluídos no painel, um relatório para a
 coordenação e — agora que existe conta individual — registrar **quem** deu baixa
