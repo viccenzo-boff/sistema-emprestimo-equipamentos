@@ -239,9 +239,18 @@ maior que a própria caixa.
 - **Textos de interface citados literalmente**, entre aspas e com a grafia exata
   da tela — inclusive quando a tela estiver errada. Corrigir no texto e não na
   tela faz o leitor procurar um botão que não existe.
-- **Na versão em inglês, citar o rótulo real entre parênteses**: *click **Return**
-  (Devolver)*. As capturas continuam em português e isso precisa ser declarado
-  uma vez, na home em inglês.
+- **Na versão em inglês, o rótulo real vem em negrito e o inglês entre
+  parênteses**: *click **Devolver** (Return)*. As capturas continuam em
+  português e isso precisa ser declarado uma vez, na home em inglês.
+
+    Esta linha dizia o contrário até a D12 — *click **Return** (Devolver)* —, e
+    perdeu para o repositório. A regra 1 do
+    [guia de estilo](docs/contribuir/guia-de-estilo.md) (D03) e a nota da home
+    em inglês (D11) já tinham publicado a forma invertida, concordando entre si,
+    e o argumento delas é de ergonomia: quem lê está com a tela em português na
+    frente, e o negrito tem que ser a palavra que ele procura no botão.
+    Levantado como conflito antes da primeira tradução; a decisão foi do dono do
+    repositório.
 - **Um passo, uma ação.** Passo que contém "e então" vira dois passos.
 - **Ramificação de decisão sempre explícita**, no formato "Se SIM → ... / Se NÃO
   → ...", nunca embutida na prosa.

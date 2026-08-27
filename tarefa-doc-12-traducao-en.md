@@ -11,12 +11,21 @@ outra.
 O sistema é todo em português e **não será internacionalizado** (§2 da
 [spec-wiki.md](spec-wiki.md)). As capturas continuam em português.
 
-A convenção, aplicada sem exceção: **o rótulo real aparece entre parênteses,
-logo após o termo em inglês.**
+A convenção, aplicada sem exceção: **o rótulo real vem em negrito, e o
+significado em inglês entre parênteses.**
 
 ```markdown
-4. Click **Return** (Devolver) on the item you want to give back.
+4. Click **Devolver** (Return) on the item you want to give back.
 ```
+
+> Este enunciado prescrevia a forma invertida — *click **Return** (Devolver)* —,
+> e ela perdeu para o repositório na execução da tarefa: a regra 1 do
+> [guia de estilo](docs/contribuir/guia-de-estilo.md) (D03) e a nota da home em
+> inglês (D11) já tinham publicado esta forma, concordando entre si, e o
+> argumento delas é de ergonomia — quem lê está com a tela em português na
+> frente, e o negrito tem que ser a palavra que ele procura no botão. A §7 da
+> [spec-wiki.md](spec-wiki.md) foi corrigida junto, para não ficarem dois donos
+> da mesma regra.
 
 Declare essa convenção **uma vez**, com destaque, na home em inglês. Sem essa
 declaração, o leitor de fora acha que a wiki está desatualizada em relação ao
