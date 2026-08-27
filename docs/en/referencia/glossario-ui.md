@@ -27,6 +27,7 @@ physical check-in — are in the [Glossary](glossario.md) instead.
 | **Sair** | Exit — ends the visit and returns to the enrollment number screen |
 | **Concluir** | Finish — closes the pickup confirmed screen |
 | **Meus equipamentos** | My equipment — the list of what is in your name right now |
+| **Retirar equipamento** | Pick equipment up — the heading over the category grid, shown only when **Meus equipamentos** is on screen too |
 | **Confirmar retirada** | Confirm pickup |
 | **Devolver** | Return — the button on one row |
 | **Devolver tudo** | Return all — the shortcut above the list, from two items upwards |
@@ -37,6 +38,8 @@ physical check-in — are in the [Glossary](glossario.md) instead.
 | **Cancelar** | Cancel |
 | "4 de 9 disponíveis" | 4 of 9 available — the count on a category card |
 | "Nenhum disponível agora" | None available right now — a category with no free unit |
+| "O que você vai levar?" | What are you taking? — the heading when you hold no device |
+| "O que você quer fazer?" | What do you want to do? — the heading when you already hold one |
 
 ## Everywhere in the admin panel
 

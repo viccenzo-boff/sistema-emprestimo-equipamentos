@@ -130,30 +130,46 @@ install.
 
     [![The opening screen of an inactive record: instead of the category grid, a yellow notice explaining the block](../../assets/images/retirada/03-cadastro-inativo.png)](../../assets/images/retirada/03-cadastro-inativo.png)
 
-5. Look at the card of the category you want. Each one says how many units are
+5. Are you already holding a device?
+
+    - **If NO** → the heading reads "O que você vai levar?" (What are you
+      taking?) and the category grid has the screen to itself. That is the
+      screen in the step 6 picture. Go to step 6.
+    - **If YES** → the heading reads "O que você quer fazer?" (What do you want
+      to do?), the **Meus equipamentos** (My equipment) section comes in with
+      what is already in your name, and the grid shares the screen with it — to
+      the right on a landscape tablet, below it on a portrait one, under the
+      heading **Retirar equipamento** (Pick equipment up). It is the same grid,
+      and the pickup works the same: go to step 6.
+
+    You do not have to return anything to pick up one more device. The list on
+    the left is the [return process](devolucao.md), and it does not get in the
+    way of a pickup.
+
+6. Look at the card of the category you want. Each one says how many units are
    free right now — "4 de 9 disponíveis" (4 of 9 available) means the front desk
    has nine laptops in circulation and four of them are on the counter at this
    moment.
 
     [![The grid with the three category cards: Notebooks, Tablets and Extensões, each with its count of free units](../../assets/images/retirada/04-grade-de-categorias.png)](../../assets/images/retirada/04-grade-de-categorias.png)
 
-6. Does the category have any free unit?
+7. Does the category have any free unit?
 
-    - **If YES** → tap the card. Go to step 7.
+    - **If YES** → tap the card. Go to step 8.
     - **If NO** → the card turns gray, says "Nenhum disponível agora" (None
       available right now) and does not respond to the tap. Choose another
       category, or talk to the front desk.
 
     [![The same grid with the Tablets card grayed out, saying none is available right now](../../assets/images/retirada/05-categoria-sem-unidade-livre.png)](../../assets/images/retirada/05-categoria-sem-unidade-livre.png)
 
-7. Tap the asset tag of each item you are taking.
+8. Tap the asset tag of each item you are taking.
 
     [![The list of free laptops, one asset tag per card](../../assets/images/retirada/06-lista-de-equipamentos.png)](../../assets/images/retirada/06-lista-de-equipamentos.png)
 
     The item you tap turns green, with a check mark in the corner. The asset tag
     on screen is the same one stuck on the device, character by character.
 
-8. Check the bar at the bottom: it lists everything that is selected.
+9. Check the bar at the bottom: it lists everything that is selected.
 
     [![The bottom bar with two selected items and the green confirm pickup button](../../assets/images/retirada/07-itens-selecionados.png)](../../assets/images/retirada/07-itens-selecionados.png)
 
@@ -167,11 +183,11 @@ install.
         arrow in the top left corner, enter another category and take everything
         in a single confirmation.
 
-9. Tap **Confirmar retirada** (Confirm pickup).
+10. Tap **Confirmar retirada** (Confirm pickup).
 
-10. Were all the selected items still free?
+11. Were all the selected items still free?
 
-    - **If YES** → the pickup confirmed screen appears. Go to step 11.
+    - **If YES** → the pickup confirmed screen appears. Go to step 12.
     - **If NO** → the bar shows which item is gone — for example "O equipamento
       NOTE-06 acabou de sair." (Device NOTE-06 has just left.) — and the portal
       removes that item from your list. **Nothing was recorded**, not even the
@@ -180,11 +196,11 @@ install.
 
     [![The bottom bar with the red alert saying NOTE-06 has just left, and NOTE-05 still selected](../../assets/images/retirada/08-item-ja-retirado.png)](../../assets/images/retirada/08-item-ja-retirado.png)
 
-11. Take from the counter the devices shown on screen, checking each asset tag.
+12. Take from the counter the devices shown on screen, checking each asset tag.
 
     [![The pickup confirmed screen, listing the two asset tags recorded in the person's name](../../assets/images/retirada/09-retirada-confirmada.png)](../../assets/images/retirada/09-retirada-confirmada.png)
 
-12. Tap **Concluir** (Finish).
+13. Tap **Concluir** (Finish).
 
     If you walk away without tapping it, the screen goes back to the start on
     its own, on the countdown shown at the bottom. The pickup is recorded

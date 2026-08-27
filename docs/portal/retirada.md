@@ -96,28 +96,41 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
 
     [![A tela inicial de um cadastro inativo: no lugar da grade de categorias, um aviso amarelo explicando o bloqueio](../assets/images/retirada/03-cadastro-inativo.png)](../assets/images/retirada/03-cadastro-inativo.png)
 
-5. Confira o cartão da categoria que você quer. Cada um diz quantas unidades
+5. Você já está com algum aparelho?
+
+    - **Se NÃO** → o título é "O que você vai levar?" e a grade de categorias
+      ocupa a tela sozinha. É a tela da captura do passo 6. Siga para o passo 6.
+    - **Se SIM** → o título é "O que você quer fazer?", a seção
+      **Meus equipamentos** entra com o que já está no seu nome, e a grade
+      divide a tela com ela — à direita no tablet deitado, abaixo dela no tablet
+      em pé, sob o título **Retirar equipamento**. É a mesma grade, e a retirada
+      segue igual: siga para o passo 6.
+
+    Você não precisa devolver nada para retirar mais um aparelho. A lista à
+    esquerda é a [devolução](devolucao.md), e ela não atrapalha a retirada.
+
+6. Confira o cartão da categoria que você quer. Cada um diz quantas unidades
    estão livres agora — "4 de 9 disponíveis" quer dizer que a secretaria tem
    nove notebooks em circulação e quatro deles estão na bancada neste momento.
 
     [![A grade com os três cartões de categoria: Notebooks, Tablets e Extensões, cada um com a contagem de unidades livres](../assets/images/retirada/04-grade-de-categorias.png)](../assets/images/retirada/04-grade-de-categorias.png)
 
-6. A categoria tem alguma unidade livre?
+7. A categoria tem alguma unidade livre?
 
-    - **Se SIM** → toque no cartão. Siga para o passo 7.
+    - **Se SIM** → toque no cartão. Siga para o passo 8.
     - **Se NÃO** → o cartão fica cinza, diz "Nenhum disponível agora" e não
       responde ao toque. Escolha outra categoria, ou fale com a secretaria.
 
     [![A mesma grade com o cartão de Tablets em cinza, dizendo que nenhum está disponível agora](../assets/images/retirada/05-categoria-sem-unidade-livre.png)](../assets/images/retirada/05-categoria-sem-unidade-livre.png)
 
-7. Toque na etiqueta de cada item que você vai levar.
+8. Toque na etiqueta de cada item que você vai levar.
 
     [![A lista de notebooks livres, com uma etiqueta por cartão](../assets/images/retirada/06-lista-de-equipamentos.png)](../assets/images/retirada/06-lista-de-equipamentos.png)
 
     O item tocado fica verde, com um sinal de confirmado no canto. A etiqueta na
     tela é a mesma que está colada no aparelho, caractere por caractere.
 
-8. Confira a barra no rodapé: ela lista tudo que está selecionado.
+9. Confira a barra no rodapé: ela lista tudo que está selecionado.
 
     [![A barra do rodapé com dois itens selecionados e o botão verde de confirmar retirada](../assets/images/retirada/07-itens-selecionados.png)](../assets/images/retirada/07-itens-selecionados.png)
 
@@ -131,11 +144,11 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
         no alto à esquerda, entrar em outra categoria e levar tudo em uma
         confirmação só.
 
-9. Toque em **Confirmar retirada**.
+10. Toque em **Confirmar retirada**.
 
-10. Todos os itens selecionados ainda estavam livres?
+11. Todos os itens selecionados ainda estavam livres?
 
-    - **Se SIM** → a tela de retirada confirmada aparece. Siga para o passo 11.
+    - **Se SIM** → a tela de retirada confirmada aparece. Siga para o passo 12.
     - **Se NÃO** → a barra mostra qual item saiu — por exemplo
       "O equipamento NOTE-06 acabou de sair." — e o portal tira esse item da sua
       lista. **Nada foi registrado**, nem os itens que continuavam livres.
@@ -143,12 +156,12 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
 
     [![A barra do rodapé com o alerta vermelho de que o NOTE-06 acabou de sair, e o NOTE-05 ainda selecionado](../assets/images/retirada/08-item-ja-retirado.png)](../assets/images/retirada/08-item-ja-retirado.png)
 
-11. Retire da bancada os aparelhos que aparecem na tela, conferindo cada
+12. Retire da bancada os aparelhos que aparecem na tela, conferindo cada
     etiqueta.
 
     [![A tela de retirada confirmada, listando as duas etiquetas registradas no nome da pessoa](../assets/images/retirada/09-retirada-confirmada.png)](../assets/images/retirada/09-retirada-confirmada.png)
 
-12. Toque em **Concluir**.
+13. Toque em **Concluir**.
 
     Se você sair sem tocar, a tela volta ao início sozinha na contagem que
     aparece no rodapé. A retirada já está registrada de qualquer forma.
