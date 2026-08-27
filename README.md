@@ -3,7 +3,7 @@
 MVP para gerenciar o empréstimo de equipamentos (notebooks, tablets, extensões) dos cursos de
 Sistemas de Informação, Ciência da Computação e Engenharia da Computação.
 
-O escopo, os fluxos de usuário e as regras de negócio estão em [spec.md](spec.md).
+O escopo, os fluxos de usuário e as regras de negócio estão em [spec.md](especificacoes/spec.md).
 
 O sistema roda em rede local, hospedado no computador da secretaria, com duas frentes de acesso:
 
@@ -122,6 +122,12 @@ PESSOAS_CSV=C:/planilhas/alunos.csv npm run db:seed
 ## Estrutura
 
 ```text
+especificacoes/
+  spec.md                    a especificação do produto; manda sobre o sistema
+  spec-wiki.md               a especificação da wiki; manda sobre docs/
+  tarefas/pendentes/         enunciados ainda não executados
+  tarefas/concluidas/        enunciados já executados, guardados como histórico
+docs/                        a wiki (MkDocs); ver "Documentação" acima
 prisma/
   schema.prisma              modelos Pessoa, Administrador, Categoria, Equipamento, Emprestimo
   migrations/                histórico de migrations
@@ -243,7 +249,7 @@ endpoint POST público, e esconder o botão na tela não fecha a porta.
 
 ## Modelo de dados
 
-Conforme a seção 3 de [spec.md](spec.md), mais o que as tarefas 6, 8, 8.1 e 10 acrescentaram:
+Conforme a seção 3 de [spec.md](especificacoes/spec.md), mais o que as tarefas 6, 8, 8.1 e 10 acrescentaram:
 
 - **Pessoa** — `matricula` (PK, string para preservar zeros à esquerda), `nome` (Title Case),
   `perfil` (`Estudante` | `Professor`), `cursos` (em ordem hierárquica), `status`

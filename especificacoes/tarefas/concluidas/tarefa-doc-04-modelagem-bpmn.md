@@ -11,7 +11,7 @@ antes do diagrama tende a virar narração de tela.
   (desktop). Ambos salvam `.bpmn`, que é XML padrão OMG.
 * **Não use o Bizagi.** O `.bpm` dele é um ZIP proprietário: o Git não faz diff,
   o GitHub não renderiza e quem for ler precisa instalar o programa. A decisão
-  está registrada na §2 da [spec-wiki.md](spec-wiki.md).
+  está registrada na §2 da [spec-wiki.md](../../spec-wiki.md).
 * Fontes em `docs/processos-fonte/NN-nome.bpmn`.
 * SVG exportado em `docs/assets/diagramas/NN-nome.svg`, commitado junto.
 
@@ -41,20 +41,20 @@ nenhum dos cinco.
 ## 4. Fonte da verdade
 
 **Modele a partir do comportamento real, não da memória nem da spec.** A
-[spec.md](spec.md) descreve a intenção; o código descreve o que acontece. Onde
+[spec.md](../../spec.md) descreve a intenção; o código descreve o que acontece. Onde
 divergirem, o código manda para a wiki, e a divergência vira uma linha no
 registro de decisões da tarefa.
 
 Para cada processo, leia:
 
-* Retirada e devolução: [src/app/actions.ts](src/app/actions.ts) e os componentes
-  em [src/components/portal/](src/components/portal/).
-* Baixa e inventário: [src/app/admin/actions.ts](src/app/admin/actions.ts),
-  [FilaDeDevolucoes.tsx](src/components/admin/FilaDeDevolucoes.tsx) e
-  [GestaoInventario.tsx](src/components/admin/GestaoInventario.tsx).
-* Pessoas: [src/app/admin/pessoas/actions.ts](src/app/admin/pessoas/actions.ts),
-  [GestaoPessoas.tsx](src/components/admin/GestaoPessoas.tsx) e
-  [planilha-pessoas.ts](src/lib/planilha-pessoas.ts).
+* Retirada e devolução: [src/app/actions.ts](../../../src/app/actions.ts) e os componentes
+  em [src/components/portal/](../../../src/components/portal/).
+* Baixa e inventário: [src/app/admin/actions.ts](../../../src/app/admin/actions.ts),
+  [FilaDeDevolucoes.tsx](../../../src/components/admin/FilaDeDevolucoes.tsx) e
+  [GestaoInventario.tsx](../../../src/components/admin/GestaoInventario.tsx).
+* Pessoas: [src/app/admin/pessoas/actions.ts](../../../src/app/admin/pessoas/actions.ts),
+  [GestaoPessoas.tsx](../../../src/components/admin/GestaoPessoas.tsx) e
+  [planilha-pessoas.ts](../../../src/lib/planilha-pessoas.ts).
 
 ## 5. Verificação
 

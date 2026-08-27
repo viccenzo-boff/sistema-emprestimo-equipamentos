@@ -1,5 +1,5 @@
-# Configuracao da wiki. A especificacao que manda aqui e a spec-wiki.md;
-# a spec.md manda sobre o sistema. Em conflito, a spec.md vence.
+# Configuracao da wiki. A especificacao que manda aqui e a especificacoes/spec-wiki.md;
+# a especificacoes/spec.md manda sobre o sistema. Em conflito, a especificacoes/spec.md vence.
 #
 # Ambiente Python: docs-requirements.txt (fora do package.json de proposito).
 # Receita de montagem e de captura de tela: secao "Documentacao" do CONTRIBUTING.md.
@@ -179,7 +179,7 @@ extra:
   version:
     provider: mike
 
-# A arvore da §4 da spec-wiki.md, inteira desde o inicio -- com as paginas
+# A arvore da §4 da especificacoes/spec-wiki.md, inteira desde o inicio -- com as paginas
 # ainda vazias. E deliberado: nav completo torna visivel o que falta, e um
 # indice que cresce sozinho esconderia o buraco ate a vespera da entrega.
 nav:

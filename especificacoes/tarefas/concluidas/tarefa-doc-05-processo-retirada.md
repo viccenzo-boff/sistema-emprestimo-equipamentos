@@ -11,8 +11,8 @@ Arquivo: `docs/portal/retirada.md`
 * Suba o estado de demonstração da D01 (`db:reset`, `db:seed`, `db:demo`, `dev`).
 * **Execute o fluxo inteiro no navegador**, do teclado da matrícula até a tela de
   sucesso. Documentação escrita de memória é a que envelhece sem ninguém notar.
-* Leia [src/app/actions.ts](src/app/actions.ts) e os componentes de
-  [src/components/portal/](src/components/portal/) para conferir cada ramificação.
+* Leia [src/app/actions.ts](../../../src/app/actions.ts) e os componentes de
+  [src/components/portal/](../../../src/components/portal/) para conferir cada ramificação.
 
 ## 2. O passo a passo
 
@@ -30,7 +30,7 @@ leva a uma saída diferente:
 ## 3. Regras que não são óbvias (seção 7)
 
 Escreva estas três em linguagem de usuário final. A fonte é a seção "Regra de
-negócio que não é óbvia pelo código" do [AGENTS.md](AGENTS.md).
+negócio que não é óbvia pelo código" do [AGENTS.md](../../../AGENTS.md).
 
 * **Cada item retirado vira um registro separado.** Levar três itens de uma vez
   gera três empréstimos, não um com três itens. É o que permite devolver um e
@@ -50,7 +50,7 @@ equipamentos de uma categoria, barra de seleção com itens escolhidos, tela de
 sucesso, e as telas das três ramificações da §2.
 
 Janela em 1280x800 (paisagem), a medida de referência do
-[AGENTS.md](AGENTS.md).
+[AGENTS.md](../../../AGENTS.md).
 
 ## 5. Verificação
 

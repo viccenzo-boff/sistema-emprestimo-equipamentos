@@ -3,13 +3,13 @@
 Espelha a wiki inteira em `docs/en/`. Esta é a tarefa **de corte**: se o prazo
 apertar, ela sai por inteiro e não deixa buraco — a wiki fica completa em
 português e o inglês entra depois. Está registrado assim na §9 da
-[spec-wiki.md](spec-wiki.md). Se você precisar cortar, corte esta, e nenhuma
+[spec-wiki.md](../../spec-wiki.md). Se você precisar cortar, corte esta, e nenhuma
 outra.
 
 ## 1. A regra da interface não traduzida
 
 O sistema é todo em português e **não será internacionalizado** (§2 da
-[spec-wiki.md](spec-wiki.md)). As capturas continuam em português.
+[spec-wiki.md](../../spec-wiki.md)). As capturas continuam em português.
 
 A convenção, aplicada sem exceção: **o rótulo real vem em negrito, e o
 significado em inglês entre parênteses.**
@@ -20,11 +20,11 @@ significado em inglês entre parênteses.**
 
 > Este enunciado prescrevia a forma invertida — *click **Return** (Devolver)* —,
 > e ela perdeu para o repositório na execução da tarefa: a regra 1 do
-> [guia de estilo](docs/contribuir/guia-de-estilo.md) (D03) e a nota da home em
+> [guia de estilo](../../../docs/contribuir/guia-de-estilo.md) (D03) e a nota da home em
 > inglês (D11) já tinham publicado esta forma, concordando entre si, e o
 > argumento delas é de ergonomia — quem lê está com a tela em português na
 > frente, e o negrito tem que ser a palavra que ele procura no botão. A §7 da
-> [spec-wiki.md](spec-wiki.md) foi corrigida junto, para não ficarem dois donos
+> [spec-wiki.md](../../spec-wiki.md) foi corrigida junto, para não ficarem dois donos
 > da mesma regra.
 
 Declare essa convenção **uma vez**, com destaque, na home em inglês. Sem essa

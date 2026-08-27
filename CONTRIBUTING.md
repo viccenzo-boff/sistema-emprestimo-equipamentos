@@ -6,7 +6,7 @@ não é conteúdo para quem vai usar o sistema.
 
 Quem vai mexer no **código** deve ler o [README.md](README.md) e o
 [AGENTS.md](AGENTS.md). Quem vai escrever a **wiki** deve ler a
-[spec-wiki.md](spec-wiki.md).
+[spec-wiki.md](especificacoes/spec-wiki.md).
 
 ## Documentação
 
@@ -279,7 +279,7 @@ não tem erro de configuração: tem ferramenta ausente, e o comando diz isso.
 ### Reproduzir o estado de demonstração
 
 As capturas de tela da wiki não podem conter dado de pessoa real
-([spec-wiki.md](spec-wiki.md) §7: *"Nenhum dado pessoal real em captura de tela.
+([spec-wiki.md](especificacoes/spec-wiki.md) §7: *"Nenhum dado pessoal real em captura de tela.
 Sem exceção, nem borrado."*). O estado que as telas mostram é montado por
 script, com gente fictícia:
 
@@ -530,7 +530,7 @@ gh-pages/
 ```
 
 A versão publicada é a `v1.0`, que é o estado congelado que esta wiki descreve
-([spec-wiki.md](spec-wiki.md) §2.1). O padrão aponta para ela **por decisão
+([spec-wiki.md](especificacoes/spec-wiki.md) §2.1). O padrão aponta para ela **por decisão
 explícita**, e não para um alias móvel: quando a Tarefa 13 entrar e virar
 `v1.1`, alguém roda `mike set-default v1.1` de propósito, em vez de a raiz do
 site mudar sozinha debaixo de quem tinha o link.

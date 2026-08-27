@@ -13,7 +13,7 @@ Complete a configuração iniciada na D03.
 * **Páginas em português:** apenas o vocabulário controlado da D03. Os estilos
   prontos do Vale são escritos para inglês e **não existe equivalente de
   qualidade para PT-BR** — a limitação está registrada na §6.1 da
-  [spec-wiki.md](spec-wiki.md). Não tente aplicar o estilo Microsoft ao
+  [spec-wiki.md](../../spec-wiki.md). Não tente aplicar o estilo Microsoft ao
   português; ele vai acusar centenas de falsos positivos e a equipe vai desligar
   o linter inteiro por causa disso.
 * Ajuste o nível de severidade para que aviso não quebre o build, mas erro sim.

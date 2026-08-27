@@ -23,7 +23,7 @@ import { PERFIL, STATUS_EMPRESTIMO, STATUS_EQUIPAMENTO, STATUS_PESSOA } from "..
  * nasce vazio, e não existe item em manutenção nem aposentado para mostrar.
  *
  * Este script acrescenta **por cima** do seed o que falta para fotografar. Ele
- * é separado de propósito: a §1 da spec-wiki.md diz que decisão que serve só ao
+ * é separado de propósito: a §1 da especificacoes/spec-wiki.md diz que decisão que serve só ao
  * portfólio e piora o produto não entra, e enfiar empréstimos fictícios no seed
  * pioraria o produto.
  *
@@ -96,7 +96,7 @@ type PessoaDemo = {
  * de situação com inativos de verdade.
  *
  * Nomes inventados. Nenhum nome de pessoa real, nem de colega — é o motivo de
- * este arquivo existir (spec-wiki.md §2: matrícula e nome de estudante real em
+ * este arquivo existir (especificacoes/spec-wiki.md §2: matrícula e nome de estudante real em
  * captura pública é LGPD).
  *
  * Três casos estão aqui de propósito, e não por variedade:

@@ -8,7 +8,7 @@ Nenhuma página de processo é escrita aqui.
 
 ## 1. Guia de estilo — `docs/contribuir/guia-de-estilo.md`
 
-Transcreva e desenvolva as regras da §7 da [spec-wiki.md](spec-wiki.md), com
+Transcreva e desenvolva as regras da §7 da [spec-wiki.md](../../spec-wiki.md), com
 exemplo de certo e errado para cada uma:
 
 * Texto de interface citado **literalmente**, entre aspas, com a grafia exata da
@@ -29,7 +29,7 @@ e imagem órfã nunca é encontrada.
 ## 2. Template — `docs/contribuir/template-processo.md`
 
 Arquivo Markdown copiável, com as oito seções da §5 da
-[spec-wiki.md](spec-wiki.md), cada uma com um comentário HTML explicando o que
+[spec-wiki.md](../../spec-wiki.md), cada uma com um comentário HTML explicando o que
 entra e o que não entra.
 
 Regra que precisa estar escrita dentro do template: **seção que não se aplica é
@@ -50,7 +50,7 @@ Cada verbete: definição em linguagem de usuário final, e — quando o termo t
 correspondente técnico — o nome do campo ou status entre parênteses.
 
 **Não invente definição.** As regras estão na seção "Regra de negócio que não é
-óbvia pelo código" do [AGENTS.md](AGENTS.md) e na [spec.md](spec.md). Traduzir
+óbvia pelo código" do [AGENTS.md](../../../AGENTS.md) e na [spec.md](../../spec.md). Traduzir
 para linguagem de usuário é o trabalho.
 
 O glossário cresce nas tarefas seguintes; aqui ele só precisa nascer consistente.
@@ -63,7 +63,7 @@ Nesta tarefa configure **apenas o vocabulário em português** — grafia aceita
 grafia proibida dos termos do glossário. A regra mais importante: **"usuário"
 não é sinônimo de aluno nem de professor**. No vocabulário do sistema, "usuário"
 significa login de administrador (`Administrador.usuario`), e o
-[AGENTS.md](AGENTS.md) já trata o uso trocado como resíduo a corrigir. A wiki não
+[AGENTS.md](../../../AGENTS.md) já trata o uso trocado como resíduo a corrigir. A wiki não
 pode reintroduzir a ambiguidade que o código eliminou.
 
 O estilo Microsoft para as páginas em inglês é configurado na D13, junto com o

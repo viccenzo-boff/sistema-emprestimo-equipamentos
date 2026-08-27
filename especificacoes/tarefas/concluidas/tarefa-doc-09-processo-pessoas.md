@@ -13,11 +13,11 @@ Arquivo: `docs/painel/pessoas.md`
   sujeira proposital (perfil em caixa alta, curso abreviado, nome todo em
   maiúscula), conferir a prévia, gravar, editar cadastro, editar matrícula,
   inativar e reativar.
-* Leia [GestaoPessoas.tsx](src/components/admin/GestaoPessoas.tsx),
-  [ImportacaoPlanilha.tsx](src/components/admin/ImportacaoPlanilha.tsx),
-  [planilha-pessoas.ts](src/lib/planilha-pessoas.ts),
-  [planilha-modelo.ts](src/lib/planilha-modelo.ts) e
-  [sanitizacao.ts](src/lib/sanitizacao.ts).
+* Leia [GestaoPessoas.tsx](../../../src/components/admin/GestaoPessoas.tsx),
+  [ImportacaoPlanilha.tsx](../../../src/components/admin/ImportacaoPlanilha.tsx),
+  [planilha-pessoas.ts](../../../src/lib/planilha-pessoas.ts),
+  [planilha-modelo.ts](../../../src/lib/planilha-modelo.ts) e
+  [sanitizacao.ts](../../../src/lib/sanitizacao.ts).
 
 ## 2. O passo a passo
 

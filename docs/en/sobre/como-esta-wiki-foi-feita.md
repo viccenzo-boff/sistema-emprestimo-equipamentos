@@ -17,7 +17,7 @@ them spoke to the people who operate the system:
 | --- | --- | --- |
 | `README.md` | Whoever installs and runs the code | How to start the project, which scripts exist |
 | `AGENTS.md` | Whoever changes the code | Why each technical decision was made |
-| `spec.md` | Whoever specified the product | What the system must do |
+| `especificacoes/spec.md` | Whoever specified the product | What the system must do |
 | 24 task statements | Whoever built each piece | What that task asked for |
 
 `CONTRIBUTING.md` existed with **zero bytes**. The `docs/` folder did not exist.

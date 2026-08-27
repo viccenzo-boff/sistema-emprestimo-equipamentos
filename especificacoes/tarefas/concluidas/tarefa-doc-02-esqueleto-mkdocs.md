@@ -6,7 +6,7 @@ sozinha, e que ninguém descubra problema de infraestrutura depois de dez págin
 prontas.
 
 **Pré-requisito bloqueante:** a autorização da Unoesc para uso público do nome e
-da logo (§8 da [spec-wiki.md](spec-wiki.md)). Se ela ainda não veio, execute esta
+da logo (§8 da [spec-wiki.md](../../spec-wiki.md)). Se ela ainda não veio, execute esta
 tarefa com uma marca neutra provisória e deixe a troca para depois — não invente
 que a autorização existe.
 
@@ -18,7 +18,7 @@ no `package.json`**.
 * Crie `docs-requirements.txt` na raiz, com versões fixadas (não use faixas):
   `mkdocs-material`, `mkdocs-static-i18n`, `mike`.
 * Documente como criar o ambiente e instalar na seção "Documentação" do
-  [CONTRIBUTING.md](CONTRIBUTING.md), aberta pela D01. Não crie arquivo de nota
+  [CONTRIBUTING.md](../../../CONTRIBUTING.md), aberta pela D01. Não crie arquivo de nota
   de trabalho dentro de `docs/` — tudo que mora lá vira página publicada.
 * Acrescente ao `.gitignore` o diretório do ambiente virtual e o `site/` gerado
   pelo build do MkDocs. **Confira antes se já não estão lá.**
@@ -28,7 +28,7 @@ no `package.json`**.
 * `site_name`, tema `material`, idioma padrão `pt-BR`.
 * Paleta: use os tokens de cor que o sistema já definiu — azul `#023770` e verde
   `#3aaa35`, documentados na seção "Decisões de design já tomadas" do
-  [AGENTS.md](AGENTS.md). **Leia a regra dos dois verdes antes de aplicar:** o
+  [AGENTS.md](../../../AGENTS.md). **Leia a regra dos dois verdes antes de aplicar:** o
   verde da logo dá 3,0:1 sobre branco e não serve para texto nem para fundo de
   botão.
 * Modo claro e escuro com alternância. (O sistema é fixado em claro por causa do
@@ -36,7 +36,7 @@ no `package.json`**.
 * Extensões necessárias para o template da D03: `admonition`,
   `pymdownx.details`, `pymdownx.superfences`, `attr_list`, `md_in_html`,
   `pymdownx.tasklist` com `custom_checkbox`.
-* `nav` com a árvore da §4 da [spec-wiki.md](spec-wiki.md), apontando para
+* `nav` com a árvore da §4 da [spec-wiki.md](../../spec-wiki.md), apontando para
   páginas ainda vazias (um `#` e uma frase). O `nav` completo desde o início
   torna visível o que falta.
 

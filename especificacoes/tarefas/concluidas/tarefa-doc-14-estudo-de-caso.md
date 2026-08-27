@@ -9,8 +9,8 @@ Visão técnica do sistema para quem lê a wiki e quer entender o que está por 
 stack, modelo de dados, as duas frentes, e por que SQLite em arquivo único (a
 portabilidade para a máquina da secretaria).
 
-Curta. Quem quiser profundidade tem o [README.md](README.md) e o
-[AGENTS.md](AGENTS.md), e esta página deve linkar para os dois.
+Curta. Quem quiser profundidade tem o [README.md](../../../README.md) e o
+[AGENTS.md](../../../AGENTS.md), e esta página deve linkar para os dois.
 
 ## 2. `docs/sobre/como-esta-wiki-foi-feita.md`
 
@@ -50,7 +50,7 @@ que ela cobre. Quem chega pelo GitHub precisa achar a documentação sem procura
 ## 4. Fechamento da série
 
 * Confira a lista de critérios de conclusão da §10 da
-  [spec-wiki.md](spec-wiki.md), item por item, e marque o que está cumprido.
+  [spec-wiki.md](../../spec-wiki.md), item por item, e marque o que está cumprido.
 * Item não cumprido **não se marca** — registre o que falta e por quê.
 * Se a autorização da Unoesc (§8) não tiver vindo, execute o plano B agora:
   trocar marca e logo pela alternativa neutra. Não publique com a marca sem

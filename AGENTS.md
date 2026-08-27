@@ -17,12 +17,31 @@ MVP para empréstimo de notebooks, tablets e extensões, rodando em rede local n
 computador da secretaria. Duas frentes: `/` (tablet, retirada e devolução) e
 `/admin` (desktop, secretaria).
 
-**A especificação é [spec.md](spec.md) e ela manda.** Leia por inteiro antes de
-mexer em qualquer coisa — escopo, fluxos e regras de negócio estão lá.
+**A especificação é [`especificacoes/spec.md`](especificacoes/spec.md) e ela
+manda.** Esse é o caminho canônico — a spec morou na raiz até 2026-08-27 e foi
+para `especificacoes/` na reorganização documental; se você lembra dela como
+`spec.md` na raiz, a memória está velha. Leia por inteiro antes de mexer em
+qualquer coisa — escopo, fluxos e regras de negócio estão lá.
 
-**A wiki tem especificação própria: [spec-wiki.md](spec-wiki.md).** Ela manda
-sobre `docs/` e sobre a série `tarefa-doc-NN`; em conflito, a `spec.md` vence —
-a wiki descreve o sistema, não o define.
+**A wiki tem especificação própria:
+[`especificacoes/spec-wiki.md`](especificacoes/spec-wiki.md).** Ela manda sobre
+`docs/` e sobre a série `tarefa-doc-NN`; em conflito, a `spec.md` vence — a wiki
+descreve o sistema, não o define.
+
+**Onde mora cada documento** (reorganização de 2026-08-27):
+
+| Caminho | O que é |
+| --- | --- |
+| [`especificacoes/spec.md`](especificacoes/spec.md) | A base arquitetural. Manda sobre o sistema inteiro. |
+| [`especificacoes/spec-wiki.md`](especificacoes/spec-wiki.md) | Manda sobre `docs/` e sobre a série `tarefa-doc-NN`. |
+| [`especificacoes/tarefas/pendentes/`](especificacoes/tarefas/pendentes/) | Enunciado de tarefa ainda **não** executada. Hoje só a Tarefa 13. |
+| [`especificacoes/tarefas/concluidas/`](especificacoes/tarefas/concluidas/) | Enunciados já executados, guardados como histórico. Não são fonte de trabalho novo. |
+| `docs/` | A wiki publicada pelo MkDocs. **Enunciado de tarefa nunca entra aqui** — o Vale lintaria e o MkDocs publicaria. |
+
+Enunciado novo nasce em `especificacoes/tarefas/pendentes/` e é movido para
+`concluidas/` quando a tarefa fecha. A raiz do repositório fica com os quatro
+arquivos que as ferramentas exigem lá: `README.md`, `CLAUDE.md`, `AGENTS.md` e
+`CONTRIBUTING.md`.
 
 ### Comandos
 
@@ -307,7 +326,7 @@ normalização de etiqueta e categoria, e o bloqueio por tentativas.
   nova no tablet ao lado de "Notebook".
 
 **Tarefa 5 — Refinamento de UI/UX (concluída):** os cinco itens de
-[tarefa-05-refinamento.md](tarefa-05-refinamento.md) — cartão de login mais
+[tarefa-05-refinamento.md](especificacoes/tarefas/concluidas/tarefa-05-refinamento.md) — cartão de login mais
 estreito e sem rolagem com erro, logo do login fora do cartão, `<select>` de
 categoria no inventário, "Confirmar Todas as Devoluções" no painel e "Devolver
 tudo" no tablet. `tsc`, `lint` e `build` em 0, com as três rotas do painel ainda
@@ -366,7 +385,7 @@ sessão. O banco foi devolvido ao estado em que estava antes da verificação.
   literal, palavra por palavra.
 
 **Tarefa 6 — Gestão de inventário e categorias (concluída):** os quatro itens
-de [tarefa-06-gestao-inventario.md](tarefa-06-gestao-inventario.md) — a tabela
+de [tarefa-06-gestao-inventario.md](especificacoes/tarefas/concluidas/tarefa-06-gestao-inventario.md) — a tabela
 `Categoria` com `Equipamento.categoria_id` obrigatório, o status `INATIVO`, a
 tela `/admin/categorias` (cadastrar, listar, excluir), o `<select>` de categoria
 alimentado pela tabela, e as ações de linha Editar etiqueta / Inativar /
@@ -442,7 +461,7 @@ invisibilidade do inativo nas contagens).
   hora, em vez de descobrir no tablet.
 
 **Tarefa 7 — Busca e filtros do inventário (concluída):** os três itens de
-[tarefa-07-filtros-pesquisa.md](tarefa-07-filtros-pesquisa.md) — a barra de
+[tarefa-07-filtros-pesquisa.md](especificacoes/tarefas/concluidas/tarefa-07-filtros-pesquisa.md) — a barra de
 busca por etiqueta ou categoria, os `<select>` de categoria e de situação, e o
 estado vazio com mensagem em vez de tabela em branco. `tsc`, `lint` e `build` em
 0, com as quatro rotas do painel ainda dinâmicas (`ƒ`). Verificado no navegador
@@ -515,7 +534,7 @@ vazio.
   Empréstimos Ativos.
 
 **Tarefa 8 — Gestão de usuários e importação de .xlsx (concluída):** os quatro
-itens de [tarefa-08-gestao-usuarios.md](tarefa-08-gestao-usuarios.md) — o campo
+itens de [tarefa-08-gestao-usuarios.md](especificacoes/tarefas/concluidas/tarefa-08-gestao-usuarios.md) — o campo
 `Usuario.status` (hoje `Pessoa.status`), a leitura nativa de planilha do Excel com `xlsx`
 (SheetJS), a importação com atualização parcial nos três cenários do enunciado,
 e a tela `/admin/usuarios` com busca, filtros, edição por modal e o botão de
@@ -628,7 +647,7 @@ de sessão**, inclusive a de upload multipart (7 asserções).
   empurraria para baixo as que acontecem toda hora.
 
 **Tarefa 8.1 — Sanitização e normalização de dados (concluída):** os cinco
-itens de [tarefa-08.1-sanitizacao-dados.md](tarefa-08.1-sanitizacao-dados.md) —
+itens de [tarefa-08.1-sanitizacao-dados.md](especificacoes/tarefas/concluidas/tarefa-08.1-sanitizacao-dados.md) —
 o módulo [sanitizacao.ts](src/lib/sanitizacao.ts), o Title Case dos nomes, o
 mapeamento de perfis para `Estudante`/`Professor`, o reconhecimento e a
 ordenação hierárquica dos cursos, e a troca do termo "Aluno" em toda a
@@ -743,7 +762,7 @@ de edição e o cabeçalho do tablet.
   escapou da migration) em vez de gritar em caixa alta no meio da tabela.
 
 **Tarefa 9 — Planilha modelo para download (concluída):** os dois itens de
-[tarefa-09-planilha-modelo.md](tarefa-09-planilha-modelo.md) — o botão
+[tarefa-09-planilha-modelo.md](especificacoes/tarefas/concluidas/tarefa-09-planilha-modelo.md) — o botão
 secundário "Baixar planilha modelo" dentro do cartão "Importar planilha" (entre
 o texto explicativo e a área pontilhada) e a geração do
 `modelo_importacao_usuarios.xlsx` no próprio navegador, com uma linha de
@@ -812,7 +831,7 @@ sujo (14 asserções). O banco terminou idêntico à linha de base, com
   "Ana Souza" viraria um cadastro real na primeira importação distraída.
 
 **Tarefa 10 — Autenticação real e refatoração de domínio (concluída):** os
-quatro itens de [tarefa-10-autenticacao-admin.md](tarefa-10-autenticacao-admin.md)
+quatro itens de [tarefa-10-autenticacao-admin.md](especificacoes/tarefas/concluidas/tarefa-10-autenticacao-admin.md)
 — `Usuario` renomeado para `Pessoa` (com `Emprestimo.pessoa_id`), a tabela
 `Administrador` com senha em hash `bcryptjs`, o seed criando as quatro contas,
 e o login de dois campos substituindo a senha mestre do `.env`. `tsc`, `lint` e
@@ -945,7 +964,7 @@ fronteira exata do freio de tentativas (12).
   dois campos manda a próxima pessoa procurar o campo que falta.
 
 **Tarefa 11 — Controle de sessão e perfil do admin (concluída):** os dois itens
-de [tarefa-11-sessao-e-perfil.md](tarefa-11-sessao-e-perfil.md) — o Logout com o
+de [tarefa-11-sessao-e-perfil.md](especificacoes/tarefas/concluidas/tarefa-11-sessao-e-perfil.md) — o Logout com o
 nome de quem está logado e o modal "Alterar senha" com os três campos, validado
 por `bcryptjs.compare` e gravado com `bcryptjs.hash`. `tsc`, `lint` e `build` em
 0, com as cinco rotas do painel dinâmicas (`ƒ`).
@@ -1057,7 +1076,7 @@ ressemear — em cópia.
   justamente a frase que não resolve a dúvida que a sprint existe para resolver.
 
 **Tarefa 12 — Auditoria de baixa física (concluída):** os dois itens de
-[tarefa-12-auditoria-devolucao.md](tarefa-12-auditoria-devolucao.md) — o campo
+[tarefa-12-auditoria-devolucao.md](especificacoes/tarefas/concluidas/tarefa-12-auditoria-devolucao.md) — o campo
 `Emprestimo.data_baixa` (`DateTime?`) e o preenchimento dele na confirmação de
 recebimento do painel. `tsc`, `lint` e `build` em 0, com as cinco rotas do painel
 dinâmicas (`ƒ`). A migration foi gerada com `--create-only`, lida (é um
@@ -1105,7 +1124,7 @@ banco foi devolvido à linha de base item a item.
 
 **Tarefa D01 — Congelar a v1.0 e criar o estado de demonstração (concluída):**
 a primeira da **série de documentação** (`tarefa-doc-NN`, regida pela
-[spec-wiki.md](spec-wiki.md)), e a única dela que mexe fora de `docs/`. Entrega
+[spec-wiki.md](especificacoes/spec-wiki.md)), e a única dela que mexe fora de `docs/`. Entrega
 a tag anotada `v1.0`, o `prisma/demo-estado.ts` com o atalho `npm run db:demo`, e
 a seção "Documentação" do [CONTRIBUTING.md](CONTRIBUTING.md), que até aqui tinha
 0 byte. `tsc` e `lint` em 0.
@@ -1206,7 +1225,7 @@ fim.
 **Tarefa D02 — Esqueleto do MkDocs, bilíngue e publicação automática
 (concluída, menos o passo que é do dono do repositório):** o site vazio no ar,
 com os quatro itens de
-[tarefa-doc-02-esqueleto-mkdocs.md](tarefa-doc-02-esqueleto-mkdocs.md) — o
+[tarefa-doc-02-esqueleto-mkdocs.md](especificacoes/tarefas/concluidas/tarefa-doc-02-esqueleto-mkdocs.md) — o
 `docs-requirements.txt` com as três ferramentas fixadas, o `mkdocs.yml` com a
 paleta da marca e as seis extensões que o template da D03 pede, o
 `mkdocs-static-i18n` em estrutura de pasta (PT na raiz, EN em `docs/en/`), as
@@ -1323,7 +1342,7 @@ foram vistos acontecer** e continuam pendentes.
 
 **Tarefa D03 — Guia de estilo, template de processo e glossário base
 (concluída):** os quatro itens de
-[tarefa-doc-03-guia-de-estilo-e-template.md](tarefa-doc-03-guia-de-estilo-e-template.md)
+[tarefa-doc-03-guia-de-estilo-e-template.md](especificacoes/tarefas/concluidas/tarefa-doc-03-guia-de-estilo-e-template.md)
 — o [guia de estilo](docs/contribuir/guia-de-estilo.md) com as sete regras da §7
 da spec-wiki em pares de certo e errado, o
 [template de processo](docs/contribuir/template-processo.md) com as oito seções
@@ -2246,7 +2265,7 @@ plantados de propósito — antes de ser aceito.
 **Decisões da D12** (não refazer sem motivo):
 
 - **A citação de rótulo é `**Devolver** (Return)`, e a spec-wiki foi corrigida
-  para isso.** A §7 da [spec-wiki.md](spec-wiki.md) e o enunciado da D12 mandavam
+  para isso.** A §7 da [spec-wiki.md](especificacoes/spec-wiki.md) e o enunciado da D12 mandavam
   o inverso — `**Return** (Devolver)` —, mas a regra 1 do
   [guia de estilo](docs/contribuir/guia-de-estilo.md) (D03) e a nota da home em
   inglês (D11) já tinham publicado a forma invertida, **concordando entre si**. O
@@ -2467,7 +2486,7 @@ as quatro páginas de "Sobre" — [arquitetura do
 sistema](docs/sobre/arquitetura-do-sistema.md) e [como esta wiki foi
 feita](docs/sobre/como-esta-wiki-foi-feita.md), nos dois idiomas —, a seção
 "Documentação" no [README.md](README.md) apontando para a wiki publicada, e a
-conferência item a item dos critérios da §10 da [spec-wiki.md](spec-wiki.md).
+conferência item a item dos critérios da §10 da [spec-wiki.md](especificacoes/spec-wiki.md).
 Junto vieram a ramificação que a leitura fria revelou na [página da
 retirada](docs/portal/retirada.md) e a correção do modelo de dados do README, que
 descrevia um campo apagado na Tarefa 6. `mkdocs build --strict`, `vale docs/`

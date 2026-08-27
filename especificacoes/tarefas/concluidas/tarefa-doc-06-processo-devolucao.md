@@ -12,8 +12,8 @@ Arquivo: `docs/portal/devolucao.md`
 * Estado de demonstração da D01 no ar, com empréstimos `ATIVO` disponíveis.
 * Execute a devolução no navegador e confirme, no `db:studio`, que o
   `Equipamento` **continua** `EMPRESTADO` depois de confirmada.
-* Leia [ModalDevolucao.tsx](src/components/portal/ModalDevolucao.tsx) e
-  [MeusEquipamentos.tsx](src/components/portal/MeusEquipamentos.tsx).
+* Leia [ModalDevolucao.tsx](../../../src/components/portal/ModalDevolucao.tsx) e
+  [MeusEquipamentos.tsx](../../../src/components/portal/MeusEquipamentos.tsx).
 
 ## 2. O passo a passo
 

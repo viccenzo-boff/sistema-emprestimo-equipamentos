@@ -12,9 +12,9 @@ Arquivo: `docs/painel/inventario.md`
   `MANUTENCAO` e `INATIVO`.
 * Execute no navegador: cadastrar item, mandar para manutenção, trazer de volta,
   aposentar, reativar, criar categoria e tentar apagar categoria que tem item.
-* Leia [GestaoInventario.tsx](src/components/admin/GestaoInventario.tsx),
-  [GestaoCategorias.tsx](src/components/admin/GestaoCategorias.tsx) e as actions
-  em [src/app/admin/actions.ts](src/app/admin/actions.ts).
+* Leia [GestaoInventario.tsx](../../../src/components/admin/GestaoInventario.tsx),
+  [GestaoCategorias.tsx](../../../src/components/admin/GestaoCategorias.tsx) e as actions
+  em [src/app/admin/actions.ts](../../../src/app/admin/actions.ts).
 
 ## 2. O passo a passo
 

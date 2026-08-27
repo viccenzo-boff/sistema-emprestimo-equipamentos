@@ -17,7 +17,7 @@ deles falava com quem opera o sistema:
 | --- | --- | --- |
 | `README.md` | Quem instala e roda o código | Como subir o projeto, quais scripts existem |
 | `AGENTS.md` | Quem altera o código | Por que cada decisão técnica foi tomada |
-| `spec.md` | Quem especificou o produto | O que o sistema deve fazer |
+| `especificacoes/spec.md` | Quem especificou o produto | O que o sistema deve fazer |
 | 24 enunciados de tarefa | Quem construiu cada pedaço | O que aquela tarefa pedia |
 
 O `CONTRIBUTING.md` existia com **zero byte**. A pasta `docs/` não existia.

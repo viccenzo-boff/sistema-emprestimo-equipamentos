@@ -1,5 +1,5 @@
 // Sistema de Empréstimo de Equipamentos — Unoesc
-// Schema conforme especificação em spec.md (seção 3. Modelagem de Dados)
+// Schema conforme especificação em especificacoes/spec.md (seção 3. Modelagem de Dados)
 // Docs: https://pris.ly/d/prisma-schema
 
 generator client {

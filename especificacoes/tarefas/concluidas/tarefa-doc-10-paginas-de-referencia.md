@@ -2,7 +2,7 @@
 
 As cinco páginas de processo ensinam a fazer. Estas ensinam a entender. Elas são
 o destino natural do conteúdo que aparecia repetido nas páginas de processo — e o
-lugar onde o conhecimento hoje trancado no [AGENTS.md](AGENTS.md) fica disponível
+lugar onde o conhecimento hoje trancado no [AGENTS.md](../../../AGENTS.md) fica disponível
 para quem não lê código.
 
 ## 1. `docs/referencia/glossario.md` — completar
@@ -30,7 +30,7 @@ A página mais técnica da wiki, e a que amarra tudo.
 ## 3. `docs/referencia/regras-de-negocio.md`
 
 Consolidação em linguagem de usuário final do que hoje está na seção "Regra de
-negócio que não é óbvia pelo código" do [AGENTS.md](AGENTS.md).
+negócio que não é óbvia pelo código" do [AGENTS.md](../../../AGENTS.md).
 
 Cada regra com: o que o sistema faz, por que faz assim, e o que quebraria se
 fizesse diferente. O terceiro item é o que dá valor à página — regra sem

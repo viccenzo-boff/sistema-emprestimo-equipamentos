@@ -4,7 +4,7 @@ Esta tarefa prepara o terreno para a wiki: congela a versão que será documenta
 e cria um estado de banco que permite fotografar **todas** as telas do sistema
 sem expor dado de pessoa real.
 
-Leia a [spec-wiki.md](spec-wiki.md) antes de começar, principalmente as seções
+Leia a [spec-wiki.md](../../spec-wiki.md) antes de começar, principalmente as seções
 2.1 (o que a v1.0 inclui) e 8 (pré-requisitos e riscos).
 
 ## 1. Congelar a v1.0
@@ -19,7 +19,7 @@ git tag -a v1.0 -m "Versao documentada pela wiki: Tarefas 1 a 12, mais a 8.1"
 ```
 
 * **Não faça `push` da tag.** Publicar é decisão do dono do repositório, como
-  manda o [AGENTS.md](AGENTS.md).
+  manda o [AGENTS.md](../../../AGENTS.md).
 
 ## 2. Por que um script de demonstração é necessário
 
@@ -37,7 +37,7 @@ linhas.
 ## 3. Criar `prisma/demo-estado.ts`
 
 Um script **separado** do seed. Não altere o `prisma/seed.ts`: a §1 da
-[spec-wiki.md](spec-wiki.md) diz que decisão que serve só ao portfólio e piora o
+[spec-wiki.md](../../spec-wiki.md) diz que decisão que serve só ao portfólio e piora o
 produto não entra, e o seed é ferramenta de produção da secretaria.
 
 O script deve:
@@ -48,7 +48,7 @@ O script deve:
   do 6 em pontos que quebram código escrito de memória.
 * Acrescentar pessoas fictícias até somar cerca de **15**, com mistura de
   perfis, cursos e status (algumas `INATIVO`), respeitando as formas canônicas
-  garantidas por [sanitizacao.ts](src/lib/sanitizacao.ts). Nomes claramente
+  garantidas por [sanitizacao.ts](../../../src/lib/sanitizacao.ts). Nomes claramente
   fictícios; **nenhum nome de pessoa real, nem de colega**.
 * Criar empréstimos cobrindo **os três status** de `Emprestimo`:
   * ao menos 2 em `ATIVO` (para "Meus equipamentos" e para `/admin/ativos`);
@@ -70,7 +70,7 @@ Acrescente o atalho ao `package.json`:
 
 ## 4. Registrar o procedimento de captura
 
-O [CONTRIBUTING.md](CONTRIBUTING.md) existe e está **vazio** (0 bytes). Use-o: é
+O [CONTRIBUTING.md](../../../CONTRIBUTING.md) existe e está **vazio** (0 bytes). Use-o: é
 nota de trabalho, mora fora de `docs/` e portanto não vira página publicada.
 
 Abra nele uma seção "Documentação" com a receita exata para reproduzir o estado
@@ -84,7 +84,7 @@ npm run dev
 ```
 
 Mais a resolução de janela usada nas capturas do painel e a do tablet
-(1280x800, a medida que o [AGENTS.md](AGENTS.md) já usa como referência de
+(1280x800, a medida que o [AGENTS.md](../../../AGENTS.md) já usa como referência de
 paisagem).
 
 ## 5. Verificação

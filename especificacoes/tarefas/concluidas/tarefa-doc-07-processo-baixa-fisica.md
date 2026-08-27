@@ -13,8 +13,8 @@ Arquivo: `docs/painel/baixa-fisica.md`
 * Execute a baixa no navegador e confirme no `db:studio`: `Emprestimo` vai a
   `CONCLUIDO`, `data_baixa` é preenchida, `data_devolucao` **permanece
   intacta**, e o `Equipamento` volta a `DISPONIVEL`.
-* Leia [FilaDeDevolucoes.tsx](src/components/admin/FilaDeDevolucoes.tsx) e a
-  action correspondente em [src/app/admin/actions.ts](src/app/admin/actions.ts).
+* Leia [FilaDeDevolucoes.tsx](../../../src/components/admin/FilaDeDevolucoes.tsx) e a
+  action correspondente em [src/app/admin/actions.ts](../../../src/app/admin/actions.ts).
 
 ## 2. O passo a passo
 

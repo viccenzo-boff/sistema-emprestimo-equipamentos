@@ -17,7 +17,7 @@ the reason, task by task.
 There is no cloud. The system runs **on the front desk computer**, over the
 local network, and the counter tablet reaches it at that machine's address. That
 comes from the
-[product specification](https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/blob/main/spec.md),
+[product specification](https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/blob/main/especificacoes/spec.md),
 and it explains almost everything else on this page.
 
 Two consequences show up on screen:

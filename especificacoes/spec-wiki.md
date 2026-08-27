@@ -11,7 +11,7 @@ construído no mesmo repositório do código, servindo a dois propósitos ao mes
 tempo:
 
 1. **Uso real:** a secretaria e os estudantes precisam de um manual. Hoje o
-   conhecimento operacional está espalhado entre o [AGENTS.md](AGENTS.md), os
+   conhecimento operacional está espalhado entre o [AGENTS.md](../AGENTS.md), os
    enunciados de tarefa e a cabeça de quem construiu.
 2. **Portfólio:** demonstrar, num artefato público e verificável, quatro
    competências — modelagem de processos em BPMN, redação técnica, engenharia de
@@ -66,7 +66,7 @@ corrigida.
 - **Guia de Início Rápido da Secretaria** — o painel em 10 minutos
 - **Glossário** — matrícula, etiqueta, baixa, prateleira, categoria, perfil
 - **Estados e transições** — as duas máquinas de estado, com diagrama
-- **Regras de negócio** — consolidação do que hoje está no [AGENTS.md](AGENTS.md)
+- **Regras de negócio** — consolidação do que hoje está no [AGENTS.md](../AGENTS.md)
 - **Conta do administrador** — login, logout, troca de senha, senha esquecida
 - **Arquitetura do sistema** — stack, modelo de dados, decisões estruturais
 - **Como esta wiki foi feita** — estudo de caso do processo de documentação
@@ -75,8 +75,8 @@ corrigida.
 
 - Traduzir a interface do sistema
 - Documentar a Tarefa 13 (Relatórios) — fica para a `v1.1`
-- Documentação de API ou de contribuição de código (o [README.md](README.md) e o
-  [AGENTS.md](AGENTS.md) já cobrem quem vai mexer no código)
+- Documentação de API ou de contribuição de código (o [README.md](../README.md) e o
+  [AGENTS.md](../AGENTS.md) já cobrem quem vai mexer no código)
 - Vídeo, GIF animado ou tour interativo
 
 ## 4. Arquitetura de informação
@@ -169,14 +169,14 @@ existe estilo pronto de qualidade para PT-BR.** Portanto:
   o travessão com espaço é a pontuação das 31 páginas), `Contractions` (350, o
   registro formal escolhido na D12) e `Quotes` (16, a pontuação dentro das aspas
   altera o texto citado, contra a regra 1 do guia de estilo). As três estão
-  desligadas com o motivo ao lado no [.vale.ini](.vale.ini); as outras 44 ficam
+  desligadas com o motivo ao lado no [.vale.ini](../.vale.ini); as outras 44 ficam
   em força total, que é o que faz "erro" continuar querendo dizer alguma coisa.
   O vocabulário controlado vale **também** aqui: estas páginas citam rótulo de
   tela em português o tempo todo, e é ali que um "aluno" passaria calado.
 - **Nas páginas em português:** apenas um `Vocab` próprio, garantindo grafia
   consistente dos termos do projeto (matrícula, baixa, empréstimo, etiqueta,
   prateleira) e proibindo os sinônimos que confundem — "usuário" para falar de
-  estudante, por exemplo, que o [AGENTS.md](AGENTS.md) já proíbe no código.
+  estudante, por exemplo, que o [AGENTS.md](../AGENTS.md) já proíbe no código.
 
 Prometer lint de estilo em português seria inventar capacidade que a ferramenta
 não tem. O vocabulário controlado é real e resolve o problema que importa:
@@ -223,7 +223,7 @@ ligar o Pages — vai no `CONTRIBUTING.md` (aberto pela D01, e com a seção de
 ambiente e publicação escrita pela D02). Nada disso entra em `docs/`: tudo que
 mora lá vira página publicada.
 
-As capturas seguem a regra de assets que o [README.md](README.md) já estabelece
+As capturas seguem a regra de assets que o [README.md](../README.md) já estabelece
 para o código: nome descritivo, nunca UUID. O wiki anterior do autor usava UUID e
 isso tornou impossível saber o que uma imagem mostra sem abrir.
 
@@ -281,7 +281,7 @@ Medido na D08, na D11, na D12 e de novo na D13.
 
     Esta linha dizia o contrário até a D12 — *click **Return** (Devolver)* —, e
     perdeu para o repositório. A regra 1 do
-    [guia de estilo](docs/contribuir/guia-de-estilo.md) (D03) e a nota da home
+    [guia de estilo](../docs/contribuir/guia-de-estilo.md) (D03) e a nota da home
     em inglês (D11) já tinham publicado a forma invertida, concordando entre si,
     e o argumento delas é de ergonomia: quem lê está com a tela em português na
     frente, e o negrito tem que ser a palavra que ele procura no botão.
@@ -395,7 +395,7 @@ A conferência foi por comando, item a item, e não por memória. Os números:
    apontando para a `gh-pages` — um ajuste de uma vez só, no `Settings` do
    repositório, que só o dono pode fazer. Enquanto ele não for feito, a URL
    responde 404 e a wiki não chega a ninguém. A receita está na seção
-   "Documentação" do [CONTRIBUTING.md](CONTRIBUTING.md).
+   "Documentação" do [CONTRIBUTING.md](../CONTRIBUTING.md).
 2. **O leitor que nunca viu o sistema.** Foi feita uma passada por procuração:
    seguir a página da retirada ao pé da letra, fazendo apenas o que ela manda,
    contra o sistema rodando. Os 17 pontos bateram e ela achou uma lacuna real —
@@ -414,8 +414,8 @@ A conferência foi por comando, item a item, e não por memória. Os números:
   no navegador contra o `dev.db` ou leia o código que o implementa. Documentação
   escrita de memória é a que envelhece sem ninguém perceber.
 - **As regras de negócio já estão escritas** na seção "Regra de negócio que não é
-  óbvia pelo código" do [AGENTS.md](AGENTS.md). Traduzir para linguagem de
+  óbvia pelo código" do [AGENTS.md](../AGENTS.md). Traduzir para linguagem de
   usuário final é o trabalho; reinventar não é.
 - **Uma tarefa por vez**, com os commits organizados na `main` ao final e sem
   `push` por conta própria — o ciclo normal do projeto, descrito no
-  [AGENTS.md](AGENTS.md).
+  [AGENTS.md](../AGENTS.md).

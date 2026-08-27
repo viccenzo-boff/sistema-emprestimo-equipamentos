@@ -16,7 +16,7 @@ motivo, tarefa por tarefa.
 
 Não há nuvem. O sistema roda **no computador da secretaria**, em rede local, e o
 tablet da bancada o alcança pelo endereço dessa máquina. É uma decisão do
-[escopo do produto](https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/blob/main/spec.md),
+[escopo do produto](https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/blob/main/especificacoes/spec.md),
 e ela explica quase todo o resto desta página.
 
 Duas consequências que aparecem na tela:
