@@ -72,13 +72,20 @@ next-env.d.ts
 /.venv-docs/
 /site/
 
-# binario do Vale (linter de texto da wiki). E um executavel Go de ~44 MB, e
-# nao cabe em docs-requirements.txt, que e Python. A receita de instalacao
-# esta na secao "Documentacao" do CONTRIBUTING.md; o que E versionado e a
-# configuracao (.vale.ini) e o vocabulario (.vale/styles/).
+# binarios das ferramentas da wiki: Vale (linter de texto), bpmn-js (exportador
+# de diagramas) e lychee (verificador de links). Nenhum e Python, entao nenhum
+# cabe em docs-requirements.txt; e nenhum e do sistema, entao nenhum entra no
+# package.json. As receitas de instalacao estao na secao "Documentacao" do
+# CONTRIBUTING.md. O que E versionado e a configuracao (.vale.ini) e o
+# vocabulario (.vale/styles/config/).
 /.tools/
 
 # estilo Microsoft do Vale, baixado pelo `vale sync` com a versao fixada no
 # .vale.ini (D13). Mesma regra do executavel: artefato de terceiro nao entra no
 # historico deste repositorio.
 /.vale/styles/Microsoft/
+
+# site construido so para o verificador de links (npm run docs:links). Fica no
+# repositorio, e nao no temporario do sistema, para que o arquivo e a linha que
+# o lychee aponta possam ser abertos quando um link quebrar.
+/.site-links/
