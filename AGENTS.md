@@ -45,30 +45,37 @@ arquivos que as ferramentas exigem lá: `README.md`, `CLAUDE.md`, `AGENTS.md` e
 
 ### Fila de trabalho — "faça a próxima tarefa" quer dizer isto
 
-Atualizada em 2026-09-14. O dono do repositório abre a sessão só com esse
-prompt; esta seção é a resposta.
+Atualizada em 2026-09-14, depois da Tarefa 13. O dono do repositório abre a
+sessão só com esse prompt; esta seção é a resposta.
 
-1. **Tarefa 13 — Relatórios e Ocupação**
-   ([enunciado](especificacoes/tarefas/pendentes/tarefa-13-relatorios-ocupacao.md)).
+1. **Tarefa 14 — Avaliação anônima no fim da retirada**
+   ([enunciado](especificacoes/tarefas/pendentes/tarefa-14-avaliacao-retirada.md)).
    Executar com a skill `executar-tarefa-especificada`, do jeito de sempre:
    varredura de conflitos antes da primeira edição, verificação em escada,
-   decisões registradas aqui, commits por tema na `main`. **Ela fecha a `v1.1`**:
-   ao terminar, seguir a receita "Como a wiki é publicada" do
-   [CONTRIBUTING.md](CONTRIBUTING.md) (título do `deploy`, `set-default`, as
-   duas homes) e deixar a tag `v1.1` para o dono criar e publicar. A página da
-   wiki para os relatórios entra na trilha do painel (§4 da spec-wiki precisa da
-   linha nova), nos dois idiomas.
-2. **Tarefa 14 — Avaliação anônima no fim da retirada**
-   ([enunciado](especificacoes/tarefas/pendentes/tarefa-14-avaliacao-retirada.md)).
-   Depende da 13 (é uma aba do `/admin/relatorios`). Todas as decisões de
+   decisões registradas aqui, commits por tema na `main`. Todas as decisões de
    produto já foram tomadas numa sessão de descoberta e estão na §0 do
-   enunciado, com o porquê — **não reabrir**; o que falta é executar. Abre a
-   `v1.2`.
+   enunciado, com o porquê — **não reabrir**; o que falta é executar.
+
+   Ela **abre a `v1.2`**, e isso tem três lugares a mexer **no começo**, e não
+   no fim: o `--title` e o `set-default` do
+   [workflow](.github/workflows/docs.yml) e a caixa de versão das duas homes.
+   A tabela de duas colunas da seção "Como a wiki é publicada" do
+   [CONTRIBUTING.md](CONTRIBUTING.md) diz o que cada um vira.
+
+   O indicador de satisfação é **uma quarta aba** do `/admin/relatorios`, que a
+   Tarefa 13 já deixou pronto para receber: a lista de abas é um lugar só
+   (`ABA_DE_RELATORIO` em [tipos.ts](src/lib/tipos.ts)), e o
+   [AbasDeRelatorios](src/components/admin/AbasDeRelatorios.tsx) percorre essa
+   lista. A página da wiki daquela aba entra na
+   [página de Relatórios](docs/painel/relatorios.md) que já existe, nos dois
+   idiomas — e a linha do glossário de interface em inglês vai junto.
 
 O que **não** precisa ser refeito: o Pages está no ar; a tag `v1.0` está no
-remoto; o defeito da mensagem de categoria em uso foi corrigido; a `main`
-publica a wiki como `v1.1 (em andamento)`. O `push` continua sendo do dono, a
-menos que ele autorize na mensagem.
+remoto; o defeito da mensagem de categoria em uso foi corrigido; a **Tarefa 13
+está concluída e a `v1.1` fechada** — o workflow publica a `v1.1` sem "(em
+andamento)" e o `set-default` já aponta para ela. **A tag `v1.1` continua sendo
+do dono criar e publicar**, e é a única coisa que falta da entrega. O `push`
+continua sendo do dono, a menos que ele autorize na mensagem.
 
 ### Comandos
 
@@ -1148,6 +1155,154 @@ banco foi devolvido à linha de base item a item.
   filtrado por `status: AGUARDANDO_BAIXA` que já existia contra duplo-clique, mas
   agora tem uma consequência a mais: o carimbo de auditoria é imutável depois de
   posto. Exercitado — a segunda chamada é recusada e o valor não muda.
+
+**Tarefa 13 — Relatórios e Ocupação (concluída):** os dois itens de
+[tarefa-13-relatorios-ocupacao.md](especificacoes/tarefas/concluidas/tarefa-13-relatorios-ocupacao.md)
+— a aba **Relatórios** no menu, a rota `/admin/relatorios` com as três abas
+horizontais, e o relatório de **Ocupação e picos de uso** (os dois cartões do
+topo e a barra de esgotamento por categoria). Junto veio a página da wiki nos
+dois idiomas e o fechamento da `v1.1`. `tsc`, `lint` e `build` em 0, com as
+**seis** rotas do painel dinâmicas (`ƒ`); `mkdocs build --strict`,
+`vale docs/` (33 arquivos, 0 erro), `npm run docs:links` (36 páginas, 2902
+referências) e `npm run docs:diagramas -- --verificar` em 0.
+
+Não houve migration: a tarefa não mudou o schema. Verificação em quatro
+degraus, com o `dev.db` do dono **conferido por md5** contra a linha de base no
+fim (idêntico — nunca foi tocado; tudo correu contra um `dev-relatorios.db`
+descartável): premissas em banco de cópia (10 asserções); o relatório pelo
+**módulo de produção**, com cada nível provocado até acender e desfeito (37);
+HTTP real contra as três formas de chegar à rota (26); navegador real por CDP,
+cobrindo a barra de abas pelo clique e pelo teclado, os números, o contraste
+calculado e cinco larguras (46 + 15); e as capturas da wiki com o cenário
+esgotado montado e desmontado (14).
+
+**Decisões da Tarefa 13** (não refazer sem motivo):
+
+- **"Equipamentos na Rua" é contado pelos EMPRÉSTIMOS, não pelo status do
+  equipamento.** O enunciado pede "status `EMPRESTADO` ou `AGUARDANDO_BAIXA`", e
+  o segundo **não é status de `Equipamento`**: enquanto a devolução espera
+  conferência, o aparelho continua `EMPRESTADO`. Ao pé da letra, o segundo termo
+  não casa nada — o cartão daria um número certo respondendo uma pergunta
+  diferente da que anuncia, sem erro em lugar nenhum. Contado pela tabela de
+  empréstimos, ele se abre em "3 com as pessoas · 4 na bancada", que é a
+  distinção que a Tarefa 12 existe para tornar visível, e cobre de graça o caso
+  raro do ramo `liberado: false` do `darBaixa` (item em `MANUTENCAO` com
+  empréstimo aberto continua contado como fora da prateleira). Levantado como
+  conflito antes da primeira edição; a decisão foi do dono do repositório.
+- **Ocupado é tudo que NÃO está disponível — emprestado ou em manutenção —
+  sobre o estoque em circulação.** O enunciado se contradizia: a fórmula do
+  exemplo ("10 no total e 9 emprestados → 90%") contra a definição do alerta
+  vermelho ("100% de ocupação = nenhum item com status `DISPONIVEL`"). Com item
+  em manutenção no meio, uma categoria com 3 em conserto, 7 emprestados e 0
+  livres mostraria a barra em 70% ao lado de um alerta dizendo "Estoque
+  Esgotado" — e as duas coisas estariam certas. Com este numerador, as duas
+  frases do enunciado passam a ser verdadeiras ao mesmo tempo e o exemplo dele
+  continua dando 90% (9 de 10). Também levantado antes da primeira edição.
+- **O denominador é o mesmo do tablet: tudo menos `INATIVO`.** O
+  `listarCategorias` de [actions.ts](src/app/actions.ts) já tira o aposentado e
+  mantém o em manutenção — é o que faz a grade dizer "4 de 9 disponíveis" com
+  dez notebooks cadastrados. Denominadores diferentes dariam à coordenação duas
+  respostas para "quantos notebooks temos", dependendo da tela em que
+  perguntasse. O `resumirInventario`, ao contrário, **conta** o inativo de
+  propósito (a secretaria ali olha patrimônio), e por isso a linha do relatório
+  mostra os aposentados entre parênteses, fora da conta: sem eles os números não
+  fechariam com a aba Inventário.
+- **Existe um quarto nível, `vazio`, que o enunciado não previa.** Desde a
+  Tarefa 6 dá para criar categoria sem nenhum equipamento, e uma categoria sem
+  unidade em circulação tem zero disponíveis **sem estar esgotada**. Com os três
+  níveis do enunciado ela apareceria em vermelho permanente, mandando comprar o
+  que ninguém pediu — e um vermelho que está sempre lá é o que ensina o olho a
+  ignorar os outros. Ela aparece sem barra, em texto cinza.
+- **O arredondamento nunca fecha nem zera o que não está fechado nem zerado.**
+  Com uma unidade livre em 500, o arredondamento normal daria 100% e a barra
+  diria "cheia" ao lado de um alerta amarelo; com uma ocupada em 500, daria 0%
+  com um aparelho fora. Os dois extremos ficam reservados para os casos exatos.
+  Exercitado nos dois sentidos com 201 unidades — 200 de 201 dá 99,5% bruto e a
+  tela mostra 99.
+- **A leitura NÃO é Server Action.** O enunciado pede
+  `/admin/relatorios/actions.ts`, mas o painel lê o banco no render das páginas
+  (regra no cabeçalho de [consultas-admin.ts](src/lib/consultas-admin.ts)): uma
+  action aqui seria um endpoint POST público criado para uma leitura que abre
+  junto com a página.
+- **`DateTime` no SQLite deste projeto é TEXTO ISO-8601 com sufixo `+00:00`**, e
+  isso foi medido, não lido. O `gte` do Prisma com um `Date` acerta a fronteira
+  exata do mês. **As duas formas óbvias de escrever a mesma consulta em SQL cru
+  devolvem número plausível e errado:** comparar com o epoch conta a tabela
+  inteira (pela regra de afinidade de tipos, INTEGER é sempre menor que TEXT), e
+  comparar com `toISOString()` perde justamente a linha da fronteira (o `+` vem
+  antes do `Z` na ordem de caracteres). Quem for escrever consulta crua sobre
+  `data_retirada` precisa disto.
+- **O `groupBy` sobre `Equipamento` não devolve linha para categoria vazia**, e
+  por isso a lista de categorias vem da tabela `Categoria`. Derivar dos grupos
+  faria a categoria recém-criada sumir da tela sem erro nenhum — que é
+  exatamente o caso que o nível `vazio` existe para mostrar.
+- **Relatórios é a última aba do menu, depois de Pessoas, e não por ser mais
+  rara.** É de outra natureza: as cinco abas acima **operam** o sistema (cada
+  uma existe para mudar algo no banco) e esta só lê. Quem a abre não veio
+  trabalhar no balcão — veio responder à coordenação. O comentário do
+  [CascaAdmin](src/components/admin/CascaAdmin.tsx), que dizia "Pessoas fica por
+  último", foi reescrito junto.
+- **A aba viva não entra na URL.** Mesma escolha dos filtros da Tarefa 7, pelo
+  mesmo motivo: o relatório inteiro já chega no render e trocar de aba não
+  consulta o banco. O preço é conhecido e está escrito na §6 da página da wiki —
+  recarregar volta para a primeira aba, e não há link que abra numa aba
+  específica.
+- **Os três painéis ficam no DOM, escondidos pelo atributo `hidden`, e
+  NENHUMA classe de `display` pode tocar aquele elemento.** No Tailwind, um
+  `flex` ali venceria o atributo e os três painéis apareceriam empilhados. É a
+  mesma armadilha de precedência já registrada para os tamanhos do `Botao` e o
+  recuo do `CAMPO_SEM_LADOS`. Afirmado por altura zero, e não por presença de
+  classe.
+- **A largura da barra é estilo em linha, e tem que ser.** O Tailwind gera as
+  classes varrendo o código-fonte: `w-[${ocupacao}%]` produziria uma classe que
+  não existe no CSS, e a barra ficaria com largura zero sem erro em lugar
+  nenhum.
+- **O `CartaoDeResumo` nasceu porque esta seria a terceira cópia.** As classes
+  do cartão de número grande estavam duplicadas em `ResumoInventario` e
+  `ResumoPessoas`. Mesmo gatilho do `Campo.tsx` na Tarefa 8; o rótulo continua
+  sendo `children` porque nas duas telas antigas ele é um selo e aqui é texto
+  com uma linha de detalhe.
+- **Os rótulos são os do enunciado, letra por letra — inclusive a caixa, que
+  não é uniforme entre as três abas** ("Ocupação e picos de uso" em caixa de
+  frase, "Ranking de Consumo" e "Índice de Manutenção" em caixa de título).
+  Uniformizar é tentador e sairia caro: a página da wiki cita rótulo de tela
+  literalmente, e quem nomeia estas abas é o enunciado. Se a caixa for acertada
+  um dia, é decisão de produto e as duas páginas mudam junto.
+- **A página da wiki é a única sem diagrama BPMN**, e é a primeira a ter sete
+  seções em vez de oito. Consultar relatório é leitura, não transação: não há
+  gateway que decida o destino de um registro nem passagem de bastão entre
+  raias, e a D04 já registrou que não se força BPMN onde ele não é a notação
+  certa. O template permite remover seção que não se aplica; as seções seguintes
+  foram **renumeradas** (1 a 7, sem buraco), e a regra ficou escrita no
+  comentário da §5 do [template](docs/contribuir/template-processo.md) — que é o
+  arquivo aberto na hora do gesto. A §3.1 da spec-wiki virou "Os processos
+  documentados", e as três frases que diziam "os cinco processos" (README e a
+  página de inventário nos dois idiomas) foram corrigidas junto.
+- **O formulário de login do painel declara `encType="multipart/form-data"`, e
+  mandar urlencoded faz o Next ignorar a chamada calado** — 200 com a própria
+  tela de login de volta, sem erro em log nenhum, indistinguível de credencial
+  recusada. Os valores dos campos ocultos também vêm **escapados** no HTML
+  (`&quot;` dentro do JSON do `$ACTION_1:0`) e precisam ser desescapados antes
+  do reenvio. As duas coisas custaram um diagnóstico cada nesta sessão; a D07
+  registrou os quatro campos, mas não a codificação.
+- **Esperar pela âncora do conteúdo não prova que o React hidratou.** O primeiro
+  clique do roteiro de navegador caiu nesse buraco: o elemento existia, o
+  `.click()` disparou um evento de verdade, e não havia tratador atrás dele
+  ainda. Nada falha nesse caminho — o estado simplesmente não muda, e a asserção
+  seguinte descreve a tela de antes. Clique em ilha de cliente é clicar **e
+  esperar o efeito**, em laço.
+- **`getComputedStyle` devolve cor em `lab()` neste Chrome**, e não em `rgb()`:
+  a paleta é declarada em `oklch` e o navegador normaliza para o que quiser. Ler
+  três números daquela string como r, g, b deu 1,22:1 para dois pares
+  legítimos — um par bom reprovando. Quem converte é o próprio navegador:
+  pintar um pixel em `<canvas>` e ler os bytes de volta devolve sRGB de verdade.
+  Medido assim: 6,39:1 no texto do selo crítico e 6,64:1 da barra sobre o
+  trilho.
+- **A tela foi medida em 1440, 1366, 1280, 1024 e 900 px**, sem rolagem
+  horizontal em nenhuma, com as três abas sempre em uma linha só. Em 1440x900 os
+  dois cartões terminam em 382px e a primeira categoria em 640px — as duas
+  acima da dobra. **Refaça a medida se a Tarefa 14 acrescentar a quarta aba**:
+  é ela que pode empurrar a barra para duas linhas em 1024.
 
 **Tarefa D01 — Congelar a v1.0 e criar o estado de demonstração (concluída):**
 a primeira da **série de documentação** (`tarefa-doc-NN`, regida pela
@@ -2630,14 +2785,18 @@ recorte ampliado. O banco de demonstração voltou idêntico à linha de base.
   varre markdown precisa tirar os blocos antes de contar.
 
 **Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
-`public/`), histórico de empréstimos concluídos no painel, um relatório para a
-coordenação e — agora que existe conta individual — registrar **quem** deu baixa
-em cada empréstimo (a Tarefa 10 criou a identidade, a 11 deu a cada pessoa uma
-senha própria, a 12 passou a registrar **quando** a baixa aconteceu — e o
-**quem** continua não existindo, porque `Emprestimo` não tem coluna de
-administrador). O relatório de tempo de prateleira também não existe: a Tarefa 12
-criou o dado, e ninguém ainda o lê. Nada disso está na spec — confirmar antes de
-construir.
+`public/`), histórico de empréstimos concluídos no painel, e — agora que existe
+conta individual — registrar **quem** deu baixa em cada empréstimo (a Tarefa 10
+criou a identidade, a 11 deu a cada pessoa uma senha própria, a 12 passou a
+registrar **quando** a baixa aconteceu — e o **quem** continua não existindo,
+porque `Emprestimo` não tem coluna de administrador).
+
+O relatório para a coordenação **passou a existir na Tarefa 13**, mas ele é uma
+fotografia do agora: não compara com o mês passado, não exporta e **não lê o
+tempo de prateleira**. Os dados para as três coisas já estão no banco desde a
+Tarefa 12 — `data_devolucao` e `data_baixa` — e ninguém ainda os lê. As duas
+abas declaradas e vazias (**Ranking de Consumo** e **Índice de Manutenção**) são
+onde isso caberia. Nada disso está na spec — confirmar antes de construir.
 
 **Correções fora de tarefa (2026-09-14):** o detalhe da recusa ao excluir
 categoria em uso (`AJUDA_DA_CATEGORIA_EM_USO`, em
