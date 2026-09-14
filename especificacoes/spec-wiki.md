@@ -387,15 +387,15 @@ A conferência foi por comando, item a item, e não por memória. Os números:
 | Os 5 `.bpmn` | Cinco fontes versionadas, e `npm run docs:diagramas -- --verificar` confere as cinco no bpmn-js |
 | Estudo de caso | 8 decisões, cada uma com **A decisão / A alternativa descartada / O motivo** — conferido por contagem nas duas versões |
 
-**Os dois itens sem marca, e o que falta em cada um:**
+**Os dois itens que ficaram sem marca na D14, e o que aconteceu com cada um:**
 
-1. **O site publica sozinho a cada `push`.** A parte automática funciona e está
-   provada: as 5 últimas execuções da Action saíram verdes, e a `gh-pages`
-   carrega o commit atual da `main`. O que falta é **ligar o GitHub Pages**
-   apontando para a `gh-pages` — um ajuste de uma vez só, no `Settings` do
-   repositório, que só o dono pode fazer. Enquanto ele não for feito, a URL
-   responde 404 e a wiki não chega a ninguém. A receita está na seção
-   "Documentação" do [CONTRIBUTING.md](../CONTRIBUTING.md).
+1. **O site publica sozinho a cada `push`.** ~~Faltava ligar o GitHub Pages.~~
+   **Resolvido em 2026-08-27**, no dia seguinte à D14: o dono do repositório
+   apontou o Pages para a `gh-pages`, e
+   <https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/> responde
+   200 nos dois idiomas, com a raiz redirecionando para `v1.0/` (conferido por
+   HTTP em 2026-09-14). A receita continua na seção "Documentação" do
+   [CONTRIBUTING.md](../CONTRIBUTING.md), para quem precisar refazer.
 2. **O leitor que nunca viu o sistema.** Foi feita uma passada por procuração:
    seguir a página da retirada ao pé da letra, fazendo apenas o que ela manda,
    contra o sistema rodando. Os 17 pontos bateram e ela achou uma lacuna real —

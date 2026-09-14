@@ -2141,10 +2141,11 @@ cinco arquivos pretendidos.
   novo, leia a seção de captura do CONTRIBUTING** — a falha não foi de
   conhecimento, foi de consulta, e é a que mais se repete entre sessões.
 - **"Renderizam no site publicado" foi verificado contra o site CONSTRUÍDO e
-  servido por HTTP, e não contra o GitHub Pages.** O Pages nunca foi apontado
-  para a `gh-pages` — é o item que a D02 deixou pendente por ser ajuste no
-  GitHub e decisão do dono do repositório. O que se provou é que o artefato que a
-  Action publica renderiza; que a URL do Pages responde continua **não visto**.
+  servido por HTTP, e não contra o GitHub Pages.** Na sessão da D10 o Pages
+  ainda não tinha sido apontado para a `gh-pages` — era o item que a D02 deixou
+  pendente por ser ajuste no GitHub e decisão do dono do repositório. **Ele foi
+  ligado em 2026-08-27**, depois da D14 (ver a nota da D13); o que a D10 provou
+  é que o artefato que a Action publica renderiza.
 
 **Tarefa D11 — Home e guias de início rápido (concluída):** a porta de entrada
 da wiki e as duas trilhas de persona — a [home](docs/index.md) com a escolha de
@@ -2365,10 +2366,16 @@ publicação depende do de qualidade, o verde do deploy **é** a prova de que os
 três portões passaram no CI. Este parágrafo dizia "continua pendente" e foi
 corrigido pela D14 — não reabra o item.
 
-**Continua pendente o Pages, da D02:** a `gh-pages` existe e a Action vem
-publicando nela desde a D04, mas o Pages do repositório **nunca foi apontado
-para ela** (conferido de novo na D14: `gh api …/pages` devolve 404, e a URL
-responde 404), então o site ainda não chega a ninguém.
+**O Pages, pendente desde a D02, foi ligado em 2026-08-27 — a wiki está no
+ar.** A `gh-pages` existe e a Action publica nela desde a D04; na D14 o Pages
+ainda não apontava para ela (`gh api …/pages` devolvia 404). O dono do
+repositório fez o ajuste no dia seguinte: hoje `gh api …/pages` devolve
+`source.branch = gh-pages`, `status = built`, e
+<https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/> responde 200
+com o redirecionamento do `mike` para `v1.0/` (conferido por HTTP em
+2026-09-14, nos dois idiomas). Este parágrafo dizia "continua pendente" e foi
+corrigido quando a requisição contradisse o registro — afirmação sobre o estado
+do mundo externo envelhece, e se reconfere por execução antes de ser citada.
 
 **Decisões da D13** (não refazer sem motivo):
 
@@ -2401,8 +2408,9 @@ responde 404), então o site ainda não chega a ninguém.
   imagem apagada. Site de terceiro fora do ar não é defeito da wiki, e o
   preâmbulo da própria D13 manda evitar "um CI vermelho que ninguém consegue
   consertar e todo mundo aprende a ignorar". O link canônico do próprio site
-  também falharia enquanto o Pages não estiver ligado. Uma bandeira com o motivo
-  escrito é melhor que uma lista de exceções que ninguém revisa.
+  também falhava enquanto o Pages não estava ligado (ficou até 2026-08-27). Uma
+  bandeira com o motivo escrito é melhor que uma lista de exceções que ninguém
+  revisa.
 - **"Aviso não quebra o build, erro sim" é comportamento NATIVO do Vale, e não
   configuração.** Medido: ele sai em 1 quando existe pelo menos um alerta de
   nível `error`, e em 0 com qualquer quantidade de `warning` e `suggestion` —
