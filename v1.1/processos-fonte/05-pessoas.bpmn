@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definicoes_pessoas" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:collaboration id="Colaboracao_pessoas">
+    <bpmn:participant id="Participante_pessoas" name="Gestão de pessoas" processRef="Processo_pessoas" />
+  </bpmn:collaboration>
+  <bpmn:process id="Processo_pessoas" isExecutable="false">
+    <bpmn:laneSet id="Raias_pessoas">
+      <bpmn:lane id="Raia_secretaria" name="Secretaria">
+        <bpmn:flowNodeRef>AbrePessoas</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>QualGesto</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EnviaPlanilha</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ConfirmaImportacao</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimCancelada</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CorrigeCampos</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ClicaSituacao</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>AvisaEmprestimoAberto</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Raia_sistema" name="Sistema">
+        <bpmn:flowNodeRef>EhPlanilha</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimArquivoRecusado</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>MontaPlano</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>MostraPrevia</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GravaImportacao</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimImportada</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CamposValidos</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimEdicaoRecusada</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GravaEdicao</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimCorrigido</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>PessoaComEquipamento</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GravaSituacaoPessoa</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>QualSituacaoPessoa</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimPessoaInativa</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimPessoaAtiva</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="AbrePessoas" name="Abre a aba Pessoas">
+      <bpmn:outgoing>Fluxo_ate_gesto</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="QualGesto" name="O que precisa ser feito?">
+      <bpmn:incoming>Fluxo_ate_gesto</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_importar</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_corrigir</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_situacao</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="EnviaPlanilha" name="Envia a planilha .xlsx da coordenação">
+      <bpmn:incoming>Fluxo_importar</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_eh_planilha</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="EhPlanilha" name="É mesmo uma planilha do Excel por dentro?">
+      <bpmn:incoming>Fluxo_ate_eh_planilha</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_arquivo_recusado</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_arquivo_aceito</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="FimArquivoRecusado" name="Arquivo recusado; nada foi lido">
+      <bpmn:incoming>Fluxo_arquivo_recusado</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="MontaPlano" name="Lê as linhas, sanitiza e confronta com o cadastro">
+      <bpmn:incoming>Fluxo_arquivo_aceito</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_previa</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="MostraPrevia" name="Mostra a prévia: criar, atualizar, inalteradas e erros">
+      <bpmn:incoming>Fluxo_ate_previa</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_confirma</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="ConfirmaImportacao" name="Confirma a importação?">
+      <bpmn:incoming>Fluxo_ate_confirma</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_cancelou</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_confirmou</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="FimCancelada" name="Importação cancelada; nada foi gravado">
+      <bpmn:incoming>Fluxo_cancelou</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="GravaImportacao" name="Relê a planilha, refaz o plano e grava em uma transação só">
+      <bpmn:incoming>Fluxo_confirmou</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_importada</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="FimImportada" name="Cadastros criados e atualizados">
+      <bpmn:incoming>Fluxo_ate_importada</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:task id="CorrigeCampos" name="Corrige os campos no aviso de edição">
+      <bpmn:incoming>Fluxo_corrigir</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_campos_validos</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="CamposValidos" name="Matrícula só com dígitos e campos preenchidos?">
+      <bpmn:incoming>Fluxo_ate_campos_validos</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_edicao_recusada</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_edicao_aceita</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="FimEdicaoRecusada" name="Edição recusada; o cadastro fica como estava">
+      <bpmn:incoming>Fluxo_edicao_recusada</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="GravaEdicao" name="Grava; matrícula corrigida leva o histórico junto">
+      <bpmn:incoming>Fluxo_edicao_aceita</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_corrigido</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="FimCorrigido" name="Cadastro corrigido">
+      <bpmn:incoming>Fluxo_ate_corrigido</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:task id="ClicaSituacao" name="Clica em Inativar ou em Ativar na linha">
+      <bpmn:incoming>Fluxo_situacao</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_com_equipamento</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="PessoaComEquipamento" name="A pessoa está com equipamento?">
+      <bpmn:incoming>Fluxo_ate_com_equipamento</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_com_equipamento</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_sem_equipamento</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="AvisaEmprestimoAberto" name="Confirma no aviso que a pessoa está com equipamento">
+      <bpmn:incoming>Fluxo_com_equipamento</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_confirmou_aviso</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="GravaSituacaoPessoa" name="Grava a nova situação do cadastro">
+      <bpmn:incoming>Fluxo_sem_equipamento</bpmn:incoming>
+      <bpmn:incoming>Fluxo_confirmou_aviso</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_qual_situacao</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="QualSituacaoPessoa" name="Qual foi o destino?">
+      <bpmn:incoming>Fluxo_ate_qual_situacao</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_para_inativo</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_para_ativo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="FimPessoaInativa" name="Cadastro inativo: retirada travada, devolução liberada">
+      <bpmn:incoming>Fluxo_para_inativo</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="FimPessoaAtiva" name="Cadastro ativo; volta a poder retirar">
+      <bpmn:incoming>Fluxo_para_ativo</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Fluxo_ate_gesto" sourceRef="AbrePessoas" targetRef="QualGesto" />
+    <bpmn:sequenceFlow id="Fluxo_importar" name="importar a planilha" sourceRef="QualGesto" targetRef="EnviaPlanilha" />
+    <bpmn:sequenceFlow id="Fluxo_corrigir" name="corrigir um cadastro" sourceRef="QualGesto" targetRef="CorrigeCampos" />
+    <bpmn:sequenceFlow id="Fluxo_situacao" name="ativar ou inativar" sourceRef="QualGesto" targetRef="ClicaSituacao" />
+    <bpmn:sequenceFlow id="Fluxo_ate_eh_planilha" sourceRef="EnviaPlanilha" targetRef="EhPlanilha" />
+    <bpmn:sequenceFlow id="Fluxo_arquivo_recusado" name="não" sourceRef="EhPlanilha" targetRef="FimArquivoRecusado" />
+    <bpmn:sequenceFlow id="Fluxo_arquivo_aceito" name="sim" sourceRef="EhPlanilha" targetRef="MontaPlano" />
+    <bpmn:sequenceFlow id="Fluxo_ate_previa" sourceRef="MontaPlano" targetRef="MostraPrevia" />
+    <bpmn:sequenceFlow id="Fluxo_ate_confirma" sourceRef="MostraPrevia" targetRef="ConfirmaImportacao" />
+    <bpmn:sequenceFlow id="Fluxo_cancelou" name="não" sourceRef="ConfirmaImportacao" targetRef="FimCancelada" />
+    <bpmn:sequenceFlow id="Fluxo_confirmou" name="sim" sourceRef="ConfirmaImportacao" targetRef="GravaImportacao" />
+    <bpmn:sequenceFlow id="Fluxo_ate_importada" sourceRef="GravaImportacao" targetRef="FimImportada" />
+    <bpmn:sequenceFlow id="Fluxo_ate_campos_validos" sourceRef="CorrigeCampos" targetRef="CamposValidos" />
+    <bpmn:sequenceFlow id="Fluxo_edicao_recusada" name="não" sourceRef="CamposValidos" targetRef="FimEdicaoRecusada" />
+    <bpmn:sequenceFlow id="Fluxo_edicao_aceita" name="sim" sourceRef="CamposValidos" targetRef="GravaEdicao" />
+    <bpmn:sequenceFlow id="Fluxo_ate_corrigido" sourceRef="GravaEdicao" targetRef="FimCorrigido" />
+    <bpmn:sequenceFlow id="Fluxo_ate_com_equipamento" sourceRef="ClicaSituacao" targetRef="PessoaComEquipamento" />
+    <bpmn:sequenceFlow id="Fluxo_com_equipamento" name="sim" sourceRef="PessoaComEquipamento" targetRef="AvisaEmprestimoAberto" />
+    <bpmn:sequenceFlow id="Fluxo_sem_equipamento" name="não" sourceRef="PessoaComEquipamento" targetRef="GravaSituacaoPessoa" />
+    <bpmn:sequenceFlow id="Fluxo_confirmou_aviso" sourceRef="AvisaEmprestimoAberto" targetRef="GravaSituacaoPessoa" />
+    <bpmn:sequenceFlow id="Fluxo_ate_qual_situacao" sourceRef="GravaSituacaoPessoa" targetRef="QualSituacaoPessoa" />
+    <bpmn:sequenceFlow id="Fluxo_para_inativo" name="Inativo" sourceRef="QualSituacaoPessoa" targetRef="FimPessoaInativa" />
+    <bpmn:sequenceFlow id="Fluxo_para_ativo" name="Ativo" sourceRef="QualSituacaoPessoa" targetRef="FimPessoaAtiva" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="Diagrama_pessoas">
+    <bpmndi:BPMNPlane id="Plano_pessoas" bpmnElement="Colaboracao_pessoas">
+      <bpmndi:BPMNShape id="Participante_pessoas_di" bpmnElement="Participante_pessoas" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1380" height="1260" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Raia_secretaria_di" bpmnElement="Raia_secretaria" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1350" height="500" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Raia_sistema_di" bpmnElement="Raia_sistema" isHorizontal="true">
+        <dc:Bounds x="190" y="580" width="1350" height="760" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="AbrePessoas_di" bpmnElement="AbrePessoas">
+        <dc:Bounds x="212" y="132" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="QualGesto_di" bpmnElement="QualGesto" isMarkerVisible="true">
+        <dc:Bounds x="330" y="125" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="200" y="218" width="145" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EnviaPlanilha_di" bpmnElement="EnviaPlanilha">
+        <dc:Bounds x="510" y="110" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ConfirmaImportacao_di" bpmnElement="ConfirmaImportacao" isMarkerVisible="true">
+        <dc:Bounds x="1145" y="125" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1015" y="185" width="145" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimCancelada_di" bpmnElement="FimCancelada">
+        <dc:Bounds x="1302" y="132" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CorrigeCampos_di" bpmnElement="CorrigeCampos">
+        <dc:Bounds x="510" y="230" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ClicaSituacao_di" bpmnElement="ClicaSituacao">
+        <dc:Bounds x="510" y="350" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="AvisaEmprestimoAberto_di" bpmnElement="AvisaEmprestimoAberto">
+        <dc:Bounds x="810" y="470" width="120" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EhPlanilha_di" bpmnElement="EhPlanilha" isMarkerVisible="true">
+        <dc:Bounds x="695" y="655" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="800" y="725" width="140" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimArquivoRecusado_di" bpmnElement="FimArquivoRecusado">
+        <dc:Bounds x="702" y="772" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="MontaPlano_di" bpmnElement="MontaPlano">
+        <dc:Bounds x="810" y="640" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="MostraPrevia_di" bpmnElement="MostraPrevia">
+        <dc:Bounds x="960" y="640" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GravaImportacao_di" bpmnElement="GravaImportacao">
+        <dc:Bounds x="1260" y="640" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimImportada_di" bpmnElement="FimImportada">
+        <dc:Bounds x="1452" y="662" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="CamposValidos_di" bpmnElement="CamposValidos" isMarkerVisible="true">
+        <dc:Bounds x="695" y="875" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="800" y="945" width="140" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimEdicaoRecusada_di" bpmnElement="FimEdicaoRecusada">
+        <dc:Bounds x="702" y="992" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GravaEdicao_di" bpmnElement="GravaEdicao">
+        <dc:Bounds x="810" y="860" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimCorrigido_di" bpmnElement="FimCorrigido">
+        <dc:Bounds x="1002" y="882" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="PessoaComEquipamento_di" bpmnElement="PessoaComEquipamento" isMarkerVisible="true">
+        <dc:Bounds x="695" y="1095" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GravaSituacaoPessoa_di" bpmnElement="GravaSituacaoPessoa">
+        <dc:Bounds x="960" y="1080" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="QualSituacaoPessoa_di" bpmnElement="QualSituacaoPessoa" isMarkerVisible="true">
+        <dc:Bounds x="1145" y="1095" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1015" y="1165" width="145" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimPessoaInativa_di" bpmnElement="FimPessoaInativa">
+        <dc:Bounds x="1302" y="1102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimPessoaAtiva_di" bpmnElement="FimPessoaAtiva">
+        <dc:Bounds x="1302" y="1212" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Fluxo_ate_gesto_di" bpmnElement="Fluxo_ate_gesto">
+        <di:waypoint x="248" y="150" />
+        <di:waypoint x="330" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_importar_di" bpmnElement="Fluxo_importar">
+        <di:waypoint x="380" y="150" />
+        <di:waypoint x="510" y="150" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="390" y="126" width="110" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_corrigir_di" bpmnElement="Fluxo_corrigir">
+        <di:waypoint x="355" y="175" />
+        <di:waypoint x="355" y="270" />
+        <di:waypoint x="510" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="365" y="200" width="115" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_situacao_di" bpmnElement="Fluxo_situacao">
+        <di:waypoint x="355" y="175" />
+        <di:waypoint x="355" y="390" />
+        <di:waypoint x="510" y="390" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="365" y="300" width="115" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_eh_planilha_di" bpmnElement="Fluxo_ate_eh_planilha">
+        <di:waypoint x="630" y="150" />
+        <di:waypoint x="720" y="150" />
+        <di:waypoint x="720" y="655" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_arquivo_recusado_di" bpmnElement="Fluxo_arquivo_recusado">
+        <di:waypoint x="720" y="705" />
+        <di:waypoint x="720" y="772" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="726" y="698" width="45" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_arquivo_aceito_di" bpmnElement="Fluxo_arquivo_aceito">
+        <di:waypoint x="745" y="680" />
+        <di:waypoint x="810" y="680" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_previa_di" bpmnElement="Fluxo_ate_previa">
+        <di:waypoint x="930" y="680" />
+        <di:waypoint x="960" y="680" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_confirma_di" bpmnElement="Fluxo_ate_confirma">
+        <di:waypoint x="1080" y="680" />
+        <di:waypoint x="1120" y="680" />
+        <di:waypoint x="1120" y="150" />
+        <di:waypoint x="1145" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_cancelou_di" bpmnElement="Fluxo_cancelou">
+        <di:waypoint x="1195" y="150" />
+        <di:waypoint x="1302" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_confirmou_di" bpmnElement="Fluxo_confirmou">
+        <di:waypoint x="1170" y="175" />
+        <di:waypoint x="1170" y="680" />
+        <di:waypoint x="1260" y="680" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1180" y="195" width="45" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_importada_di" bpmnElement="Fluxo_ate_importada">
+        <di:waypoint x="1380" y="680" />
+        <di:waypoint x="1452" y="680" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_campos_validos_di" bpmnElement="Fluxo_ate_campos_validos">
+        <di:waypoint x="630" y="270" />
+        <di:waypoint x="670" y="270" />
+        <di:waypoint x="670" y="900" />
+        <di:waypoint x="695" y="900" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_edicao_recusada_di" bpmnElement="Fluxo_edicao_recusada">
+        <di:waypoint x="720" y="925" />
+        <di:waypoint x="720" y="992" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="726" y="918" width="45" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_edicao_aceita_di" bpmnElement="Fluxo_edicao_aceita">
+        <di:waypoint x="745" y="900" />
+        <di:waypoint x="810" y="900" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_corrigido_di" bpmnElement="Fluxo_ate_corrigido">
+        <di:waypoint x="930" y="900" />
+        <di:waypoint x="1002" y="900" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_com_equipamento_di" bpmnElement="Fluxo_ate_com_equipamento">
+        <di:waypoint x="630" y="390" />
+        <di:waypoint x="650" y="390" />
+        <di:waypoint x="650" y="1120" />
+        <di:waypoint x="695" y="1120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_com_equipamento_di" bpmnElement="Fluxo_com_equipamento">
+        <di:waypoint x="720" y="1095" />
+        <di:waypoint x="720" y="1060" />
+        <di:waypoint x="780" y="1060" />
+        <di:waypoint x="780" y="510" />
+        <di:waypoint x="810" y="510" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="790" y="1040" width="45" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_sem_equipamento_di" bpmnElement="Fluxo_sem_equipamento">
+        <di:waypoint x="745" y="1120" />
+        <di:waypoint x="960" y="1120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_confirmou_aviso_di" bpmnElement="Fluxo_confirmou_aviso">
+        <di:waypoint x="930" y="510" />
+        <di:waypoint x="945" y="510" />
+        <di:waypoint x="945" y="1120" />
+        <di:waypoint x="960" y="1120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_qual_situacao_di" bpmnElement="Fluxo_ate_qual_situacao">
+        <di:waypoint x="1080" y="1120" />
+        <di:waypoint x="1145" y="1120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_para_inativo_di" bpmnElement="Fluxo_para_inativo">
+        <di:waypoint x="1195" y="1120" />
+        <di:waypoint x="1302" y="1120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_para_ativo_di" bpmnElement="Fluxo_para_ativo">
+        <di:waypoint x="1170" y="1145" />
+        <di:waypoint x="1170" y="1230" />
+        <di:waypoint x="1302" y="1230" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1180" y="1150" width="50" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

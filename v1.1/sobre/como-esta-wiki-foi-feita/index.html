@@ -1,0 +1,1959 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Manual de uso e documentação de processos do sistema de empréstimo de notebooks, tablets e extensões da Unoesc.">
+      
+      
+        <meta name="author" content="Viccenzo Boff">
+      
+      
+        <link rel="canonical" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/sobre/como-esta-wiki-foi-feita/">
+      
+      
+        <link rel="prev" href="../arquitetura-do-sistema/">
+      
+      
+        <link rel="next" href="../../contribuir/guia-de-estilo/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="pt-BR">
+        
+          <link rel="alternate" href="../../en/sobre/como-esta-wiki-foi-feita/" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../assets/brand/logo-unoesc-colorido.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Como esta wiki foi feita - Sistema de Empréstimo de Equipamentos — Unoesc</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/marca.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#como-esta-wiki-foi-feita" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="Sistema de Empréstimo de Equipamentos — Unoesc" class="md-header__button md-logo" aria-label="Sistema de Empréstimo de Equipamentos — Unoesc" data-md-component="logo">
+      
+  <img src="../../assets/brand/logo-unoesc-colorido.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Sistema de Empréstimo de Equipamentos — Unoesc
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Como esta wiki foi feita
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Mudar para o modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Mudar para o modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Mudar para o modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Mudar para o modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Selecione o idioma">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="pt-BR" class="md-select__link">
+              Português (Brasil)
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../en/sobre/como-esta-wiki-foi-feita/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    viccenzo-boff/sistema-emprestimo-equipamentos
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Sistema de Empréstimo de Equipamentos — Unoesc" class="md-nav__button md-logo" aria-label="Sistema de Empréstimo de Equipamentos — Unoesc" data-md-component="logo">
+      
+  <img src="../../assets/brand/logo-unoesc-colorido.png" alt="logo">
+
+    </a>
+    Sistema de Empréstimo de Equipamentos — Unoesc
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    viccenzo-boff/sistema-emprestimo-equipamentos
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Início
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guia de Início Rápido
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guia de Início Rápido
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../inicio-rapido/estudante-e-professor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Estudante e Professor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../inicio-rapido/secretaria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secretaria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Processos do Portal
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Processos do Portal
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../portal/retirada/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Retirada de equipamento
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../portal/devolucao/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Devolução de equipamento
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Processos do Painel
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Processos do Painel
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/baixa-fisica/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Baixa física
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/inventario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Gestão de inventário
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/pessoas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Gestão de pessoas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referência
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referência
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../referencia/glossario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossário
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../referencia/estados-e-transicoes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Estados e transições
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../referencia/regras-de-negocio/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regras de negócio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../referencia/conta-do-administrador/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conta do administrador
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sobre
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sobre
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arquitetura-do-sistema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitetura do sistema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Como esta wiki foi feita
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Como esta wiki foi feita
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#antes-onde-o-conhecimento-morava" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Antes: onde o conhecimento morava
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#as-decisoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        As decisões
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="As decisões">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-modelar-em-bpmn-antes-de-escrever-a-primeira-pagina" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Modelar em BPMN antes de escrever a primeira página
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-descrever-a-decisao-de-produto-e-nao-a-tela" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Descrever a decisão de produto, e não a tela
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-a-documentacao-no-mesmo-repositorio-do-codigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. A documentação no mesmo repositório do código
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-documentar-uma-versao-congelada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Documentar uma versão congelada
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-dado-de-demonstracao-em-vez-de-borrar-a-imagem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Dado de demonstração em vez de borrar a imagem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-vocabulario-controlado-em-vez-de-lint-de-estilo-em-portugues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Vocabulário controlado em vez de lint de estilo em português
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-portoes-que-reprovam-e-tres-coisas-que-eles-mediram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Portões que reprovam, e três coisas que eles mediram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-documentar-um-defeito-em-vez-de-corrigi-lo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Documentar um defeito em vez de corrigi-lo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-teste-que-vale-mais-que-os-tres-portoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O teste que vale mais que os três portões
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-de-fora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O que ficou de fora
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#depois-o-que-existe-hoje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Depois: o que existe hoje
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribuir
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contribuir
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contribuir/guia-de-estilo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guia de estilo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contribuir/template-processo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Template de processo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#antes-onde-o-conhecimento-morava" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Antes: onde o conhecimento morava
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#as-decisoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        As decisões
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="As decisões">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-modelar-em-bpmn-antes-de-escrever-a-primeira-pagina" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Modelar em BPMN antes de escrever a primeira página
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-descrever-a-decisao-de-produto-e-nao-a-tela" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Descrever a decisão de produto, e não a tela
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-a-documentacao-no-mesmo-repositorio-do-codigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. A documentação no mesmo repositório do código
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-documentar-uma-versao-congelada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Documentar uma versão congelada
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-dado-de-demonstracao-em-vez-de-borrar-a-imagem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Dado de demonstração em vez de borrar a imagem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-vocabulario-controlado-em-vez-de-lint-de-estilo-em-portugues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Vocabulário controlado em vez de lint de estilo em português
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-portoes-que-reprovam-e-tres-coisas-que-eles-mediram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Portões que reprovam, e três coisas que eles mediram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-documentar-um-defeito-em-vez-de-corrigi-lo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Documentar um defeito em vez de corrigi-lo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-teste-que-vale-mais-que-os-tres-portoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O teste que vale mais que os três portões
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-que-ficou-de-fora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O que ficou de fora
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#depois-o-que-existe-hoje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Depois: o que existe hoje
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/edit/main/docs/sobre/como-esta-wiki-foi-feita.md" title="Editar esta página" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="como-esta-wiki-foi-feita">Como esta wiki foi feita</h1>
+<p>Esta página não é um diário. Ela registra as <strong>decisões</strong> que produziram a wiki
+que você está lendo, e cada uma vem com a alternativa que foi descartada e o
+motivo — porque decisão sem alternativa descartada é propaganda, e propaganda
+não ajuda ninguém a repetir o trabalho.</p>
+<p>Onde houve medição, o número está junto. Vários deles contradizem o que parecia
+óbvio antes de medir.</p>
+<h2 id="antes-onde-o-conhecimento-morava">Antes: onde o conhecimento morava</h2>
+<p>Quando a documentação começou, o repositório tinha quatro documentos e nenhum
+deles falava com quem opera o sistema:</p>
+<table>
+<thead>
+<tr>
+<th>Documento</th>
+<th>Escrito para</th>
+<th>O que respondia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>README.md</code></td>
+<td>Quem instala e roda o código</td>
+<td>Como subir o projeto, quais scripts existem</td>
+</tr>
+<tr>
+<td><code>AGENTS.md</code></td>
+<td>Quem altera o código</td>
+<td>Por que cada decisão técnica foi tomada</td>
+</tr>
+<tr>
+<td><code>especificacoes/spec.md</code></td>
+<td>Quem especificou o produto</td>
+<td>O que o sistema deve fazer</td>
+</tr>
+<tr>
+<td>24 enunciados de tarefa</td>
+<td>Quem construiu cada pedaço</td>
+<td>O que aquela tarefa pedia</td>
+</tr>
+</tbody>
+</table>
+<p>O <code>CONTRIBUTING.md</code> existia com <strong>zero byte</strong>. A pasta <code>docs/</code> não existia.</p>
+<p>Ou seja: quem estivesse de pé na bancada com um tablet na frente, ou na
+secretaria com a fila de devoluções aberta, não tinha onde procurar. O
+conhecimento operacional estava inteiro na cabeça de quem construiu — e a única
+forma de consultá-lo era perguntar.</p>
+<h2 id="as-decisoes">As decisões</h2>
+<h3 id="1-modelar-em-bpmn-antes-de-escrever-a-primeira-pagina">1. Modelar em BPMN antes de escrever a primeira página</h3>
+<p><strong>A decisão.</strong> Os cinco processos foram desenhados em BPMN antes de qualquer
+página de passo a passo existir. Os diagramas vieram primeiro; o texto veio
+depois, a partir deles.</p>
+<p><strong>A alternativa descartada.</strong> Escrever o passo a passo primeiro e desenhar o
+diagrama depois, a partir do texto pronto — que é a ordem natural, porque
+escrever é mais rápido que modelar.</p>
+<p><strong>O motivo.</strong> Modelar obriga a achar as ramificações enquanto ainda é barato
+mudar de ideia. O texto escrito primeiro vira <strong>narração de tela</strong>: descreve o
+caminho feliz, que é o que a pessoa que escreve tem na cabeça, e as decisões
+ficam embutidas na prosa. O diagrama não deixa: um losango sem as duas saídas
+nomeadas é visivelmente um buraco.</p>
+<p>Isso deu resultado três vezes. Nas páginas da <a href="../../portal/retirada/">retirada</a>,
+da <a href="../../portal/devolucao/">devolução</a> e da
+<a href="../../painel/baixa-fisica/">baixa física</a>, o diagrama tinha uma ramificação que
+o enunciado da tarefa <strong>não listava</strong> — a corrida de dois tablets pelo mesmo
+aparelho, a escolha entre devolver um item e devolver a lista inteira, e a
+escolha entre uma baixa e a fila toda. As três entraram no passo a passo porque
+a figura estava ali, na mesma página, contradizendo o texto.</p>
+<h3 id="2-descrever-a-decisao-de-produto-e-nao-a-tela">2. Descrever a decisão de produto, e não a tela</h3>
+<p><strong>A decisão.</strong> Toda página de processo tem uma seção chamada
+"Regras que não são óbvias", e ela explica <strong>por que</strong> o sistema se comporta
+daquele jeito — não o que clicar.</p>
+<p><strong>A alternativa descartada.</strong> O manual comum: as oito telas, na ordem, com uma
+captura em cada uma. É mais rápido de escrever e envelhece junto com a
+interface.</p>
+<p><strong>O motivo.</strong> Quem procura o manual raramente está perdido em <em>como</em> clicar.
+Está perdido em <em>por que</em> o sistema fez o que fez — e essa resposta não está na
+tela.</p>
+<p>O exemplo mais ilustrativo é a devolução em duas fases. Quando alguém devolve um
+aparelho no tablet, ele <strong>não</strong> volta a ficar disponível:</p>
+<blockquote>
+<p>Devolver no tablet é uma <strong>declaração</strong>, não uma conferência. Enquanto o
+empréstimo está aguardando baixa, o aparelho está fisicamente na bancada mas
+ninguém da secretaria o recolheu ainda. Se ele voltasse para disponível nesse
+momento, o tablet ofereceria a outra pessoa um equipamento que continua em
+cima da bancada.</p>
+</blockquote>
+<p>Um manual de tela descreveria isso como "o equipamento aparece na fila de
+devoluções" e pronto. A pessoa que abrisse o inventário procurando o notebook
+que acabou de ser devolvido continuaria achando que o sistema errou. A regra
+inteira está em <a href="../../painel/baixa-fisica/">baixa física</a> e em
+<a href="../../referencia/estados-e-transicoes/">estados e transições</a>.</p>
+<h3 id="3-a-documentacao-no-mesmo-repositorio-do-codigo">3. A documentação no mesmo repositório do código</h3>
+<p><strong>A decisão.</strong> A wiki mora em <code>docs/</code>, no repositório do sistema, e é publicada
+por uma ação que roda a cada envio para a branch principal.</p>
+<p><strong>A alternativa descartada.</strong> Um repositório separado só para a documentação.
+Ele dá um artefato mais limpo de linkar, com histórico próprio e sem os
+enunciados de tarefa no meio.</p>
+<p><strong>O motivo.</strong> Documentação e código no mesmo histórico é o que permite a
+<strong>mudança de regra e a correção do manual caberem no mesmo commit</strong>. Em
+repositórios separados, os dois passos existem, o segundo depende de alguém
+lembrar, e é sempre o segundo que fica para depois. A wiki que descreve a versão
+anterior do produto é pior que wiki nenhuma, porque ela tem a autoridade de um
+documento oficial e o conteúdo de um boato.</p>
+<p>Aconteceu ao contrário nesta série, e é a prova de que o arranjo funciona: ao
+escrever a página de <a href="../../painel/pessoas/">gestão de pessoas</a>, a leitura do
+código revelou que o campo de matrícula do painel aceitava 16 dígitos enquanto o
+servidor recusava acima de 15. A correção do produto e a página que a descreve
+saíram na mesma sessão.</p>
+<h3 id="4-documentar-uma-versao-congelada">4. Documentar uma versão congelada</h3>
+<p><strong>A decisão.</strong> A wiki descreve a <code>v1.0</code>, uma etiqueta fixa no histórico. O
+seletor de versão no alto da página existe para que versões futuras convivam
+com ela, em vez de substituí-la.</p>
+<p><strong>A alternativa descartada.</strong> Documentar a branch principal, que é o estado mais
+recente e o que a secretaria de fato usa.</p>
+<p><strong>O motivo.</strong> Captura de tela de alvo em movimento <strong>nasce vencida</strong>. A branch
+principal continua andando: um botão muda de lugar e as 49 capturas desta wiki
+passam a mostrar uma tela que não existe mais, sem que ninguém perceba, porque
+imagem não tem verificador. Congelar transforma isso em uma decisão explícita —
+quando a próxima versão do produto sair, alguém publica a wiki dela ao lado, e a
+<code>v1.0</code> continua correta sobre a <code>v1.0</code>.</p>
+<p>O preço é conhecido e está declarado na <a href="../../">home</a>: se a tela na sua
+frente tiver um botão que nenhuma página daqui menciona, é porque você está em
+uma versão mais nova.</p>
+<h3 id="5-dado-de-demonstracao-em-vez-de-borrar-a-imagem">5. Dado de demonstração em vez de borrar a imagem</h3>
+<p><strong>A decisão.</strong> Nenhuma captura mostra pessoa real. O cenário fotografado é
+montado por um script — 15 pessoas fictícias, 10 empréstimos, 20 equipamentos —
+que recria sempre o mesmo estado.</p>
+<p><strong>A alternativa descartada.</strong> Fotografar o banco real e borrar nome e matrícula
+nas imagens.</p>
+<p><strong>O motivo.</strong> São três problemas, e o borrão resolve zero deles. Borrão de
+imagem <strong>falha</strong> com mais frequência do que se imagina, e uma matrícula tem
+poucos dígitos — o que sobra é um quebra-cabeça pequeno. Borrão fica <strong>feio</strong>, e
+uma tela cheia de retângulos cinzas é ilegível justamente onde a captura
+precisava ensinar. E, principalmente, borrão não resolve o problema de origem:
+o dado pessoal continua tendo estado na tela e no arquivo de imagem, e basta uma
+captura esquecida para vazar.</p>
+<p>O script tem um segundo efeito que só apareceu no uso: ele é <strong>idempotente</strong>.
+Depois de exercitar uma tela clicando nos botões de verdade, rodá-lo de novo
+devolve o enquadramento — o que torna possível fotografar o mesmo cenário em
+sessões diferentes, com semanas de distância, e obter a mesma imagem.</p>
+<p>O elenco fictício também foi escolhido, e não sorteado: uma pessoa com <strong>dois</strong>
+aparelhos, porque os botões de lote só aparecem a partir de dois; uma pessoa
+inativa <strong>que está na fila de devoluções</strong>, porque é a regra assimétrica em
+imagem; um nome com partícula minúscula, porque é o caso que a normalização de
+nomes trata.</p>
+<h3 id="6-vocabulario-controlado-em-vez-de-lint-de-estilo-em-portugues">6. Vocabulário controlado em vez de lint de estilo em português</h3>
+<!-- vale Vale.Avoid = NO -->
+
+<p><strong>A decisão.</strong> O corretor de texto confere uma lista de grafias proibidas nas
+páginas em português — "usuário" para falar de estudante, "aluno", "o sistema
+irá" — e o estilo Microsoft completo apenas nas páginas em inglês.</p>
+<!-- vale Vale.Avoid = YES -->
+
+<p><strong>A alternativa descartada.</strong> Ligar um estilo pronto também em português, como
+se faz em inglês.</p>
+<p><strong>O motivo.</strong> <strong>Não existe estilo pronto de qualidade para português</strong>, e a
+tentativa de usar um foi medida: em uma página de prova com quatro frases,
+<strong>15 dos 19 alertas</strong> eram o corretor ortográfico de inglês perguntando "você
+quis mesmo dizer 'tabela'?". Um portão que erra três em cada quatro vezes é um
+portão que a próxima pessoa desliga inteiro — e aí não sobra nem o pouco que
+funcionava.</p>
+<!-- vale Vale.Avoid = NO -->
+
+<p>O que restou é pequeno e resolve o problema que importa: <strong>duas páginas
+discordarem do nome da mesma coisa</strong>. E ele decidiu uma palavra do projeto —
+quem retira equipamento é <em>estudante</em>, nunca "aluno", porque é "Estudante" o que
+o painel mostra desde que o termo foi trocado no sistema. Uma wiki que dissesse
+"aluno" mandaria o leitor procurar um filtro que tem outro nome.</p>
+<!-- vale Vale.Avoid = YES -->
+
+<h3 id="7-portoes-que-reprovam-e-tres-coisas-que-eles-mediram">7. Portões que reprovam, e três coisas que eles mediram</h3>
+<p><strong>A decisão.</strong> Três verificações rodam a cada envio, em etapas separadas, e a
+publicação <strong>depende</strong> das três passarem: a construção do site em modo estrito,
+o corretor de texto, e o conferidor de links sobre o site construído.</p>
+<p><strong>A alternativa descartada.</strong> Rebaixar as regras incômodas a aviso, em vez de
+desligá-las com o motivo escrito ao lado. Aviso não quebra nada e deixa todo
+mundo em paz.</p>
+<p><strong>O motivo.</strong> Aviso que ninguém lê é ruído, e ruído soterra o erro real. Com o
+estilo de inglês ligado por inteiro, o corretor apontava <strong>570 erros</strong> — dos
+quais <strong>569 vinham de três regras de voz</strong> que contrariam decisões já publicadas
+desta wiki. Rebaixar as três a aviso significaria 569 linhas por execução sobre
+assuntos já decididos, e o único erro verdadeiro no meio delas. As três foram
+<strong>desligadas com o motivo escrito</strong>, as outras 44 ficaram em força total, e o
+erro real foi corrigido no texto.</p>
+<p>As três medições que mudaram o desenho dos portões:</p>
+<ul>
+<li><strong>A construção em modo estrito passa com âncora quebrada.</strong> Ela classifica
+  "este documento não tem a âncora <code>#x</code>" como informação, e o modo estrito só
+  promove <em>aviso</em> a erro — o site sobe com o link quebrado impresso na saída.
+  Isso foi medido quatro vezes, em quatro tarefas diferentes, antes de virar
+  regra. É por isso que existe um terceiro portão.</li>
+<li><strong>O conferidor de links roda sobre o site construído, não sobre os arquivos
+  de origem.</strong> Sobre a origem ele produzia <strong>60 alertas falsos</strong>: 57 porque
+  calcula a âncora de cada título preservando o acento, enquanto o gerador do
+  site normaliza para ASCII — obedecer ao portão quebraria os links no site de
+  verdade.</li>
+<li><strong>Um portão pode ficar verde sem ter olhado nada.</strong> Ao configurar o corretor
+  de texto, o primeiro padrão de caminho casava a primeira pasta e <strong>nenhuma
+  abaixo dela</strong>: a ferramenta dizia "0 arquivos" e <strong>saía com sucesso</strong>. Esse
+  verde é indistinguível do verde de um projeto limpo. Desde então, a primeira
+  asserção sobre qualquer verificador novo é <strong>quantos arquivos ele examinou</strong>,
+  e não o código de saída dele.</li>
+</ul>
+<h3 id="8-documentar-um-defeito-em-vez-de-corrigi-lo">8. Documentar um defeito em vez de corrigi-lo</h3>
+<p><strong>A decisão.</strong> Uma mensagem do painel dava um conselho que não funciona. Ao
+tentar excluir uma categoria que ainda tem equipamento, a tela da <code>v1.0</code> sugeria
+inativar os equipamentos primeiro — e inativar <strong>não</strong> libera a exclusão. A
+página de <a href="../../painel/inventario/">gestão de inventário</a> da <code>v1.0</code> cita a
+mensagem com a grafia exata e, logo abaixo, desmente o conselho.</p>
+<p><strong>A alternativa descartada.</strong> Corrigir a frase no produto, que é uma linha de
+código.</p>
+<p><strong>O motivo.</strong> A wiki descreve a versão <code>v1.0</code>, e a regra de escrita desta wiki é
+citar a tela <strong>inclusive quando a tela está errada</strong> — porque é pela frase que a
+pessoa chega à página, e corrigir no texto faria o leitor procurar uma mensagem
+que não existe. Corrigir o produto é uma tarefa de produto, com o seu próprio
+ciclo de verificação; ficou registrada como defeito em aberto.</p>
+<p>A decisão vale como princípio: <strong>a wiki não conserta o sistema por escrito.</strong>
+Quando ela encontra um defeito, o registro é honesto e o conserto vira trabalho
+declarado.</p>
+<p><strong>O que aconteceu depois.</strong> O conserto veio em setembro de 2026, já na <code>v1.1</code>:
+a frase passou a dizer o que de fato acontece, a captura foi refeita contra o
+sistema rodando, e a página desta versão descreve a mensagem nova — enquanto a
+página da <code>v1.0</code>, congelada no seletor de versão, continua citando a antiga. É
+a <a href="#4-documentar-uma-versao-congelada">decisão 4</a> funcionando como prometido:
+cada versão da wiki fica correta sobre a sua versão do produto.</p>
+<h2 id="o-teste-que-vale-mais-que-os-tres-portoes">O teste que vale mais que os três portões</h2>
+<p>Nenhum portão pega uma página que está toda certa e mesmo assim não serve. Por
+isso o critério final da wiki não é uma ferramenta: é entregá-la a alguém que
+nunca viu o sistema e pedir uma retirada usando <strong>só</strong> ela.</p>
+<p>A passada feita aqui seguiu a página da retirada ao pé da letra, fazendo apenas
+o que ela manda e usando apenas os rótulos que ela cita. Os 17 pontos conferidos
+bateram: cada botão citado existe com a grafia exata, e a sequência leva do
+teclado da matrícula até o aparelho na mão.</p>
+<p>O que ela achou foi uma coisa só, e é o tipo de coisa que só a leitura acha:</p>
+<blockquote>
+<p>A página prometia que "a grade de categorias aparece". Ela aparece — mas para
+quem <strong>já está com um aparelho</strong> a tela é outra: o título muda, a lista do que
+já está no seu nome entra à esquerda, e a grade divide o espaço com ela. Em um
+tablet em pé, a grade começa em 752px de uma tela de 1280px, abaixo de uma
+lista que a página nunca mencionou.</p>
+</blockquote>
+<p>Ninguém fica travado — a grade está visível sem rolar nas duas orientações, e o
+número acima é o que prova isso. Mas é meio segundo de "esta é a tela certa?"
+para o caso mais comum do balcão, que é justamente quem já tem alguma coisa e
+veio buscar mais uma. A página ganhou uma ramificação explícita para os dois
+casos.</p>
+<div class="admonition note">
+<p class="admonition-title">O teste completo continua pendente</p>
+<p>A passada acima foi feita por quem construiu o sistema, seguindo a própria
+página. Isso encontra rótulo errado e passo que falta; <strong>não</strong> encontra o
+pressuposto que quem escreveu nem sabe que tem. Só uma pessoa de fora acha
+isso, e essa parte do critério ainda não foi executada.</p>
+</div>
+<h2 id="o-que-ficou-de-fora">O que ficou de fora</h2>
+<p>Honestidade sobre escopo vale mais que lista de conquistas.</p>
+<ul>
+<li><strong>Não há sexta página de processo.</strong> A funcionalidade de relatórios e ocupação
+  está especificada e <strong>não</strong> foi construída — a wiki descreve o que existe, e
+  ela não existe. Quando entrar, vira uma versão nova, publicada ao lado desta.</li>
+<li><strong>A interface do sistema continua só em português.</strong> A wiki é bilíngue; o
+  produto não. Traduzir a interface é uma semana de trabalho que não cabia, e a
+  solução foi um <strong>glossário de interface</strong> na trilha em inglês, com cada rótulo
+  de tela e o que ele significa. Quem lê em inglês está com uma tela em
+  português na frente, e por isso o rótulo real vem em negrito e a tradução
+  entre parênteses — nunca o contrário.</li>
+<li><strong>As duas páginas de "Contribuir" não foram traduzidas</strong>, e é deliberado: elas
+  ensinam a escrever <strong>em português</strong>, com as grafias que o corretor proíbe.
+  Uma cópia em inglês seria um segundo dono da mesma regra de redação.</li>
+<li><strong>Não há vídeo, GIF animado nem tour interativo.</strong> Estavam fora de escopo
+  desde o começo: envelhecem pior que captura de tela e não têm diff no
+  histórico.</li>
+<li><strong>O tempo de prateleira é medido e não é lido por ninguém.</strong> O sistema grava
+  quando a devolução foi declarada e quando a secretaria conferiu, mas não
+  existe tela que mostre a diferença. O dado está lá, esperando o relatório.</li>
+<li><strong>Não se registra quem deu a baixa.</strong> O sistema sabe <strong>quando</strong> cada
+  conferência aconteceu e passou a ter contas individuais, mas o empréstimo não
+  guarda qual conta confirmou o recebimento.</li>
+<li><strong>A mensagem errada do inventário continua errada</strong>, pelo motivo da decisão 8.</li>
+</ul>
+<h2 id="depois-o-que-existe-hoje">Depois: o que existe hoje</h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Quanto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Páginas</td>
+<td>16 em português, 15 em inglês</td>
+</tr>
+<tr>
+<td>Palavras</td>
+<td>Cerca de 26.600 em português, 30.100 em inglês</td>
+</tr>
+<tr>
+<td>Processos documentados</td>
+<td>5, com as oito seções cada</td>
+</tr>
+<tr>
+<td>Diagramas BPMN</td>
+<td>5 fontes <code>.bpmn</code> versionadas, com o SVG derivado delas por comando</td>
+</tr>
+<tr>
+<td>Capturas de tela</td>
+<td>49, nenhuma com dado de pessoa real</td>
+</tr>
+<tr>
+<td>Portões no CI</td>
+<td>3, e a publicação depende dos três</td>
+</tr>
+</tbody>
+</table>
+<p>O número que importa não está na tabela: <strong>quem chega com uma dúvida operacional
+agora tem onde procurar</strong>, e a resposta explica a decisão em vez de descrever o
+botão.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../arquitetura-do-sistema/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Arquitetura do sistema">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Arquitetura do sistema
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../contribuir/guia-de-estilo/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Guia de estilo">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Guia de estilo
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Nome e logo da Unoesc usados com autorização da instituição.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "toc.follow", "content.action.edit", "search.highlight", "search.suggest"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js"></script>
+      
+    
+  </body>
+</html>
