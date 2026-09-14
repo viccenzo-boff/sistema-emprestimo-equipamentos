@@ -61,7 +61,7 @@ funciona: uma lista só, com o formulário de cadastro em cima e as ações na l
 de cada aparelho.
 
 **A gestão de categorias não está no diagrama, de propósito.** Ela é outra tela
-(**Categorias**, no menu) e não é um dos cinco processos do sistema — o que o
+(**Categorias**, no menu) e não é um dos processos documentados — o que o
 diagrama mostra é o cadastro **escolhendo** uma categoria que já existe. O
 procedimento 5 do passo a passo cobre a criação e a exclusão.
 

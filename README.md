@@ -14,10 +14,10 @@ O sistema roda em rede local, hospedado no computador da secretaria, com duas fr
 
 **A wiki do sistema está em <https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/>.**
 
-Ela é o manual de quem **opera** o sistema, e cobre os cinco processos — retirada e devolução
-no tablet, baixa física, inventário e cadastros no painel — cada um com diagrama BPMN, passo a
+Ela é o manual de quem **opera** o sistema, e cobre os seis processos — retirada e devolução
+no tablet, baixa física, inventário, cadastros e relatórios no painel — cada um com passo a
 passo com capturas de tela e uma seção que explica **por que** o sistema se comporta daquele
-jeito. Tem ainda glossário, as duas máquinas de estado, as regras de negócio consolidadas e dois
+jeito (os cinco primeiros trazem também um diagrama BPMN; relatório é leitura, e não transação). Tem ainda glossário, as duas máquinas de estado, as regras de negócio consolidadas e dois
 guias de início rápido, em português e inglês.
 
 A wiki descreve a versão **`v1.0`**; a `main` pode estar à frente dela. A fonte fica em

@@ -63,8 +63,8 @@ screen works: a single list, with the registration form on top and the actions
 on each device's row.
 
 **Category management is not in the diagram, on purpose.** It is another screen
-(**Categorias** (Categories), in the menu) and it is not one of the five
-processes of the system — what the diagram shows is registration **choosing** a
+(**Categorias** (Categories), in the menu) and it is not one of the documented
+processes — what the diagram shows is registration **choosing** a
 category that already exists. Procedure 5 in the step by step covers creating and
 deleting them.
 

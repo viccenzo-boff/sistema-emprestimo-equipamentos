@@ -83,6 +83,15 @@ Registra os logs de movimentação (um log isolado por item).
   1. **Fila de Devoluções:** Uma visualização em destaque mostrando todos os empréstimos `AGUARDANDO_BAIXA`. A secretária pega o equipamento na bancada e clica em "Confirmar Recebimento". O `Emprestimo` vai para `CONCLUIDO` e o `Equipamento` volta para `DISPONIVEL`.
   2. **Gestão de Inventário:** Mudar o status de equipamentos para `MANUTENCAO` (removendo-os da visão do tablet) ou cadastrar novos.
   3. **Visão Geral:** Ver quem está com qual equipamento no momento (logs `ATIVO`).
+  4. **Relatórios:** Ler o que o sistema já registrou, sem mudar nada — o volume de retiradas do mês, quantos aparelhos estão fora da prateleira agora, e a taxa de ocupação de cada categoria, com alerta de estoque esgotado ou crítico.
+
+> O item 4 entrou na **Tarefa 13**, e é a primeira funcionalidade do painel que
+> esta seção não previa. O motivo é externo ao sistema: a coordenação decide a
+> compra de equipamento e não tinha número nenhum para decidir com. As três
+> funcionalidades acima operam o sistema; esta só lê, e por isso não cria
+> regra de negócio nova — ela expõe as que já existem. A aba abre espaço para
+> outros relatórios (consumo e manutenção estão declarados no menu e ainda não
+> foram construídos).
 
 ## 5. Diretrizes para a IA (Claude)
 * Siga rigorosamente a arquitetura de dados descrita usando Prisma.

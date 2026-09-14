@@ -114,6 +114,17 @@ rótulo se lê. Sem o link para si mesmo, a seção 5 vira uma mancha cinza.
 
 O texto alternativo descreve o caminho principal do diagrama em uma frase —
 um SVG sem alternativo é uma imagem vazia para quem usa leitor de tela.
+
+ESTA É A SEÇÃO QUE MAIS SE REMOVE, e removê-la tem uma consequência de
+numeração. Processo que é LEITURA, e não transação, não tem BPMN honesto: sem
+gateway que decida o destino de um registro e sem passagem de bastão entre
+raias, o diagrama vira uma fileira de caixas repetindo o passo a passo. A D04
+registrou que não se força BPMN onde ele não é a notação certa, e a página de
+Relatórios (Tarefa 13) é o primeiro caso.
+
+Ao remover esta seção, RENUMERE as seguintes: a página fica com 1 a 7, sem
+buraco. Um índice que pula do 4 para o 6 faz o leitor procurar o que não
+existe, e o custo de renumerar é uma linha por título.
 -->
 
 *O SVG do diagrama, com link para o `.bpmn` fonte.*

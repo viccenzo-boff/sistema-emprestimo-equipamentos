@@ -57,7 +57,7 @@ corrigida.
 
 ## 3. Escopo
 
-### 3.1 Os cinco processos
+### 3.1 Os processos documentados
 
 | #   | Processo                 | Ator            | Rota                | Regra não óbvia que a página precisa explicar                            |
 | --- | ------------------------ | --------------- | ------------------- | ------------------------------------------------------------------------ |
@@ -66,6 +66,15 @@ corrigida.
 | 3   | Baixa física             | Secretaria      | `/admin`            | O ciclo só fecha aqui; a diferença de tempo é o tempo de prateleira      |
 | 4   | Gestão de inventário     | Secretaria      | `/admin/inventario` | `INATIVO` é aposentadoria, não exclusão — o histórico aponta para o item |
 | 5   | Gestão de pessoas        | Secretaria      | `/admin/pessoas`    | `INATIVO` de pessoa é **assimétrico**: trava retirada, libera devolução  |
+| 6   | Relatórios               | Secretaria      | `/admin/relatorios` | Ocupado é tudo que não está disponível; o aposentado fica fora da conta  |
+
+**Os cinco primeiros têm diagrama BPMN; o sexto não**, e a seção era "Os cinco
+processos" até a Tarefa 13. Consultar relatório é **leitura, não transação**: não
+há gateway que decida o destino de um registro, nem passagem de bastão entre
+raias. A D04 já tinha registrado que não se força BPMN onde ele não é a notação
+certa, e o template da §5 permite remover a seção que não se aplica. A página de
+Relatórios é, por isso, a única com sete seções em vez de oito — renumeradas de
+1 a 7, sem buraco.
 
 ### 3.2 Páginas de apoio
 
@@ -82,7 +91,9 @@ corrigida.
 ### 3.3 Fora de escopo
 
 - Traduzir a interface do sistema
-- Documentar a Tarefa 13 (Relatórios) — fica para a `v1.1`
+- ~~Documentar a Tarefa 13 (Relatórios) — fica para a `v1.1`~~ **Feito na
+  própria Tarefa 13**, que entregou a página nos dois idiomas junto com a tela.
+  Foi o que fechou a `v1.1`.
 - Documentação de API ou de contribuição de código (o [README.md](../README.md) e o
   [AGENTS.md](../AGENTS.md) já cobrem quem vai mexer no código)
 - Vídeo, GIF animado ou tour interativo
@@ -100,7 +111,8 @@ Início
 ├── Processos do Painel
 │   ├── 3. Baixa física
 │   ├── 4. Gestão de inventário
-│   └── 5. Gestão de pessoas
+│   ├── 5. Gestão de pessoas
+│   └── 6. Relatórios
 ├── Referência
 │   ├── Glossário
 │   ├── Estados e transições
