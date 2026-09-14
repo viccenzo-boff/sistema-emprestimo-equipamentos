@@ -1,3 +1,4 @@
+import { CartaoDeResumo } from "@/components/admin/CartaoDeResumo";
 import { SeloStatus } from "@/components/admin/SeloStatus";
 import { STATUS_EQUIPAMENTO, type ResumoDoInventario } from "@/lib/tipos";
 
@@ -39,17 +40,9 @@ export function ResumoInventario({
         ].join(" ")}
       >
         {cartoes.map(({ status, valor }) => (
-          <div
-            key={status}
-            className="flex flex-col gap-3 rounded-2xl border border-borda bg-superficie p-5"
-          >
-            <dd className="numeros-tabulares text-4xl font-semibold tracking-tight text-marca-azul">
-              {valor}
-            </dd>
-            <dt>
-              <SeloStatus status={status} />
-            </dt>
-          </div>
+          <CartaoDeResumo key={status} valor={valor}>
+            <SeloStatus status={status} />
+          </CartaoDeResumo>
         ))}
       </dl>
 

@@ -1,3 +1,4 @@
+import { CartaoDeResumo } from "@/components/admin/CartaoDeResumo";
 import { SeloPerfil, SeloStatusPessoa } from "@/components/admin/SeloStatus";
 import { PERFIL, STATUS_PESSOA, type ResumoDePessoas } from "@/lib/tipos";
 
@@ -36,23 +37,23 @@ export function ResumoPessoas({
           temInativos ? "sm:grid-cols-2 lg:grid-cols-4" : "sm:grid-cols-3",
         ].join(" ")}
       >
-        <Cartao valor={ativos}>
+        <CartaoDeResumo valor={ativos}>
           <SeloStatusPessoa status={STATUS_PESSOA.ativo} />
-        </Cartao>
+        </CartaoDeResumo>
 
         {temInativos ? (
-          <Cartao valor={inativos}>
+          <CartaoDeResumo valor={inativos}>
             <SeloStatusPessoa status={STATUS_PESSOA.inativo} />
-          </Cartao>
+          </CartaoDeResumo>
         ) : null}
 
-        <Cartao valor={estudantes}>
+        <CartaoDeResumo valor={estudantes}>
           <SeloPerfil perfil={PERFIL.estudante} />
-        </Cartao>
+        </CartaoDeResumo>
 
-        <Cartao valor={professores}>
+        <CartaoDeResumo valor={professores}>
           <SeloPerfil perfil={PERFIL.professor} />
-        </Cartao>
+        </CartaoDeResumo>
       </dl>
 
       <p className="px-1 text-base text-tinta-tenue">
@@ -63,13 +64,3 @@ export function ResumoPessoas({
   );
 }
 
-function Cartao({ valor, children }: { valor: number; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-borda bg-superficie p-5">
-      <dd className="numeros-tabulares text-4xl font-semibold tracking-tight text-marca-azul">
-        {valor}
-      </dd>
-      <dt>{children}</dt>
-    </div>
-  );
-}
