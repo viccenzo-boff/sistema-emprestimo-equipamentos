@@ -34,7 +34,7 @@ descreve o sistema, não o define.
 | --- | --- |
 | [`especificacoes/spec.md`](especificacoes/spec.md) | A base arquitetural. Manda sobre o sistema inteiro. |
 | [`especificacoes/spec-wiki.md`](especificacoes/spec-wiki.md) | Manda sobre `docs/` e sobre a série `tarefa-doc-NN`. |
-| [`especificacoes/tarefas/pendentes/`](especificacoes/tarefas/pendentes/) | Enunciado de tarefa ainda **não** executada. Hoje só a Tarefa 13. |
+| [`especificacoes/tarefas/pendentes/`](especificacoes/tarefas/pendentes/) | Enunciado de tarefa ainda **não** executada. Hoje as Tarefas 13 e 14, nesta ordem. |
 | [`especificacoes/tarefas/concluidas/`](especificacoes/tarefas/concluidas/) | Enunciados já executados, guardados como histórico. Não são fonte de trabalho novo. |
 | `docs/` | A wiki publicada pelo MkDocs. **Enunciado de tarefa nunca entra aqui** — o Vale lintaria e o MkDocs publicaria. |
 
@@ -42,6 +42,33 @@ Enunciado novo nasce em `especificacoes/tarefas/pendentes/` e é movido para
 `concluidas/` quando a tarefa fecha. A raiz do repositório fica com os quatro
 arquivos que as ferramentas exigem lá: `README.md`, `CLAUDE.md`, `AGENTS.md` e
 `CONTRIBUTING.md`.
+
+### Fila de trabalho — "faça a próxima tarefa" quer dizer isto
+
+Atualizada em 2026-09-14. O dono do repositório abre a sessão só com esse
+prompt; esta seção é a resposta.
+
+1. **Tarefa 13 — Relatórios e Ocupação**
+   ([enunciado](especificacoes/tarefas/pendentes/tarefa-13-relatorios-ocupacao.md)).
+   Executar com a skill `executar-tarefa-especificada`, do jeito de sempre:
+   varredura de conflitos antes da primeira edição, verificação em escada,
+   decisões registradas aqui, commits por tema na `main`. **Ela fecha a `v1.1`**:
+   ao terminar, seguir a receita "Como a wiki é publicada" do
+   [CONTRIBUTING.md](CONTRIBUTING.md) (título do `deploy`, `set-default`, as
+   duas homes) e deixar a tag `v1.1` para o dono criar e publicar. A página da
+   wiki para os relatórios entra na trilha do painel (§4 da spec-wiki precisa da
+   linha nova), nos dois idiomas.
+2. **Tarefa 14 — Avaliação anônima no fim da retirada**
+   ([enunciado](especificacoes/tarefas/pendentes/tarefa-14-avaliacao-retirada.md)).
+   Depende da 13 (é uma aba do `/admin/relatorios`). Todas as decisões de
+   produto já foram tomadas numa sessão de descoberta e estão na §0 do
+   enunciado, com o porquê — **não reabrir**; o que falta é executar. Abre a
+   `v1.2`.
+
+O que **não** precisa ser refeito: o Pages está no ar; a tag `v1.0` está no
+remoto; o defeito da mensagem de categoria em uso foi corrigido; a `main`
+publica a wiki como `v1.1 (em andamento)`. O `push` continua sendo do dono, a
+menos que ele autorize na mensagem.
 
 ### Comandos
 

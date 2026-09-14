@@ -412,7 +412,12 @@ A conferência foi por comando, item a item, e não por memória. Os números:
    passo. **Isso não substitui o critério.** Quem seguiu a página foi quem
    escreveu o sistema, e essa pessoa acha rótulo errado e passo faltando, mas
    não acha o pressuposto que ela mesma não sabe que tem. O critério continua
-   dependendo de uma pessoa de fora.
+   dependendo de uma pessoa de fora. **Decisão de 2026-09-14:** o dono do
+   repositório só terá essa pessoa na implantação na secretaria; o critério
+   fica aberto até lá, e o roteiro é: dar a página da retirada no celular de
+   alguém que nunca usou o tablet, pedir uma retirada sem ajudar, e anotar
+   onde travou. As anotações fecham o critério — inclusive se disserem "não
+   travou em nada".
 
 ## 11. Diretrizes para a IA
 
