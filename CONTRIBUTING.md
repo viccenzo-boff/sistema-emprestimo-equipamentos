@@ -558,9 +558,15 @@ dizer "em andamento".
 
 ### Ligar o GitHub Pages (uma vez só)
 
-Isto ainda **não foi feito** e precisa ser feito pelo dono do repositório, uma
-vez. A ordem importa: a branch `gh-pages` nasce no primeiro deploy, e o Pages
-não pode ser apontado para uma branch que não existe.
+**Já foi feito, em 2026-08-27.** A receita fica aqui como histórico e para o dia
+em que o site precisar ser reconstruído em outro repositório. Conferido de novo
+em 2026-09-14, por requisição: a raiz responde 200, e `/v1.0/` e `/v1.1/`
+também. Afirmação sobre o estado do mundo externo envelhece — este parágrafo
+dizia "ainda não foi feito" até a Tarefa 13, quando a conferência contradisse o
+texto. Reconfira antes de citá-la, em vez de repetir o que está escrito.
+
+A ordem importa: a branch `gh-pages` nasce no primeiro deploy, e o Pages não
+pode ser apontado para uma branch que não existe.
 
 1. Dê o `push` da `main`. A Action roda e cria a `gh-pages`.
    (Se preferir criar a branch antes de ter conteúdo novo em `docs/`, rode o
@@ -577,8 +583,8 @@ não pode ser apontado para uma branch que não existe.
    ```
 
 3. Confira a URL: <https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/>.
-   Ela deve redirecionar para `/v1.0/` e mostrar `v1.0` no seletor de versão,
-   ao lado do nome do site.
+   Ela redireciona para a versão padrão do `mike` e mostra o seletor de versão
+   ao lado do nome do site. Qual é a padrão está no `set-default` do workflow.
 
 ### Despublicar, ou voltar atrás
 
