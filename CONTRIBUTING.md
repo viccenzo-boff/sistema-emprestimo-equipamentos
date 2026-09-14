@@ -573,3 +573,41 @@ mike delete --all --push       # esvazia a gh-pages
 Para tirar o site do ar por inteiro, **Settings → Pages → Source: None**. A
 branch `gh-pages` pode ficar onde está: sem o Pages ligado, ela é só um
 diretório de arquivos no Git.
+
+## Os avisos de entrega (hooks do Git)
+
+Publicar uma tag `vN.N` deixa duas coisas para trás que ninguém lembra na hora:
+a raiz da wiki continua apontando para a versão anterior (o `mike set-default` é
+passo deliberado, veja acima) e o cartão deste projeto no portfólio passa a
+descrever a versão antiga. Os dois hooks em [.githooks/](.githooks/) só falam:
+
+| Hook          | Quando fala                                                      |
+| ------------- | ---------------------------------------------------------------- |
+| `pre-push`    | uma tag `vN.N` está subindo — lista o que não acontece sozinho    |
+| `post-commit` | o commit recém-criado é o primeiro depois de uma entrega tagueada |
+
+**Por que `pre-push`, e não um hook na criação da tag:** o Git **não tem** hook
+de criação de tag — `git tag` não dispara nada, e o `post-commit` roda antes de
+você taguear no fluxo normal. O `pre-push` é o único que recebe `refs/tags/*`.
+
+Nenhum dos dois bloqueia nada: os dois saem em `0` em todo caminho, inclusive
+com entrada vazia ou malformada. Aviso que impede o `push` vira a primeira coisa
+que alguém desliga, e aí não sobra nem o aviso.
+
+**Instalar** (o `.git/hooks/` não é versionado — sem esta linha, os hooks somem
+no próximo clone):
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Só disparam em tag de entrega: `v1.0` e `v2.13` sim; `v1`, `v1.1-rc1` e
+`rascunho` não — versão candidata não é entrega.
+
+### Voltar atrás
+
+```bash
+git config --unset core.hooksPath   # desliga os dois de uma vez
+git push --no-verify                # pula o pre-push uma vez só
+git commit --no-verify              # pula o post-commit uma vez só
+```

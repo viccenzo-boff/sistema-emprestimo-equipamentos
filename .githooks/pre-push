@@ -1,0 +1,67 @@
+#!/bin/sh
+#
+# pre-push — avisa quando uma tag de entrega (vN.N) está subindo.
+#
+# Por que este hook, e não um na criação da tag: o Git **não tem** hook de
+# criação de tag. `git tag` não dispara nada, e o `post-commit` roda antes de
+# você taguear no fluxo normal. O `pre-push` é o único que recebe `refs/tags/*`,
+# porque publicar a tag é o momento em que a entrega deixa de ser local.
+#
+# Este hook NUNCA bloqueia: ele sai em 0 em todo caminho, inclusive quando algo
+# nele falha. Um aviso que impede o push vira a primeira coisa que alguém
+# desliga, e aí não resta nem o aviso.
+#
+# A entrada padrão traz uma linha por referência empurrada:
+#   <ref local> <sha local> <ref remota> <sha remoto>
+# Para uma tag, a ref local é `refs/tags/v1.0`.
+#
+# Caminho de volta: `rm .git/hooks/pre-push`, ou `git config --unset
+# core.hooksPath` se você o instalou pelo diretório versionado. Para pular uma
+# única vez sem desinstalar: `git push --no-verify`.
+
+while read -r ref_local _sha_local _ref_remota _sha_remoto; do
+	case "$ref_local" in
+	refs/tags/*) ;;
+	*) continue ;;
+	esac
+
+	tag=${ref_local#refs/tags/}
+
+	# Só tag de entrega. `v1.0` e `v2.13` casam; `v1`, `rascunho` e
+	# `v1.0-rc1` não — versão candidata não é entrega.
+	case "$tag" in
+	v[0-9]*.[0-9]*)
+		# Descarta o que sobrou depois de "vN.N" (sufixo de pré-lançamento).
+		resto=${tag#v}
+		resto=${resto#*.}
+		case "$resto" in
+		*[!0-9]*) continue ;;
+		esac
+		;;
+	*) continue ;;
+	esac
+
+	printf '\n'
+	printf '  ─────────────────────────────────────────────────────────────\n'
+	printf '   Entrega nova: a tag %s está subindo.\n' "$tag"
+	printf '  ─────────────────────────────────────────────────────────────\n'
+	printf '\n'
+	printf '   Duas coisas não acontecem sozinhas depois deste push:\n'
+	printf '\n'
+	printf '   1. A raiz da wiki continua apontando para a versão anterior.\n'
+	printf '      O workflow publica %s num diretório próprio, mas trocar o\n' "$tag"
+	printf '      padrão é passo deliberado (veja .github/workflows/docs.yml):\n'
+	printf '\n'
+	printf '          mike set-default --push %s\n' "$tag"
+	printf '\n'
+	printf '   2. O cartão deste projeto no portfólio descreve a versão antiga.\n'
+	printf '      Se %s mudou o que o cartão afirma, atualize a spec de entrada\n' "$tag"
+	printf '      do currículo e regenere o PDF:\n'
+	printf '\n'
+	printf '          .claudecode/cv_base.md  →  pnpm generate:cv-pdf\n'
+	printf '\n'
+	printf '   Este aviso não bloqueia nada — o push segue normalmente.\n'
+	printf '\n'
+done
+
+exit 0

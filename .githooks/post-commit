@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+# post-commit — reforço do pre-push: avisa quando o commit recém-criado é o
+# primeiro depois de uma entrega já tagueada.
+#
+# Por que existe, se o `pre-push` já avisa: o `pre-push` só fala no momento em
+# que a tag sobe, e nesse momento a entrega já está fechada. Este avisa na outra
+# ponta — quando o trabalho da PRÓXIMA entrega começa —, que é quando ainda dá
+# para decidir se ele entra na versão atual ou abre a seguinte.
+#
+# Nunca bloqueia (o Git ignora o código de saída do post-commit, e mesmo assim
+# ele sai em 0 de propósito) e nunca escreve nada no repositório.
+#
+# Caminho de volta: `rm .git/hooks/post-commit`, ou `git config --unset
+# core.hooksPath` se instalado pelo diretório versionado. Para pular uma vez:
+# `git commit --no-verify`.
+
+# O commit anterior. Num commit raiz não há pai — e aí não há entrega anterior.
+pai=$(git rev-parse --quiet --verify HEAD^ 2>/dev/null) || exit 0
+[ -n "$pai" ] || exit 0
+
+# Tags de entrega que apontam exatamente para o pai.
+tags=$(git tag --points-at "$pai" 2>/dev/null | grep -E '^v[0-9]+\.[0-9]+$') || exit 0
+[ -n "$tags" ] || exit 0
+
+# Se o próprio commit novo já está tagueado, não é "trabalho depois da entrega".
+if git tag --points-at HEAD 2>/dev/null | grep -qE '^v[0-9]+\.[0-9]+$'; then
+	exit 0
+fi
+
+anterior=$(printf '%s\n' "$tags" | head -n 1)
+
+printf '\n'
+printf '  ─────────────────────────────────────────────────────────────\n'
+printf '   Este é o primeiro commit depois da entrega %s.\n' "$anterior"
+printf '  ─────────────────────────────────────────────────────────────\n'
+printf '\n'
+printf '   A %s está congelada: o que entrar daqui para a frente pertence\n' "$anterior"
+printf '   à próxima. Quando ela fechar, a tag nova é que avisa a wiki e o\n'
+printf '   portfólio (o aviso completo sai no push da tag).\n'
+printf '\n'
+
+exit 0
