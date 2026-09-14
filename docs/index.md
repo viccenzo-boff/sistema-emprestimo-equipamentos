@@ -71,13 +71,13 @@ página do painel, e o contrário também vale.
 
 ## A versão que esta wiki descreve
 
-!!! info "Esta wiki descreve a versão v1.1 do sistema, em andamento"
+!!! info "Esta wiki descreve a versão v1.1 do sistema"
 
-    A `v1.1` é a versão que está sendo construída: as páginas acompanham a
-    `main` do repositório. A `v1.0` está congelada no seletor de versão, no
-    alto da página — se a tela na sua frente tiver um botão que nenhuma página
-    daqui menciona, ou uma mensagem com outra redação, confira ali qual versão
-    você está usando.
+    A `v1.1` acrescentou a aba **Relatórios** ao painel e corrigiu a mensagem
+    de recusa ao excluir categoria em uso. A `v1.0` continua no seletor de
+    versão, no alto da página, congelada — se a tela na sua frente não tiver a
+    aba de relatórios, ou trouxer uma mensagem com outra redação, confira ali
+    qual versão você está usando.
 
 ## Onde pedir ajuda
 

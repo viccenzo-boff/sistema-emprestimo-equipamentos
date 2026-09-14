@@ -48,11 +48,15 @@ while read -r ref_local _sha_local _ref_remota _sha_remoto; do
 	printf '\n'
 	printf '   Duas coisas não acontecem sozinhas depois deste push:\n'
 	printf '\n'
-	printf '   1. A raiz da wiki continua apontando para a versão anterior.\n'
-	printf '      O workflow publica %s num diretório próprio, mas trocar o\n' "$tag"
-	printf '      padrão é passo deliberado (veja .github/workflows/docs.yml):\n'
+	printf '   1. A raiz da wiki só aponta para %s se o workflow mandar.\n' "$tag"
+	printf '      O deploy publica a versão num diretório próprio; o padrão da\n'
+	printf '      raiz é uma linha à parte, editada de propósito. Confira que\n'
+	printf '      ela já cita %s antes de anunciar a entrega:\n' "$tag"
 	printf '\n'
-	printf '          mike set-default --push %s\n' "$tag"
+	printf '          grep set-default .github/workflows/docs.yml\n'
+	printf '\n'
+	printf '      Se ainda estiver na versão anterior, troque lá (junto com o\n'
+	printf '      --title e a caixa de versão das duas homes) e publique de novo.\n'
 	printf '\n'
 	printf '   2. O cartão deste projeto no portfólio descreve a versão antiga.\n'
 	printf '      Se %s mudou o que o cartão afirma, atualize a spec de entrada\n' "$tag"

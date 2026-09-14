@@ -123,7 +123,10 @@ Cinco coisas que economizam um diagnóstico:
   `docs/*.md` **não** casa `docs/referencia/glossario.md`. Com um padrão só,
   `vale docs/` dizia "0 files" para a árvore inteira abaixo do primeiro nível e
   **saía com sucesso** — um portão mudo é pior que portão nenhum, porque parece
-  verde. **Confira o rodapé da saída:** hoje ele tem que dizer `in 31 files`.
+  verde. **Confira o rodapé da saída:** ele tem que dizer o número de `.md` que
+  existem em `docs/` (`find docs -name '*.md' | wc -l`) — hoje, 33. O número
+  sobe a cada página nova, nos dois idiomas; se ele ficar para trás quando uma
+  página entrar, o escopo é que está errado.
 - **`Vale.Spelling` está desligado nos dois idiomas, e tem que ficar.** Em
   português ele é um corretor de inglês lendo português: numa página de prova
   com quatro frases, 15 dos 19 alertas eram *"Did you really mean 'tabela'?"*.
@@ -533,28 +536,30 @@ gh-pages/
 **Desde 2026-09-14 a `main` publica a `v1.1`, e a `v1.0` ficou congelada na
 `gh-pages`.** A `v1.0` é o estado que a wiki descrevia até a tag
 ([spec-wiki.md](especificacoes/spec-wiki.md) §2.1); tudo que mudou no produto
-depois dela (a começar pela mensagem de recusa ao excluir categoria em uso, e a
-Tarefa 13 quando entrar) é descrito só na `v1.1`. Foi por isso que o
+depois dela — a mensagem de recusa ao excluir categoria em uso e a aba
+**Relatórios** da Tarefa 13 — é descrito só na `v1.1`. Foi por isso que o
 `mike deploy` do workflow passou a apontar para `v1.1` **antes** de a Tarefa 13
 existir: sem isso, o primeiro `push` com uma página corrigida reescreveria a
 `v1.0` publicada com um comportamento que a `v1.0` do produto não tem.
 
-O padrão da raiz continua na `v1.0` **por decisão explícita**, e não por um
-alias móvel: quando a `v1.1` for tagueada, alguém troca o `set-default` do
-workflow de propósito, em vez de a raiz do site mudar sozinha debaixo de quem
-tinha o link. O `pre-push` de [.githooks/](.githooks/) lembra disso no push da
-tag. São **quatro** lugares a mexer no dia da entrega, e nenhum portão acusa
-se um ficar para trás:
+O padrão da raiz muda **por decisão explícita**, e não por um alias móvel:
+alguém edita a linha do `set-default`, em vez de a raiz do site mudar sozinha
+debaixo de quem tinha o link.
 
-| Onde                                    | O quê                                              |
-| --------------------------------------- | -------------------------------------------------- |
-| `.github/workflows/docs.yml`, `deploy`  | o título: `"v1.1 (em andamento)"` → `"v1.1"`       |
-| `.github/workflows/docs.yml`, `default` | `mike set-default --push v1.0` → `v1.1`            |
-| `docs/index.md` e `docs/en/index.md`    | a caixa "Esta wiki descreve a versão…" deixa de dizer "em andamento" |
+**A `v1.1` fechou com a Tarefa 13**, e os quatro lugares abaixo já estão na
+forma de versão entregue. Nenhum portão acusa se um ficar para trás — a tabela
+existe para o dia em que a `v1.2` abrir, quando cada linha volta para a coluna
+da direita:
 
-E, ao abrir a versão **seguinte** (`v1.2`), o caminho inverso: o `deploy` passa a
-`v1.2 (em andamento)`, o `set-default` fica na `v1.1`, e as duas homes voltam a
-dizer "em andamento".
+| Onde                                    | Hoje, com a `v1.1` entregue             | Ao abrir a `v1.2`                          |
+| --------------------------------------- | --------------------------------------- | ------------------------------------------ |
+| `.github/workflows/docs.yml`, `deploy`  | `--title "v1.1"`                        | `v1.2`, com `--title "v1.2 (em andamento)"` |
+| `.github/workflows/docs.yml`, `default` | `mike set-default --push v1.1`          | continua na `v1.1`                         |
+| `docs/index.md` e `docs/en/index.md`    | a caixa diz só "descreve a versão v1.1" | volta a dizer "em andamento", já na `v1.2` |
+
+**A tag `v1.1` é do dono do repositório**, como a `v1.0` foi — o `pre-push` de
+[.githooks/](.githooks/) lembra disso no push dela. Quem publica a wiki é a
+Action, no `push` da `main`: a tag é o marco, não o gatilho.
 
 ### Ligar o GitHub Pages (uma vez só)
 
@@ -584,7 +589,8 @@ pode ser apontado para uma branch que não existe.
 
 3. Confira a URL: <https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/>.
    Ela redireciona para a versão padrão do `mike` e mostra o seletor de versão
-   ao lado do nome do site. Qual é a padrão está no `set-default` do workflow.
+   ao lado do nome do site. Qual é a padrão está no `set-default` do workflow —
+   hoje a `v1.1`.
 
 ### Despublicar, ou voltar atrás
 

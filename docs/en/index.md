@@ -84,12 +84,13 @@ an admin panel page, and the other way round as well.
 
 ## The version this wiki describes
 
-!!! info "This wiki describes version v1.1 of the system, in progress"
+!!! info "This wiki describes version v1.1 of the system"
 
-    `v1.1` is the version being built: the pages follow the repository's
-    `main` branch. `v1.0` is frozen in the version selector at the top of the
-    page — if the screen in front of you has a button no page here mentions, or
-    a message with different wording, check there which version you are using.
+    `v1.1` added the **Relatórios** (Reports) tab to the panel and fixed the
+    message shown when a category in use cannot be deleted. `v1.0` stays frozen
+    in the version selector at the top of the page — if the screen in front of
+    you has no reports tab, or a message with different wording, check there
+    which version you are using.
 
 ## Where to ask for help
 

@@ -168,16 +168,15 @@ jobs:
       #
       # A v1.0 e o estado congelado que esta wiki descrevia ate 2026-09-14
       # (spec-wiki §2.1), e a gh-pages continua servindo o ultimo build dela.
-      # Desde entao a main publica a v1.1, que esta em andamento: cada push
-      # atualiza so o diretorio v1.1/, e o mike mantem as duas lado a lado no
-      # seletor do cabecalho. Quando a v1.1 for tagueada, troque o titulo para
-      # "v1.1" (sem o parentese) e mude o set-default abaixo.
+      # A v1.1 FECHOU com a Tarefa 13 (a aba Relatorios): o titulo perdeu o
+      # "(em andamento)" e o padrao abaixo passou para ela. Ao abrir a v1.2,
+      # o caminho e o inverso -- este deploy vira "v1.2 (em andamento)", o
+      # set-default fica na v1.1, e as duas homes voltam a dizer "em andamento".
       - name: Publicar a versao v1.1
-        run: mike deploy --push --update-aliases v1.1 --title "v1.1 (em andamento)"
+        run: mike deploy --push --update-aliases v1.1 --title "v1.1"
 
-      # A raiz do site redireciona para a versao padrao. Ela continua na v1.0
-      # por decisao explicita: a v1.1 so vira padrao quando for entregue --
-      # alguem troca esta linha de proposito, em vez de a raiz mudar sozinha
-      # debaixo de quem guardou o link.
-      - name: Apontar o padrao para a v1.0
-        run: mike set-default --push v1.0
+      # A raiz do site redireciona para a versao padrao. Ela so muda de
+      # proposito, numa linha que alguem edita -- e nao por um alias movel que
+      # a faria mudar sozinha debaixo de quem guardou o link.
+      - name: Apontar o padrao para a v1.1
+        run: mike set-default --push v1.1
