@@ -218,11 +218,11 @@ The three measurements that changed how the gates were built:
 
 ### 8. Document a defect instead of fixing it
 
-**The decision.** One admin panel message gives advice that does not work. When
-deleting a category that still has equipment, the screen suggests deactivating
-the equipment first — and deactivating does **not** unlock the deletion. The
-[inventory management](../painel/inventario.md) page quotes the message with its
-exact wording and, right below, contradicts the advice.
+**The decision.** One admin panel message gave advice that does not work. When
+deleting a category that still has equipment, the `v1.0` screen suggested
+deactivating the equipment first — and deactivating does **not** unlock the
+deletion. The `v1.0` [inventory management](../painel/inventario.md) page quotes
+the message with its exact wording and, right below, contradicts the advice.
 
 **The discarded alternative.** Fixing the sentence in the product, which is one
 line of code.
@@ -231,12 +231,19 @@ line of code.
 wiki is to quote the screen **even when the screen is wrong**, because the
 sentence is how a reader finds the page, and correcting it in the text would
 send that reader looking for a message that does not exist. Fixing the product
-is a product task, with its own verification cycle. It remains open and is
-recorded as such.
+is a product task, with its own verification cycle. It was recorded as an open
+defect.
 
 The decision holds as a principle: **the wiki does not fix the system in
 writing.** When it finds a defect, the record is honest and the fix becomes
 declared work.
+
+**What happened next.** The fix came in September 2026, in `v1.1`: the sentence
+now says what actually happens, the screenshot was retaken against the running
+system, and this version's page describes the new message — while the `v1.0`
+page, frozen in the version selector, keeps quoting the old one. That is
+[decision 4](#4-document-a-frozen-version) working as promised: each version of
+the wiki stays correct about its version of the product.
 
 ## The test worth more than the three gates
 

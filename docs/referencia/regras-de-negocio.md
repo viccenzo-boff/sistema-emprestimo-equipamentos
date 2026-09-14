@@ -121,17 +121,17 @@ por isso a única saída para os dois é a inativação.
 por ela deixaria equipamentos apontando para uma categoria que não existe mais —
 e eles sumiriam do portal inteiro, porque a grade é organizada por categoria.
 
-!!! warning "A mensagem de recusa dá um conselho que não funciona"
+!!! note "Inativar os equipamentos não libera a exclusão"
 
-    Ela manda inativar os equipamentos da categoria antes de excluí-la, e
-    **isso não libera a exclusão**: o item inativo continua vinculado e o banco
-    recusa igual. Como não existe tela que mova um equipamento de categoria, e
-    equipamento nunca é apagado, **categoria com equipamento não é excluível
-    pelo painel**.
+    O item inativo continua vinculado e o banco recusa igual. Como não existe
+    tela que mova um equipamento de categoria, e equipamento nunca é apagado,
+    **categoria com equipamento não é excluível pelo painel** — o que inativar
+    faz é tirá-la do tablet, porque item inativo não conta na grade.
 
-    O comportamento real e a saída estão em
-    [Gestão de inventário, §7](../painel/inventario.md#a-mensagem-manda-inativar-os-equipamentos-isso-libera-a-exclusao).
-    A frase da tela é um defeito conhecido e ainda em aberto.
+    O comportamento e a saída estão em
+    [Gestão de inventário, §7](../painel/inventario.md#por-que-nao-da-para-excluir-uma-categoria-que-tem-equipamento).
+    Até setembro de 2026 a mensagem de recusa mandava inativar "antes de
+    excluí-la", como se isso liberasse; a frase foi corrigida.
 
 ---
 

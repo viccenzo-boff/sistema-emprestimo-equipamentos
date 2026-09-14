@@ -1878,8 +1878,12 @@ comparado com a linha de base ao fim e voltou idêntico nas quatro tabelas.
   indeletável pelo painel**. A página cita a mensagem exata (é a chave de busca
   do leitor, e a regra 1 do guia de estilo manda citar a tela mesmo errada) e
   desmente o conselho na §7. Levantado como conflito antes da primeira edição; a
-  decisão de documentar em vez de corrigir o produto foi do dono do repositório
-  — **consertar a frase continua sendo tarefa de produto, e está em aberto.**
+  decisão de documentar em vez de corrigir o produto foi do dono do repositório.
+  **Corrigido em 2026-09-14**, por decisão dele: a frase passou a dizer o que de
+  fato acontece (categoria com equipamento não é excluída; inativar os
+  aparelhos a tira do tablet), a captura 12 foi refeita contra o sistema
+  rodando, e as duas páginas (PT e EN) mais as regras de negócio deixaram de
+  desmentir a tela — ver "Correções fora de tarefa", abaixo do estado atual.
 - **A página tem CINCO procedimentos, e o enunciado pedia quatro.** O diagrama
   `04-inventario.svg` que ela publica tem um ramo — "corrigir a etiqueta" — que
   os quatro do enunciado não cobrem. Mesmo precedente da D05, D06 e D07: página
@@ -2608,11 +2612,19 @@ administrador). O relatório de tempo de prateleira também não existe: a Taref
 criou o dado, e ninguém ainda o lê. Nada disso está na spec — confirmar antes de
 construir.
 
-**Defeito de produto conhecido e ainda em aberto:** o detalhe da recusa ao
-excluir categoria em uso (`AJUDA_DA_CATEGORIA_EM_USO`, em
-[actions.ts](src/app/admin/actions.ts)) manda inativar os equipamentos, e isso
-não libera a exclusão — medido na D08, cuja página documenta o comportamento
-real. Ver as decisões da D08 para o porquê de a correção não ter entrado ali.
+**Correções fora de tarefa (2026-09-14):** o detalhe da recusa ao excluir
+categoria em uso (`AJUDA_DA_CATEGORIA_EM_USO`, em
+[actions.ts](src/app/admin/actions.ts)) mandava inativar os equipamentos como se
+isso liberasse a exclusão — não libera, medido na D08. A frase agora diz o que
+acontece: categoria com equipamento não pode ser excluída, e inativar os
+aparelhos dela a tira da grade do tablet (`listarCategorias` não conta `INATIVO`
+e descarta categoria com total zero). A recusa foi provocada de novo pela
+corrida da D08 (categoria vazia no render, equipamento inserido por fora, clique
+na tela velha), a mensagem lida na linha foi conferida contra a constante
+**extraída do código**, e a captura `12-recusa-ao-apagar-categoria.png` foi
+refeita — mesmo enquadramento, 1022px de largura, agora com 247px de altura
+porque o detalhe tem quatro linhas. Não há mais defeito de produto conhecido em
+aberto.
 
 ### Ambiente
 

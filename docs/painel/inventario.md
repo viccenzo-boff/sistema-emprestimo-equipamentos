@@ -246,7 +246,7 @@ emprestado não tem botão nenhum.
     - **Se NÃO** → a linha tem o botão **Excluir**. Siga para o passo 8.
     - **Se SIM** → no lugar do botão a linha mostra a contagem, como "11
       equipamentos vinculados". Não há como excluí-la — ver a
-      [regra sobre a categoria em uso](#a-mensagem-manda-inativar-os-equipamentos-isso-libera-a-exclusao).
+      [regra sobre a categoria em uso](#por-que-nao-da-para-excluir-uma-categoria-que-tem-equipamento).
 
 8. Clique em **Excluir**.
 
@@ -349,32 +349,36 @@ emprestado não tem botão nenhum.
     Por isso esta é a única exclusão de verdade do painel — e ela só é oferecida
     quando a categoria não tem nenhum equipamento vinculado.
 
-<a id="a-mensagem-manda-inativar-os-equipamentos-isso-libera-a-exclusao"></a>
+<a id="por-que-nao-da-para-excluir-uma-categoria-que-tem-equipamento"></a>
 
-!!! question "A mensagem manda inativar os equipamentos. Isso libera a exclusão?"
+!!! question "Por que não dá para excluir uma categoria que tem equipamento?"
 
-    **Não.** Inativar tira o aparelho de circulação, mas ele continua vinculado
-    à categoria — e é o vínculo que trava a exclusão, não a situação.
+    Porque **equipamento nunca é apagado** (ver a
+    [primeira pergunta desta seção](#por-que-nao-existe-um-botao-de-excluir-equipamento)),
+    e enquanto ele existe, ele está vinculado a uma categoria — e é o vínculo
+    que trava a exclusão, não a situação do aparelho. Não existe tela que mova
+    um aparelho de uma categoria para outra, então uma categoria só volta a
+    ficar vazia se ela nunca tiver sido usada.
 
-    Isso foi medido: com o único aparelho de uma categoria marcado como
-    **Inativo**, a exclusão continua sendo recusada com a mesma mensagem, e o
-    banco de dados recusa igual.
+    Inativar os aparelhos **não libera a exclusão**, e isso foi medido: com o
+    único aparelho de uma categoria marcado como **Inativo**, a exclusão continua
+    sendo recusada com a mesma mensagem, e o banco de dados recusa igual. O que
+    inativar faz é outra coisa, e é o que a mensagem da tela sugere: sem nenhuma
+    unidade em circulação, **a categoria some da grade do tablet sozinha**,
+    porque item inativo não conta.
 
-    Na prática, **categoria com equipamento não é excluída pelo painel**. Não
-    existe tela que mova um aparelho de uma categoria para outra, e equipamento
-    nunca é apagado — então uma categoria só volta a ficar vazia se ela nunca
-    tiver sido usada.
-
-    O que resolve, quando a categoria foi criada por engano:
+    O que fazer, então, quando a categoria foi criada por engano:
 
     1. **Se ela ainda estiver vazia**, apague agora. É o único momento em que dá.
     2. **Se já tiver aparelho**, deixe-a onde está. Uma categoria a mais no
-       tablet incomoda menos que um histórico furado — e ela some da grade
-       sozinha se você aposentar os aparelhos dela, porque item inativo não
-       conta.
+       painel incomoda menos que um histórico furado — e, aposentados os
+       aparelhos dela, ela desaparece do tablet.
 
     A frase que a tela escreve na recusa está registrada na
-    [tabela de erros](#8-erros-comuns-e-o-que-fazer), com esta ressalva ao lado.
+    [tabela de erros](#8-erros-comuns-e-o-que-fazer). Até setembro de 2026 ela
+    mandava "inativar os equipamentos antes de excluí-la", como se isso fosse
+    liberar a exclusão; a frase foi corrigida quando esta página mediu que não
+    libera.
 
 !!! question "Cadastrei uma etiqueta errada. Como desfaço?"
 
@@ -431,7 +435,7 @@ Quando uma ação é recusada, a mensagem aparece **dentro da linha**, logo abai
 dos botões, e a lista é relida na hora. Isso é o sinal de que nada mudou: a
 situação do aparelho continua a que estava.
 
-[![A linha da categoria Microfone depois de uma exclusão recusada: um alerta vermelho dizendo Microfone ainda tem equipamentos, com o detalhe mandando inativar os equipamentos antes, e a contagem já corrigida para 1 equipamento vinculado.](../assets/images/inventario/12-recusa-ao-apagar-categoria.png)](../assets/images/inventario/12-recusa-ao-apagar-categoria.png)
+[![A linha da categoria Microfone depois de uma exclusão recusada: um alerta vermelho dizendo Microfone ainda tem equipamentos, com o detalhe explicando que categoria com equipamento não pode ser excluída e que inativar os aparelhos a tira do tablet, e a contagem já corrigida para 1 equipamento vinculado.](../assets/images/inventario/12-recusa-ao-apagar-categoria.png)](../assets/images/inventario/12-recusa-ao-apagar-categoria.png)
 
 Na tela de Categorias há um detalhe a mais: quando a exclusão é recusada, **o
 diálogo continua aberto**, ainda dizendo que a categoria está vazia — ele é do
@@ -452,6 +456,6 @@ render anterior. Feche no **Cancelar**; o motivo está na linha, atrás dele.
 | "NOTE-09 não está disponível."                      | Tentou trocar a etiqueta de um aparelho que não está na prateleira.                                        | A etiqueta só muda com o aparelho na bancada. Traga-o de volta a **Disponível** primeiro.                                                            |
 | "A categoria Notebook já existe."                   | O nome digitado é o mesmo de uma categoria existente, ignorando maiúsculas e acentos ("notebook", "extensao"). | Use a categoria que já existe. Duas grafias da mesma coisa virariam duas prateleiras no tablet.                                                     |
 | "Informe o nome da categoria."                      | O campo foi enviado vazio, ou com mais de 30 caracteres.                                                   | Escreva o nome no singular, com até 30 caracteres.                                                                                                  |
-| "Notebook ainda tem equipamentos."                  | A categoria tem aparelho vinculado. Quem recusa é o banco de dados, não a tela.                            | Não há como esvaziá-la pelo painel. O detalhe da mensagem manda inativar os equipamentos, e **isso não resolve** — ver a [regra acima](#a-mensagem-manda-inativar-os-equipamentos-isso-libera-a-exclusao). |
+| "Notebook ainda tem equipamentos."                  | A categoria tem aparelho vinculado. Quem recusa é o banco de dados, não a tela.                            | Não há como esvaziá-la pelo painel. Se a categoria não serve mais, inative os aparelhos dela: ela some do tablet, e a linha fica aqui — ver a [regra acima](#por-que-nao-da-para-excluir-uma-categoria-que-tem-equipamento). |
 | "Essa categoria já não existe."                     | Outro computador excluiu a mesma categoria antes.                                                          | Nenhuma ação. A lista foi atualizada.                                                                                                               |
 | "Não foi possível cadastrar o equipamento."         | O painel não conseguiu falar com o banco de dados.                                                         | Tente de novo. Se continuar, avise quem cuida do servidor.                                                                                          |

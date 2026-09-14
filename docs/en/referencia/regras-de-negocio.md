@@ -125,17 +125,18 @@ not go through it would leave equipment pointing at a category that no longer
 exists — and it would vanish from the whole portal, because the grid is
 organized by category.
 
-!!! warning "The refusal message gives advice that does not work"
+!!! note "Deactivating the equipment does not allow the deletion"
 
-    It tells you to deactivate the equipment in the category before deleting it,
-    and **that does not allow the deletion**: an inactive item is still linked
-    and the database refuses just the same. Since there is no screen that moves
-    equipment between categories, and equipment is never deleted, **a category
-    with equipment cannot be deleted from the admin panel**.
+    An inactive item is still linked and the database refuses just the same.
+    Since there is no screen that moves equipment between categories, and
+    equipment is never deleted, **a category with equipment cannot be deleted
+    from the admin panel** — what deactivating does is remove it from the
+    tablet, because an inactive item does not count in the grid.
 
-    The real behavior and the way out are in
-    [Inventory management, §7](../painel/inventario.md#the-message-says-to-deactivate-the-devices-does-that-allow-deletion).
-    The sentence on screen is a known defect and still open.
+    The behavior and the way out are in
+    [Inventory management, §7](../painel/inventario.md#why-can-a-category-with-equipment-not-be-deleted).
+    Until September 2026 the refusal message told you to deactivate "before
+    deleting it", as if that allowed the deletion; the sentence was corrected.
 
 ---
 

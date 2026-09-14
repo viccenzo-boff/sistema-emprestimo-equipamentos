@@ -192,7 +192,7 @@ export function GestaoCategorias({ categorias }: Props) {
 
         <p className="px-1 text-base text-tinta-tenue">
           A ordem desta lista é a ordem em que as categorias aparecem no tablet e
-          no inventário. Só é possível excluir uma categoria sem nenhum equipamento vinculado à ela.
+          no inventário. Só é possível excluir uma categoria sem nenhum equipamento vinculado a ela.
         </p>
       </section>
 

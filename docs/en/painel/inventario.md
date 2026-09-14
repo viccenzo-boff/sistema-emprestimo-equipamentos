@@ -300,7 +300,7 @@ on loan has no button at all.
     - **If YES** → instead of the button, the row shows the count, such as "11
       equipamentos vinculados" (11 linked devices). There is no way to delete it
       — see the
-      [rule about a category in use](#the-message-says-to-deactivate-the-devices-does-that-allow-deletion).
+      [rule about a category in use](#why-can-a-category-with-equipment-not-be-deleted).
 
 8. Click **Excluir** (Delete).
 
@@ -408,33 +408,37 @@ on loan has no button at all.
     That is why this is the only real deletion in the panel — and it is only
     offered when the category has no linked equipment.
 
-<a id="the-message-says-to-deactivate-the-devices-does-that-allow-deletion"></a>
+<a id="why-can-a-category-with-equipment-not-be-deleted"></a>
 
-!!! question "The message says to deactivate the devices. Does that allow the deletion?"
+!!! question "Why can a category with equipment not be deleted?"
 
-    **No.** Deactivating takes the device out of circulation, but it stays
-    linked to the category — and it is the link that blocks the deletion, not
-    the status.
+    Because **equipment is never deleted** (see the
+    [first question in this section](#why-is-there-no-delete-equipment-button)),
+    and as long as a device exists, it is linked to a category — and it is the
+    link that blocks the deletion, not the status of the device. There is no
+    screen that moves a device from one category to another, so a category only
+    becomes empty again if it was never used.
 
-    This was measured: with the only device of a category marked as **Inativo**
+    Deactivating the devices **does not allow the deletion**, and this was
+    measured: with the only device of a category marked as **Inativo**
     (Inactive), the deletion is still refused with the same message, and the
-    database refuses it just the same.
+    database refuses it just the same. What deactivating does is something else,
+    and it is what the message on the screen suggests: with no unit in
+    circulation, **the category disappears from the tablet grid on its own**,
+    because an inactive item does not count.
 
-    In practice, **a category with equipment is not deleted from the admin
-    panel**. There is no screen that moves a device from one category to
-    another, and equipment is never deleted — so a category only becomes empty
-    again if it was never used.
-
-    What does work, when the category was created by mistake:
+    So, when the category was created by mistake:
 
     1. **If it is still empty**, delete it now. That is the only moment you can.
     2. **If it already has a device**, leave it where it is. One extra category
-       on the tablet is less trouble than a hole in the history — and it
-       disappears from the grid on its own if you retire its devices, because an
-       inactive item does not count.
+       in the panel is less trouble than a hole in the history — and once its
+       devices are retired, it disappears from the tablet.
 
     The sentence the screen writes in the refusal is recorded in the
-    [error table](#8-common-errors-and-what-to-do), with this caveat beside it.
+    [error table](#8-common-errors-and-what-to-do). Until September 2026 it told
+    you to "deactivate the devices before deleting it", as if that allowed the
+    deletion; the sentence was corrected when this page measured that it does
+    not.
 
 !!! question "I registered the wrong asset tag. How do I undo it?"
 
@@ -495,7 +499,7 @@ When an action is refused, the message appears **inside the row**, just below
 the buttons, and the list is re-read straight away. That is the sign that
 nothing changed: the status of the device is still the one it was.
 
-[![The Microfone category row after a refused deletion: a red alert saying Microfone still has equipment, with the detail telling you to deactivate the devices first, and the count already corrected to 1 linked device.](../../assets/images/inventario/12-recusa-ao-apagar-categoria.png)](../../assets/images/inventario/12-recusa-ao-apagar-categoria.png)
+[![The Microfone category row after a refused deletion: a red alert saying Microfone still has equipment, with the detail explaining that a category with equipment cannot be deleted and that deactivating its devices removes it from the tablet, and the count already corrected to 1 linked device.](../../assets/images/inventario/12-recusa-ao-apagar-categoria.png)](../../assets/images/inventario/12-recusa-ao-apagar-categoria.png)
 
 On the Categories screen there is one more detail: when the deletion is refused,
 **the dialog stays open**, still saying the category is empty — it comes from
@@ -517,6 +521,6 @@ row, behind it.
 | "NOTE-09 não está disponível." (NOTE-09 is not available.)                                                      | You tried to change the asset tag of a device that is not on the shelf.                   | The asset tag only changes with the device on the counter. Bring it back to **Disponível** (Available) first.   |
 | "A categoria Notebook já existe." (Category Notebook already exists.)                                           | The name typed is the same as an existing category, ignoring case and accents ("notebook", "extensao"). | Use the category that already exists. Two spellings of the same thing would become two shelves on the tablet. |
 | "Informe o nome da categoria." (Give the category name.)                                                        | The field was submitted empty, or with more than 30 characters.                           | Write the name in the singular, up to 30 characters.                                                           |
-| "Notebook ainda tem equipamentos." (Notebook still has equipment.)                                              | The category has linked devices. What refuses is the database, not the screen.            | There is no way to empty it from the panel. The detail of the message tells you to deactivate the devices, and **that does not work** — see the [rule above](#the-message-says-to-deactivate-the-devices-does-that-allow-deletion). |
+| "Notebook ainda tem equipamentos." (Notebook still has equipment.)                                              | The category has linked devices. What refuses is the database, not the screen.            | There is no way to empty it from the panel. If the category is no longer needed, deactivate its devices: it disappears from the tablet, and the row stays here — see the [rule above](#why-can-a-category-with-equipment-not-be-deleted). |
 | "Essa categoria já não existe." (That category no longer exists.)                                               | Another computer deleted the same category first.                                         | No action. The list has been refreshed.                                                                        |
 | "Não foi possível cadastrar o equipamento." (Could not register the device.)                                    | The panel could not reach the database.                                                   | Try again. If it persists, tell whoever looks after the server.                                                |

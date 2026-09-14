@@ -221,11 +221,11 @@ As três medições que mudaram o desenho dos portões:
 
 ### 8. Documentar um defeito em vez de corrigi-lo
 
-**A decisão.** Uma mensagem do painel dá um conselho que não funciona. Ao tentar
-excluir uma categoria que ainda tem equipamento, a tela sugere inativar os
-equipamentos primeiro — e inativar **não** libera a exclusão. A página de
-[gestão de inventário](../painel/inventario.md) cita a mensagem com a grafia
-exata e, logo abaixo, desmente o conselho.
+**A decisão.** Uma mensagem do painel dava um conselho que não funciona. Ao
+tentar excluir uma categoria que ainda tem equipamento, a tela da `v1.0` sugeria
+inativar os equipamentos primeiro — e inativar **não** libera a exclusão. A
+página de [gestão de inventário](../painel/inventario.md) da `v1.0` cita a
+mensagem com a grafia exata e, logo abaixo, desmente o conselho.
 
 **A alternativa descartada.** Corrigir a frase no produto, que é uma linha de
 código.
@@ -234,11 +234,18 @@ código.
 citar a tela **inclusive quando a tela está errada** — porque é pela frase que a
 pessoa chega à página, e corrigir no texto faria o leitor procurar uma mensagem
 que não existe. Corrigir o produto é uma tarefa de produto, com o seu próprio
-ciclo de verificação; ela continua em aberto e está registrada como tal.
+ciclo de verificação; ficou registrada como defeito em aberto.
 
 A decisão vale como princípio: **a wiki não conserta o sistema por escrito.**
 Quando ela encontra um defeito, o registro é honesto e o conserto vira trabalho
 declarado.
+
+**O que aconteceu depois.** O conserto veio em setembro de 2026, já na `v1.1`:
+a frase passou a dizer o que de fato acontece, a captura foi refeita contra o
+sistema rodando, e a página desta versão descreve a mensagem nova — enquanto a
+página da `v1.0`, congelada no seletor de versão, continua citando a antiga. É
+a [decisão 4](#4-documentar-uma-versao-congelada) funcionando como prometido:
+cada versão da wiki fica correta sobre a sua versão do produto.
 
 ## O teste que vale mais que os três portões
 

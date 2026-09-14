@@ -952,9 +952,18 @@ export async function excluirCategoria(
 /**
  * O detalhe da recusa, dito igual nos dois caminhos: o da contagem lida antes e
  * o do P2003 que o banco devolve quando um equipamento entrou no meio.
+ *
+ * Até 2026-09-14 a frase mandava "inativar os equipamentos antes de excluí-la",
+ * e isso **não libera a exclusão** — medido na D08 da wiki: o item inativo
+ * continua vinculado, a contagem o inclui e o banco recusa igual (P2003). Como
+ * não existe tela que mova um equipamento de categoria e equipamento nunca é
+ * apagado, categoria com equipamento é indeletável pelo painel; o conselho
+ * honesto é o que de fato acontece quando os aparelhos dela são inativados —
+ * ela some da grade do tablet, porque `listarCategorias` não conta `INATIVO` e
+ * descarta categoria com total zero.
  */
 const AJUDA_DA_CATEGORIA_EM_USO =
-  "Inative os equipamentos dessa categoria antes de excluí-la — apagá-la levaria junto o histórico de empréstimos deles.";
+  "Categoria com equipamento não pode ser excluída: equipamento nunca é apagado, porque o histórico de empréstimos aponta para ele. Para tirá-la do tablet, inative os aparelhos dela — sem unidade em circulação, ela some da grade sozinha.";
 
 /** Rótulo em português de um status de equipamento, para mensagens de erro. */
 function rotuloDeStatus(status: string): string {
