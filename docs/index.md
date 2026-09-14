@@ -48,6 +48,7 @@ página do painel, e o contrário também vale.
 - [Confirmar o recebimento dos aparelhos devolvidos](painel/baixa-fisica.md)
 - [Cadastrar equipamento e cuidar do inventário](painel/inventario.md)
 - [Importar a planilha de pessoas](painel/pessoas.md)
+- [Ver o que está esgotando e levar à coordenação](painel/relatorios.md)
 - [Entrar, sair e trocar a senha](referencia/conta-do-administrador.md)
 
 </div>

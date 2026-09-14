@@ -91,6 +91,30 @@ physical check-in — are in the [Glossary](glossario.md) instead.
 | "Não aparece no tablet enquanto estiver vazia" | Does not appear on the tablet while empty |
 | "No tablet: Projetores" | On the tablet: Projetores — the plural the portal will show |
 
+## Reports
+
+<!-- vale Microsoft.Ellipses = NO -->
+
+| On screen | In English |
+| --- | --- |
+| **Relatórios** | Reports — the last tab of the panel |
+| **Ocupação e picos de uso** | Occupancy and usage peaks — the only tab with a report so far |
+| **Ranking de Consumo** | Usage ranking — declared, not built |
+| **Índice de Manutenção** | Maintenance rate — declared, not built |
+| **Empréstimos no Mês** | Loans this month — pickups recorded since the first day |
+| **Equipamentos na Rua** | Devices out — off the shelf at this instant |
+| **Esgotamento por categoria** | Stock depletion by category |
+| **Estoque Esgotado** | Out of stock — the red badge, no unit available |
+| **Estoque Crítico** | Low stock — the amber badge, one or two units left |
+| "N% de ocupação (N de N)" | N% occupancy (N of N) — occupied out of the circulating stock |
+| "4 livres · 4 emprestados · 1 em manutenção" | 4 free, 4 on loan, 1 under maintenance |
+| "(+ 1 aposentado, fora da conta)" | (+ 1 retired, outside the count) |
+| "Sem unidades em circulação" | No units in circulation |
+| "Relatório em desenvolvimento..." | Report under development |
+| "Nenhuma categoria cadastrada ainda." | No category registered yet |
+
+<!-- vale Microsoft.Ellipses = YES -->
+
 ## People
 
 | On screen | In English |

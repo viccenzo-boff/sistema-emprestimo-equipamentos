@@ -139,6 +139,7 @@ plugins:
             3. Baixa física: 3. Physical check-in
             4. Gestão de inventário: 4. Inventory management
             5. Gestão de pessoas: 5. People management
+            6. Relatórios: 6. Reports
             Referência: Reference
             Glossário: Glossary
             Estados e transições: States and transitions
@@ -194,6 +195,12 @@ nav:
       - 3. Baixa física: painel/baixa-fisica.md
       - 4. Gestão de inventário: painel/inventario.md
       - 5. Gestão de pessoas: painel/pessoas.md
+      # A sexta entrou com a Tarefa 13, e e a unica pagina de processo SEM
+      # diagrama BPMN: consultar relatorio e leitura, nao transacao, e a D04
+      # registrou que nao se forca BPMN onde ele nao e a notacao certa. O
+      # template permite remover secao que nao se aplica -- ver o comentario
+      # da secao 5 em docs/contribuir/template-processo.md.
+      - 6. Relatórios: painel/relatorios.md
   - Referência:
       - Glossário: referencia/glossario.md
       - Estados e transições: referencia/estados-e-transicoes.md

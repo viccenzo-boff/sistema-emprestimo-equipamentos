@@ -59,6 +59,7 @@ an admin panel page, and the other way round as well.
 - [Check returned devices in](painel/baixa-fisica.md)
 - [Register equipment and manage the inventory](painel/inventario.md)
 - [Import the people spreadsheet](painel/pessoas.md)
+- [See what is running out and take it to the coordination](painel/relatorios.md)
 - [Sign in, sign out, change your password](referencia/conta-do-administrador.md)
 
 </div>
