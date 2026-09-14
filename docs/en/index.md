@@ -83,11 +83,12 @@ an admin panel page, and the other way round as well.
 
 ## The version this wiki describes
 
-!!! info "This wiki describes version v1.0 of the system"
+!!! info "This wiki describes version v1.1 of the system, in progress"
 
-    If the screen in front of you has a button no page here mentions, check the
-    version selector at the top: `v1.0` is the frozen state this wiki
-    documents, and newer versions are published next to it.
+    `v1.1` is the version being built: the pages follow the repository's
+    `main` branch. `v1.0` is frozen in the version selector at the top of the
+    page — if the screen in front of you has a button no page here mentions, or
+    a message with different wording, check there which version you are using.
 
 ## Where to ask for help
 

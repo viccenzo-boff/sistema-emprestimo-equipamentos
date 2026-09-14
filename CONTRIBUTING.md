@@ -526,14 +526,35 @@ código** — ela só tem o site construído, uma pasta por versão:
 gh-pages/
 ├── index.html      ← redireciona para a versão padrão
 ├── versions.json   ← o que alimenta o seletor de versão do cabeçalho
-└── v1.0/           ← o site inteiro, PT na raiz e EN em v1.0/en/
+├── v1.0/           ← o site inteiro, PT na raiz e EN em v1.0/en/ (congelado)
+└── v1.1/           ← a versão em andamento, republicada a cada push
 ```
 
-A versão publicada é a `v1.0`, que é o estado congelado que esta wiki descreve
-([spec-wiki.md](especificacoes/spec-wiki.md) §2.1). O padrão aponta para ela **por decisão
-explícita**, e não para um alias móvel: quando a Tarefa 13 entrar e virar
-`v1.1`, alguém roda `mike set-default v1.1` de propósito, em vez de a raiz do
-site mudar sozinha debaixo de quem tinha o link.
+**Desde 2026-09-14 a `main` publica a `v1.1`, e a `v1.0` ficou congelada na
+`gh-pages`.** A `v1.0` é o estado que a wiki descrevia até a tag
+([spec-wiki.md](especificacoes/spec-wiki.md) §2.1); tudo que mudou no produto
+depois dela (a começar pela mensagem de recusa ao excluir categoria em uso, e a
+Tarefa 13 quando entrar) é descrito só na `v1.1`. Foi por isso que o
+`mike deploy` do workflow passou a apontar para `v1.1` **antes** de a Tarefa 13
+existir: sem isso, o primeiro `push` com uma página corrigida reescreveria a
+`v1.0` publicada com um comportamento que a `v1.0` do produto não tem.
+
+O padrão da raiz continua na `v1.0` **por decisão explícita**, e não por um
+alias móvel: quando a `v1.1` for tagueada, alguém troca o `set-default` do
+workflow de propósito, em vez de a raiz do site mudar sozinha debaixo de quem
+tinha o link. O `pre-push` de [.githooks/](.githooks/) lembra disso no push da
+tag. São **quatro** lugares a mexer no dia da entrega, e nenhum portão acusa
+se um ficar para trás:
+
+| Onde                                    | O quê                                              |
+| --------------------------------------- | -------------------------------------------------- |
+| `.github/workflows/docs.yml`, `deploy`  | o título: `"v1.1 (em andamento)"` → `"v1.1"`       |
+| `.github/workflows/docs.yml`, `default` | `mike set-default --push v1.0` → `v1.1`            |
+| `docs/index.md` e `docs/en/index.md`    | a caixa "Esta wiki descreve a versão…" deixa de dizer "em andamento" |
+
+E, ao abrir a versão **seguinte** (`v1.2`), o caminho inverso: o `deploy` passa a
+`v1.2 (em andamento)`, o `set-default` fica na `v1.1`, e as duas homes voltam a
+dizer "em andamento".
 
 ### Ligar o GitHub Pages (uma vez só)
 

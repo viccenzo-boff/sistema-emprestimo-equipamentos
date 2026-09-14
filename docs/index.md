@@ -70,11 +70,13 @@ página do painel, e o contrário também vale.
 
 ## A versão que esta wiki descreve
 
-!!! info "Esta wiki descreve a versão v1.0 do sistema"
+!!! info "Esta wiki descreve a versão v1.1 do sistema, em andamento"
 
-    Se a tela na sua frente tiver um botão que nenhuma página daqui menciona,
-    confira o seletor de versão no alto: a `v1.0` é o estado congelado que esta
-    wiki documenta, e versões mais novas são publicadas ao lado dela.
+    A `v1.1` é a versão que está sendo construída: as páginas acompanham a
+    `main` do repositório. A `v1.0` está congelada no seletor de versão, no
+    alto da página — se a tela na sua frente tiver um botão que nenhuma página
+    daqui menciona, ou uma mensagem com outra redação, confira ali qual versão
+    você está usando.
 
 ## Onde pedir ajuda
 

@@ -47,6 +47,14 @@ Quando a Tarefa 13 entrar, ela vira `v1.1` e ganha uma sexta página de processo
 O `mike` publica as duas versões lado a lado; a wiki da `v1.0` não precisa ser
 corrigida.
 
+> **Desde 2026-09-14 o workflow publica a `main` como `v1.1 (em andamento)`**, e
+> a `v1.0` ficou congelada na `gh-pages` no último build dela. A troca veio
+> antes da Tarefa 13 porque a primeira correção de produto depois da tag (a
+> mensagem de recusa ao excluir categoria em uso, defeito registrado pela D08)
+> mudou uma página da wiki — e publicá-la como `v1.0` faria a wiki congelada
+> descrever um comportamento que a `v1.0` do produto não tem. A raiz do site
+> continua apontando para a `v1.0` até a `v1.1` ser tagueada.
+
 ## 3. Escopo
 
 ### 3.1 Os cinco processos

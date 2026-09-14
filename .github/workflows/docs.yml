@@ -166,15 +166,18 @@ jobs:
       # (conferido em `mike deploy --help`). Quem faz o build estrito e o job
       # `qualidade`, do qual este depende -- por isso o passo nao se repete aqui.
       #
-      # A v1.0 e o estado congelado que esta wiki descreve (spec-wiki §2.1).
-      # Quando a Tarefa 13 entrar, ela vira v1.1 e as duas convivem: o mike
-      # publica cada versao num diretorio proprio e o seletor do cabecalho
-      # alterna entre elas.
-      - name: Publicar a versao v1.0
-        run: mike deploy --push --update-aliases v1.0 --title "v1.0"
+      # A v1.0 e o estado congelado que esta wiki descrevia ate 2026-09-14
+      # (spec-wiki §2.1), e a gh-pages continua servindo o ultimo build dela.
+      # Desde entao a main publica a v1.1, que esta em andamento: cada push
+      # atualiza so o diretorio v1.1/, e o mike mantem as duas lado a lado no
+      # seletor do cabecalho. Quando a v1.1 for tagueada, troque o titulo para
+      # "v1.1" (sem o parentese) e mude o set-default abaixo.
+      - name: Publicar a versao v1.1
+        run: mike deploy --push --update-aliases v1.1 --title "v1.1 (em andamento)"
 
-      # A raiz do site redireciona para a versao padrao. Ela aponta para a
-      # v1.0 por decisao explicita: quando a v1.1 sair, alguem roda
-      # `mike set-default v1.1` de proposito, em vez de a raiz mudar sozinha.
+      # A raiz do site redireciona para a versao padrao. Ela continua na v1.0
+      # por decisao explicita: a v1.1 so vira padrao quando for entregue --
+      # alguem troca esta linha de proposito, em vez de a raiz mudar sozinha
+      # debaixo de quem guardou o link.
       - name: Apontar o padrao para a v1.0
         run: mike set-default --push v1.0
