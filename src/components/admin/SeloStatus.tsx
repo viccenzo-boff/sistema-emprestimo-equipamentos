@@ -1,5 +1,5 @@
 import { rotuloDePerfil } from "@/lib/sanitizacao";
-import { STATUS_EQUIPAMENTO, STATUS_PESSOA } from "@/lib/tipos";
+import { STATUS_EQUIPAMENTO, STATUS_PESSOA, type NivelDeEstoque } from "@/lib/tipos";
 
 /**
  * A situação de um equipamento, em uma palavra.
@@ -149,6 +149,66 @@ export function SeloPerfil({ perfil, className = "" }: { perfil: string; classNa
         .join(" ")}
     >
       {rotulo}
+    </span>
+  );
+}
+
+/**
+ * O aviso de estoque de uma categoria, no relatório de ocupação (Tarefa 13).
+ *
+ * Mora neste arquivo pelo mesmo motivo que o selo de pessoa: "selo" é a forma
+ * do painel inteiro — mesmo raio, mesma altura de linha, mesmo par de cores
+ * semânticas. Separado no componente do relatório, ele divergiria da tabela de
+ * inventário na primeira vez que alguém ajustasse uma das duas.
+ *
+ * **Só dois níveis viram selo**, e os outros dois são ausência de propósito:
+ *
+ * - `normal` não desenha nada. Um selo verde permanente em cada categoria que
+ *   está bem treina o olho a ignorar a coluna inteira — e é justamente nela
+ *   que o vermelho precisa saltar.
+ * - `vazio` (categoria sem unidade em circulação) também não. Ela tem zero
+ *   disponíveis sem estar esgotada, e um vermelho ali mandaria a secretaria
+ *   comprar o que ninguém pediu. Quem explica esse caso é a linha de texto da
+ *   própria categoria, que não tem barra nenhuma para desenhar.
+ */
+const SELOS_DE_ESTOQUE: Partial<
+  Record<NivelDeEstoque, { rotulo: string; caixa: string; ponto: string }>
+> = {
+  esgotado: {
+    rotulo: "Estoque Esgotado",
+    caixa: "border-erro-borda bg-erro-fundo text-erro",
+    ponto: "bg-erro",
+  },
+  critico: {
+    rotulo: "Estoque Crítico",
+    caixa: "border-aviso-borda bg-aviso-fundo text-aviso",
+    ponto: "bg-aviso",
+  },
+};
+
+export function SeloDeEstoque({
+  nivel,
+  className = "",
+}: {
+  nivel: NivelDeEstoque;
+  className?: string;
+}) {
+  const selo = SELOS_DE_ESTOQUE[nivel];
+  if (!selo) return null;
+
+  return (
+    <span
+      className={[
+        "inline-flex items-center gap-2 rounded-full border px-3 py-1",
+        "text-sm font-semibold whitespace-nowrap",
+        selo.caixa,
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <span className={["size-2 rounded-full", selo.ponto].join(" ")} aria-hidden="true" />
+      {selo.rotulo}
     </span>
   );
 }

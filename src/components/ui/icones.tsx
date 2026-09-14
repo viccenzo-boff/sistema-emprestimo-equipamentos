@@ -336,6 +336,28 @@ export function IconePessoaCheck({ className }: PropsDeIcone) {
 }
 
 /**
+ * Aba Relatórios (Tarefa 13): as barras verticais com o eixo.
+ *
+ * Barras, e não a linha ascendente do gráfico de tendência: o que esta aba
+ * mostra é comparação entre categorias em um instante — quanto de cada
+ * prateleira está fora —, e não uma série ao longo do tempo. A forma promete
+ * o que a tela entrega.
+ *
+ * A barra mais alta é a do meio, e não a da direita: a subida da esquerda para
+ * a direita é justamente a leitura de crescimento que não existe aqui.
+ */
+export function IconeGrafico({ className }: PropsDeIcone) {
+  return (
+    <Svg className={className}>
+      <path d="M4 4.5v14a1 1 0 0 0 1 1h15" {...TRACO} />
+      <path d="M8 16.5v-4" {...TRACO} strokeWidth={2.25} />
+      <path d="M12.5 16.5v-9" {...TRACO} strokeWidth={2.25} />
+      <path d="M17 16.5v-6" {...TRACO} strokeWidth={2.25} />
+    </Svg>
+  );
+}
+
+/**
  * Ícone da categoria, escolhido pelo `tipo` gravado no banco.
  *
  * Renderiza aqui dentro em vez de devolver o componente para quem chama: um

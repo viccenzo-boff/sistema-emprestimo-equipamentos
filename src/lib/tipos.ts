@@ -479,3 +479,103 @@ export type EstadoDaImportacao =
   | { fase: "previa"; previa: PreviaDaImportacao }
   | { fase: "concluida"; resultado: ImportacaoConcluida }
   | { fase: "erro"; mensagem: string; detalhe?: string };
+
+/* ------------------------------------------------------------------------- *
+ * Relatórios (Tarefa 13)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * As abas do `/admin/relatorios`.
+ *
+ * Duas delas ainda não têm relatório: a Tarefa 13 entrega a estrutura de
+ * navegação e o primeiro painel, e as outras duas ficam declaradas com o texto
+ * de "em desenvolvimento". Estão aqui como valores, e não só como texto na
+ * tela, porque é a lista que o componente de abas percorre — acrescentar a
+ * quarta aba um dia é editar um lugar.
+ */
+export const ABA_DE_RELATORIO = {
+  ocupacao: "ocupacao",
+  consumo: "consumo",
+  manutencao: "manutencao",
+} as const;
+
+export type AbaDeRelatorio =
+  (typeof ABA_DE_RELATORIO)[keyof typeof ABA_DE_RELATORIO];
+
+/**
+ * O quanto falta na prateleira de uma categoria, em uma palavra.
+ *
+ * Os três primeiros são os do enunciado da Tarefa 13; `vazio` é o quarto, e
+ * existe porque desde a Tarefa 6 dá para criar categoria sem nenhum
+ * equipamento — e uma categoria sem unidade em circulação tem zero disponíveis
+ * sem estar esgotada. Sem este nível ela apareceria em vermelho permanente,
+ * dizendo "Estoque Esgotado" de uma prateleira que nunca teve aparelho.
+ */
+export type NivelDeEstoque = "esgotado" | "critico" | "normal" | "vazio";
+
+/**
+ * A ocupação de uma categoria: quanto do estoque em circulação não está na
+ * prateleira agora.
+ *
+ * **`emCirculacao` não conta os `INATIVO`**, e é o mesmo denominador que o
+ * tablet já mostra em "Notebooks — 4 de 9 disponíveis" (ver `listarCategorias`
+ * em [actions.ts](src/app/actions.ts)). Contar o aposentado aqui faria a
+ * coordenação receber dois números diferentes para "quantos notebooks temos",
+ * dependendo da tela em que perguntasse.
+ *
+ * `ocupados` é tudo que **não** está disponível — emprestado ou em manutenção.
+ * É o que faz `ocupacao === 100` querer dizer exatamente "nenhum item com
+ * status `DISPONIVEL`", que é como o enunciado define o alerta vermelho. Com o
+ * numerador só nos emprestados, a barra diria 70% enquanto o alerta ao lado
+ * diria "Estoque Esgotado" — e as duas coisas estariam certas.
+ */
+export type OcupacaoDeCategoria = {
+  id: number;
+  /** O nome como está no banco, no singular. Quem pluraliza é a tela. */
+  nome: string;
+  /** Tudo menos os aposentados: é o estoque de que a prateleira dispõe. */
+  emCirculacao: number;
+  disponiveis: number;
+  emprestados: number;
+  manutencao: number;
+  /** `INATIVO`: fora da conta, mostrado como nota para os números fecharem. */
+  aposentados: number;
+  /** `emCirculacao - disponiveis`. */
+  ocupados: number;
+  /** 0 a 100, inteiro. É o número que a barra desenha e que o texto repete. */
+  ocupacao: number;
+  nivel: NivelDeEstoque;
+};
+
+/**
+ * O relatório de Ocupação e picos de uso (Tarefa 13, item 2).
+ *
+ * As datas e o nome do mês já chegam formatados, pela mesma regra do resto do
+ * painel: formatar de novo na hidratação é a receita clássica de divergência
+ * de fuso em texto de tempo.
+ */
+export type RelatorioDeOcupacao = {
+  /** Retiradas com `data_retirada` dentro do mês corrente. */
+  emprestimosNoMes: number;
+  /** "setembro de 2026" — para o cartão dizer de que mês está falando. */
+  mes: string;
+  /**
+   * Os equipamentos que não estão na prateleira agora, contados pelos
+   * **empréstimos abertos**.
+   *
+   * O enunciado pede "status `EMPRESTADO` ou `AGUARDANDO_BAIXA`", e o segundo
+   * não é status de `Equipamento`: enquanto o empréstimo espera conferência, o
+   * aparelho continua `EMPRESTADO`. Contar pela tabela de empréstimos é o que
+   * torna a frase verdadeira — e o que permite separar os dois, que é a
+   * distinção que a Tarefa 12 existe para tornar visível.
+   */
+  naRua: {
+    total: number;
+    /** Empréstimos `ATIVO`: o aparelho está com a pessoa. */
+    comPessoas: number;
+    /** Empréstimos `AGUARDANDO_BAIXA`: o aparelho está na bancada. */
+    naBancada: number;
+  };
+  /** Uma linha por categoria, na ordem do `Categoria.id` — a do tablet. */
+  categorias: OcupacaoDeCategoria[];
+};

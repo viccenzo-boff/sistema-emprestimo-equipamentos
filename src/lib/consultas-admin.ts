@@ -9,7 +9,10 @@ import {
   type EmprestimoEmCurso,
   type ItemDaFila,
   type ItemDeInventario,
+  type NivelDeEstoque,
+  type OcupacaoDeCategoria,
   type OpcaoDeCategoria,
+  type RelatorioDeOcupacao,
   type ResumoDePessoas,
   type ResumoDoInventario,
   type PessoaDoPainel,
@@ -338,4 +341,195 @@ export async function resumirPessoas(): Promise<ResumoDePessoas> {
     professores: perfil.get(PERFIL.professor) ?? 0,
     total,
   };
+}
+
+/* ------------------------------------------------------------------------- *
+ * Relatórios (Tarefa 13)
+ * ------------------------------------------------------------------------- */
+
+const MES_POR_EXTENSO = new Intl.DateTimeFormat("pt-BR", {
+  month: "long",
+  year: "numeric",
+});
+
+/**
+ * Acima deste número de unidades livres a categoria não pede nada de ninguém.
+ * Com 1 ou 2 ela é "Estoque Crítico"; com 0, "Estoque Esgotado".
+ *
+ * O número é do enunciado da Tarefa 13 ("apenas 1 ou 2 disponíveis"), e está
+ * aqui como constante porque é ele que a página da wiki cita: mudá-lo sem
+ * mudar a página faz o manual descrever um amarelo que a tela não acende.
+ */
+const LIMITE_DE_ESTOQUE_CRITICO = 2;
+
+/**
+ * O relatório de Ocupação e picos de uso (Tarefa 13, item 2).
+ *
+ * **Não é uma Server Action, de propósito.** O enunciado pede
+ * "`/admin/relatorios/actions.ts` ou similar", mas o painel lê o banco no
+ * render das páginas, e não por chamada de ação — é a regra registrada no
+ * cabeçalho deste arquivo. Uma action aqui seria um endpoint POST público
+ * criado para uma leitura que nunca precisa de um.
+ *
+ * Quatro consultas em paralelo, e nenhuma delas carrega tabela para contar no
+ * Node: o inventário cresce por semestre e o relatório continua sendo uma
+ * dúzia de números.
+ */
+export async function montarRelatorioDeOcupacao(): Promise<RelatorioDeOcupacao> {
+  const agora = new Date();
+  const inicioDoMes = new Date(agora.getFullYear(), agora.getMonth(), 1);
+
+  const [emprestimosNoMes, abertos, categorias, porCategoria] = await Promise.all([
+    /*
+      A comparação é feita pelo Prisma com um `Date`, e isso foi conferido
+      nesta máquina contra o banco real, na fronteira exata do mês: o
+      empréstimo do primeiro instante entra e o do último instante do mês
+      anterior fica de fora.
+
+      Não troque por SQL cru sem refazer a prova. O SQLite guarda `DateTime`
+      como TEXTO ISO-8601 com o sufixo `+00:00`, e as duas formas óbvias de
+      escrever isto à mão devolvem um número plausível e errado: comparar com
+      o epoch conta a tabela inteira (pela regra de afinidade de tipos,
+      INTEGER é sempre menor que TEXT), e comparar com `toISOString()` perde
+      justamente a linha da fronteira (o `+` vem antes do `Z` na ordem de
+      caracteres). Medido nas duas direções.
+    */
+    prisma.emprestimo.count({ where: { data_retirada: { gte: inicioDoMes } } }),
+
+    /*
+      "Equipamentos na rua" contado pelos EMPRÉSTIMOS, e não pelo status do
+      equipamento. O enunciado pede "`EMPRESTADO` ou `AGUARDANDO_BAIXA`", e o
+      segundo não é status de `Equipamento`: enquanto a devolução espera
+      conferência, o aparelho continua `EMPRESTADO`. Ao pé da letra, o segundo
+      termo não casaria nada e o cartão responderia calado uma pergunta
+      diferente da que anuncia.
+
+      O efeito colateral é o que a tarefa queria: o número se abre em "com as
+      pessoas" e "na bancada", que é a distinção que a Tarefa 12 existe para
+      tornar visível. E cobre o caso raro em que o equipamento saiu de
+      `EMPRESTADO` sem o empréstimo fechar (o ramo `liberado: false` do
+      `darBaixa`): o aparelho continua fora da prateleira, e continua contado.
+    */
+    prisma.emprestimo.groupBy({
+      by: ["status"],
+      where: {
+        status: {
+          in: [STATUS_EMPRESTIMO.ativo, STATUS_EMPRESTIMO.aguardandoBaixa],
+        },
+      },
+      _count: { _all: true },
+    }),
+
+    prisma.categoria.findMany({
+      select: { id: true, nome: true },
+      orderBy: { id: "asc" },
+    }),
+
+    prisma.equipamento.groupBy({
+      by: ["categoria_id", "status"],
+      _count: { _all: true },
+    }),
+  ]);
+
+  const abertoPor = new Map(abertos.map((grupo) => [grupo.status, grupo._count._all]));
+  const comPessoas = abertoPor.get(STATUS_EMPRESTIMO.ativo) ?? 0;
+  const naBancada = abertoPor.get(STATUS_EMPRESTIMO.aguardandoBaixa) ?? 0;
+
+  /*
+    A lista de categorias vem da tabela `Categoria`, e não dos grupos do
+    inventário. Conferido: o `groupBy` **não** devolve linha nenhuma para uma
+    categoria sem equipamento — derivar dali a faria sumir da tela sem erro
+    algum, que é justamente o caso que o nível `vazio` existe para mostrar.
+  */
+  const contagem = new Map<number, Map<string, number>>();
+  for (const grupo of porCategoria) {
+    const porStatus = contagem.get(grupo.categoria_id) ?? new Map<string, number>();
+    porStatus.set(grupo.status, grupo._count._all);
+    contagem.set(grupo.categoria_id, porStatus);
+  }
+
+  return {
+    emprestimosNoMes,
+    mes: MES_POR_EXTENSO.format(agora),
+    naRua: { total: comPessoas + naBancada, comPessoas, naBancada },
+    categorias: categorias.map((categoria) =>
+      medirOcupacao(categoria, contagem.get(categoria.id)),
+    ),
+  };
+}
+
+/**
+ * Transforma as contagens por status de uma categoria na linha que a tela
+ * desenha.
+ *
+ * Duas decisões moram aqui, e as duas existem para a barra e o alerta ao lado
+ * dela nunca se contradizerem:
+ *
+ * 1. **Ocupado é tudo que não está disponível** — emprestado ou em manutenção.
+ *    É o que faz `ocupacao === 100` querer dizer exatamente "nenhum item com
+ *    status `DISPONIVEL`", que é como o enunciado define o vermelho.
+ * 2. **O arredondamento nunca fecha nem zera o que não está fechado nem
+ *    zerado.** Com uma unidade livre em 500, o arredondamento normal daria
+ *    100% e a barra diria "cheia" ao lado de um alerta amarelo; com uma
+ *    unidade ocupada em 500, daria 0% e a barra diria "vazia" com um aparelho
+ *    fora. Os dois extremos ficam reservados para os casos exatos.
+ */
+function medirOcupacao(
+  categoria: { id: number; nome: string },
+  porStatus: Map<string, number> | undefined,
+): OcupacaoDeCategoria {
+  const de = (status: string) => porStatus?.get(status) ?? 0;
+
+  const disponiveis = de(STATUS_EQUIPAMENTO.disponivel);
+  const emprestados = de(STATUS_EQUIPAMENTO.emprestado);
+  const manutencao = de(STATUS_EQUIPAMENTO.manutencao);
+  const aposentados = de(STATUS_EQUIPAMENTO.inativo);
+
+  /*
+    O estoque em circulação é a soma dos grupos menos os aposentados, e não a
+    soma dos três status nomeados: um status que não seja nenhum dos quatro
+    sumiria da conta, e o equipamento continua existindo na prateleira. Mesma
+    regra do total do `resumirInventario`.
+  */
+  const total = [...(porStatus?.values() ?? [])].reduce((soma, n) => soma + n, 0);
+  const emCirculacao = total - aposentados;
+  const ocupados = emCirculacao - disponiveis;
+
+  return {
+    id: categoria.id,
+    nome: categoria.nome,
+    emCirculacao,
+    disponiveis,
+    emprestados,
+    manutencao,
+    aposentados,
+    ocupados,
+    ocupacao: percentualDeOcupacao(ocupados, emCirculacao),
+    nivel: nivelDeEstoque(emCirculacao, disponiveis),
+  };
+}
+
+function percentualDeOcupacao(ocupados: number, emCirculacao: number): number {
+  if (emCirculacao <= 0) return 0;
+
+  const bruto = (ocupados / emCirculacao) * 100;
+  const arredondado = Math.round(bruto);
+
+  // 100 só quando não sobrou nada; 0 só quando não saiu nada.
+  if (arredondado >= 100 && ocupados < emCirculacao) return 99;
+  if (arredondado <= 0 && ocupados > 0) return 1;
+
+  return arredondado;
+}
+
+function nivelDeEstoque(emCirculacao: number, disponiveis: number): NivelDeEstoque {
+  // Antes de tudo: sem unidade em circulação não há estoque para esgotar. Uma
+  // categoria recém-criada, ou com todos os aparelhos aposentados, tem zero
+  // disponíveis sem estar esgotada — e o vermelho permanente diria a uma
+  // secretaria que ela precisa comprar o que ninguém nunca pediu.
+  if (emCirculacao <= 0) return "vazio";
+  if (disponiveis <= 0) return "esgotado";
+  if (disponiveis <= LIMITE_DE_ESTOQUE_CRITICO) return "critico";
+
+  return "normal";
 }

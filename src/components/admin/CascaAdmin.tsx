@@ -10,12 +10,13 @@ import {
   IconeCaixa,
   IconeEtiquetas,
   IconeFila,
+  IconeGrafico,
   IconePessoas,
   IconeRelogio,
 } from "@/components/ui/icones";
 
 /**
- * Moldura das cinco telas do painel: barra lateral de navegação e área de
+ * Moldura das seis telas do painel: barra lateral de navegação e área de
  * conteúdo.
  *
  * É componente, não `layout.tsx`, por dois motivos que se somam:
@@ -38,7 +39,8 @@ export type AbaDoPainel =
   | "ativos"
   | "inventario"
   | "categorias"
-  | "pessoas";
+  | "pessoas"
+  | "relatorios";
 
 type Props = {
   /**
@@ -91,19 +93,32 @@ const ABAS = [
     Icone: IconeEtiquetas,
   },
   /*
-    Pessoas fica por último de propósito, e não junto da fila.
+    As duas últimas não são o trabalho do dia, e é por isso que ficam no fim.
 
-    As quatro abas acima são o trabalho do dia — a secretaria entra no painel
-    para conferir devolução e mexer no inventário. Cadastro é manutenção de
-    início de semestre: a planilha da coordenação chega uma vez, é importada, e
-    a aba fica meses sem ser aberta. Pôr uma tarefa rara no topo empurraria para
-    baixo as três que acontecem toda hora.
+    As quatro abas acima acontecem toda hora — a secretaria entra no painel para
+    conferir devolução e mexer no inventário. Cadastro de pessoa é manutenção de
+    início de semestre: a planilha da coordenação chega uma vez, é importada, e a
+    aba fica meses sem ser aberta. Pôr uma tarefa rara no topo empurraria para
+    baixo as que acontecem toda hora.
+
+    Relatórios (Tarefa 13) desceu mais um degrau, para depois de Pessoas, e não
+    por ser mais rara: é de outra natureza. As cinco abas acima **operam** o
+    sistema — cada uma existe para mudar alguma coisa no banco. Esta só lê, e
+    quem a abre não veio trabalhar no balcão: veio responder à coordenação se
+    falta notebook. Separar as duas naturezas na ponta da lista custa menos
+    leitura do que intercalá-las.
   */
   {
     id: "pessoas" as const,
     rotulo: "Pessoas",
     href: "/admin/pessoas",
     Icone: IconePessoas,
+  },
+  {
+    id: "relatorios" as const,
+    rotulo: "Relatórios",
+    href: "/admin/relatorios",
+    Icone: IconeGrafico,
   },
 ];
 
