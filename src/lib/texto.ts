@@ -77,6 +77,33 @@ const HORA = new Intl.DateTimeFormat("pt-BR", {
 const DIA = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" });
 
 /**
+ * 00:00 do dia da data, no fuso da máquina — o grão da avaliação anônima
+ * (Tarefa 14). `Pessoa.avaliacao_pedida_em` guarda isto, e não o instante:
+ * carimbo com segundos é justamente o que a `Avaliacao` não tem.
+ *
+ * Aritmética de calendário (`getDate() - n`), e nunca de milissegundos: os
+ * dois divergem em uma hora quando há horário de verão no meio, e a fronteira
+ * dos 30 dias escorregaria sem ninguém ver.
+ */
+export function inicioDoDia(data: Date, menosDias = 0): Date {
+  return new Date(data.getFullYear(), data.getMonth(), data.getDate() - menosDias);
+}
+
+/**
+ * "2026-09-16" — o dia no fuso da máquina, no formato que ordena como texto.
+ *
+ * É o que `Avaliacao.dia` guarda, e é por isso que o relatório pode comparar
+ * `dia >= "2026-08-18"` direto no banco: a ordem lexicográfica de AAAA-MM-DD é
+ * a ordem cronológica. Sai do mesmo `inicioDoDia` para os dois campos não
+ * discordarem numa virada de meia-noite.
+ */
+export function diaLocal(data: Date): string {
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const dia = String(data.getDate()).padStart(2, "0");
+  return `${data.getFullYear()}-${mes}-${dia}`;
+}
+
+/**
  * "Desde quando" um equipamento está com a pessoa.
  *
  * Compara dias de calendário, não intervalos de 24h: quem pegou às 23h de

@@ -77,6 +77,43 @@ export const PERFIL = {
 export const MAXIMO_ITENS_POR_RETIRADA = 10;
 
 /**
+ * De quantos em quantos dias a mesma pessoa vê os rostos da avaliação no fim
+ * da retirada (Tarefa 14).
+ *
+ * É constante no código, e não configuração do painel, de propósito: a regra
+ * precisa se sustentar sozinha por anos — `now()` contra uma coluna, sem
+ * calendário, sem serviço externo, sem tela para alguém esquecer. Trinta é o
+ * piso da faixa que o mercado usa para repesquisar a mesma pessoa (30–90
+ * dias): quem retira todo dia é perguntado uma vez por mês, e quem retira uma
+ * vez por semestre é perguntado sempre.
+ */
+export const INTERVALO_ENTRE_AVALIACOES_DIAS = 30;
+
+/**
+ * A escala da avaliação: quatro rostos, sem neutro, do pior ao melhor.
+ *
+ * Quatro e não cinco porque o neutro vira depósito de indiferença (20–30% das
+ * respostas em escalas ímpares); quatro força um lado. O pior rosto é
+ * **triste**, nunca bravo: a escala tem um eixo só (valência), raiva é outra
+ * dimensão, e ninguém aperta "bravo" num tablet compartilhado com a secretaria
+ * a dois metros — a ponta baixa esvaziaria.
+ *
+ * É um `Map`, e não um objeto literal, porque a `nota` chega de um POST
+ * público: `OBJETO[chave]` responde a `"constructor"` com o protótipo, e a
+ * guarda deixaria passar. É a mesma regra da tabela de transições do
+ * inventário (Tarefa 6).
+ */
+export const NOTAS_DE_AVALIACAO: ReadonlyMap<number, string> = new Map([
+  [1, "Muito ruim"],
+  [2, "Ruim"],
+  [3, "Bom"],
+  [4, "Muito bom"],
+]);
+
+/** A única chave da tabela `Configuracao` hoje: a URL do formulário externo. */
+export const CHAVE_URL_FORMULARIO = "url_formulario_feedback";
+
+/**
  * Dados da pessoa expostos ao tablet. Só o que a tela realmente mostra.
  *
  * `status` entrou na Tarefa 8 porque a tela precisa dele: um cadastro `INATIVO`
@@ -186,12 +223,44 @@ export type MotivoDeFalha =
   | "SENHA_IGUAL_A_ATUAL"
   | "SENHA_ATUAL_INCORRETA"
   | "MUITAS_TENTATIVAS"
+  // Avaliação anônima e QR code (Tarefa 14)
+  | "AVALIACAO_INVALIDA"
+  | "AVALIACAO_NAO_ENCONTRADA"
+  | "URL_INVALIDA"
   | "FALHA_INTERNA";
+
+/**
+ * O que a tela de sucesso recebe quando os rostos devem aparecer (Tarefa 14).
+ *
+ * Só o `id` da linha de `Avaliacao` que o servidor acabou de criar — é o token
+ * de uso único que `registrarAvaliacao` preenche. Nulo quer dizer "não
+ * pergunte": a decisão é do servidor, dentro de `confirmarRetirada`, e a tela
+ * não sabe nem precisa saber por quê.
+ */
+export type AvaliacaoPedida = {
+  id: number;
+};
+
+/**
+ * O QR code do formulário de sugestões, pronto para a tela.
+ *
+ * `svg` é a imagem inteira, gerada no servidor pela biblioteca `qrcode` (sem
+ * rede), e `url` é o que ele codifica — vai junto para a tela poder mostrar o
+ * destino a quem prefere ler a apontar a câmera.
+ */
+export type QrDoFormulario = {
+  svg: string;
+  url: string;
+};
 
 export type RetiradaConfirmada = {
   pessoa: PessoaIdentificada;
   itens: EquipamentoDisponivel[];
   registrados: number;
+  /** Os rostos aparecem? Decidido no servidor pela regra dos 30 dias. */
+  avaliacao: AvaliacaoPedida | null;
+  /** Nulo quando a URL do formulário não está configurada — a tela não mostra nada. */
+  qr: QrDoFormulario | null;
 };
 
 /** Resultado da devolução de um item: o que sumiu da lista e o que sobrou nela. */
@@ -485,16 +554,24 @@ export type EstadoDaImportacao =
  * ------------------------------------------------------------------------- */
 
 /**
- * As abas do `/admin/relatorios`.
+ * As abas do `/admin/relatorios`, **na ordem em que aparecem na barra**.
  *
- * Duas delas ainda não têm relatório: a Tarefa 13 entrega a estrutura de
- * navegação e o primeiro painel, e as outras duas ficam declaradas com o texto
- * de "em desenvolvimento". Estão aqui como valores, e não só como texto na
- * tela, porque é a lista que o componente de abas percorre — acrescentar a
- * quarta aba um dia é editar um lugar.
+ * Duas delas ainda não têm relatório: a Tarefa 13 entregou a estrutura de
+ * navegação e o primeiro painel, e consumo e manutenção ficaram declaradas com
+ * o texto de "em desenvolvimento". Estão aqui como valores, e não só como texto
+ * na tela, porque é a lista que o componente de abas percorre — acrescentar
+ * uma aba é editar um lugar.
+ *
+ * A Tarefa 14 acrescentou **Satisfação**, e ela entrou em segundo, e não em
+ * quarto como o enunciado escrevia: com as duas vazias no meio, a barra
+ * ficaria *relatório · vazio · vazio · relatório*, e quem procura o segundo
+ * relatório clicaria em dois avisos antes de achá-lo. Os dois que existem
+ * ficam juntos; os que ainda não existem vão para o fim. Decisão do dono do
+ * repositório (2026-09-16).
  */
 export const ABA_DE_RELATORIO = {
   ocupacao: "ocupacao",
+  satisfacao: "satisfacao",
   consumo: "consumo",
   manutencao: "manutencao",
 } as const;
@@ -579,3 +656,58 @@ export type RelatorioDeOcupacao = {
   /** Uma linha por categoria, na ordem do `Categoria.id` — a do tablet. */
   categorias: OcupacaoDeCategoria[];
 };
+
+/* ------------------------------------------------------------------------- *
+ * Satisfação (Tarefa 14)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Um recorte do relatório de satisfação: os últimos 30 dias, ou tudo desde o
+ * início. Os dois são fixos — não há filtro, por decisão da Tarefa 14: o dado
+ * é um inteiro de 1 a 4 por dia, e filtro é código para manter num sistema que
+ * vai ficar anos parado. Quem quer outro recorte baixa o CSV.
+ */
+export type RecorteDeSatisfacao = {
+  /** "Últimos 30 dias" ou "Desde o início". */
+  rotulo: string;
+  /** Quantas vezes os rostos apareceram. */
+  pedidas: number;
+  /** Quantas dessas vezes alguém tocou num rosto. */
+  respondidas: number;
+  /** `respondidas / pedidas`, em inteiro de 0 a 100. Zero quando nada foi pedido. */
+  taxaDeResposta: number;
+  /** "3,4" — média na escala 1–4 com uma casa, já formatada. Nula sem resposta. */
+  media: string | null;
+  /** Uma entrada por nota, de 1 a 4, sempre as quatro — inclusive as com zero. */
+  distribuicao: { nota: number; rotulo: string; quantas: number; fatia: number }[];
+};
+
+/**
+ * O relatório de Satisfação (Tarefa 14, item 5).
+ *
+ * `linhas` é o que o botão "Baixar planilha" serializa **no navegador**: as
+ * linhas descem no render porque o painel lê o banco no render, e não por
+ * ação. O peso é o dado, não o código — ~30 bytes por linha e no máximo umas
+ * cinco linhas por dia útil —, e a página abre uma vez por mês. Vêm ordenadas
+ * por `dia` e `nota`, nunca por id: a ordem de gravação é a única coisa que
+ * poderia parear pessoa e nota, e ela não sai daqui.
+ */
+export type RelatorioDeSatisfacao = {
+  ultimos30Dias: RecorteDeSatisfacao;
+  desdeOInicio: RecorteDeSatisfacao;
+  linhas: LinhaDeAvaliacao[];
+  /** A URL configurada e o QR que ela gera, ou nulo — é o que o cartão do formulário mostra. */
+  formulario: { url: string; qr: QrDoFormulario } | null;
+};
+
+/** Uma linha do CSV: o dia e a nota (nula quando ninguém respondeu). */
+export type LinhaDeAvaliacao = {
+  dia: string;
+  nota: number | null;
+};
+
+/** Estado do formulário da URL do formulário de sugestões, para o `useActionState`. */
+export type EstadoDaUrlDoFormulario =
+  | { fase: "inicial" }
+  | { fase: "erro"; mensagem: string; detalhe?: string }
+  | { fase: "sucesso"; mensagem: string };

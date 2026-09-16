@@ -64,8 +64,62 @@ model Pessoa {
   /// faculdade costuma estar com um aparelho na mochila, e travar a devolução
   /// empurraria o equipamento para nunca voltar.
   status    String @default("ATIVO")
+  /// O dia em que os rostos da avaliação foram mostrados a esta pessoa pela
+  /// última vez, **truncado a 00:00 no fuso da máquina** (Tarefa 14). Nulo
+  /// enquanto ela nunca foi perguntada.
+  ///
+  /// É a regra de frequência inteira: `confirmarRetirada` só mostra os rostos
+  /// se este campo é nulo ou está a `INTERVALO_ENTRE_AVALIACOES_DIAS` ou mais
+  /// — e grava o dia de hoje **quando os rostos aparecem**, não quando alguém
+  /// responde. Sem isso, quem ignora a pesquisa é justamente quem a veria em
+  /// toda retirada.
+  ///
+  /// Truncado ao dia porque é o mesmo grão de `Avaliacao.dia`: gravar o
+  /// instante aqui recriaria, do lado da pessoa, o carimbo com segundos que a
+  /// `Avaliacao` não tem de propósito.
+  avaliacao_pedida_em DateTime?
 
   emprestimos Emprestimo[]
+}
+
+/// Uma linha por vez que os rostos da avaliação apareceram no fim de uma
+/// retirada (Tarefa 14). `nota` nula = apareceram e a pessoa não respondeu —
+/// é o que dá a taxa de resposta (respondidas ÷ pedidas), a métrica que
+/// denuncia fadiga antes da reclamação.
+///
+/// **Não há matrícula, perfil nem hora aqui, de propósito.** Um carimbo com
+/// segundos cruzaria trivialmente com `Emprestimo.data_retirada` e revelaria
+/// quem deu a nota 1; o perfil identificaria o professor do dia. Com só o dia,
+/// quem lê o banco sabe *quem foi perguntado naquele dia* (pelo
+/// `Pessoa.avaliacao_pedida_em`) e *quais notas saíram naquele dia*, e não o
+/// pareamento — exceto no dia em que uma pessoa só foi perguntada, que é a
+/// limitação inerente de população pequena, e a wiki diz isso.
+model Avaliacao {
+  /// **Aleatório, e não autoincremento.** O id sequencial seria um carimbo de
+  /// tempo disfarçado: a linha nasce na mesma transação do `Emprestimo`, então
+  /// a ordem dos ids no dia D seria a ordem de `data_retirada` das pessoas
+  /// perguntadas em D — três linhas, três pessoas, um `ORDER BY` de cada lado,
+  /// e o pareamento sairia inteiro. Sem `@default`, o Prisma obriga quem cria a
+  /// linha a fornecer o id, e o único caminho é `idAleatorio()` em
+  /// [actions.ts](../src/app/actions.ts). Efeito colateral bem-vindo: chutar
+  /// uma linha ainda não respondida passa de trivial a 1 em 2³¹.
+  id   Int     @id
+  /// 1 = Muito ruim, 2 = Ruim, 3 = Bom, 4 = Muito bom. Nula até o toque, e
+  /// gravada uma vez só (`updateMany` filtrado por `nota: null`).
+  nota Int?
+  /// "AAAA-MM-DD" no fuso da máquina. Dia, não instante — ver o comentário do
+  /// modelo.
+  dia  String
+}
+
+/// Chave-valor para o que precisa mudar sem deploy (Tarefa 14). Hoje só uma
+/// chave: `url_formulario_feedback`, a URL do formulário externo que o QR code
+/// da tela de sucesso aponta. Mora no banco porque "anos sem atualização"
+/// corta dos dois lados — se o link do formulário mudar, não pode exigir
+/// deploy para acompanhar. Sem a linha, ou com valor vazio, o QR não aparece.
+model Configuracao {
+  chave String @id
+  valor String
 }
 
 /// Contas de acesso ao Painel Administrativo (Tarefa 10).
