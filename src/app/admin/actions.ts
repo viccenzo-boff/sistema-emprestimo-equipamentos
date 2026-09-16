@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { validarUrlDoFormulario } from "@/lib/formulario-feedback";
 import { prisma } from "@/lib/prisma";
 import {
   alterarSenha,
@@ -14,9 +15,11 @@ import {
 } from "@/lib/sessao-admin";
 import { semAcento } from "@/lib/texto";
 import {
+  CHAVE_URL_FORMULARIO,
   STATUS_EMPRESTIMO,
   STATUS_EQUIPAMENTO,
   type EstadoDaCategoria,
+  type EstadoDaUrlDoFormulario,
   type EstadoDoCadastro,
   type EstadoDoLogin,
   type MotivoDeFalha,
@@ -971,4 +974,78 @@ function rotuloDeStatus(status: string): string {
   if (status === STATUS_EQUIPAMENTO.emprestado) return "emprestado";
   if (status === STATUS_EQUIPAMENTO.inativo) return "inativo";
   return "em manutenção";
+}
+
+/* ------------------------------------------------------------------------- *
+ * Formulário de sugestões (Tarefa 14, item 6)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Salva a URL do formulário externo que o QR code da tela de sucesso aponta.
+ *
+ * Um campo, um botão, e a prévia do QR ao lado — dentro da própria aba
+ * Satisfação, e não numa tela de configurações nova: é a única configuração
+ * do sistema, e mora ao lado do relatório que ela alimenta.
+ *
+ * **Campo em branco apaga a linha**, e esse é o gesto de volta: sem URL o QR
+ * some do tablet e nada quebra. Preenchido, só `https://` passa (ver
+ * `validarUrlDoFormulario`), e o valor gravado é o que o próprio `URL` do Node
+ * normalizou — o mesmo interpretador que o celular vai usar.
+ */
+export async function salvarUrlDoFormulario(
+  _estadoAnterior: EstadoDaUrlDoFormulario,
+  formulario: FormData,
+): Promise<EstadoDaUrlDoFormulario> {
+  if (!(await temSessaoAdmin())) {
+    return {
+      fase: "erro",
+      mensagem: "Sessão encerrada.",
+      detalhe: "Atualize a página e entre de novo.",
+    };
+  }
+
+  const digitado = String(formulario.get("url") ?? "").trim();
+
+  try {
+    if (digitado.length === 0) {
+      await prisma.configuracao.deleteMany({ where: { chave: CHAVE_URL_FORMULARIO } });
+      revalidatePath(RAIZ_DO_PAINEL, "layout");
+
+      return {
+        fase: "sucesso",
+        mensagem: "Formulário removido. O QR code não aparece mais no tablet.",
+      };
+    }
+
+    const validacao = validarUrlDoFormulario(digitado);
+
+    if (!validacao.ok) {
+      return {
+        fase: "erro",
+        mensagem: "Endereço inválido.",
+        detalhe: `${validacao.motivo} Cole o link completo do formulário, começando por https://.`,
+      };
+    }
+
+    await prisma.configuracao.upsert({
+      where: { chave: CHAVE_URL_FORMULARIO },
+      update: { valor: validacao.url },
+      create: { chave: CHAVE_URL_FORMULARIO, valor: validacao.url },
+    });
+
+    revalidatePath(RAIZ_DO_PAINEL, "layout");
+
+    return {
+      fase: "sucesso",
+      mensagem: "Formulário salvo. O QR code aparece no tablet a partir da próxima retirada.",
+    };
+  } catch (erro) {
+    console.error("[admin] falha ao salvar a URL do formulário:", erro);
+
+    return {
+      fase: "erro",
+      mensagem: "Não foi possível salvar o endereço.",
+      detalhe: "Tente de novo. Se continuar, confira o banco de dados.",
+    };
+  }
 }

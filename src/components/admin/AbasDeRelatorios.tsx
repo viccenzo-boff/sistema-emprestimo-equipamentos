@@ -23,25 +23,32 @@ import { ABA_DE_RELATORIO, type AbaDeRelatorio } from "@/lib/tipos";
  *
  * O padrão de teclado é o de abas de verdade, e não o de uma fileira de botões:
  * `Tab` entra e sai da barra inteira (um só ponto de parada, pelo `tabIndex`
- * rotativo), e as setas trocam de aba. Sem isso, três abas custariam três
- * paradas de `Tab` antes de chegar ao conteúdo — e a quarta, quando o relatório
- * de consumo existir, custaria quatro.
+ * rotativo), e as setas trocam de aba. Sem isso, quatro abas custariam quatro
+ * paradas de `Tab` antes de chegar ao conteúdo.
  */
 
 const ABAS: { id: AbaDeRelatorio; rotulo: string }[] = [
   /*
-    Os três rótulos são os do enunciado da Tarefa 13, letra por letra — caixa
-    inclusive, e ela não é uniforme entre os três. Uniformizar é tentador e
+    Os três rótulos da Tarefa 13 são os do enunciado dela, letra por letra —
+    caixa inclusive, e ela não é uniforme entre os três. Uniformizar é tentador e
     sairia caro: a página da wiki cita rótulo de tela literalmente, e o
     enunciado é quem nomeia estas abas. Se um dia a caixa for acertada, é uma
     decisão de produto e as duas páginas mudam junto.
   */
   { id: ABA_DE_RELATORIO.ocupacao, rotulo: "Ocupação e picos de uso" },
+  // A Tarefa 14 acrescentou esta, em segundo — ver `ABA_DE_RELATORIO`.
+  { id: ABA_DE_RELATORIO.satisfacao, rotulo: "Satisfação" },
   { id: ABA_DE_RELATORIO.consumo, rotulo: "Ranking de Consumo" },
   { id: ABA_DE_RELATORIO.manutencao, rotulo: "Índice de Manutenção" },
 ];
 
-export function AbasDeRelatorios({ ocupacao }: { ocupacao: ReactNode }) {
+export function AbasDeRelatorios({
+  ocupacao,
+  satisfacao,
+}: {
+  ocupacao: ReactNode;
+  satisfacao: ReactNode;
+}) {
   const [ativa, setAtiva] = useState<AbaDeRelatorio>(ABA_DE_RELATORIO.ocupacao);
   const barra = useRef<HTMLDivElement>(null);
 
@@ -67,7 +74,7 @@ export function AbasDeRelatorios({ ocupacao }: { ocupacao: ReactNode }) {
     /*
       O foco acompanha a seta — é o que a seta significa em uma barra de abas.
       Procurado pelo `id` dentro da barra, e não guardado em um mapa de `ref`:
-      o botão de destino já existe no DOM (as três abas são sempre
+      o botão de destino já existe no DOM (as quatro abas são sempre
       renderizadas), então não há o que esperar.
     */
     barra.current?.querySelector<HTMLButtonElement>(`#${idDaAba(ABAS[destino].id)}`)?.focus();
@@ -95,13 +102,23 @@ export function AbasDeRelatorios({ ocupacao }: { ocupacao: ReactNode }) {
               aria-controls={idDoPainel(id)}
               /*
                 Ponto de parada único: só a aba viva recebe `Tab`. É o que
-                transforma a barra em um controle, em vez de três controles.
+                transforma a barra em um controle, em vez de quatro controles.
               */
               tabIndex={viva ? 0 : -1}
               onClick={() => setAtiva(id)}
+              /*
+                Entre `lg` e `xl` a aba encolhe (corpo 14 px, recuo 10 px), e
+                só aí: é a única faixa em que a coluna lateral já ocupa a tela
+                E a largura ainda é pequena. Medido com a quarta aba, em 1024:
+                a barra tem 656 px e as quatro abas no tamanho normal somam
+                756 — a última descia para uma segunda linha. Abaixo de `lg` a
+                barra lateral vira faixa e o conteúdo ganha a largura toda; de
+                `xl` para cima sobra espaço. Refaça a medida se entrar uma
+                quinta aba, ou se um rótulo crescer.
+              */
               className={[
-                "-mb-px min-h-12 rounded-t-xl border-b-2 px-4 py-2.5",
-                "text-base font-semibold transition-colors duration-150",
+                "-mb-px min-h-12 rounded-t-xl border-b-2 px-4 py-2.5 lg:px-2.5 xl:px-4",
+                "text-base font-semibold transition-colors duration-150 lg:text-sm xl:text-base",
                 viva
                   ? "border-marca-azul text-marca-azul"
                   : "border-transparent text-tinta-suave hover:border-borda-forte hover:text-tinta",
@@ -115,13 +132,13 @@ export function AbasDeRelatorios({ ocupacao }: { ocupacao: ReactNode }) {
 
       {ABAS.map(({ id }) => (
         /*
-          Os três painéis ficam no DOM e o `hidden` esconde os dois inativos —
+          Os quatro painéis ficam no DOM e o `hidden` esconde os três inativos —
           é o que permite ao `aria-controls` de cada aba apontar para um
           elemento que existe de verdade.
 
           Nenhuma classe de `display` neste elemento, e isso é load-bearing: no
           Tailwind, `flex` ou `grid` aqui venceriam o atributo `hidden` e os
-          três painéis apareceriam empilhados. Quem precisa de layout é o
+          quatro painéis apareceriam empilhados. Quem precisa de layout é o
           conteúdo, uma camada abaixo.
         */
         <div
@@ -132,7 +149,13 @@ export function AbasDeRelatorios({ ocupacao }: { ocupacao: ReactNode }) {
           hidden={id !== ativa}
           tabIndex={0}
         >
-          {id === ABA_DE_RELATORIO.ocupacao ? ocupacao : <EmDesenvolvimento />}
+          {id === ABA_DE_RELATORIO.ocupacao ? (
+            ocupacao
+          ) : id === ABA_DE_RELATORIO.satisfacao ? (
+            satisfacao
+          ) : (
+            <EmDesenvolvimento />
+          )}
         </div>
       ))}
     </div>
@@ -165,8 +188,9 @@ function EmDesenvolvimento() {
         Relatório em desenvolvimento...
       </p>
       <p className="mt-2 text-base text-tinta-tenue">
-        Esta aba ainda não tem dados. O relatório disponível é{" "}
-        <strong className="font-semibold">Ocupação e picos de uso</strong>.
+        Esta aba ainda não tem dados. Os relatórios disponíveis são{" "}
+        <strong className="font-semibold">Ocupação e picos de uso</strong> e{" "}
+        <strong className="font-semibold">Satisfação</strong>.
       </p>
     </div>
   );

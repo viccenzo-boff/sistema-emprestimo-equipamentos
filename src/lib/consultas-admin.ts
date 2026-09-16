@@ -1,6 +1,8 @@
+import { gerarQrDoFormulario, lerUrlDoFormulario } from "@/lib/formulario-feedback";
 import { prisma } from "@/lib/prisma";
-import { dataHora, haQuantoTempo } from "@/lib/texto";
+import { dataHora, diaLocal, haQuantoTempo, inicioDoDia } from "@/lib/texto";
 import {
+  NOTAS_DE_AVALIACAO,
   PERFIL,
   STATUS_EMPRESTIMO,
   STATUS_EQUIPAMENTO,
@@ -12,7 +14,9 @@ import {
   type NivelDeEstoque,
   type OcupacaoDeCategoria,
   type OpcaoDeCategoria,
+  type RecorteDeSatisfacao,
   type RelatorioDeOcupacao,
+  type RelatorioDeSatisfacao,
   type ResumoDePessoas,
   type ResumoDoInventario,
   type PessoaDoPainel,
@@ -532,4 +536,105 @@ function nivelDeEstoque(emCirculacao: number, disponiveis: number): NivelDeEstoq
   if (disponiveis <= LIMITE_DE_ESTOQUE_CRITICO) return "critico";
 
   return "normal";
+}
+
+/* ------------------------------------------------------------------------- *
+ * Satisfação (Tarefa 14)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * O recorte curto do relatório de satisfação: hoje mais os 29 dias anteriores.
+ *
+ * Vale o mesmo número de `INTERVALO_ENTRE_AVALIACOES_DIAS`, e **é
+ * coincidência**, não a mesma regra: aquele diz de quanto em quanto tempo a
+ * mesma pessoa é perguntada; este diz que janela a coordenação lê. Mudar um
+ * não pede mudar o outro, e por isso são duas constantes.
+ */
+const JANELA_DO_RELATORIO_DIAS = 30;
+
+const MEDIA_COM_UMA_CASA = new Intl.NumberFormat("pt-BR", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+
+/**
+ * O relatório de Satisfação (Tarefa 14, item 5).
+ *
+ * Dois `groupBy` por nota — um com o filtro de dia, outro sem —, e nenhum
+ * deles carrega linha para contar no Node: o que vem são no máximo cinco
+ * grupos por recorte (as quatro notas e a nula). As linhas do CSV vêm numa
+ * terceira consulta, e vêm **ordenadas por dia e nota, nunca por id**: a
+ * ordem de gravação é a única coisa que poderia parear pessoa e nota, e ela
+ * não sai do banco.
+ *
+ * O filtro `dia >= "AAAA-MM-DD"` compara texto, e é por isso que o campo tem
+ * esse formato: a ordem lexicográfica de AAAA-MM-DD é a cronológica. O limite
+ * sai do mesmo `inicioDoDia` que a action do tablet usa, para os dois lados
+ * nunca discordarem numa virada de meia-noite.
+ */
+export async function montarRelatorioDeSatisfacao(): Promise<RelatorioDeSatisfacao> {
+  const hoje = inicioDoDia(new Date());
+  const desde = diaLocal(inicioDoDia(hoje, JANELA_DO_RELATORIO_DIAS - 1));
+
+  const [recentes, todas, linhas, url] = await Promise.all([
+    prisma.avaliacao.groupBy({
+      by: ["nota"],
+      where: { dia: { gte: desde } },
+      _count: { _all: true },
+    }),
+    prisma.avaliacao.groupBy({ by: ["nota"], _count: { _all: true } }),
+    prisma.avaliacao.findMany({
+      select: { dia: true, nota: true },
+      orderBy: [{ dia: "asc" }, { nota: "asc" }],
+    }),
+    lerUrlDoFormulario(),
+  ]);
+
+  return {
+    ultimos30Dias: resumirSatisfacao("Últimos 30 dias", recentes),
+    desdeOInicio: resumirSatisfacao("Desde o início", todas),
+    linhas,
+    formulario: url ? { url, qr: await gerarQrDoFormulario(url) } : null,
+  };
+}
+
+/**
+ * Transforma os grupos por nota nos números do cartão.
+ *
+ * A média é calculada só sobre as respondidas (a nota nula é "não respondeu",
+ * não é zero) e já sai formatada em pt-BR com uma casa — "3,4" —, pela mesma
+ * regra de datas do painel: o texto pronto desce para a tela, e nada é
+ * refeito na hidratação. `fatia` é a parte de cada nota entre as respondidas,
+ * e é o que a barra desenha; `quantas` é o que o rótulo escreve.
+ */
+function resumirSatisfacao(
+  rotulo: string,
+  grupos: { nota: number | null; _count: { _all: number } }[],
+): RecorteDeSatisfacao {
+  const porNota = new Map(grupos.map((grupo) => [grupo.nota, grupo._count._all]));
+
+  const pedidas = grupos.reduce((soma, grupo) => soma + grupo._count._all, 0);
+  const respondidas = pedidas - (porNota.get(null) ?? 0);
+
+  let somaDasNotas = 0;
+  const distribuicao = [...NOTAS_DE_AVALIACAO].map(([nota, rotuloDaNota]) => {
+    const quantas = porNota.get(nota) ?? 0;
+    somaDasNotas += nota * quantas;
+
+    return {
+      nota,
+      rotulo: rotuloDaNota,
+      quantas,
+      fatia: respondidas === 0 ? 0 : Math.round((quantas / respondidas) * 100),
+    };
+  });
+
+  return {
+    rotulo,
+    pedidas,
+    respondidas,
+    taxaDeResposta: pedidas === 0 ? 0 : Math.round((respondidas / pedidas) * 100),
+    media: respondidas === 0 ? null : MEDIA_COM_UMA_CASA.format(somaDasNotas / respondidas),
+    distribuicao,
+  };
 }
