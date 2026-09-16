@@ -20,7 +20,9 @@ passo com capturas de tela e uma seção que explica **por que** o sistema se co
 jeito (os cinco primeiros trazem também um diagrama BPMN; relatório é leitura, e não transação). Tem ainda glossário, as duas máquinas de estado, as regras de negócio consolidadas e dois
 guias de início rápido, em português e inglês.
 
-A wiki descreve a versão **`v1.0`**; a `main` pode estar à frente dela. A fonte fica em
+A wiki publica uma pasta por versão: a raiz abre na **`v1.1`**, a última entregue, e a
+**`v1.2`** (em andamento) acompanha a `main` — o seletor no cabeçalho troca entre elas e a
+`v1.0`. A fonte fica em
 [`docs/`](docs/), é construída com MkDocs Material e publicada por
 [uma Action](.github/workflows/docs.yml) a cada `push` na `main`, depois de três portões de
 qualidade. Quem for escrever uma página nova começa pelo
@@ -249,12 +251,15 @@ endpoint POST público, e esconder o botão na tela não fecha a porta.
 
 ## Modelo de dados
 
-Conforme a seção 3 de [spec.md](especificacoes/spec.md), mais o que as tarefas 6, 8, 8.1 e 10 acrescentaram:
+Conforme a seção 3 de [spec.md](especificacoes/spec.md), mais o que as tarefas 6, 8, 8.1, 10, 12 e 14
+acrescentaram:
 
 - **Pessoa** — `matricula` (PK, string para preservar zeros à esquerda), `nome` (Title Case),
   `perfil` (`Estudante` | `Professor`), `cursos` (em ordem hierárquica), `status`
-  (`ATIVO` | `INATIVO`). Chamava-se `Usuario` até a Tarefa 10; o perfil era `ALUNO`/`PROFESSOR`
-  em caixa alta até a Tarefa 8.1, que passou a gravá-lo já na forma exibida.
+  (`ATIVO` | `INATIVO`) e `avaliacao_pedida_em` (o dia, truncado a 00:00 local, em que os rostos
+  da avaliação foram mostrados pela última vez — Tarefa 14; é o campo inteiro da regra dos 30
+  dias). Chamava-se `Usuario` até a Tarefa 10; o perfil era `ALUNO`/`PROFESSOR` em caixa alta
+  até a Tarefa 8.1, que passou a gravá-lo já na forma exibida.
 - **Administrador** — `id`, `nome`, `usuario` (único), `senha` (hash bcrypt). As contas do painel.
 - **Categoria** — `id`, `nome` (único). Virou tabela na Tarefa 6: enquanto era uma String no
   `Equipamento`, cada grafia ("notebook", "Notebook") abria uma categoria nova no tablet. A
@@ -269,6 +274,14 @@ Conforme a seção 3 de [spec.md](especificacoes/spec.md), mais o que as tarefas
   marcadores de tempo têm donos distintos: a retirada no tablet, a **declaração** da devolução no
   tablet (`data_devolucao`) e a **conferência física** na secretaria (`data_baixa`, Tarefa 12) —
   a diferença entre os dois últimos é o tempo que o equipamento passou na bancada.
+- **Avaliacao** — uma linha por vez que os quatro rostos apareceram no fim de uma retirada
+  (Tarefa 14): `id` (**sorteado**, não sequencial — sequencial seria a ordem de gravação, e a
+  ordem de gravação no dia pareia com as retiradas), `nota` (1 a 4, nula enquanto ninguém tocou —
+  é o que dá a taxa de resposta) e `dia` (`AAAA-MM-DD`). **Sem matrícula, perfil nem hora**, de
+  propósito: é o que torna a avaliação anônima também para quem abre o banco. Nenhuma FK.
+- **Configuracao** — chave-valor para o que precisa mudar sem deploy (Tarefa 14). Hoje uma chave
+  só, `url_formulario_feedback`: a URL do formulário externo que o QR code da tela de sucesso
+  abre. Sem a linha, o QR não aparece.
 
 O status `AGUARDANDO_BAIXA` é o que separa "a pessoa disse que devolveu" de "a secretaria
 recolheu o equipamento": enquanto o empréstimo está nesse estado, o equipamento **não** volta a

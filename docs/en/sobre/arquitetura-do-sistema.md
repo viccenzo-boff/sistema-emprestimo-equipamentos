@@ -94,6 +94,7 @@ erDiagram
         string perfil
         string cursos
         string status
+        datetime avaliacao_pedida_em
     }
     Categoria {
         int id
@@ -113,12 +114,31 @@ erDiagram
         datetime data_baixa
         string status
     }
+    Avaliacao {
+        int id
+        int nota
+        string dia
+    }
+    Configuracao {
+        string chave
+        string valor
+    }
 ```
 
 `Administrador` stands apart on purpose. It is the account of whoever operates
 the admin panel, and it appears in **no** loan. Recording who performed each
 check-in is a column that does not exist yet, and it sits on the list of
 [what was left out](como-esta-wiki-foi-feita.md#what-was-left-out).
+
+`Avaliacao` and `Configuracao` stand apart as well, for opposite reasons
+(`v1.2`). `Avaliacao` **cannot** point at a person or at a loan: it is the
+anonymous rating at the end of a pickup, and the row keeps only the rating and
+the day — even the `id` is drawn at random, not sequential, so the write order
+does not reveal who answered after whom. The stamp of when a person was last
+asked sits on the other side, in `Pessoa.avaliacao_pedida_em`, with no link to
+the row. `Configuracao` is a key-value table for what has to change without a
+deploy; today it holds only the suggestion form URL that the tablet's QR code
+opens.
 
 Four points of the model that the wiki explains in full under
 [business rules](../referencia/regras-de-negocio.md):

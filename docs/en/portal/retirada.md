@@ -30,7 +30,7 @@ Terms that cross several processes live in the
 [loan](../referencia/glossario.md#loan) and
 [inactive record](../referencia/glossario.md#inactive-record-person).
 
-These three belong to this page only — they are the parts of the screen that the
+These five belong to this page only — they are the parts of the screen that the
 steps name:
 
 | Term          | What it is                                                                                                       |
@@ -38,14 +38,16 @@ steps name:
 | Category grid | The large cards on the opening screen, one per category, each with a count of free units.                        |
 | Selection     | The items already tapped and **not** yet confirmed. Nothing is recorded while an item is only here.              |
 | Selection bar | The fixed strip at the bottom that lists the selection and holds the **Confirmar retirada** (Confirm pickup) button. |
+| Rating faces  | The four faces under the question "Como foi a retirada?" (How was the pickup?) on the pickup confirmed screen. They show up at most once every 30 days per person. |
+| QR code       | The code next to the faces, which opens the front desk suggestion form on your phone. It only shows up when the front desk has set the link up. |
 
 ## 4. Who does what
 
 | Role              | Does                                                                                                    | Does not                                                                                                  |
 | ----------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | Student or teacher | Types the enrollment number, chooses the items, confirms the pickup and takes the devices from the counter. | Does not choose which unit is free — the portal only offers the ones that are.                              |
-| Portal (the tablet) | Checks the record, shows what is free at the moment of the tap and records one loan per item.             | Does not keep a session: the identification lasts for one visit and ends with it.                           |
-| Front desk        | Keeps the inventory up to date and leaves the devices on the counter.                                     | **Takes no part in the pickup.** Confirms nothing, and does not need to be there for a pickup to happen.    |
+| Portal (the tablet) | Checks the record, shows what is free at the moment of the tap, records one loan per item and, at most once every 30 days, asks how it went. | Does not keep a session: the identification lasts for one visit and ends with it. Does not keep who answered the question. |
+| Front desk        | Keeps the inventory up to date, leaves the devices on the counter and sets the suggestion form link up in the panel. | **Takes no part in the pickup.** Confirms nothing, and does not need to be there for a pickup to happen.    |
 
 ## 5. BPMN diagram
 
@@ -198,9 +200,28 @@ install.
 
 12. Take from the counter the devices shown on screen, checking each asset tag.
 
-    [![The pickup confirmed screen, listing the two asset tags recorded in the person's name](../../assets/images/retirada/09-retirada-confirmada.png)](../../assets/images/retirada/09-retirada-confirmada.png)
+    [![The pickup confirmed screen, listing the two asset tags recorded in the person's name, with the four rating faces and the suggestion form QR code below](../../assets/images/retirada/09-retirada-confirmada.png)](../../assets/images/retirada/09-retirada-confirmada.png)
 
-13. Tap **Concluir** (Finish).
+13. Did the four faces show up under the question **Como foi a retirada?** (How
+    was the pickup?)?
+
+    - **If YES** → tap the face that says how it went, from sad to smiling,
+      **or tap none of them**. It is optional: one tap records the rating and
+      the screen goes back to the start after a short **Obrigado!** (Thank
+      you!); without a tap, **Concluir** and the countdown at the bottom work as
+      usual. Nobody learns who answered — see the
+      [rule below](#7-rules-that-are-not-obvious).
+    - **If NO** → you were already asked in the last 30 days. The pickup is
+      recorded all the same; go on to step 14.
+
+    [![The four rating faces, from the sad red one to the smiling green one, and next to them the QR code with the suggestion or problem caption](../../assets/images/retirada/10-avaliacao-e-qr.png)](../../assets/images/retirada/10-avaliacao-e-qr.png)
+
+14. Want to report a problem or a suggestion in writing? Point your phone
+    camera at the QR code next to the faces: it opens the front desk suggestion
+    form. It is optional as well, and the same QR code is usually on a sticker
+    next to the tablet — you can use it later, with no rush.
+
+15. Tap **Concluir** (Finish).
 
     If you walk away without tapping it, the screen goes back to the start on
     its own, on the countdown shown at the bottom. The pickup is recorded
@@ -254,6 +275,38 @@ install.
     enrollment number and [return](devolucao.md) the item you are not going to
     use, leaving it on the counter. It is only offered to somebody else after
     the front desk collects it.
+
+!!! question "Why did the faces not show up today?"
+
+    Because you were already asked in the last **30 days** — and "asked" means
+    the faces showed up, whether you tapped one of them or not. Whoever picks
+    equipment up every day is asked once a month; whoever picks it up once a
+    semester is asked every time.
+
+    The rule exists so the survey does not become a nuisance: if the faces
+    showed up on every pickup, the people who ignore them would be exactly the
+    ones seeing them most. There is no way to ask for them again before the
+    period is over.
+
+!!! question "I tapped the wrong face. Can I fix it?"
+
+    No — and that is a consequence of the anonymity, not an oversight. The
+    system keeps only the rating and the day: there is no way to find "your"
+    vote to change it, because nothing in it says it was yours.
+
+    A wrong tap is one rating among dozens in the month, and the front desk
+    reads averages, not votes. If what you meant fits in writing, the QR code
+    next to the faces opens the suggestion form.
+
+!!! question "No QR code showed up. Is it broken?"
+
+    No. The QR code only shows up when the front desk has set the suggestion
+    form link up in the panel; without a link, the screen shows only the
+    faces. The faces and the QR code are independent: either one can show up
+    without the other.
+
+    If you want to report something and the QR code is not on screen, talk to
+    the front desk.
 
 ## 8. Common errors and what to do
 

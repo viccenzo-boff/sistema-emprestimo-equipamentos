@@ -26,6 +26,9 @@ com as telas e a lista de mensagens de erro.
 7. Toque em **Confirmar retirada**.
 8. Retire da bancada os aparelhos que aparecem na tela, conferindo cada
    etiqueta.
+9. Se aparecerem quatro rostos perguntando como foi a retirada, toque no que
+   descreve — ou não toque em nenhum. É opcional e anônimo, e os rostos só
+   aparecem uma vez a cada 30 dias.
 
 Cada aparelho vira um empréstimo **separado**, mesmo tendo sido uma confirmação
 só — por isso dá para devolver o notebook na terça e ficar com a extensão até

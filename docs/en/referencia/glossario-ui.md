@@ -40,6 +40,13 @@ physical check-in — are in the [Glossary](glossario.md) instead.
 | "Nenhum disponível agora" | None available right now — a category with no free unit |
 | "O que você vai levar?" | What are you taking? — the heading when you hold no device |
 | "O que você quer fazer?" | What do you want to do? — the heading when you already hold one |
+| "Como foi a retirada?" | How was the pickup? — the question over the four rating faces, on the pickup confirmed screen |
+| **Muito ruim** | Very bad — the first face (1); the label is read by screen readers only |
+| **Ruim** | Bad — the second face (2) |
+| **Bom** | Good — the third face (3) |
+| **Muito bom** | Very good — the fourth face (4) |
+| "Obrigado!" | Thank you! — shown for about a second after a tap on a face |
+| "Sugestão ou problema? Aponte a câmera do celular." | Suggestion or problem? Point your phone camera. — the caption under the QR code |
 
 ## Everywhere in the admin panel
 
@@ -98,7 +105,8 @@ physical check-in — are in the [Glossary](glossario.md) instead.
 | On screen | In English |
 | --- | --- |
 | **Relatórios** | Reports — the last tab of the panel |
-| **Ocupação e picos de uso** | Occupancy and usage peaks — the only tab with a report so far |
+| **Ocupação e picos de uso** | Occupancy and usage peaks — the first tab |
+| **Satisfação** | Satisfaction — the second tab, with the rating report |
 | **Ranking de Consumo** | Usage ranking — declared, not built |
 | **Índice de Manutenção** | Maintenance rate — declared, not built |
 | **Empréstimos no Mês** | Loans this month — pickups recorded since the first day |
@@ -106,6 +114,19 @@ physical check-in — are in the [Glossary](glossario.md) instead.
 | **Esgotamento por categoria** | Stock depletion by category |
 | **Estoque Esgotado** | Out of stock — the red badge, no unit available |
 | **Estoque Crítico** | Low stock — the amber badge, one or two units left |
+| **Satisfação com a retirada** | Satisfaction with the pickup — the heading of the satisfaction tab |
+| **Últimos 30 dias** | Last 30 days — the first card of the satisfaction tab |
+| **Desde o início** | Since the beginning — the second card |
+| "3,3 de 4" | 3.3 out of 4 — the average rating |
+| "33 respostas · 87% de taxa de resposta (33 de 38 pedidas)" | 33 answers, 87% response rate (33 of 38 asked) |
+| **Baixar planilha** | Download spreadsheet — the CSV with one row per time the faces showed up |
+| **Formulário de sugestões** | Suggestion form — the card where the QR code link is set up |
+| **Endereço do formulário** | Form address — the link field |
+| "Como aparece no tablet" | As it appears on the tablet — the caption under the QR code preview |
+| "Nenhuma avaliação ainda. Os rostos aparecem no tablet ao fim da retirada, uma vez a cada 30 dias por pessoa." | No rating yet. The faces show up on the tablet at the end of a pickup, once every 30 days per person. |
+| "Endereço inválido." | Invalid address — the link is not a full https:// address |
+| "Formulário salvo. O QR code aparece no tablet a partir da próxima retirada." | Form saved. The QR code shows up on the tablet from the next pickup on. |
+| "Formulário removido. O QR code não aparece mais no tablet." | Form removed. The QR code no longer shows up on the tablet. |
 | "N% de ocupação (N de N)" | N% occupancy (N of N) — occupied out of the circulating stock |
 | "4 livres · 4 emprestados · 1 em manutenção" | 4 free, 4 on loan, 1 under maintenance |
 | "(+ 1 aposentado, fora da conta)" | (+ 1 retired, outside the count) |

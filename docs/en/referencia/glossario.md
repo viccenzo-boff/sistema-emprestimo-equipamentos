@@ -206,6 +206,27 @@ It is the only database field stored exactly in the form it appears on screen.
 It is used to filter and count records in the [admin panel](#admin-panel); it
 does not change what the person can pick up.
 
+## Rating
+
+The tap on one of the four faces that may show up at the end of a
+[pickup](#pickup), under the question **Como foi a retirada?** (How was the
+pickup?): 1 (**Muito ruim**, very bad), 2 (**Ruim**, bad), 3 (**Bom**, good) or
+4 (**Muito bom**, very good). One row in the `Avaliacao` table, with the rating
+and the day — and nothing else. On screen the panel tab is **Satisfação**
+(Satisfaction).
+
+It is **anonymous by construction**: there is no enrollment number, profile or
+time in the row, and the [admin panel](#admin-panel) shows averages, counts and
+the response rate, never a vote. And it is **optional**: the row is born when
+the faces show up, with the rating blank; whoever does not tap leaves the row
+that way, and that is what gives the response rate.
+
+Each person is asked at most once every 30 days, counted from when the faces
+showed up. The whole rule is in
+[Business rules](regras-de-negocio.md#the-rating-is-anonymous-and-each-person-is-asked-once-every-30-days),
+and the report that reads it is the **Satisfação** tab of
+[Reports](../painel/relatorios.md).
+
 ## Retirement (inactive item)
 
 The permanent removal of a device from circulation, **without deleting it**

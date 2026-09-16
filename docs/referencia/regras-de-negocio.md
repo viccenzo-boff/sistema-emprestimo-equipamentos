@@ -240,6 +240,46 @@ dela, ou declarar uma devolução que não aconteceu.
 
 ---
 
+## A avaliação é anônima, e cada pessoa é perguntada uma vez a cada 30 dias
+
+**O que o sistema faz.** No fim de uma [retirada](glossario.md#retirada), a tela
+de confirmação pode mostrar quatro rostos sob a pergunta "Como foi a
+retirada?". Eles aparecem quando a pessoa nunca foi perguntada ou quando a
+última vez foi há **30 dias ou mais** — contados do dia em que os rostos
+**apareceram**, tenha ela tocado ou não. Um toque grava a nota (de 1, Muito
+ruim, a 4, Muito bom) e o dia. O sistema **não grava** quem tocou, com que
+perfil, nem a que horas: a linha de avaliação tem só a nota e o dia. O painel
+mostra médias, contagens e taxa de resposta, nunca um voto; a planilha baixada
+traz só `dia` e `nota`.
+
+**Por que faz assim.** Quem retira equipamento todo dia não pode ser
+interrogado todo dia — a pesquisa que irrita é a pesquisa que ninguém responde,
+e quem a ignora seria justamente quem a veria mais. E o anonimato precisa ser
+uma propriedade do dado, não uma cortesia da tela: um carimbo com a hora
+cruzaria com a hora da retirada e apontaria quem deu a nota 1; o perfil
+apontaria o professor do dia. Sem esses campos, não há o que cruzar — nem para
+quem abre o banco.
+
+**O que quebraria.** Contar os 30 dias a partir da **resposta**, e não da
+aparição, faria os rostos aparecerem em toda retirada para quem os ignora — e a
+taxa de resposta, que é a métrica que denuncia a fadiga, deixaria de existir.
+Gravar a hora "só para ordenar" recriaria o cruzamento que tirar o carimbo
+existe para impedir; o mesmo vale para um número de ordem que cresça com o
+tempo, que é uma hora disfarçada. O limite honesto é a população pequena: no
+dia em que **uma pessoa só** foi perguntada, quem lê o banco sabe de quem é a
+nota. A tela nunca mostra isso, e a wiki diz que o limite existe em vez de
+prometer mais do que o dado sustenta.
+
+!!! info "O QR code é outra coisa"
+
+    Ao lado dos rostos pode aparecer um QR code que abre, no celular, um
+    formulário de sugestões da secretaria — fora do sistema, porque o celular
+    não alcança o computador da secretaria pela rede. Ele só aparece quando o
+    link está configurado na aba **Satisfação** dos relatórios, e é
+    independente dos rostos: um pode aparecer sem o outro.
+
+---
+
 ## Onde continuar
 
 * O desenho completo das transições está em

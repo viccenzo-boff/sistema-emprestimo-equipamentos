@@ -34,6 +34,24 @@ lixeira — lixeira promete que o registro some, e ele não some.
 
 [Manutenção](#manutencao) é o contrário: temporária, e para conserto.
 
+## Avaliação
+
+O toque num dos quatro rostos que podem aparecer no fim de uma
+[retirada](#retirada), sob a pergunta "Como foi a retirada?": 1 (Muito ruim),
+2 (Ruim), 3 (Bom) ou 4 (Muito bom). Uma linha na tabela `Avaliacao`, com a
+nota e o dia — e nada mais.
+
+É **anônima por construção**: não há matrícula, perfil nem hora na linha, e o
+[painel](#painel) mostra médias, contagens e taxa de resposta, nunca um voto.
+E é **opcional**: a linha nasce quando os rostos aparecem, com a nota vazia;
+quem não toca deixa a linha assim, e é isso que dá a taxa de resposta.
+
+Cada pessoa é perguntada no máximo uma vez a cada 30 dias, contados de quando
+os rostos apareceram. A regra inteira está em
+[Regras de negócio](regras-de-negocio.md#a-avaliacao-e-anonima-e-cada-pessoa-e-perguntada-uma-vez-a-cada-30-dias),
+e o relatório que a lê é a aba **Satisfação** de
+[Relatórios](../painel/relatorios.md).
+
 ## Baixa física
 
 A conferência da secretaria: o equipamento foi recolhido da bancada e o

@@ -248,6 +248,48 @@ equipment up in their name, or declare a return that never happened.
 
 ---
 
+## The rating is anonymous, and each person is asked once every 30 days
+
+**What the system does.** At the end of a [pickup](glossario.md#pickup), the
+confirmation screen may show four faces under the question **Como foi a
+retirada?** (How was the pickup?). They show up when the person was never
+asked or when the last time was **30 days or more** ago — counted from the day
+the faces **showed up**, whether the person tapped or not. One tap records the
+rating (from 1, **Muito ruim**, to 4, **Muito bom**) and the day. The system
+**does not record** who tapped, with which profile, or at what time: a rating
+row has only the rating and the day. The panel shows averages, counts and the
+response rate, never a vote; the downloaded spreadsheet carries only `dia`
+(day) and `nota` (rating).
+
+**Why it works this way.** Whoever picks equipment up every day cannot be
+questioned every day — the survey that annoys is the survey nobody answers,
+and whoever ignores it would be exactly the one seeing it most. And anonymity
+has to be a property of the data, not a courtesy of the screen: a timestamp
+would cross with the pickup time and point at whoever gave the 1; the profile
+would point at the teacher of the day. Without those fields there is nothing
+to cross — not even for whoever opens the database.
+
+**What would break.** Counting the 30 days from the **answer**, rather than
+from the appearance, would make the faces show up on every pickup for whoever
+ignores them — and the response rate, the metric that reveals fatigue, would
+stop existing. Storing the time "just to sort" would rebuild the crossing that
+dropping the timestamp exists to prevent; the same goes for a sequence number
+that grows with time, which is a time in disguise. The honest limit is the
+small population: on a day when **a single person** was asked, whoever reads
+the database knows whose rating it is. The screen never shows it, and this
+wiki says the limit exists instead of promising more than the data supports.
+
+!!! info "The QR code is something else"
+
+    Next to the faces a QR code may show up which opens, on the phone, a
+    suggestion form of the front desk — outside the system, because the phone
+    cannot reach the front desk computer over the network. It only shows up
+    when the link is set up in the **Satisfação** (Satisfaction) tab of the
+    reports, and it is independent from the faces: either one can show up
+    without the other.
+
+---
+
 ## Where to go next
 
 * The complete design of the transitions is in

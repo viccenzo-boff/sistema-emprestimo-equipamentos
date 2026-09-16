@@ -4,11 +4,13 @@
 
 Este processo transforma o que o sistema já registrou em um argumento: quantos
 empréstimos passaram pelo balcão neste mês, quantos aparelhos estão fora da
-prateleira agora, e o quanto cada categoria chegou perto de acabar.
+prateleira agora, o quanto cada categoria chegou perto de acabar — e, desde a
+`v1.2`, como as pessoas avaliam a retirada.
 
 Quando termina, a secretaria tem um número para levar à coordenação — e a
-coordenação tem com que decidir se compra mais aparelho. É a única tela do
-painel que não muda nada: ela só lê.
+coordenação tem com que decidir se compra mais aparelho, ou se o atendimento
+precisa de atenção. É a única tela do painel que quase não muda nada: ela lê,
+e a única coisa que grava é o link do formulário de sugestões.
 
 ## 2. Pré-condições
 
@@ -39,15 +41,19 @@ Estes são só desta página:
 | Estoque Crítico        | O selo amarelo: sobraram uma ou duas unidades disponíveis.                                                                                |
 | Empréstimos no Mês     | Quantas **retiradas** foram registradas desde o dia 1º. Conta o que saiu, não o que está fora.                                            |
 | Equipamentos na Rua    | Quantos aparelhos estão fora da prateleira neste instante, somando os que estão com as pessoas e os que esperam conferência na bancada.   |
+| Avaliação              | O toque num dos quatro rostos no fim da retirada, no tablet: 1 (Muito ruim), 2 (Ruim), 3 (Bom) ou 4 (Muito bom). Anônima — ver a [regra abaixo](#por-que-nao-aparece-quem-votou). |
+| Pedida                 | Uma vez em que os rostos apareceram, tenha alguém tocado ou não. Cada pessoa é perguntada no máximo uma vez a cada 30 dias.                |
+| Taxa de resposta       | Respondidas ÷ pedidas, em %. É o número que denuncia a fadiga com a pesquisa antes de qualquer reclamação: quando ela cai, a média deixa de valer. |
+| Formulário de sugestões | O formulário externo (do Google, numa conta institucional do setor) que o QR code da tela de retirada abre. O link é configurado aqui.    |
 
 ## 4. Papéis e responsabilidades
 
 | Papel                  | Faz                                                                                                          | Não faz                                                                                                             |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Secretaria             | Abre a aba, lê os números e leva à coordenação o que está esgotado ou crítico.                                   | Não corrige nada aqui. O que aparece errado nesta tela se conserta nas abas **Inventário** e **Fila de Devoluções**.       |
+| Secretaria             | Abre a aba, lê os números e leva à coordenação o que está esgotado ou crítico — e a média de satisfação. Configura o link do formulário de sugestões. | Não corrige nada aqui. O que aparece errado nesta tela se conserta nas abas **Inventário** e **Fila de Devoluções**. Não vê quem votou, porque ninguém vê. |
 | Coordenação            | Decide a compra, a partir do que a secretaria mostra.                                                            | Não abre o painel. Ela não tem conta — o painel é da secretaria.                                                          |
 | Painel (o computador)  | Soma o que está gravado, no instante em que a página abre.                                                       | Não guarda histórico do relatório, não manda aviso e não compara com o mês passado. Cada abertura é uma fotografia nova.   |
-| Estudante ou professor | Nada. Não participa deste processo.                                                                              | Não vê esta tela. O que ele percebe é a consequência: a categoria que aparece esgotada aqui é a que ele acha vazia lá.     |
+| Estudante ou professor | Toca num rosto no fim da retirada, no tablet, quando os rostos aparecem — ou não toca. É a única parte dele.      | Não vê esta tela. O que ele percebe é a consequência: a categoria que aparece esgotada aqui é a que ele acha vazia lá.     |
 
 ## 5. Passo a passo
 
@@ -92,8 +98,50 @@ Uma sequência só, do login ao número que sai desta tela.
     - Se não aparece selo nenhum → aquela categoria tem três ou mais unidades
       livres. Nada a fazer.
 
-8. As abas **Ranking de Consumo** e **Índice de Manutenção** ainda não têm
-   relatório. Abrir uma delas mostra um aviso, e não um erro.
+8. Clique na aba **Satisfação**. Os dois cartões são dois recortes fixos —
+   **Últimos 30 dias** e **Desde o início** —, e cada um traz a média na escala
+   de 1 a 4, quantas respostas houve e a taxa de resposta, e a distribuição em
+   quatro barras, uma por rosto.
+
+    [![A aba Satisfação: dois cartões lado a lado, cada um com a média, as respostas, a taxa de resposta e quatro barras com um rosto colorido em cada, e o botão Baixar planilha abaixo](../assets/images/relatorios/06-satisfacao.png)](../assets/images/relatorios/06-satisfacao.png)
+
+9. Leia o cartão de cima para baixo: **3,3 de 4** é a média das notas; **33
+   respostas · 87% de taxa de resposta (33 de 38 pedidas)** diz que os rostos
+   apareceram 38 vezes e 33 pessoas tocaram; e as barras dizem quantas tocaram
+   em cada rosto. A barra é a fatia entre as respostas, e o número ao lado é a
+   contagem.
+10. Há alguma linha? Se a aba diz "Nenhuma avaliação ainda. Os rostos aparecem
+    no tablet ao fim da retirada, uma vez a cada 30 dias por pessoa.", ninguém
+    foi perguntado ainda — os cartões e o botão de baixar só aparecem com a
+    primeira linha.
+
+    [![A aba Satisfação sem nenhuma avaliação: só o título, a explicação e a frase de que nenhuma avaliação existe ainda](../assets/images/relatorios/08-satisfacao-vazia.png)](../assets/images/relatorios/08-satisfacao-vazia.png)
+
+11. Quer cruzar os dados de outro jeito? Clique em **Baixar planilha**. O
+    arquivo `avaliacoes-AAAA-MM-DD.csv` chega à pasta de downloads com uma
+    linha por vez que os rostos apareceram, nas colunas `dia` e `nota` — a
+    nota em branco quando ninguém respondeu. Não há hora, matrícula nem nome no
+    arquivo, e não há como haver: o sistema não os guarda. A tela não recarrega.
+12. Desça até **Formulário de sugestões**. É o link que o QR code da tela de
+    retirada abre — cole o endereço completo do formulário, começando por
+    `https://`, e clique em **Salvar**. A prévia ao lado mostra o QR exatamente
+    como ele aparece no tablet. Para o QR sumir do tablet, salve com o campo em
+    branco.
+
+    [![O cartão Formulário de sugestões, com o campo do endereço preenchido, o botão Salvar e a prévia do QR code à direita](../assets/images/relatorios/07-formulario-de-sugestoes.png)](../assets/images/relatorios/07-formulario-de-sugestoes.png)
+
+    !!! tip "Como criar o formulário"
+
+        No Google Forms, com a **conta institucional do setor** — nunca a
+        pessoal de quem está na secretaria hoje, porque ela sai com a pessoa e
+        o adesivo continua apontando para um formulário que ninguém abre. Em
+        Configurações → Respostas, deixe **desligadas** a coleta de e-mail e a
+        exigência de login: o formulário é anônimo como os rostos. Copie o link
+        de Enviar, cole aqui e imprima o mesmo QR num adesivo ao lado do tablet
+        — a devolução não mostra o QR, e o adesivo cobre quem só veio devolver.
+
+13. As abas **Ranking de Consumo** e **Índice de Manutenção** ainda não têm
+    relatório. Abrir uma delas mostra um aviso, e não um erro.
 
     [![A aba Ranking de Consumo selecionada, mostrando a caixa tracejada com o aviso de relatório em desenvolvimento](../assets/images/relatorios/05-aba-sem-relatorio.png)](../assets/images/relatorios/05-aba-sem-relatorio.png)
 
@@ -194,16 +242,70 @@ Uma sequência só, do login ao número que sai desta tela.
 
 <a id="por-que-nao-da-para-comparar-com-o-mes-passado"></a>
 
-!!! question "Por que não dá para ver o mês passado, nem exportar isto?"
+!!! question "Por que não dá para ver o mês passado, nem exportar a ocupação?"
 
-    Porque o relatório é uma fotografia do agora, e esta é a primeira versão
-    dele. O sistema guarda todos os empréstimos com as datas — o dado para
-    comparar meses **existe** —, mas a tela que faria essa leitura ainda não foi
-    construída.
+    Porque o relatório de ocupação é uma fotografia do agora, e esta é a
+    primeira versão dele. O sistema guarda todos os empréstimos com as datas —
+    o dado para comparar meses **existe** —, mas a tela que faria essa leitura
+    ainda não foi construída. A aba **Satisfação** é a única que exporta, e o
+    que ela exporta é a lista crua, para o cruzamento ser feito fora.
 
     O mesmo vale para as abas **Ranking de Consumo** e **Índice de Manutenção**:
     os nomes estão no menu para dizer o que vem por aí, e o aviso dentro delas
     diz que ainda não vem.
+
+<a id="por-que-nao-aparece-quem-votou"></a>
+
+!!! question "Por que não aparece quem deu cada nota?"
+
+    Porque o sistema **não guarda**. A linha de avaliação tem só a nota e o
+    dia — sem matrícula, sem perfil, sem hora. Um carimbo com a hora cruzaria
+    com a hora da retirada e revelaria quem deu a nota 1; o perfil apontaria o
+    professor do dia. Não é um filtro que a tela esconde: é um dado que não
+    existe em lugar nenhum, nem na planilha baixada, nem para quem abre o banco.
+
+    O limite honesto disso é o tamanho da população: num dia em que **uma
+    pessoa só** foi perguntada, quem lê o banco sabe de quem é aquela nota. A
+    tela nunca mostra isso, e o arquivo baixado só traz dia e nota — mas a
+    regra vale ser dita, porque é a única forma de a promessa de anonimato ser
+    verdadeira.
+
+<a id="por-que-a-media-e-sobre-respostas"></a>
+
+!!! question "A média é sobre as respostas ou sobre as pedidas?"
+
+    Sobre as **respostas**. Quem não tocou em rosto nenhum não deu nota zero —
+    não deu nota. Por isso o cartão mostra os dois números separados: a média
+    (das respostas) e a taxa de resposta (respostas sobre pedidas).
+
+    Leia os dois juntos. Uma média de 3,8 com 30% de taxa de resposta diz menos
+    do que uma média de 3,3 com 85%: no primeiro caso quase ninguém está
+    respondendo, e os que respondem são os que têm algo a dizer.
+
+<a id="por-que-30-dias"></a>
+
+!!! question "Por que a mesma pessoa só é perguntada uma vez a cada 30 dias?"
+
+    Para a pesquisa não irritar quem retira todo dia — e para o resultado não
+    ser a opinião de quem retira todo dia. O intervalo é uma regra do sistema,
+    não uma configuração: conta a partir do dia em que os rostos **apareceram**,
+    tenha a pessoa tocado ou não.
+
+    A consequência que importa aqui: "pedida" conta quem ignorou. Se a taxa de
+    resposta cair, não é porque as pessoas passaram a ver menos rostos — é
+    porque passaram a ignorá-los mais.
+
+<a id="por-que-o-csv-abre-numa-coluna-so"></a>
+
+!!! question "Abri a planilha no Excel e veio tudo numa coluna só"
+
+    Porque o arquivo separa as colunas por vírgula (é o formato padrão de CSV),
+    e o Excel em português espera ponto e vírgula quando você clica duas vezes
+    no arquivo. Ele não está errado — está lendo com o separador do sistema.
+
+    O caminho é importar em vez de abrir: **Dados → De Texto/CSV**, escolha o
+    arquivo, e o Excel reconhece a vírgula sozinho. O Google Planilhas e o
+    LibreOffice abrem direto.
 
 ## 7. Erros comuns e o que fazer
 
@@ -212,4 +314,8 @@ Uma sequência só, do login ao número que sai desta tela.
 | "Relatório em desenvolvimento..."       | Você abriu **Ranking de Consumo** ou **Índice de Manutenção**. Esses dois ainda não existem.     | Volte para **Ocupação e picos de uso**, que é a única aba com dados. Não é erro: a tela está avisando.        |
 | "Nenhuma categoria cadastrada ainda."   | Não há categoria no sistema, então não há prateleira para medir.                                | Crie a primeira na aba **Categorias**. Sem categoria, o tablet também não mostra nada.                       |
 | "Sem unidades em circulação"            | A categoria existe, mas não tem aparelho em circulação — nenhum cadastrado, ou todos aposentados. | Cadastre um aparelho nela pela aba **Inventário**, ou apague a categoria se ela não serve mais.              |
-| A tela de login aparece no lugar do relatório | A sessão expirou enquanto a página estava aberta.                                          | Entre de novo. Nada se perde: esta tela não grava nada — ver [Conta do administrador](../referencia/conta-do-administrador.md). |
+| "Nenhuma avaliação ainda. Os rostos aparecem no tablet ao fim da retirada, uma vez a cada 30 dias por pessoa." | Os rostos ainda não apareceram para ninguém — o sistema acabou de ser instalado, ou ninguém retirou equipamento desde então. | Nada a fazer. O primeiro cartão aparece com a primeira retirada. Não é erro: a tela está avisando. |
+| "Endereço inválido."                    | O link colado no **Formulário de sugestões** não é um endereço completo, ou não começa com `https://`. O detalhe abaixo diz qual dos dois. | Abra o formulário no navegador, copie o endereço inteiro da barra e cole. Ele tem que começar com `https://`. |
+| "Formulário removido. O QR code não aparece mais no tablet." | Você salvou o campo em branco.                                                        | Não é erro: é o que "em branco" faz. Para o QR voltar, cole o endereço e salve de novo.                       |
+| "Sessão encerrada."                     | A sessão caiu entre abrir a página e clicar em **Salvar**.                                       | Atualize a página, entre de novo e salve outra vez. O endereço não foi gravado.                               |
+| A tela de login aparece no lugar do relatório | A sessão expirou enquanto a página estava aberta.                                          | Entre de novo. Nada se perde: esta tela só grava o link do formulário — ver [Conta do administrador](../referencia/conta-do-administrador.md). |

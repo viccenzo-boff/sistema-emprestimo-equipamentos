@@ -25,6 +25,9 @@ with the screens and the list of error messages.
 6. Check the bar at the bottom, which lists what is selected.
 7. Tap **Confirmar retirada** (Confirm pickup).
 8. Take the devices shown on screen from the counter, checking each asset tag.
+9. If four faces show up asking how the pickup went, tap the one that
+   describes it — or tap none. It is optional and anonymous, and the faces show
+   up only once every 30 days.
 
 Each device becomes a **separate** loan, even though you confirmed only once —
 which is why you can return the laptop on Tuesday and keep the power strip until

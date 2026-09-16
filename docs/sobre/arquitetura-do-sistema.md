@@ -92,6 +92,7 @@ erDiagram
         string perfil
         string cursos
         string status
+        datetime avaliacao_pedida_em
     }
     Categoria {
         int id
@@ -111,12 +112,31 @@ erDiagram
         datetime data_baixa
         string status
     }
+    Avaliacao {
+        int id
+        int nota
+        string dia
+    }
+    Configuracao {
+        string chave
+        string valor
+    }
 ```
 
 O `Administrador` fica solto de propósito: ele é a conta de quem opera o painel,
 e **não** aparece em nenhum empréstimo. Registrar quem deu a baixa em cada item é
 uma coluna que ainda não existe — está na lista de [o que ficou de
 fora](como-esta-wiki-foi-feita.md#o-que-ficou-de-fora).
+
+A `Avaliacao` e a `Configuracao` também ficam soltas, e por motivos opostos
+(`v1.2`). A `Avaliacao` **não pode** apontar para pessoa nem para empréstimo:
+é a nota anônima do fim da retirada, e a linha guarda só a nota e o dia — até
+o `id` é sorteado, e não sequencial, para a ordem de gravação não denunciar
+quem respondeu depois de quem. O carimbo de quando a pessoa foi perguntada
+pela última vez fica do outro lado, em `Pessoa.avaliacao_pedida_em`, sem
+ligação com a linha. A `Configuracao` é chave-valor para o que precisa mudar
+sem deploy; hoje só tem a URL do formulário de sugestões que o QR code do
+tablet abre.
 
 Quatro pontos do modelo que a wiki explica por inteiro nas
 [regras de negócio](../referencia/regras-de-negocio.md):

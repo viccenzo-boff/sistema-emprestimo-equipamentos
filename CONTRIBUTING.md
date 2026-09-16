@@ -307,6 +307,8 @@ O resultado é sempre o mesmo cenário:
 | Equipamentos                 | 20 — 9 disponíveis, 7 emprestados, 2 manutenção, 2 inativos |
 | Fila de Devoluções           | 4 linhas, com esperas diferentes (há 5 h, 3 h, 2 h, 1 h)    |
 | "Meus equipamentos" (tablet) | matrícula `0012345` (Ana Souza), com 2 itens                |
+| Avaliações (Tarefa 14)       | ~68 linhas em 60 dias úteis, as quatro notas presentes, ~20% sem resposta; sorteio determinístico, só o `dia` anda com o calendário |
+| Formulário de sugestões      | `https://sugestoes.example/formulario` — domínio reservado (RFC 2606), o QR da captura não leva a lugar nenhum |
 
 `npm run db:demo` é idempotente e **restaura** o cenário: depois de você clicar
 nos botões testando uma tela, rodá-lo de novo devolve tudo ao enquadramento
@@ -335,6 +337,15 @@ Tarefa 8 ("campo que a origem não menciona é campo que o banco preserva"). Ou
 seja: se você inativar a Ana à mão para fotografar a trava assimétrica, **nada
 a reativa sozinho** — nem `db:demo`, nem `db:seed`. Desfaça no mesmo gesto em
 que fizer, ou recrie o banco com a receita de três passos acima.
+
+**As avaliações são a exceção da exceção (Tarefa 14): o `db:demo` apaga o que
+a tela criou.** Uma avaliação nascida de um toque de teste tem id fora da faixa
+reservada (9001+) e entraria na média da captura seguinte — então o script
+regrava as suas ~68 linhas e apaga qualquer outra. Ele também devolve
+`avaliacao_pedida_em` a nulo nas **onze** pessoas dele, para os rostos voltarem
+a aparecer numa retirada de captura; a Ana Souza e os outros três do seed, de
+novo, ficam como estão. Para fotografar os rostos use o João Pedro (`0112345`),
+que é do elenco do demo e não tem empréstimo aberto.
 
 ### Capturar sem mexer no seu `dev.db`
 
@@ -610,6 +621,32 @@ mike delete --all --push       # esvazia a gh-pages
 Para tirar o site do ar por inteiro, **Settings → Pages → Source: None**. A
 branch `gh-pages` pode ficar onde está: sem o Pages ligado, ela é só um
 diretório de arquivos no Git.
+
+## O formulário de sugestões do tablet (Tarefa 14)
+
+O QR code da tela de retirada confirmada aponta para um formulário **fora do
+sistema**, e tem que ser assim: o celular de quem retira não alcança o
+computador da secretaria (rede local, HTTP), então um formulário interno seria
+um QR morto. O sistema só guarda a URL, na tabela `Configuracao`, editável pelo
+cartão **Formulário de sugestões** da aba Satisfação em `/admin/relatorios`.
+
+A receita, que é procedimento e não código:
+
+1. Crie o formulário no **Google Forms** com a **conta institucional do setor**
+   — nunca com a conta pessoal de quem está na secretaria hoje. A conta pessoal
+   sai com a pessoa, e o QR impresso no adesivo continua apontando para um
+   formulário que ninguém mais abre.
+2. Em **Configurações → Respostas**, deixe **desligadas** as opções de coletar
+   endereço de e-mail e de exigir login. O formulário é o canal anônimo de quem
+   quer relatar um problema em texto; pedir e-mail desfaz o anonimato que a
+   avaliação dos rostos garante.
+3. Copie o link de **Enviar → link** (pode encurtar) e cole no cartão do painel.
+   Só `https://` é aceito. A prévia ao lado mostra o QR como ele vai aparecer.
+4. Imprima o mesmo QR num adesivo e cole ao lado do tablet — a devolução não
+   mostra o QR, e o adesivo cobre quem só veio devolver.
+
+Se o link mudar, basta colar o novo no painel: nada precisa de deploy. Para o
+QR sumir do tablet, salve o campo em branco.
 
 ## Os avisos de entrega (hooks do Git)
 

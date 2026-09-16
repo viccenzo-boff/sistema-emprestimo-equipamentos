@@ -28,22 +28,24 @@ Os termos que atravessam vários processos moram no
 [empréstimo](../referencia/glossario.md#emprestimo) e
 [cadastro inativo](../referencia/glossario.md#cadastro-inativo-pessoa).
 
-Estes três são só desta página — são as partes da tela que os passos citam pelo
-nome:
+Estes cinco são só desta página — são as partes da tela que os passos citam
+pelo nome:
 
-| Termo               | O que é                                                                                              |
-| ------------------- | ---------------------------------------------------------------------------------------------------- |
-| Grade de categorias | Os cartões grandes da tela inicial, um por categoria, com a contagem de unidades livres em cada um.  |
-| Seleção             | Os itens já tocados e ainda **não** confirmados. Nada foi registrado enquanto o item está só aqui.   |
-| Barra de seleção    | A faixa fixa no rodapé que lista a seleção e traz o botão **Confirmar retirada**.                    |
+| Termo               | O que é                                                                                                                                       |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Grade de categorias | Os cartões grandes da tela inicial, um por categoria, com a contagem de unidades livres em cada um.                                           |
+| Seleção             | Os itens já tocados e ainda **não** confirmados. Nada foi registrado enquanto o item está só aqui.                                            |
+| Barra de seleção    | A faixa fixa no rodapé que lista a seleção e traz o botão **Confirmar retirada**.                                                             |
+| Rostos da avaliação | Os quatro rostos sob a pergunta "Como foi a retirada?", na tela de retirada confirmada. Aparecem no máximo uma vez a cada 30 dias por pessoa. |
+| QR code             | O código ao lado dos rostos, que abre no celular o formulário de sugestões da secretaria. Só aparece quando a secretaria configurou o link.   |
 
 ## 4. Papéis e responsabilidades
 
 | Papel                  | Faz                                                                                            | Não faz                                                                                              |
 | ---------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | Estudante ou professor | Digita a matrícula, escolhe os itens, confirma a retirada e leva os aparelhos da bancada.       | Não escolhe qual unidade está livre — o portal só oferece as que estão.                                |
-| Portal (o tablet)      | Confere o cadastro, mostra o que está livre no momento do toque e registra um empréstimo por item. | Não guarda sessão: a identificação vale para um atendimento e acaba nele.                             |
-| Secretaria             | Mantém o inventário em dia e deixa os aparelhos na bancada.                                     | **Não participa da retirada.** Não confirma nada, e não precisa estar presente para a retirada acontecer. |
+| Portal (o tablet)      | Confere o cadastro, mostra o que está livre no momento do toque, registra um empréstimo por item e, no máximo uma vez a cada 30 dias, pergunta como foi. | Não guarda sessão: a identificação vale para um atendimento e acaba nele. Não guarda quem respondeu à pergunta. |
+| Secretaria             | Mantém o inventário em dia, deixa os aparelhos na bancada e configura o link do formulário de sugestões no painel. | **Não participa da retirada.** Não confirma nada, e não precisa estar presente para a retirada acontecer. |
 
 ## 5. Diagrama BPMN
 
@@ -159,9 +161,26 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
 12. Retire da bancada os aparelhos que aparecem na tela, conferindo cada
     etiqueta.
 
-    [![A tela de retirada confirmada, listando as duas etiquetas registradas no nome da pessoa](../assets/images/retirada/09-retirada-confirmada.png)](../assets/images/retirada/09-retirada-confirmada.png)
+    [![A tela de retirada confirmada, listando as duas etiquetas registradas no nome da pessoa, com os quatro rostos da avaliação e o QR code do formulário abaixo](../assets/images/retirada/09-retirada-confirmada.png)](../assets/images/retirada/09-retirada-confirmada.png)
 
-13. Toque em **Concluir**.
+13. Os quatro rostos apareceram sob a pergunta "Como foi a retirada?"?
+
+    - **Se SIM** → toque no rosto que diz como foi, do triste ao sorridente,
+      **ou não toque em nenhum**. É opcional: um toque grava a nota e a tela
+      volta ao início depois de um "Obrigado!" curto; sem toque, o **Concluir**
+      e a contagem do rodapé fazem o de sempre. Ninguém fica sabendo quem
+      respondeu — ver a [regra abaixo](#7-regras-que-nao-sao-obvias).
+    - **Se NÃO** → você já foi perguntado nos últimos 30 dias. A retirada está
+      registrada do mesmo jeito; siga para o passo 14.
+
+    [![Os quatro rostos da avaliação, do vermelho triste ao verde sorridente, e ao lado o QR code com a legenda de sugestão ou problema](../assets/images/retirada/10-avaliacao-e-qr.png)](../assets/images/retirada/10-avaliacao-e-qr.png)
+
+14. Quer relatar um problema ou uma sugestão em texto? Aponte a câmera do
+    celular para o QR code ao lado dos rostos: ele abre o formulário de
+    sugestões da secretaria. Também é opcional, e o mesmo QR costuma estar num
+    adesivo ao lado do tablet — dá para usar depois, sem pressa.
+
+15. Toque em **Concluir**.
 
     Se você sair sem tocar, a tela volta ao início sozinha na contagem que
     aparece no rodapé. A retirada já está registrada de qualquer forma.
@@ -212,6 +231,35 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
     [devolva](devolucao.md) o item que você não vai usar, deixando-o na bancada.
     Ele só volta a ser oferecido a outra pessoa depois que a secretaria o
     recolher.
+
+!!! question "Por que os rostos não apareceram hoje?"
+
+    Porque você já foi perguntado nos últimos **30 dias** — e "perguntado" quer
+    dizer que os rostos apareceram, tenha você tocado num deles ou não. Quem
+    retira equipamento todo dia é perguntado uma vez por mês; quem retira uma
+    vez por semestre é perguntado sempre.
+
+    A regra existe para a pesquisa não irritar: se os rostos aparecessem em
+    toda retirada, quem os ignora seria justamente quem os veria mais. Não há
+    como pedir para ver de novo antes do prazo.
+
+!!! question "Toquei no rosto errado. Dá para corrigir?"
+
+    Não — e é uma consequência do anonimato, não um descuido. O sistema guarda
+    só a nota e o dia: não há como achar "o seu" voto para trocar, porque não
+    existe nada nele que diga que foi seu.
+
+    Um toque errado é uma nota entre dezenas do mês, e a secretaria lê médias,
+    não votos. Se o que você queria dizer cabe em texto, o QR code ao lado
+    abre o formulário de sugestões.
+
+!!! question "Não apareceu QR code nenhum. Está quebrado?"
+
+    Não. O QR só aparece quando a secretaria configurou o link do formulário
+    de sugestões no painel; sem link, a tela mostra só os rostos. Os rostos e
+    o QR são independentes: um pode aparecer sem o outro.
+
+    Se quiser relatar algo e o QR não estiver na tela, fale com a secretaria.
 
 ## 8. Erros comuns e o que fazer
 
