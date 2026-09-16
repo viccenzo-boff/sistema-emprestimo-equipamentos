@@ -18,6 +18,7 @@ import { TelaInicio } from "@/components/portal/TelaInicio";
 import { TelaMatricula } from "@/components/portal/TelaMatricula";
 import { TelaSucesso } from "@/components/portal/TelaSucesso";
 import { Notificacao } from "@/components/ui/Notificacao";
+import { AUTOR } from "@/lib/autor";
 import {
   STATUS_PESSOA,
   type Categoria,
@@ -388,6 +389,26 @@ export function Portal() {
           />
         ) : null}
       </main>
+
+      {/*
+        Crédito do desenvolvedor (Tarefa 15), e só na tela de matrícula.
+
+        É a tela de repouso do quiosque — a que fica na bancada o dia inteiro
+        entre um uso e outro — e a única sem `BarraSelecao` fixa no rodapé nem
+        orçamento vertical já medido no limite (a de sucesso tem 87 px de folga
+        em 1280x800). Cai no pé da janela porque o `main` acima é `flex-1`.
+
+        Texto, e não link: o tablet é uma rota só, sem navegação, e um
+        `<a href>` para fora seria a única porta de saída da aplicação pelo
+        toque — o reinício por inatividade mora nesta página e não traria a
+        tela de volta.
+      */}
+      {etapa.nome === "matricula" ? (
+        <footer className="mx-auto w-full max-w-5xl px-4 pb-5 text-center text-sm text-tinta-suave sm:px-8">
+          Desenvolvido por <span className="font-semibold">{AUTOR.nome}</span>{" "}
+          · {AUTOR.githubTexto}
+        </footer>
+      ) : null}
 
       {mostrarBarra ? (
         <BarraSelecao

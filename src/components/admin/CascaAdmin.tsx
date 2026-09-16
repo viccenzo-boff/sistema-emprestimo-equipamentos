@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import logoUnoesc from "@/assets/brand/logo-unoesc-colorido.png";
+import { AUTOR } from "@/lib/autor";
 import type { SessaoAdmin } from "@/lib/sessao-admin";
 import { ContaDoAdmin } from "@/components/admin/ContaDoAdmin";
 import {
@@ -181,7 +182,29 @@ export function CascaAdmin({
           </ul>
         </nav>
 
-        <ContaDoAdmin admin={admin} />
+        {/*
+          O bloco da conta e o crédito dividem um contêiner para o crédito não
+          receber os 32 px do `gap-8` da coluna: ele é uma linha de rodapé, não
+          uma seção. Aqui o crédito tem link, ao contrário do tablet — desktop
+          com mouse e barra de endereço não é quiosque, e é onde a coordenação
+          vai de fato ver o nome. Sem versão ao lado, de propósito: ela já mora
+          em quatro lugares (ver "Como a wiki é publicada", no CONTRIBUTING), e
+          um quinto cravado aqui divergiria na primeira troca de ciclo.
+        */}
+        <div className="flex flex-col gap-3">
+          <ContaDoAdmin admin={admin} />
+          <p className="text-xs text-tinta-suave lg:text-center">
+            Desenvolvido por{" "}
+            <a
+              href={AUTOR.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded font-semibold text-marca-azul underline decoration-marca-azul-claro underline-offset-4 hover:text-marca-azul-escuro"
+            >
+              {AUTOR.nome}
+            </a>
+          </p>
+        </div>
       </aside>
 
       <main className="flex-1 px-6 py-8 lg:px-10 lg:py-10">
