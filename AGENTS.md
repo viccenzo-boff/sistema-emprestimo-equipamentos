@@ -34,7 +34,7 @@ descreve o sistema, não o define.
 | --- | --- |
 | [`especificacoes/spec.md`](especificacoes/spec.md) | A base arquitetural. Manda sobre o sistema inteiro. |
 | [`especificacoes/spec-wiki.md`](especificacoes/spec-wiki.md) | Manda sobre `docs/` e sobre a série `tarefa-doc-NN`. |
-| [`especificacoes/tarefas/pendentes/`](especificacoes/tarefas/pendentes/) | Enunciado de tarefa ainda **não** executada. Hoje as Tarefas 13 e 14, nesta ordem. |
+| [`especificacoes/tarefas/pendentes/`](especificacoes/tarefas/pendentes/) | Enunciado de tarefa ainda **não** executada. Hoje, nenhum — a Tarefa 14 foi a última. |
 | [`especificacoes/tarefas/concluidas/`](especificacoes/tarefas/concluidas/) | Enunciados já executados, guardados como histórico. Não são fonte de trabalho novo. |
 | `docs/` | A wiki publicada pelo MkDocs. **Enunciado de tarefa nunca entra aqui** — o Vale lintaria e o MkDocs publicaria. |
 
@@ -45,37 +45,33 @@ arquivos que as ferramentas exigem lá: `README.md`, `CLAUDE.md`, `AGENTS.md` e
 
 ### Fila de trabalho — "faça a próxima tarefa" quer dizer isto
 
-Atualizada em 2026-09-14, depois da Tarefa 13. O dono do repositório abre a
+Atualizada em 2026-09-16, depois da Tarefa 14. O dono do repositório abre a
 sessão só com esse prompt; esta seção é a resposta.
 
-1. **Tarefa 14 — Avaliação anônima no fim da retirada**
-   ([enunciado](especificacoes/tarefas/pendentes/tarefa-14-avaliacao-retirada.md)).
-   Executar com a skill `executar-tarefa-especificada`, do jeito de sempre:
-   varredura de conflitos antes da primeira edição, verificação em escada,
-   decisões registradas aqui, commits por tema na `main`. Todas as decisões de
-   produto já foram tomadas numa sessão de descoberta e estão na §0 do
-   enunciado, com o porquê — **não reabrir**; o que falta é executar.
-
-   Ela **abre a `v1.2`**, e isso tem três lugares a mexer **no começo**, e não
-   no fim: o `--title` e o `set-default` do
-   [workflow](.github/workflows/docs.yml) e a caixa de versão das duas homes.
-   A tabela de duas colunas da seção "Como a wiki é publicada" do
-   [CONTRIBUTING.md](CONTRIBUTING.md) diz o que cada um vira.
-
-   O indicador de satisfação é **uma quarta aba** do `/admin/relatorios`, que a
-   Tarefa 13 já deixou pronto para receber: a lista de abas é um lugar só
-   (`ABA_DE_RELATORIO` em [tipos.ts](src/lib/tipos.ts)), e o
-   [AbasDeRelatorios](src/components/admin/AbasDeRelatorios.tsx) percorre essa
-   lista. A página da wiki daquela aba entra na
-   [página de Relatórios](docs/painel/relatorios.md) que já existe, nos dois
-   idiomas — e a linha do glossário de interface em inglês vai junto.
+**Não há enunciado pendente.** `especificacoes/tarefas/pendentes/` está vazio:
+a Tarefa 14 foi executada e o enunciado dela está em `concluidas/`. Se a
+próxima sessão receber "faça a próxima tarefa" sem um enunciado novo, a
+resposta é dizer isso e perguntar qual — as ideias de "Próximos passos
+possíveis", no fim do estado atual, **não estão na spec** e precisam de um
+enunciado antes de virar código.
 
 O que **não** precisa ser refeito: o Pages está no ar; a tag `v1.0` está no
-remoto; o defeito da mensagem de categoria em uso foi corrigido; a **Tarefa 13
-está concluída e a `v1.1` fechada** — o workflow publica a `v1.1` sem "(em
-andamento)" e o `set-default` já aponta para ela. **A tag `v1.1` continua sendo
-do dono criar e publicar**, e é a única coisa que falta da entrega. O `push`
-continua sendo do dono, a menos que ele autorize na mensagem.
+remoto; a **`v1.2` está aberta** — o workflow publica `v1.2 (em andamento)`, o
+`set-default` continua na `v1.1`, e as duas homes dizem "em andamento". Quando
+a `v1.2` fechar, a tabela da seção "Como a wiki é publicada" do
+[CONTRIBUTING.md](CONTRIBUTING.md) diz os quatro lugares a mexer. **A tag
+`v1.1` continua sendo do dono criar e publicar** (não existe nem no local nem
+no remoto — conferido em 2026-09-16), e a `v1.2` será dele quando fechar. O
+`push` continua sendo do dono, a menos que ele autorize na mensagem.
+
+**O `dev.db` desta máquina recebeu duas migrations na Tarefa 14**, e não uma:
+ele estava com a `20260822160000_perfil_estudante` (Tarefa 8.1) **por aplicar**
+— os cinco cadastros gravavam `ALUNO`/`PROFESSOR` e o app só funcionava porque
+`rotuloDePerfil` converte o legado. O `npm run db:migrate` do fim da tarefa
+aplicou as duas, por decisão do dono; a guarda daquela migration passou e só o
+`perfil` mudou (ensaiado em cópia antes). O registro da D01 que dizia "a
+receita reset + seed + demo resolveu junto" valia para o banco de captura, não
+para este arquivo.
 
 ### Comandos
 
@@ -248,6 +244,20 @@ ao contrário do equipamento, cuja situação trava até o ciclo fechar.
 A matrícula é editável no painel, e a correção dela **leva o histórico junto**
 (`onUpdate: Cascade` + `PRAGMA foreign_keys = 1`). Só aceita dígitos, até 15,
 porque é isso que o teclado do tablet consegue digitar.
+
+**A `Avaliacao` é anônima por construção, e a construção tem três peças que
+parecem arbitrárias** (Tarefa 14): a linha guarda **só nota e dia** (sem
+matrícula, perfil nem hora — carimbo com segundos cruzaria com
+`Emprestimo.data_retirada`); o **id é sorteado**, não autoincremento (a ordem
+de gravação no dia é a ordem das retiradas das pessoas perguntadas naquele
+dia — sequencial, ele seria o carimbo de volta); e o **CSV sai ordenado por
+`dia, nota`**, nunca por id. Quem "otimizar" qualquer uma das três recria o
+pareamento sem nenhum erro aparecer. A regra dos 30 dias mora em
+`Pessoa.avaliacao_pedida_em`, gravada quando os rostos **aparecem** — não quando
+alguém responde —, e é isso que faz "pedida" contar quem ignorou (a taxa de
+resposta é a métrica que denuncia fadiga). A linha nasce com `nota` nula na
+mesma transação da retirada; o toque a preenche uma vez só (`updateMany` com
+`nota: null`).
 
 ### Estado atual
 
@@ -1303,6 +1313,176 @@ esgotado montado e desmontado (14).
   dois cartões terminam em 382px e a primeira categoria em 640px — as duas
   acima da dobra. **Refaça a medida se a Tarefa 14 acrescentar a quarta aba**:
   é ela que pode empurrar a barra para duas linhas em 1024.
+
+**Tarefa 14 — Avaliação anônima no fim da retirada (concluída):** os sete
+itens de
+[tarefa-14-avaliacao-retirada.md](especificacoes/tarefas/concluidas/tarefa-14-avaliacao-retirada.md)
+— os quatro rostos e o QR code na tela de sucesso do tablet, a regra dos 30
+dias em `Pessoa.avaliacao_pedida_em`, as tabelas `Avaliacao` e `Configuracao`,
+`registrarAvaliacao` e a decisão dentro de `confirmarRetirada`, a aba
+**Satisfação** do `/admin/relatorios` (média, respostas, taxa de resposta,
+distribuição em quatro barras, dois recortes, "Baixar planilha" em CSV e o
+cartão do formulário de sugestões), o `db:demo` com ~68 avaliações, e a wiki
+nos dois idiomas. Ela **abriu a `v1.2`**. `tsc`, `lint` e `build` em 0, com as
+seis rotas do painel dinâmicas (`ƒ`) e a `/` estática; `mkdocs build --strict`,
+`vale docs/` (33 arquivos, 0 erro), `npm run docs:links` (36 páginas, 2943
+referências) e `npm run docs:diagramas -- --verificar` em 0. Dependência nova
+aprovada: `qrcode` 1.5.4 (mais `@types/qrcode`); o `npm audit` tem os mesmos
+8 avisos antes e depois.
+
+A migration foi gerada com `--create-only` contra uma **cópia** do `dev.db`
+(o `migrate dev` aplica migration pendente antes de gerar a nova, e havia uma
+pendente — ver a fila), lida, e ensaiada na cópia: 16 asserções, os ids das
+cinco tabelas preservados, `foreign_key_check` vazio. Verificação em cinco
+degraus, tudo contra o `dev-demo.db` da receita do CONTRIBUTING: premissas em
+cópia (22 asserções — o truncamento ao dia atravessando o Prisma, a fronteira
+dos 30 dias nos dois sentidos, a colisão de id virando P2002 e resolvida na
+retentativa, o `updateMany` de uso único, o `groupBy` por nota); HTTP real
+contra as três formas de chegar às actions (27 — as quatro recusas de
+`registrarAvaliacao` e a quinta válida, `confirmarRetirada` duas vezes no mesmo
+dia com a segunda voltando `avaliacao: null`, e a transação que volta atrás
+sem carimbar a pessoa); navegador real por CDP no tablet (45 — as duas
+orientações, o toque, o auto-fechamento, a URL vazia, o contraste calculado) e
+no painel (44 — os números contra o banco, o CSV chegando ao disco e conferido
+byte a byte, o formulário nas quatro saídas, a barra de abas em cinco larguras,
+o estado vazio); e a leitura visual das sete capturas. O `dev.db` do dono só
+recebeu as migrations.
+
+**Decisões da Tarefa 14** (não refazer sem motivo):
+
+- **O `id` da `Avaliacao` é sorteado (`randomInt`, 31 bits), e não
+  autoincremento — contra a letra do enunciado, por decisão do dono.** O
+  enunciado prescrevia `@default(autoincrement())` e, três parágrafos acima,
+  prometia que "quem lê o banco sabe quem foi perguntado naquele dia e quais
+  notas saíram naquele dia, não o pareamento". Com id sequencial a promessa
+  era falsa sempre que mais de uma pessoa fosse perguntada no dia: a linha
+  nasce na mesma transação do `Emprestimo`, então a ordem dos ids no dia D é a
+  ordem de `data_retirada` das pessoas com `avaliacao_pedida_em = D` — um
+  `ORDER BY` de cada lado e o pareamento sai inteiro. O carimbo com segundos
+  foi tirado justamente para impedir isso; o autoincremento era o mesmo
+  relógio, disfarçado. Levantado como conflito antes da primeira edição. A
+  colisão é conferida antes de inserir (`findUnique`), com a corrida residual
+  de duas transações sorteando o mesmo número deixada para a chave primária
+  (1 em 2³¹ por retirada). Efeito colateral bem-vindo: o "risco aceito" do id
+  chutável caiu de trivial para 1 em 2³¹. **O schema não tem `@default`**, e é
+  isso que obriga todo `create` a fornecer o id — o gerador do Prisma ainda
+  escreve `AUTOINCREMENT` no DDL do SQLite para todo `Int @id` (conferido no
+  SQL gerado), e isso é inofensivo porque nenhuma inserção deixa o id vazio.
+- **O CSV sai ordenado por `dia, nota`, nunca por id**, pelo mesmo motivo: a
+  ordem de gravação é a única coisa que poderia parear pessoa e nota, e ela
+  não sai do banco. `sqlite_sequence` guarda só o maior id — medido — e nada
+  sobre a ordem.
+- **A aba Satisfação é a segunda, não a quarta** — decisão do dono. Com as
+  duas vazias (Ranking, Índice) no meio, a barra ficaria *relatório · vazio ·
+  vazio · relatório*, e quem procura o segundo relatório clicaria em dois
+  avisos antes de achá-lo. A ordem é a de `ABA_DE_RELATORIO`, e o aviso das
+  abas vazias passou a nomear os dois relatórios que existem.
+- **A `avaliacao_pedida_em` é decidida por um `updateMany` só**, filtrado pela
+  matrícula e pela condição dos 30 dias (nulo ou `lte` hoje − 30), que grava
+  hoje e conta linhas: 1 é "pergunte", 0 é "já perguntada". É a trava de
+  concorrência de sempre, e é o que faz duas retiradas da mesma pessoa no
+  mesmo instante gerarem uma linha só. A fronteira foi medida em cópia: 30
+  dias pergunta, 29 não; a segunda retirada do dia não pergunta. A conta é em
+  **data local** (`inicioDoDia(hoje, 30)`), e não em milissegundos — com
+  horário de verão no meio, as duas divergem em uma hora.
+- **`DateTime` truncado a 00:00 local vai e volta igual pelo Prisma** —
+  medido: gravado como `2026-09-16T03:00:00.000+00:00` (texto ISO com sufixo
+  `+00:00`, a regra da Tarefa 13), lido de volta com o mesmo `getTime()`. Os
+  dois campos (`avaliacao_pedida_em` e `Avaliacao.dia`) saem do mesmo
+  `inicioDoDia`, e é o que impede os dois lados de discordarem numa virada de
+  meia-noite. `diaLocal` produz `AAAA-MM-DD`, que ordena como texto — por isso
+  o relatório compara `dia >= "..."` direto no banco.
+- **"Últimos 30 dias" é hoje mais os 29 anteriores**, e o número é uma
+  constante própria (`JANELA_DO_RELATORIO_DIAS`), separada de
+  `INTERVALO_ENTRE_AVALIACOES_DIAS`: os dois valem 30 por coincidência, e mudar
+  um não pede mudar o outro.
+- **A média é sobre as respondidas, e sai formatada no servidor** ("3,3",
+  `Intl` pt-BR com uma casa), pela regra de datas do painel. Sem resposta o
+  cartão mostra "—", e não "0,0": zero num intervalo de 1 a 4 é um número que
+  não existe. As barras são a fatia entre as **respondidas** (somam 100%); a
+  taxa de resposta ao lado é o que lembra que nem todo mundo respondeu.
+- **O toque mostra "Obrigado!" antes de a resposta chegar, e uma falha da
+  action não aparece na tela.** É uma pesquisa opcional numa tela de um
+  segundo; "não foi possível registrar a sua opinião" seria ruído para quem já
+  está saindo com o aparelho na mão. A falha vai para o console do servidor. A
+  tela volta ao início 1,1 s depois do toque (medido: 1162 ms), e não no fim
+  dos 15 s.
+- **Salvar a URL em branco apaga a linha, e é o gesto de volta.** O enunciado
+  só dizia "valide que é uma URL https://"; sem o caminho de apagar, tirar o
+  QR do tablet exigiria o `db:studio`. Quem valida a forma é o `URL` do Node,
+  não expressão regular — é o mesmo interpretador que o celular vai usar — e
+  só `https:` passa. A recusa foi exercitada com `http://` e sem sessão.
+- **O `<form>` da URL tem `key={url}`.** O React 19 limpa o formulário depois
+  da action e o campo volta ao `defaultValue`; com a revalidação da rota na
+  mesma resposta, a chave amarra o formulário à URL gravada e o campo remonta
+  com o valor certo, em vez de depender da ordem entre a limpeza e a
+  re-renderização. Conferido no navegador: depois de salvar, o campo mostra a
+  URL nova; o segundo envio sem mexer grava o mesmo valor.
+- **O QR entra na tela como `<img src="data:image/svg+xml,…">`**, e não como
+  SVG embutido por `innerHTML`: uma imagem não executa nada, é dimensionada
+  por CSS, e o texto vem da biblioteca, não de quem digitou a URL. O mesmo
+  `ImagemQr` serve ao tablet (cliente) e à prévia do painel (servidor). O
+  `qrcode` gera `<svg>` com `viewBox` e dois `<path>`, sem `width`/`height`,
+  em ~13 ms e ~1,5 KB, determinístico — medido antes de virar desenho. No
+  flight do Next a string longa viaja numa linha própria (`N:T<bytes>,…`)
+  referenciada como `"$N"`; quem for ler resposta de action por HTTP precisa
+  resolver isso, senão o campo chega como `"$3"`.
+- **O QR é gerado depois da transação e nunca derruba a retirada.** Os
+  empréstimos já estão no nome da pessoa quando ele é montado; uma falha ali
+  (URL corrompida no banco) vira `qr: null` com log, e não uma mensagem de
+  erro em cima de uma retirada que aconteceu.
+- **As linhas do CSV descem no render, e o `import()` do serializador fica
+  pela paridade com a Tarefa 9.** O painel lê o banco no render, não por
+  ação; o que pesa é o dado, não o código — ~30 bytes por linha, no máximo
+  umas cinco por dia útil, numa página aberta uma vez por mês. O CSV é RFC
+  4180 (vírgula, `\r\n`), como o enunciado pede; **o Excel em português abre
+  isso numa coluna só ao clicar duas vezes**, e a página da wiki diz o caminho
+  (Dados → De Texto/CSV). Se isso incomodar, a troca para `;` é uma linha em
+  [avaliacoes-csv.ts](src/lib/avaliacoes-csv.ts) — decisão de produto.
+- **Existem dois âmbares, pela regra dos dois verdes.** O `aviso` do tema é
+  âmbar de texto (47%, 7,0:1) e saiu **marrom** como preenchimento de 88 px —
+  visto na primeira captura, não estimado. O token novo `ambar` (`#cd6600`,
+  3,8:1 com o branco) é o de preenchimento grande, entre o vermelho (7,2:1) e
+  o verde da logo (3,0:1) na escala. Contraste calculado no navegador pelo
+  pixel do `<canvas>` (o `getComputedStyle` devolve `lab()` neste Chrome):
+  7,21 / 3,82 / 3,01 / 5,44.
+- **A tela de sucesso mudou de arranjo, e foi medido.** O ícone e o título
+  ficaram lado a lado (eram empilhados), o contêiner passou a `max-w-2xl`, e
+  os rostos e o QR ficam lado a lado a partir de `sm`. Em **1280x800** o
+  documento tem 800 px e o **Concluir** termina em 713 px; em **800x1280**,
+  1280 e 953 px; sem QR, 666 px. Alvo do rosto 88x88 (`size-22`), QR 160x160.
+  Refaça a medida se entrar mais um item na tela ou se o texto do QR crescer.
+- **A quarta aba empurrava a barra para duas linhas em 1024 px — exatamente
+  o que a Tarefa 13 mandou medir.** A barra tem 656 px ali e as quatro abas no
+  tamanho normal somam 756. Entre `lg` e `xl` a aba usa `text-sm` e
+  `px-2.5` (soma 633), e só ali: abaixo de `lg` a barra lateral vira faixa e
+  o conteúdo ganha a largura toda; de `xl` para cima sobra espaço. Medido em
+  1440, 1366, 1280, 1024 e 900. Refaça se entrar uma quinta aba.
+- **O `db:demo` apaga as avaliações que a tela criou**, ao contrário do que
+  faz com os empréstimos (limitação registrada na D05). Uma avaliação de
+  toque de teste tem id fora da faixa 9001+ e entraria na média da captura
+  seguinte. Ele também zera `avaliacao_pedida_em` nas onze pessoas dele — a
+  Ana Souza e os outros três do seed ficam como estão, pela regra da D06. As
+  ~68 linhas saem de um sorteio determinístico (mulberry32, semente fixa) em
+  dias úteis, com as quatro notas presentes e ~20% sem resposta; só o `dia`
+  anda com o calendário. A semente foi escolhida entre onze porque a primeira
+  não produzia nenhum "Muito ruim". A URL de exemplo é
+  `https://sugestoes.example/formulario` — domínio reservado (RFC 2606) para o
+  QR da captura publicada não levar a lugar nenhum.
+- **Toque no rosto errado não tem desfazer, e a wiki diz isso.** É a
+  varredura de reversibilidade: o gesto de ida existe e o de volta não — e não
+  pode existir, porque não há como achar "o seu" voto numa linha sem dono. A
+  resposta honesta está na §7 da página da retirada: uma nota entre dezenas do
+  mês, e a secretaria lê médias.
+- **`clicarAte` não serve para envio de formulário.** Dois falsos negativos
+  na mesma sessão: o auxiliar repete o clique até o efeito aparecer, e um
+  envio repetido depois de a action terminar (a) no login acerta o primeiro
+  `submit` do painel, que é "Sair do painel", e (b) no cartão da URL manda o
+  campo **em branco** (o React 19 limpa o formulário), apagando o que o
+  primeiro envio gravou. Envio de formulário não é idempotente: ali é um
+  clique e a espera. E `form button` casa primeiro as **teclas do teclado
+  numérico** do tablet, que estão dentro do `<form>` — o "clique no
+  Continuar" digitava um dígito a mais.
 
 **Tarefa D01 — Congelar a v1.0 e criar o estado de demonstração (concluída):**
 a primeira da **série de documentação** (`tarefa-doc-NN`, regida pela
@@ -2791,12 +2971,15 @@ criou a identidade, a 11 deu a cada pessoa uma senha própria, a 12 passou a
 registrar **quando** a baixa aconteceu — e o **quem** continua não existindo,
 porque `Emprestimo` não tem coluna de administrador).
 
-O relatório para a coordenação **passou a existir na Tarefa 13**, mas ele é uma
+O relatório de ocupação **passou a existir na Tarefa 13**, mas ele é uma
 fotografia do agora: não compara com o mês passado, não exporta e **não lê o
 tempo de prateleira**. Os dados para as três coisas já estão no banco desde a
 Tarefa 12 — `data_devolucao` e `data_baixa` — e ninguém ainda os lê. As duas
 abas declaradas e vazias (**Ranking de Consumo** e **Índice de Manutenção**) são
-onde isso caberia. Nada disso está na spec — confirmar antes de construir.
+onde isso caberia. A aba **Satisfação** (Tarefa 14) é a única que exporta, e o
+que ela exporta é a lista crua em CSV; o Excel em português a abre numa coluna
+só ao clicar duas vezes, e a troca de separador para `;` é uma linha, se um
+dia incomodar. Nada disso está na spec — confirmar antes de construir.
 
 **Correções fora de tarefa (2026-09-14):** o detalhe da recusa ao excluir
 categoria em uso (`AJUDA_DA_CATEGORIA_EM_USO`, em
@@ -2825,9 +3008,20 @@ aberto.
   enunciado da Tarefa 10 pedia é um **stub deprecado**: o próprio npm avisa que
   "bcryptjs provides its own type definitions, so you do not need this
   installed". Instalá-lo só somaria um pacote inútil.
-- `npm audit` reporta 3 avisos "high" em `deepmerge-ts`, via `@prisma/config` —
-  dependência **só de desenvolvimento**, sem exposição no app. **Não rode
-  `npm audit fix --force`**: ele rebaixa o Prisma para 6.x e quebra este setup.
+- `npm audit` reporta 8 avisos (7 "high", 1 "critical") em 2026-09-16 — os de
+  `deepmerge-ts`/`mysql2` via `@prisma/config` (dependência **só de
+  desenvolvimento**, sem exposição no app), `fast-uri`, `js-yaml` e `sharp`
+  (transitivas) e **um crítico no próprio `next` 16.3.1, com correção
+  não-major disponível (16.3.5)** — anterior à Tarefa 14, que não tocou nele:
+  subir o Next é decisão do dono, com o `build` e o degrau de navegador
+  refeitos depois. **Não rode `npm audit fix --force`**: ele rebaixa o Prisma
+  para 6.x e quebra este setup.
+- **`qrcode` 1.5.4 (mais `@types/qrcode`) é a única dependência da Tarefa 14**,
+  aprovada no enunciado. JavaScript puro, sem rede — conferido: nenhum módulo
+  de `http`/`https`/`net`/`dns` no `lib/` dela, e o `npm audit` tem os mesmos
+  8 avisos antes e depois. Ela traz `yargs` e `pngjs` para a CLI e o PNG, que
+  este projeto não usa; o que se usa é `toString(url, { type: "svg" })`, no
+  servidor.
 - **A dependência `xlsx` aponta para uma URL do CDN da SheetJS, e é de
   propósito.** O pacote no npm parou na 0.18.5 (2022), com duas advisories sem
   correção; a SheetJS distribui as versões novas apenas pelo próprio CDN. Trocar

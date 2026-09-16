@@ -27,6 +27,20 @@ Armazena estudantes e professores (dados importados inicialmente via planilha).
 > Chamava-se `Usuario` até a Tarefa 10, que a renomeou para `Pessoa`: com a chegada da tabela
 > `Administrador`, "usuário" passou a querer dizer duas coisas — quem retira equipamento e quem
 > opera o painel. A Tarefa 8 acrescentou a esta tabela o campo `status` ("ATIVO" | "INATIVO").
+> A **Tarefa 14** acrescentou `avaliacao_pedida_em` (DateTime, Nullable): o dia, truncado a
+> 00:00 local, em que os rostos da avaliação foram mostrados à pessoa pela última vez. É o
+> campo inteiro da regra "uma vez a cada 30 dias", e é gravado quando os rostos **aparecem**,
+> não quando alguém responde.
+>
+> A mesma tarefa criou duas tabelas sem relação com as demais:
+>
+> * **`Avaliacao`** — `id` (Int, PK, **sorteado** — não autoincremento, porque a ordem de
+>   gravação no dia parearia com as retiradas), `nota` (Int, Nullable: 1 a 4, nula enquanto
+>   ninguém tocou), `dia` (String "AAAA-MM-DD" no fuso da máquina). Uma linha por vez que os
+>   rostos apareceram. **Sem matrícula, perfil nem hora**, de propósito: é a anonimização.
+> * **`Configuracao`** — `chave` (String, PK), `valor` (String). Chave-valor para o que precisa
+>   mudar sem deploy; hoje só `url_formulario_feedback`, a URL do formulário externo que o QR
+>   code da tela de sucesso abre.
 
 ### Tabela: Equipamento
 Armazena o inventário físico.
@@ -57,6 +71,11 @@ Registra os logs de movimentação (um log isolado por item).
   3. Ao clicar na categoria, exibe apenas os equipamentos com status `DISPONIVEL`.
   4. O usuário seleciona os itens (por número da etiqueta) e confirma.
   5. O sistema gera **logs individuais** na tabela `Emprestimo` (status `ATIVO`) e muda o status dos `Equipamentos` para `EMPRESTADO`.
+  6. *(Tarefa 14, opcional)* Na tela de confirmação, se a pessoa nunca foi perguntada ou a última vez foi há 30 dias ou mais, aparecem quatro rostos sob "Como foi a retirada?". Um toque grava nota e dia numa linha anônima de `Avaliacao` e a tela volta ao início; sem toque, o "Concluir" e o auto-fechamento fazem o de sempre, e a linha fica com nota nula (é a taxa de resposta). Ao lado, quando a secretaria configurou a URL, um QR code abre um formulário de sugestões externo. A devolução **não** pergunta.
+
+> O passo 6 entrou na **Tarefa 14** e não muda o resultado do processo — por isso o diagrama
+> BPMN da retirada na wiki continua o mesmo. O anonimato é do dado, não da tela: a `Avaliacao`
+> não tem matrícula, perfil, hora nem id sequencial (ver §3).
 
 ### Fluxo 2: Devolução pelo Usuário (Rota `/` - Tablet)
 * **Passos:**
@@ -83,7 +102,7 @@ Registra os logs de movimentação (um log isolado por item).
   1. **Fila de Devoluções:** Uma visualização em destaque mostrando todos os empréstimos `AGUARDANDO_BAIXA`. A secretária pega o equipamento na bancada e clica em "Confirmar Recebimento". O `Emprestimo` vai para `CONCLUIDO` e o `Equipamento` volta para `DISPONIVEL`.
   2. **Gestão de Inventário:** Mudar o status de equipamentos para `MANUTENCAO` (removendo-os da visão do tablet) ou cadastrar novos.
   3. **Visão Geral:** Ver quem está com qual equipamento no momento (logs `ATIVO`).
-  4. **Relatórios:** Ler o que o sistema já registrou, sem mudar nada — o volume de retiradas do mês, quantos aparelhos estão fora da prateleira agora, e a taxa de ocupação de cada categoria, com alerta de estoque esgotado ou crítico.
+  4. **Relatórios:** Ler o que o sistema já registrou, sem mudar nada — o volume de retiradas do mês, quantos aparelhos estão fora da prateleira agora, e a taxa de ocupação de cada categoria, com alerta de estoque esgotado ou crítico. Desde a Tarefa 14, também a aba **Satisfação**: média, taxa de resposta e distribuição das avaliações anônimas em dois recortes fixos, com "Baixar planilha" (CSV `dia,nota`) e o cartão que configura a URL do formulário de sugestões — a única escrita da tela.
 
 > O item 4 entrou na **Tarefa 13**, e é a primeira funcionalidade do painel que
 > esta seção não previa. O motivo é externo ao sistema: a coordenação decide a
