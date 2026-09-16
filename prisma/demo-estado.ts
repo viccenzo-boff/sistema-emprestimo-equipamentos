@@ -7,7 +7,14 @@ import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
 import { PrismaClient } from "../src/generated/prisma/client";
 import { normalizarCursos, normalizarNome } from "../src/lib/sanitizacao";
-import { PERFIL, STATUS_EMPRESTIMO, STATUS_EQUIPAMENTO, STATUS_PESSOA } from "../src/lib/tipos";
+import { diaLocal, inicioDoDia } from "../src/lib/texto";
+import {
+  CHAVE_URL_FORMULARIO,
+  PERFIL,
+  STATUS_EMPRESTIMO,
+  STATUS_EQUIPAMENTO,
+  STATUS_PESSOA,
+} from "../src/lib/tipos";
 
 /**
  * Estado de demonstração para as capturas de tela da wiki — Tarefa D01.
@@ -306,6 +313,79 @@ const EM_MANUTENCAO = ["NOTE-09", "EXT-05"];
 const APOSENTADOS = ["NOTE-10", "TAB-05"];
 
 /* ------------------------------------------------------------------------- *
+ * Avaliações (Tarefa 14)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * A URL de exemplo do formulário de sugestões, para o QR aparecer no tablet e
+ * a prévia aparecer no painel. O domínio `.example` é reservado (RFC 2606):
+ * quem apontar a câmera para a captura da wiki não cai em nenhum lugar real —
+ * nem num 404 no domínio da instituição.
+ */
+const URL_DO_FORMULARIO_DE_EXEMPLO = "https://sugestoes.example/formulario";
+
+/**
+ * Faixa de ids reservada às avaliações de demonstração, pela mesma regra dos
+ * empréstimos (9001+): é o que permite ao `upsert` endereçar cada linha e ao
+ * script rodar duas vezes sem duplicar nada.
+ *
+ * Sequenciais aqui, ao contrário da produção (`idAleatorio()` em
+ * `confirmarRetirada`), e isso não fere o anonimato: estas linhas não
+ * correspondem a nenhuma retirada, então não há ordem de gravação a proteger.
+ */
+const PRIMEIRO_ID_DE_AVALIACAO = 9001;
+
+/** Quantos dias para trás o cenário de avaliações cobre. */
+const DIAS_DE_AVALIACOES = 60;
+
+/**
+ * As avaliações do cenário: uns 60 dias de linhas, dias úteis apenas, de zero
+ * a três por dia, com uma parte sem resposta.
+ *
+ * Geradas por um sorteio **determinístico** (semente fixa), e não escritas uma
+ * a uma: são umas oitenta linhas, e o que importa delas é a forma — média
+ * plausível, taxa de resposta abaixo de 100%, as quatro notas presentes —, não
+ * o valor de cada uma. Rodar duas vezes produz a mesma estrutura; só o `dia`
+ * anda com o calendário, pela mesma regra dos carimbos dos empréstimos: a aba
+ * tem que dizer "últimos 30 dias" com dados dentro deles na captura tirada
+ * hoje e na tirada em novembro.
+ *
+ * A distribuição é a de um balcão que atende bem: metade "Muito bom", um
+ * terço "Bom", e as duas notas baixas somando uns 15%. Um quarto das vezes
+ * ninguém responde — é o que faz a taxa de resposta ser um número que se lê.
+ */
+function avaliacoesDoCenario(hoje: Date): { id: number; dia: string; nota: number | null }[] {
+  // mulberry32: um gerador pequeno e reprodutível, suficiente para sortear
+  // oitenta linhas. Não é para nada além deste cenário.
+  let estado = 0x5eed17;
+  const sortear = () => {
+    estado = (estado + 0x6d2b79f5) | 0;
+    let t = Math.imul(estado ^ (estado >>> 15), 1 | estado);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+
+  const linhas: { id: number; dia: string; nota: number | null }[] = [];
+  let id = PRIMEIRO_ID_DE_AVALIACAO;
+
+  for (let atras = DIAS_DE_AVALIACOES - 1; atras >= 0; atras--) {
+    const dia = inicioDoDia(hoje, atras);
+    const diaDaSemana = dia.getDay();
+    if (diaDaSemana === 0 || diaDaSemana === 6) continue;
+
+    const quantas = Math.floor(sortear() * 4); // 0 a 3 por dia útil
+    for (let i = 0; i < quantas; i++) {
+      const respondeu = sortear() >= 0.25;
+      const s = sortear();
+      const nota = !respondeu ? null : s < 0.05 ? 1 : s < 0.15 ? 2 : s < 0.5 ? 3 : 4;
+      linhas.push({ id: id++, dia: diaLocal(dia), nota });
+    }
+  }
+
+  return linhas;
+}
+
+/* ------------------------------------------------------------------------- *
  * Execução
  * ------------------------------------------------------------------------- */
 
@@ -370,6 +450,11 @@ async function main() {
         perfil: pessoa.perfil,
         cursos: normalizarCursos(pessoa.cursos),
         status: pessoa.status,
+        // `null` explícito (Tarefa 14): uma retirada feita pela tela para
+        // fotografar os rostos grava o dia aqui, e sem o reset a captura
+        // seguinte não teria rostos para mostrar — a pessoa "já foi
+        // perguntada". Mesma regra do `status` logo acima.
+        avaliacao_pedida_em: null,
       };
 
       await prisma.pessoa.upsert({
@@ -471,6 +556,39 @@ async function main() {
     });
     console.log(`Equipamentos: ${porStatus.map((l) => `${l._count._all} ${l.status}`).join(", ")}.`);
 
+    // 4. Avaliações (Tarefa 14).
+    //
+    // Ao contrário dos empréstimos, aqui o que a tela criou É apagado: uma
+    // avaliação nascida de um toque de teste tem id fora da faixa reservada e
+    // entraria na média da captura seguinte. O `Emprestimo` criado pela tela
+    // fica (limitação registrada na D05); a `Avaliacao` não, porque o relatório
+    // que ela alimenta precisa mostrar os mesmos números em toda captura.
+    const avaliacoes = avaliacoesDoCenario(inicioDoDia(new Date(agora)));
+    const idsDoCenario = avaliacoes.map((a) => a.id);
+
+    for (const avaliacao of avaliacoes) {
+      await prisma.avaliacao.upsert({
+        where: { id: avaliacao.id },
+        update: { dia: avaliacao.dia, nota: avaliacao.nota },
+        create: avaliacao,
+      });
+    }
+    const apagadas = await prisma.avaliacao.deleteMany({ where: { id: { notIn: idsDoCenario } } });
+
+    const respondidas = avaliacoes.filter((a) => a.nota !== null).length;
+    console.log(
+      `Avaliações: ${avaliacoes.length} em ${DIAS_DE_AVALIACOES} dias ` +
+        `(${respondidas} respondidas${apagadas.count > 0 ? `; ${apagadas.count} de fora do cenário apagadas` : ""}).`,
+    );
+
+    // 5. A URL do formulário de sugestões, para o QR aparecer nas capturas.
+    await prisma.configuracao.upsert({
+      where: { chave: CHAVE_URL_FORMULARIO },
+      update: { valor: URL_DO_FORMULARIO_DE_EXEMPLO },
+      create: { chave: CHAVE_URL_FORMULARIO, valor: URL_DO_FORMULARIO_DE_EXEMPLO },
+    });
+    console.log(`Formulário de sugestões: ${URL_DO_FORMULARIO_DE_EXEMPLO}.`);
+
     const [pessoas, emprestimos, fila] = await Promise.all([
       prisma.pessoa.count(),
       prisma.emprestimo.count(),
@@ -479,7 +597,7 @@ async function main() {
 
     console.log(
       `\nBanco de demonstração: ${pessoas} pessoas, ${emprestimos} empréstimos ` +
-        `(${fila} na fila de devoluções).\n` +
+        `(${fila} na fila de devoluções), ${avaliacoes.length} avaliações.\n` +
         `Capturas do painel: entre como "secretaria" — ver o CONTRIBUTING.md.`,
     );
   } finally {
