@@ -316,3 +316,17 @@ Honestidade sobre escopo vale mais que lista de conquistas.
 O número que importa não está na tabela: **quem chega com uma dúvida operacional
 agora tem onde procurar**, e a resposta explica a decisão em vez de descrever o
 botão.
+
+## Quem fez
+
+O sistema e esta wiki foram feitos por **Viccenzo Boff**, sozinho, para a
+coordenação dos cursos. O crédito que aparece no rodapé da tela de matrícula do
+tablet e no pé da barra lateral do painel existe por autorização da
+coordenação — foi a contrapartida pelo trabalho.
+
+- GitHub: [viccenzo-boff](https://github.com/viccenzo-boff)
+- E-mail: [viccenzoboff@gmail.com](mailto:viccenzoboff@gmail.com)
+
+Para problema no sistema em uso, o caminho continua sendo a secretaria e o
+[repositório do projeto](https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/issues);
+o contato acima é para quem quer falar sobre o trabalho.

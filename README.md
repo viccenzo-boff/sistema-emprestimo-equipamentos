@@ -286,3 +286,14 @@ acrescentaram:
 O status `AGUARDANDO_BAIXA` é o que separa "a pessoa disse que devolveu" de "a secretaria
 recolheu o equipamento": enquanto o empréstimo está nesse estado, o equipamento **não** volta a
 ficar disponível.
+
+## Autor
+
+Feito por **Viccenzo Boff** — [github.com/viccenzo-boff](https://github.com/viccenzo-boff) ·
+[viccenzoboff@gmail.com](mailto:viccenzoboff@gmail.com).
+
+O crédito no rodapé da tela de matrícula do tablet e no pé da barra lateral do painel existe
+**por autorização da coordenação dos cursos** (2026-09-16): foi a contrapartida por um sistema
+feito por uma pessoa só. Os dois lugares e o texto exato estão na Tarefa 15, em
+[`especificacoes/tarefas/`](especificacoes/tarefas/); nome e handle vivem em
+[`src/lib/autor.ts`](src/lib/autor.ts), um lugar só para o tablet e o painel não divergirem.

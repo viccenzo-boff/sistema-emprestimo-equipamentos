@@ -315,3 +315,17 @@ Honesty about scope is worth more than a list of achievements.
 The number that matters is not in the table: **anyone arriving with an
 operational question now has somewhere to look**, and the answer explains the
 decision instead of describing the button.
+
+## Who made it
+
+The system and this wiki were made by **Viccenzo Boff**, alone, for the
+program coordination. The credit shown in the footer of the tablet's enrollment
+screen and at the bottom of the panel's sidebar exists with the coordination's
+authorization. It was the compensation for the work.
+
+- GitHub: [viccenzo-boff](https://github.com/viccenzo-boff)
+- Email: [viccenzoboff@gmail.com](mailto:viccenzoboff@gmail.com)
+
+For a problem with the system in use, the path is still the front desk and the
+[project repository](https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/issues);
+the contact above is for anyone who wants to talk about the work.
