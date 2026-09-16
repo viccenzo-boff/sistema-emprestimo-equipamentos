@@ -130,6 +130,82 @@ export function IconeDevolver({ className }: PropsDeIcone) {
   );
 }
 
+/**
+ * A curvatura da boca de cada rosto da avaliação (Tarefa 14), em passos
+ * iguais: franzido forte, franzido leve, sorriso leve, sorriso largo.
+ *
+ * É o deslocamento vertical do ponto de controle da curva, a partir da linha
+ * dos cantos da boca — negativo bota o meio da boca **acima** dos cantos
+ * (tristeza), positivo, abaixo (sorriso). Os quatro valores estão a 2,4
+ * unidades um do outro, e é isso que faz a escala parecer uma escala, e não
+ * quatro desenhos: quem olha percebe a distância entre "Ruim" e "Bom" igual à
+ * distância entre "Bom" e "Muito bom".
+ */
+const CURVATURA_DA_BOCA: ReadonlyMap<number, number> = new Map([
+  [1, -3.6],
+  [2, -1.2],
+  [3, 1.2],
+  [4, 3.6],
+]);
+
+/**
+ * A cor de cada rosto (classe de `color`, que o SVG herda por `currentColor`),
+ * sequencial, para o "bater o olho" — a boca carrega o significado sozinha, a
+ * cor é o segundo canal.
+ *
+ * Vermelho é o tom de `erro` do tema; o âmbar é o `ambar` de preenchimento
+ * (não o `aviso`, que é âmbar de texto e sai marrom num círculo de 88 px —
+ * visto na primeira captura, e é por isso que o token existe); o terceiro é
+ * o verde da logo (`marca-verde`), que reprova em texto mas é exatamente o
+ * caso previsto para preenchimento grande; o quarto é o `marca-verde-forte`.
+ * Os olhos e a boca são brancos sobre os quatro, e o contraste calculado no
+ * navegador é 7,2 / 3,8 / 3,0 / 5,4 — o pior par (branco sobre o verde da
+ * logo) fica no mínimo de 3:1 para objeto gráfico, num traço de 7 px.
+ *
+ * Mora aqui, ao lado do ícone, porque o tablet (os botões) e o painel (as
+ * barras da distribuição) usam o mesmo mapa: duas cópias divergiriam na
+ * primeira vez que alguém ajustasse um tom.
+ */
+export const COR_DO_ROSTO: ReadonlyMap<number, string> = new Map([
+  [1, "text-erro"],
+  [2, "text-ambar"],
+  [3, "text-marca-verde"],
+  [4, "text-marca-verde-forte"],
+]);
+
+/**
+ * Um rosto da escala de avaliação: 1 = Muito ruim … 4 = Muito bom.
+ *
+ * **SVG próprio, e não emoji**, por decisão da Tarefa 14: emoji renderiza
+ * diferente em cada sistema (o "levemente triste" do Android e o do Windows
+ * têm intensidades diferentes), e quatro emojis de fontes distintas não formam
+ * uma escala de passos iguais. Aqui os quatro têm o mesmo círculo e os mesmos
+ * olhos; **só a boca muda**, e a boca carrega o significado sozinha — a cor
+ * (que vem de `currentColor`, escolhida por quem monta o botão) é o segundo
+ * canal, nunca o único.
+ *
+ * O rótulo ("Muito ruim", "Ruim"…) não está aqui: o SVG é `aria-hidden`, como
+ * os outros ícones, e quem fala pelo rosto é o texto `sr-only` do botão.
+ */
+export function IconeRosto({ nota, className }: PropsDeIcone & { nota: number }) {
+  const curvatura = CURVATURA_DA_BOCA.get(nota) ?? 0;
+
+  return (
+    <Svg className={className}>
+      <circle cx="12" cy="12" r="11" fill="currentColor" stroke="none" />
+      <circle cx="8.75" cy="9.5" r="1.4" fill="#fff" stroke="none" />
+      <circle cx="15.25" cy="9.5" r="1.4" fill="#fff" stroke="none" />
+      <path
+        d={`M7.5 15.25 Q12 ${15.25 + curvatura} 16.5 15.25`}
+        fill="none"
+        stroke="#fff"
+        strokeWidth={2}
+        strokeLinecap="round"
+      />
+    </Svg>
+  );
+}
+
 /* ------------------------------------------------------------------------- *
  * Painel Administrativo (Fluxo 3)
  * ------------------------------------------------------------------------- */

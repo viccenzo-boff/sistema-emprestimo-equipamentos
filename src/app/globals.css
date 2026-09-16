@@ -48,6 +48,16 @@
   --color-aviso: oklch(47% 0.115 70);
   --color-aviso-fundo: oklch(97% 0.04 85);
   --color-aviso-borda: oklch(86% 0.09 80);
+  /*
+    Existem dois âmbares, pela mesma regra dos dois verdes. O `aviso` é o de
+    TEXTO (7,0:1 com o branco): como preenchimento de 88 px ele sai marrom —
+    visto na primeira captura dos rostos da avaliação (Tarefa 14), não
+    estimado. Este é o de PREENCHIMENTO GRANDE: #cd6600, 3,8:1 com o branco
+    dos olhos e da boca, acima do mínimo de 3:1 para objeto gráfico e entre o
+    vermelho (7,2:1) e o verde da logo (3,0:1) na escala dos quatro rostos.
+    Nunca para texto.
+  */
+  --color-ambar: oklch(62% 0.17 60);
   --color-sucesso: oklch(45% 0.14 142.4);
   --color-sucesso-fundo: oklch(96.5% 0.032 142.5);
   --color-sucesso-borda: oklch(84% 0.09 142.5);

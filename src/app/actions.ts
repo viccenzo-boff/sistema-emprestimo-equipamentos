@@ -1,17 +1,25 @@
 "use server";
 
+import { randomInt } from "node:crypto";
+
+import { qrDoFormularioSeConfigurado } from "@/lib/formulario-feedback";
 import { prisma } from "@/lib/prisma";
+import { diaLocal, inicioDoDia } from "@/lib/texto";
 import {
+  INTERVALO_ENTRE_AVALIACOES_DIAS,
   MAXIMO_ITENS_POR_RETIRADA,
+  NOTAS_DE_AVALIACAO,
   STATUS_EMPRESTIMO,
   STATUS_EQUIPAMENTO,
   STATUS_PESSOA,
+  type AvaliacaoPedida,
   type Categoria,
   type DevolucaoConfirmada,
   type DevolucaoEmLoteConfirmada,
   type EmprestimoAtivo,
   type EquipamentoDisponivel,
   type MotivoDeFalha,
+  type QrDoFormulario,
   type Resultado,
   type RetiradaConfirmada,
   type PessoaIdentificada,
@@ -313,6 +321,9 @@ export async function confirmarRetirada(
         // A etiqueta e o nome da categoria — é o que a tela de sucesso lista.
         itens: itens.map(({ id, categoria }) => ({ id, tipo: categoria.nome })),
         registrados: criados.count,
+        // Na mesma transação dos empréstimos: se a retirada voltar atrás, o
+        // carimbo e a linha de avaliação voltam junto.
+        avaliacao: await pedirAvaliacaoSeForHora(tx, pessoa.matricula),
       };
     });
 
@@ -322,6 +333,8 @@ export async function confirmarRetirada(
         pessoa,
         itens: retirada.itens,
         registrados: retirada.registrados,
+        avaliacao: retirada.avaliacao,
+        qr: await qrSemDerrubarARetirada(),
       },
     };
   } catch (erro) {
@@ -346,6 +359,147 @@ class EquipamentoIndisponivelError extends Error {
   constructor(readonly ids: string[]) {
     super("Equipamento indisponível");
     this.name = "EquipamentoIndisponivelError";
+  }
+}
+
+/* ------------------------------------------------------------------------- *
+ * Avaliação anônima no fim da retirada (Tarefa 14)
+ * ------------------------------------------------------------------------- */
+
+/** O que a transação de retirada enxerga do client. */
+type TransacaoDeRetirada = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+
+/**
+ * Decide se os rostos aparecem nesta retirada e, se sim, deixa tudo pronto.
+ *
+ * A regra é uma escrita só: o `updateMany` filtra pela matrícula **e** pela
+ * condição dos 30 dias (nunca perguntada, ou perguntada há
+ * `INTERVALO_ENTRE_AVALIACOES_DIAS` ou mais), grava o dia de hoje e conta as
+ * linhas. Uma linha quer dizer "é hora"; zero quer dizer "já foi perguntada há
+ * menos de 30 dias". Duas retiradas da mesma pessoa correndo ao mesmo tempo
+ * disputam a mesma linha, e só uma delas conta 1 — é o mesmo padrão de
+ * concorrência que o resto do arquivo usa.
+ *
+ * **O carimbo é gravado quando os rostos aparecem, não quando alguém
+ * responde.** Sem isso, quem ignora a pesquisa é justamente quem a veria em
+ * toda retirada. A linha de `Avaliacao` nasce aqui, com `nota` nula, pelo
+ * mesmo motivo: é ela que dá a taxa de resposta (respondidas ÷ pedidas), e é
+ * o `id` dela que serve de token de uso único para `registrarAvaliacao`.
+ *
+ * A fronteira foi medida em cópia do banco: pedida há 30 dias pergunta de
+ * novo, há 29 não; a segunda retirada do mesmo dia não pergunta. A conta é em
+ * data local (`inicioDoDia`), e não em milissegundos — com horário de verão
+ * no meio, as duas divergem em uma hora.
+ */
+async function pedirAvaliacaoSeForHora(
+  tx: TransacaoDeRetirada,
+  matricula: string,
+): Promise<AvaliacaoPedida | null> {
+  const hoje = inicioDoDia(new Date());
+  const limite = inicioDoDia(hoje, INTERVALO_ENTRE_AVALIACOES_DIAS);
+
+  const marcados = await tx.pessoa.updateMany({
+    where: {
+      matricula,
+      OR: [{ avaliacao_pedida_em: null }, { avaliacao_pedida_em: { lte: limite } }],
+    },
+    data: { avaliacao_pedida_em: hoje },
+  });
+
+  if (marcados.count !== 1) return null;
+
+  /*
+    O id é sorteado, e não sequencial, porque sequencial seria a ordem de
+    gravação — e a ordem de gravação no dia D é a ordem de `data_retirada` das
+    pessoas perguntadas em D: com três linhas e três pessoas, um `ORDER BY` de
+    cada lado devolveria o pareamento que a tabela existe para não guardar.
+    Ver o comentário do modelo `Avaliacao` no schema.
+
+    A colisão é conferida antes de inserir. Sobra a corrida de duas transações
+    sorteando o mesmo número no mesmo instante, que a chave primária recusa —
+    aí a retirada inteira falha e a pessoa tenta de novo; com 2³¹ valores e
+    unidades de linhas por dia, é um caso que não acontece.
+  */
+  const dia = diaLocal(hoje);
+
+  for (let tentativa = 0; tentativa < 5; tentativa++) {
+    const id = randomInt(1, 2 ** 31 - 1);
+    const ocupado = await tx.avaliacao.findUnique({ where: { id }, select: { id: true } });
+    if (ocupado) continue;
+
+    await tx.avaliacao.create({ data: { id, dia } });
+    return { id };
+  }
+
+  throw new Error("Cinco colisões seguidas ao sortear o id da avaliação");
+}
+
+/**
+ * O QR do formulário, depois de a retirada já estar gravada.
+ *
+ * Falha aqui (URL corrompida no banco, biblioteca fora do lugar) não pode
+ * transformar uma retirada que **aconteceu** numa mensagem de erro: os
+ * empréstimos já estão no nome da pessoa. O QR é enfeite em relação à
+ * retirada; sem ele a tela só não mostra o cantinho do formulário.
+ */
+async function qrSemDerrubarARetirada(): Promise<QrDoFormulario | null> {
+  try {
+    return await qrDoFormularioSeConfigurado();
+  } catch (erro) {
+    console.error("[retirada] falha ao gerar o QR do formulário:", erro);
+    return null;
+  }
+}
+
+/**
+ * O toque num rosto (Tarefa 14, item 4).
+ *
+ * Não recebe matrícula, e não precisa: o `id` da `Avaliacao` foi criado
+ * segundos atrás por `confirmarRetirada`, e o `updateMany` filtrado por
+ * `nota: null` faz dele um token de uso único — a segunda gravação no mesmo
+ * id conta zero linhas e é recusada sem nenhum erro chegar à tela. É o padrão
+ * de concorrência que o projeto já usa em toda escrita.
+ *
+ * Risco aceito e registrado: o `id` é sorteado em 2³¹ valores, então chutar
+ * uma linha ainda não respondida nos 15 s em que ela vive na tela é uma
+ * chance em dois bilhões por tentativa. O dano seria um voto poluído num
+ * indicador de satisfação — e a mesma pessoa poderia tocar o rosto no tablet.
+ * Não há token além do próprio id.
+ */
+export async function registrarAvaliacao(
+  avaliacaoIdBruto: number,
+  notaBruta: number,
+): Promise<Resultado<{ id: number; nota: number }>> {
+  const id = Number(avaliacaoIdBruto);
+
+  if (!Number.isInteger(id) || id <= 0) {
+    return falha("AVALIACAO_NAO_ENCONTRADA", "Não encontramos essa avaliação.");
+  }
+
+  // `has` num `Map`, e nunca `OBJETO[nota]`: a nota vem de um POST público, e
+  // um objeto literal responderia a "constructor" com o protótipo.
+  const nota = Number(notaBruta);
+
+  if (!NOTAS_DE_AVALIACAO.has(nota)) {
+    return falha("AVALIACAO_INVALIDA", "Nota inválida.", "Escolha um dos quatro rostos.");
+  }
+
+  try {
+    const gravadas = await prisma.avaliacao.updateMany({
+      where: { id, nota: null },
+      data: { nota },
+    });
+
+    if (gravadas.count !== 1) {
+      return falha(
+        "AVALIACAO_NAO_ENCONTRADA",
+        "Essa avaliação já foi registrada ou não existe.",
+      );
+    }
+
+    return { ok: true, dados: { id, nota } };
+  } catch (erro) {
+    return falhaInterna(erro);
   }
 }
 

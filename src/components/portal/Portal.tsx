@@ -382,6 +382,8 @@ export function Portal() {
           <TelaSucesso
             nome={etapa.retirada.pessoa.nome}
             itens={etapa.retirada.itens}
+            avaliacao={etapa.retirada.avaliacao}
+            qr={etapa.retirada.qr}
             onConcluir={reiniciar}
           />
         ) : null}
