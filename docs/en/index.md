@@ -84,13 +84,15 @@ an admin panel page, and the other way round as well.
 
 ## The version this wiki describes
 
-!!! info "This wiki describes version v1.1 of the system"
+!!! info "This wiki describes version v1.2 of the system, in progress"
 
-    `v1.1` added the **Relatórios** (Reports) tab to the panel and fixed the
-    message shown when a category in use cannot be deleted. `v1.0` stays frozen
-    in the version selector at the top of the page — if the screen in front of
-    you has no reports tab, or a message with different wording, check there
-    which version you are using.
+    `v1.2` is the version being built: the pages follow the repository's
+    `main` branch. It adds the anonymous rating at the end of a pickup — the
+    four faces and the suggestion-form QR code on the tablet, and the
+    **Satisfação** (Satisfaction) tab in the panel's reports. `v1.1` and
+    `v1.0` stay frozen in the version selector at the top of the page — if the
+    pickup confirmed screen in front of you has no faces, or the reports have
+    no satisfaction tab, check there which version you are using.
 
 ## Where to ask for help
 

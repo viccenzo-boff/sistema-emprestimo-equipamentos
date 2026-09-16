@@ -530,36 +530,40 @@ gh-pages/
 ├── index.html      ← redireciona para a versão padrão
 ├── versions.json   ← o que alimenta o seletor de versão do cabeçalho
 ├── v1.0/           ← o site inteiro, PT na raiz e EN em v1.0/en/ (congelado)
-└── v1.1/           ← a versão em andamento, republicada a cada push
+├── v1.1/           ← a aba Relatórios e a mensagem corrigida (congelado)
+└── v1.2/           ← a versão em andamento, republicada a cada push
 ```
 
-**Desde 2026-09-14 a `main` publica a `v1.1`, e a `v1.0` ficou congelada na
-`gh-pages`.** A `v1.0` é o estado que a wiki descrevia até a tag
-([spec-wiki.md](especificacoes/spec-wiki.md) §2.1); tudo que mudou no produto
-depois dela — a mensagem de recusa ao excluir categoria em uso e a aba
-**Relatórios** da Tarefa 13 — é descrito só na `v1.1`. Foi por isso que o
-`mike deploy` do workflow passou a apontar para `v1.1` **antes** de a Tarefa 13
-existir: sem isso, o primeiro `push` com uma página corrigida reescreveria a
-`v1.0` publicada com um comportamento que a `v1.0` do produto não tem.
+**Desde 2026-09-16 a `main` publica a `v1.2`, e a `v1.1` ficou congelada na
+`gh-pages` ao lado da `v1.0`.** Cada versão é o estado que a wiki descrevia até
+a tag dela ([spec-wiki.md](especificacoes/spec-wiki.md) §2.1): a `v1.1` fechou
+com a Tarefa 13 (a aba **Relatórios** e a mensagem de recusa ao excluir
+categoria em uso), e tudo que muda no produto a partir da Tarefa 14 — a
+avaliação anônima e a aba **Satisfação** — é descrito só na `v1.2`. O `mike
+deploy` do workflow aponta para a versão nova **no começo** do ciclo, e não no
+fim: sem isso, o primeiro `push` com uma página nova reescreveria a versão
+publicada com um comportamento que aquela versão do produto não tem.
 
 O padrão da raiz muda **por decisão explícita**, e não por um alias móvel:
 alguém edita a linha do `set-default`, em vez de a raiz do site mudar sozinha
-debaixo de quem tinha o link.
+debaixo de quem tinha o link. Ele continua na `v1.1` enquanto a `v1.2` estiver
+em andamento.
 
-**A `v1.1` fechou com a Tarefa 13**, e os quatro lugares abaixo já estão na
-forma de versão entregue. Nenhum portão acusa se um ficar para trás — a tabela
-existe para o dia em que a `v1.2` abrir, quando cada linha volta para a coluna
-da direita:
+**A `v1.2` está aberta**, e os quatro lugares abaixo já estão na forma de
+versão em andamento. Nenhum portão acusa se um ficar para trás — a tabela
+existe para o dia em que a `v1.2` fechar, quando cada linha vai para a coluna
+da direita (é o que a `v1.1` fez em 2026-09-14):
 
-| Onde                                    | Hoje, com a `v1.1` entregue             | Ao abrir a `v1.2`                          |
-| --------------------------------------- | --------------------------------------- | ------------------------------------------ |
-| `.github/workflows/docs.yml`, `deploy`  | `--title "v1.1"`                        | `v1.2`, com `--title "v1.2 (em andamento)"` |
-| `.github/workflows/docs.yml`, `default` | `mike set-default --push v1.1`          | continua na `v1.1`                         |
-| `docs/index.md` e `docs/en/index.md`    | a caixa diz só "descreve a versão v1.1" | volta a dizer "em andamento", já na `v1.2` |
+| Onde                                    | Hoje, com a `v1.2` em andamento            | Ao fechar a `v1.2`                          |
+| --------------------------------------- | ------------------------------------------ | ------------------------------------------- |
+| `.github/workflows/docs.yml`, `deploy`  | `--title "v1.2 (em andamento)"`            | `--title "v1.2"`                            |
+| `.github/workflows/docs.yml`, `default` | `mike set-default --push v1.1`             | passa para `v1.2`                           |
+| `docs/index.md` e `docs/en/index.md`    | a caixa diz "em andamento" e o que ela traz | diz só "descreve a versão v1.2", com o que ela acrescentou |
 
-**A tag `v1.1` é do dono do repositório**, como a `v1.0` foi — o `pre-push` de
-[.githooks/](.githooks/) lembra disso no push dela. Quem publica a wiki é a
-Action, no `push` da `main`: a tag é o marco, não o gatilho.
+**A tag `v1.1` é do dono do repositório**, como a `v1.0` foi — ela ainda não
+existe no remoto, e o `pre-push` de [.githooks/](.githooks/) lembra disso no
+push dela. Quem publica a wiki é a Action, no `push` da `main`: a tag é o
+marco, não o gatilho.
 
 ### Ligar o GitHub Pages (uma vez só)
 
