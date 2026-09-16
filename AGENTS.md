@@ -34,7 +34,7 @@ descreve o sistema, não o define.
 | --- | --- |
 | [`especificacoes/spec.md`](especificacoes/spec.md) | A base arquitetural. Manda sobre o sistema inteiro. |
 | [`especificacoes/spec-wiki.md`](especificacoes/spec-wiki.md) | Manda sobre `docs/` e sobre a série `tarefa-doc-NN`. |
-| [`especificacoes/tarefas/pendentes/`](especificacoes/tarefas/pendentes/) | Enunciado de tarefa ainda **não** executada. Hoje, nenhum — a Tarefa 14 foi a última. |
+| [`especificacoes/tarefas/pendentes/`](especificacoes/tarefas/pendentes/) | Enunciado de tarefa ainda **não** executada. Hoje, nenhum — a Tarefa 15 foi a última. |
 | [`especificacoes/tarefas/concluidas/`](especificacoes/tarefas/concluidas/) | Enunciados já executados, guardados como histórico. Não são fonte de trabalho novo. |
 | `docs/` | A wiki publicada pelo MkDocs. **Enunciado de tarefa nunca entra aqui** — o Vale lintaria e o MkDocs publicaria. |
 
@@ -45,11 +45,11 @@ arquivos que as ferramentas exigem lá: `README.md`, `CLAUDE.md`, `AGENTS.md` e
 
 ### Fila de trabalho — "faça a próxima tarefa" quer dizer isto
 
-Atualizada em 2026-09-16, depois da Tarefa 14. O dono do repositório abre a
+Atualizada em 2026-09-16, depois da Tarefa 15. O dono do repositório abre a
 sessão só com esse prompt; esta seção é a resposta.
 
 **Não há enunciado pendente.** `especificacoes/tarefas/pendentes/` está vazio:
-a Tarefa 14 foi executada e o enunciado dela está em `concluidas/`. Se a
+a Tarefa 15 foi executada e o enunciado dela está em `concluidas/`. Se a
 próxima sessão receber "faça a próxima tarefa" sem um enunciado novo, a
 resposta é dizer isso e perguntar qual — as ideias de "Próximos passos
 possíveis", no fim do estado atual, **não estão na spec** e precisam de um
@@ -1483,6 +1483,87 @@ recebeu as migrations.
   clique e a espera. E `form button` casa primeiro as **teclas do teclado
   numérico** do tablet, que estão dentro do `<form>` — o "clique no
   Continuar" digitava um dígito a mais.
+
+**Tarefa 15 — Créditos do desenvolvedor (concluída):** os três lugares de
+[tarefa-15-creditos-do-desenvolvedor.md](especificacoes/tarefas/concluidas/tarefa-15-creditos-do-desenvolvedor.md)
+— o rodapé em texto na tela de matrícula do tablet, a linha com link no pé da
+barra lateral do painel, e o contato completo no `## Autor` do README e na
+seção "Quem fez" do estudo de caso da wiki, nos dois idiomas. Nome e handle
+vivem em [autor.ts](src/lib/autor.ts), um lugar só para os dois leitores.
+Nasceu de uma consultoria de UX em 2026-09-16; o crédito existe **por
+autorização da coordenação**, como contrapartida por um sistema feito por uma
+pessoa só. `tsc`, `lint` e `build` em 0, com as seis rotas do painel dinâmicas
+(`ƒ`) e a `/` estática; `mkdocs build --strict`, `vale docs/` (33 arquivos, 0
+erro) e `npm run docs:links` (36 páginas, 2953 referências) em 0. Sem
+migration e sem escrita no banco: o `dev.db` tem a mesma data de modificação
+de antes do roteiro. Verificado em navegador real por CDP contra o `next dev`
+que já estava de pé — 37 asserções: as duas orientações do tablet e quatro
+larguras do painel, com o contraste calculado pelo pixel do `<canvas>`.
+
+**Decisões da Tarefa 15** (não refazer sem motivo):
+
+- **O crédito do tablet é texto, e nunca pode virar link.** O tablet é
+  quiosque: uma rota, sem navegação, reinício por inatividade que é um
+  `setState`. Um `<a href>` para o GitHub seria a única porta de saída da
+  aplicação pelo toque, e o relógio de 2 min não traria a tela de volta — ele
+  mora na página que ficou para trás. Nenhum portão acusa; o link funciona, e
+  é isso que o torna perigoso. O mesmo vale para `mailto:` e `tel:`. Por isso
+  o painel, que é desktop com barra de endereço, tem o link e o tablet não.
+- **Só na tela de matrícula.** É a tela de repouso do quiosque — a que todo
+  mundo vê primeiro e a que fica na bancada o dia inteiro entre um uso e
+  outro — e a única sem `BarraSelecao` fixa no rodapé nem orçamento vertical
+  já medido no limite. Medido: em **1280x800** o Continuar termina em 580 px e
+  o rodapé ocupa 760–800; em **800x1280**, 1010 e 1240–1280. Documento sem
+  rolagem nas duas. O rodapé some depois da identificação (afirmado). Refaça a
+  medida se a `TelaMatricula` ganhar um elemento ou se o texto do crédito
+  crescer.
+- **`text-sm` em `tinta-suave`, e o número foi calculado.** 6,63:1 sobre o
+  fundo na posição do rodapé (o gradiente do `body` já se dissolveu no
+  `fundo` ali). No painel, 7,12:1 o texto e 11,78:1 o link, sobre a
+  `superficie` branca. `tinta-tenue` foi descartado para 14 px — é o token do
+  rótulo "Conectado como", que é `uppercase` em 12 px de peso semibold.
+- **Sem versão ao lado do crédito no painel, contra a proposta inicial.**
+  "v1.2" cravada no `CascaAdmin` seria o **quinto** lugar a mexer na troca de
+  ciclo (a tabela "Como a wiki é publicada" do CONTRIBUTING lista quatro), e o
+  `package.json` está em `0.1.0` — não é fonte. Se um dia a versão for exibida
+  no painel, ela precisa de um dono só, e o `package.json` passaria a ser
+  mantido de propósito.
+- **A faixa horizontal do painel abaixo de `lg` passou de 364 para 392 px em
+  900 px de largura** (+28 px: o `gap-3` mais a linha de 16 px). Sem rolagem
+  horizontal em 1440, 1280, 1024 e 900. A D11 tinha medido 364 antes desta
+  linha; refaça se entrar mais um item no pé da barra.
+- **O bloco da conta e o crédito dividem um `div` com `gap-3`**, em vez de o
+  crédito ser mais um filho do `aside` — que tem `gap-8`. Trinta e dois pixels
+  entre a conta e uma linha de rodapé a fariam parecer uma seção própria.
+- **Telefone em lugar nenhum público; e-mail só no README e no estudo de
+  caso.** O que envelhece com o desenvolvedor não vai na tela da instituição;
+  o handle do GitHub é o identificador estável, e o repositório com a wiki
+  está a um clique dele. Repositório público é indexado — por isso nem o
+  README tem telefone.
+- **As capturas da wiki não foram refeitas.** O crédito não é etapa de
+  processo: as capturas da tela de matrícula (retirada e devolução) não
+  mostram nada falso, só omitem uma linha de rodapé. Refazê-las custaria uma
+  sessão de captura inteira.
+- **`p:last-of-type` dentro do `aside` casa o "Painel Administrativo", não o
+  crédito.** É por pai, não por documento: o primeiro `div` do `aside` tem um
+  `<p>` que é o último entre os irmãos dele. Custou um falso negativo. A
+  âncora exclusiva é `a[href="https://github.com/viccenzo-boff"]` e o
+  `closest('p')` dela — mesma família dos três gêmeos de `role="status"`
+  registrados na D07 e na D08.
+- **A página do estudo de caso estava envelhecida em duas frases e três
+  números, e foi corrigida em commit próprio.** "Não há sexta página de
+  processo" e "a mensagem errada do inventário continua errada" eram
+  desmentidas pela própria página (a decisão 8 conta a correção de setembro);
+  a tabela "Depois" dizia 16/15 páginas, 5 processos e 49 capturas contra
+  17/16, 6 e 58 contados na árvore. **A linha de palavras ficou como estava:**
+  o 26.600 publicado não sai de `wc -w` sobre o markdown (dá 33.736 no commit
+  da D14), o método não está registrado, e publicar uma contagem por outro
+  método seria comparar coisas diferentes com a mesma cara.
+- **`github.com/viccenzo-boff` como texto de link reprova no Vale**
+  (`Vale.Terms`: "Use 'GitHub' instead of 'github'") — o termo canônico casa
+  dentro do hostname, como o `bpmn` dentro de `bpmn.io` na D05. Na wiki o
+  texto do link é o handle (`viccenzo-boff`), com o rótulo "GitHub:" antes; no
+  README e no tablet, que o Vale não lê, o hostname fica por extenso.
 
 **Tarefa D01 — Congelar a v1.0 e criar o estado de demonstração (concluída):**
 a primeira da **série de documentação** (`tarefa-doc-NN`, regida pela
