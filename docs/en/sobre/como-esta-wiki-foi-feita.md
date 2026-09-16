@@ -303,10 +303,13 @@ Honesty about scope is worth more than a list of achievements.
 
 ## After, what exists today
 
+<!-- Pages and words come from `npm run docs:palavras` (rendered text of the
+     built site, per language). Do not count the markdown: it gives ~27% more. -->
+
 | What | How much |
 | --- | --- |
 | Pages | 17 in Portuguese, 16 in English |
-| Words | About 26,600 in Portuguese, 30,100 in English |
+| Words | About 31,100 in Portuguese, 35,400 in English |
 | Documented processes | 6: five with the eight sections and the diagram, and the reports one with seven, without a diagram |
 | BPMN diagrams | 5 `.bpmn` sources under version control, with the SVG derived from them by command |
 | Screenshots | 58, none holding real personal data |

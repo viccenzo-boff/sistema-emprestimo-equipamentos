@@ -304,10 +304,13 @@ Honestidade sobre escopo vale mais que lista de conquistas.
 
 ## Depois: o que existe hoje
 
+<!-- Páginas e palavras saem de `npm run docs:palavras` (texto renderizado do
+     site construído, por idioma). Não conte no markdown: dá ~27 % a mais. -->
+
 | O que | Quanto |
 | --- | --- |
 | Páginas | 17 em português, 16 em inglês |
-| Palavras | Cerca de 26.600 em português, 30.100 em inglês |
+| Palavras | Cerca de 31.100 em português, 35.400 em inglês |
 | Processos documentados | 6 — cinco com as oito seções e o diagrama, e o de relatórios com sete, sem diagrama |
 | Diagramas BPMN | 5 fontes `.bpmn` versionadas, com o SVG derivado delas por comando |
 | Capturas de tela | 58, nenhuma com dado de pessoa real |

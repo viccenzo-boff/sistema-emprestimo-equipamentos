@@ -1555,10 +1555,16 @@ larguras do painel, com o contraste calculado pelo pixel do `<canvas>`.
   processo" e "a mensagem errada do inventário continua errada" eram
   desmentidas pela própria página (a decisão 8 conta a correção de setembro);
   a tabela "Depois" dizia 16/15 páginas, 5 processos e 49 capturas contra
-  17/16, 6 e 58 contados na árvore. **A linha de palavras ficou como estava:**
-  o 26.600 publicado não sai de `wc -w` sobre o markdown (dá 33.736 no commit
-  da D14), o método não está registrado, e publicar uma contagem por outro
-  método seria comparar coisas diferentes com a mesma cara.
+  17/16, 6 e 58 contados na árvore. **A linha de palavras ganhou um
+  comando** (`npm run docs:palavras`, em
+  [contar-palavras.mjs](scripts/contar-palavras.mjs)): o 26.600 publicado
+  não saía de `wc -w` sobre o markdown (33.736 no commit da D14), e o método
+  não estava registrado. O conferidor lê o texto do `<article>` do site
+  construído, por idioma, e rodado sobre o commit da D14 devolve **26.675 e
+  30.315** — o método da tabela era esse. Hoje: 31.092 e 35.446, publicados
+  como "cerca de 31.100 e 35.400". A receita está no CONTRIBUTING ("Os
+  números do estudo de caso") e o comando, em comentário HTML ao lado da
+  própria tabela — que é o arquivo aberto na hora do gesto.
 - **`github.com/viccenzo-boff` como texto de link reprova no Vale**
   (`Vale.Terms`: "Use 'GitHub' instead of 'github'") — o termo canônico casa
   dentro do hostname, como o `bpmn` dentro de `bpmn.io` na D05. Na wiki o

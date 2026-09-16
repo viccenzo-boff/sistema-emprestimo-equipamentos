@@ -212,6 +212,27 @@ Quatro coisas que economizam um diagnóstico:
   todo mundo aprende a ignorar. O link canônico do próprio site também falharia
   enquanto o Pages não estiver ligado.
 
+### Os números do estudo de caso
+
+A tabela "Depois: o que existe hoje" da página
+[como-esta-wiki-foi-feita.md](docs/sobre/como-esta-wiki-foi-feita.md) publica
+páginas e palavras por idioma. O número sai de um comando, e não de `wc -w`:
+
+```bash
+npm run docs:palavras            # constrói o site e conta
+npm run docs:palavras -- --site  # só conta, sobre o site/ já construído
+```
+
+Ele lê o texto do `<article>` de cada página do **site construído**, mapeando
+cada `.md` de `docs/` à página gerada para ele — `docs/en/**` é inglês, o
+resto é português, e as páginas que o `fallback_to_default` cria em `/en/` a
+partir de um `.md` português não entram. `wc -w` sobre o markdown dá ~27 % a
+mais (URL de link, célula de tabela, comentário HTML), e foi por isso que a
+primeira tentativa de atualizar a tabela não bateu com o número publicado: o
+conferidor rodado sobre o commit da D14 devolve 26.675 e 30.315, que são os
+"cerca de 26.600 e 30.100" da tabela — o método é este. Atualize as duas
+páginas (PT e EN) juntas, arredondando à centena.
+
 ### Os diagramas BPMN (D04)
 
 A fonte de cada processo é um `.bpmn` em `docs/processos-fonte/` — XML padrão

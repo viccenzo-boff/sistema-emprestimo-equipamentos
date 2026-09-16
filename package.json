@@ -15,6 +15,7 @@
     "db:studio": "prisma studio",
     "docs:diagramas": "node scripts/exportar-diagramas.mjs",
     "docs:links": "node scripts/verificar-links.mjs",
+    "docs:palavras": "node scripts/contar-palavras.mjs",
     "db:generate": "prisma generate",
     "postinstall": "prisma generate"
   },
