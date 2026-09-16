@@ -1,0 +1,1880 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Manual de uso e documentação de processos do sistema de empréstimo de notebooks, tablets e extensões da Unoesc.">
+      
+      
+        <meta name="author" content="Viccenzo Boff">
+      
+      
+        <link rel="canonical" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.2/referencia/regras-de-negocio/">
+      
+      
+        <link rel="prev" href="../estados-e-transicoes/">
+      
+      
+        <link rel="next" href="../conta-do-administrador/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="pt-BR">
+        
+          <link rel="alternate" href="../../en/referencia/regras-de-negocio/" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../assets/brand/logo-unoesc-colorido.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Regras de negócio - Sistema de Empréstimo de Equipamentos — Unoesc</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/marca.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#regras-de-negocio" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="Sistema de Empréstimo de Equipamentos — Unoesc" class="md-header__button md-logo" aria-label="Sistema de Empréstimo de Equipamentos — Unoesc" data-md-component="logo">
+      
+  <img src="../../assets/brand/logo-unoesc-colorido.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Sistema de Empréstimo de Equipamentos — Unoesc
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Regras de negócio
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Mudar para o modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Mudar para o modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Mudar para o modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Mudar para o modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Selecione o idioma">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="pt-BR" class="md-select__link">
+              Português (Brasil)
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../en/referencia/regras-de-negocio/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    viccenzo-boff/sistema-emprestimo-equipamentos
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Sistema de Empréstimo de Equipamentos — Unoesc" class="md-nav__button md-logo" aria-label="Sistema de Empréstimo de Equipamentos — Unoesc" data-md-component="logo">
+      
+  <img src="../../assets/brand/logo-unoesc-colorido.png" alt="logo">
+
+    </a>
+    Sistema de Empréstimo de Equipamentos — Unoesc
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    viccenzo-boff/sistema-emprestimo-equipamentos
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Início
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guia de Início Rápido
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guia de Início Rápido
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../inicio-rapido/estudante-e-professor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Estudante e Professor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../inicio-rapido/secretaria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secretaria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Processos do Portal
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Processos do Portal
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../portal/retirada/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Retirada de equipamento
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../portal/devolucao/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Devolução de equipamento
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Processos do Painel
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Processos do Painel
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/baixa-fisica/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Baixa física
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/inventario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Gestão de inventário
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/pessoas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Gestão de pessoas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/relatorios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Relatórios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referência
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referência
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossário
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../estados-e-transicoes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Estados e transições
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regras de negócio
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regras de negócio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#devolver-e-declarar-nao-e-entregar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Devolver é declarar, não é entregar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cada-item-retirado-e-um-emprestimo-separado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cada item retirado é um empréstimo separado
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#os-tres-horarios-sao-tres-campos-e-cada-um-tem-um-dono-so" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Os três horários são três campos, e cada um tem um dono só
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aposentar-um-equipamento-nao-e-apaga-lo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aposentar um equipamento não é apagá-lo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#categoria-se-apaga-equipamento-e-pessoa-nunca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Categoria se apaga; equipamento e pessoa, nunca
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inativar-pessoa-e-inativar-equipamento-nao-sao-a-mesma-regra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inativar pessoa e inativar equipamento não são a mesma regra
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-cadastro-inativo-pode-devolver-e-nao-pode-retirar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O cadastro inativo pode devolver, e não pode retirar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-matricula-e-texto-e-corrigi-la-leva-o-historico-junto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A matrícula é texto, e corrigi-la leva o histórico junto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-importacao-mostra-antes-de-escrever-e-preserva-o-que-a-planilha-nao-traz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A importação mostra antes de escrever, e preserva o que a planilha não traz
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-portal-nao-tem-login-e-se-fecha-sozinho" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O portal não tem login, e se fecha sozinho
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-avaliacao-e-anonima-e-cada-pessoa-e-perguntada-uma-vez-a-cada-30-dias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A avaliação é anônima, e cada pessoa é perguntada uma vez a cada 30 dias
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#onde-continuar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Onde continuar
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../conta-do-administrador/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conta do administrador
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sobre
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sobre
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sobre/arquitetura-do-sistema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitetura do sistema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sobre/como-esta-wiki-foi-feita/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Como esta wiki foi feita
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribuir
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contribuir
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contribuir/guia-de-estilo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guia de estilo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contribuir/template-processo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Template de processo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#devolver-e-declarar-nao-e-entregar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Devolver é declarar, não é entregar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cada-item-retirado-e-um-emprestimo-separado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cada item retirado é um empréstimo separado
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#os-tres-horarios-sao-tres-campos-e-cada-um-tem-um-dono-so" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Os três horários são três campos, e cada um tem um dono só
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aposentar-um-equipamento-nao-e-apaga-lo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aposentar um equipamento não é apagá-lo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#categoria-se-apaga-equipamento-e-pessoa-nunca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Categoria se apaga; equipamento e pessoa, nunca
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inativar-pessoa-e-inativar-equipamento-nao-sao-a-mesma-regra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inativar pessoa e inativar equipamento não são a mesma regra
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-cadastro-inativo-pode-devolver-e-nao-pode-retirar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O cadastro inativo pode devolver, e não pode retirar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-matricula-e-texto-e-corrigi-la-leva-o-historico-junto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A matrícula é texto, e corrigi-la leva o histórico junto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-importacao-mostra-antes-de-escrever-e-preserva-o-que-a-planilha-nao-traz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A importação mostra antes de escrever, e preserva o que a planilha não traz
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-portal-nao-tem-login-e-se-fecha-sozinho" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O portal não tem login, e se fecha sozinho
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-avaliacao-e-anonima-e-cada-pessoa-e-perguntada-uma-vez-a-cada-30-dias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A avaliação é anônima, e cada pessoa é perguntada uma vez a cada 30 dias
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#onde-continuar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Onde continuar
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/edit/main/docs/referencia/regras-de-negocio.md" title="Editar esta página" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="regras-de-negocio">Regras de negócio</h1>
+<p>As decisões de produto que explicam por que o sistema se comporta como se
+comporta. Cada regra vem em três partes: <strong>o que o sistema faz</strong>, <strong>por que faz
+assim</strong> e <strong>o que quebraria</strong> se fizesse diferente.</p>
+<p>A terceira parte é a que dá valor à página. Regra sem consequência declarada é
+regra que alguém "simplifica" na primeira refatoração, de boa-fé, sem ter como
+saber o que estava segurando.</p>
+<div class="admonition note">
+<p class="admonition-title">Esta página não substitui o <code>AGENTS.md</code>, e isso é de propósito</p>
+<p>O <a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/blob/main/AGENTS.md">AGENTS.md</a>
+descreve as mesmas regras para quem vai mexer no código: fala em campo,
+transação e chave estrangeira. Esta página fala em bancada, aparelho e
+balcão.</p>
+<p>São dois vocabulários para o mesmo conjunto de regras, e as duas versões
+precisam existir — quem opera o balcão não deve ter que ler um arquivo de
+instrução de código para entender por que um botão recusou. <strong>Não tente
+unificar as duas.</strong> Quando uma regra mudar, mudam as duas.</p>
+</div>
+<hr />
+<h2 id="devolver-e-declarar-nao-e-entregar">Devolver é declarar, não é entregar</h2>
+<p><strong>O que o sistema faz.</strong> Quando alguém toca em <strong>Confirmar devolução</strong> no
+<a href="../glossario/#portal">portal</a>, o empréstimo sai de <code>ATIVO</code> e vai para
+<code>AGUARDANDO_BAIXA</code>. O aparelho <strong>não</strong> volta a ficar disponível: ele continua
+<code>EMPRESTADO</code> até a secretaria confirmar o recebimento no
+<a href="../glossario/#painel">painel</a>.</p>
+<p><strong>Por que faz assim.</strong> Porque o tablet não tem como conferir nada. Ele registra
+uma afirmação — "eu deixei o aparelho na <a href="../glossario/#bancada">bancada</a>" — e
+quem verifica se o aparelho está mesmo lá é uma pessoa, com o aparelho na mão.
+A <a href="../glossario/#baixa-fisica">baixa física</a> é essa verificação.</p>
+<p><strong>O que quebraria.</strong> O portal ofereceria a outra pessoa um equipamento que ainda
+está em cima da bancada — ou que nunca chegou lá. A segunda pessoa faria a
+retirada, iria buscar na prateleira e não acharia nada; e o sistema mostraria
+duas pessoas com o mesmo aparelho, sem nenhum erro em lugar nenhum.</p>
+<p>O intervalo entre os dois momentos tem nome: é o
+<a href="../glossario/#tempo-de-prateleira">tempo de prateleira</a>.</p>
+<hr />
+<h2 id="cada-item-retirado-e-um-emprestimo-separado">Cada item retirado é um empréstimo separado</h2>
+<p><strong>O que o sistema faz.</strong> Quem leva um notebook e uma extensão na mesma ida ao
+balcão gera <strong>dois</strong> registros, não um com dois itens.</p>
+<p><strong>Por que faz assim.</strong> Porque os dois aparelhos voltam em momentos diferentes.
+Devolver a extensão hoje e ficar com o notebook até sexta é o caso comum, e não
+a exceção.</p>
+<p><strong>O que quebraria.</strong> Uma devolução parcial não teria como ser registrada. A
+pessoa devolveria um item e o sistema teria que escolher entre encerrar o
+empréstimo inteiro (perdendo o notebook de vista) ou não encerrar nada (mantendo
+a extensão fora de circulação). Na fila da secretaria, cada linha deixaria de ser
+uma tarefa física com um aparelho e uma <a href="../glossario/#etiqueta">etiqueta</a>.</p>
+<hr />
+<h2 id="os-tres-horarios-sao-tres-campos-e-cada-um-tem-um-dono-so">Os três horários são três campos, e cada um tem um dono só</h2>
+<p><strong>O que o sistema faz.</strong> Um empréstimo guarda três marcadores de tempo: a
+retirada, a devolução declarada no tablet e a baixa conferida no painel. Um
+nunca sobrescreve o outro.</p>
+<p><strong>Por que faz assim.</strong> Porque a diferença entre o segundo e o terceiro é a única
+medida do gargalo operacional do sistema — quanto tempo o aparelho ficou parado
+na bancada, fisicamente livre e invisível para quem queria pegá-lo.</p>
+<p><strong>O que quebraria.</strong> Se a baixa regravasse o horário da devolução, os dois
+carimbos ficariam iguais e o tempo de prateleira daria <strong>zero para sempre</strong>. E
+daria zero em silêncio: os registros continuariam certos, o relatório continuaria
+somando, e o número apenas diria que não existe gargalo nenhum.</p>
+<div class="admonition info">
+<p class="admonition-title">A nota técnica dessa regressão mora na página da baixa física</p>
+<p>Ela está em
+<a href="../../painel/baixa-fisica/#7-regras-que-nao-sao-obvias">Baixa física, §7</a>,
+num bloco recolhido, e não é repetida aqui — dizer a mesma coisa em dois
+lugares é como as duas versões passam a discordar.</p>
+</div>
+<hr />
+<h2 id="aposentar-um-equipamento-nao-e-apaga-lo">Aposentar um equipamento não é apagá-lo</h2>
+<p><strong>O que o sistema faz.</strong> Um aparelho que sai de circulação para sempre vai para
+<code>INATIVO</code>. Ele some do portal — inclusive das contagens de disponibilidade — e
+continua na lista do inventário, em cinza, com um botão para reativar. Nenhuma
+tela apaga equipamento.</p>
+<p><strong>Por que faz assim.</strong> Porque o histórico de empréstimos aponta para o aparelho.
+Apagar o <code>NOTE-03</code> levaria junto o registro de quem o usou no semestre passado, e
+com ele a resposta para "quem estava com este notebook quando a tela quebrou".</p>
+<p><strong>O que quebraria.</strong> O sistema perderia justamente a informação que a secretaria
+procura quando um aparelho volta com defeito. Por isso o ícone da ação é um
+círculo cortado e não uma lixeira: lixeira promete que o registro some, e ele não
+some.</p>
+<p><a href="../glossario/#manutencao">Manutenção</a> é o contrário — temporária, para conserto,
+com volta de um clique.</p>
+<hr />
+<h2 id="categoria-se-apaga-equipamento-e-pessoa-nunca">Categoria se apaga; equipamento e pessoa, nunca</h2>
+<p><strong>O que o sistema faz.</strong> <a href="../glossario/#categoria">Categoria</a> pode ser excluída de
+verdade, mas só quando está vazia. Quem recusa a exclusão de uma categoria em uso
+é o banco de dados, não a tela.</p>
+<p><strong>Por que faz assim.</strong> Nenhum empréstimo aponta para uma categoria — ela é só o
+nome da prateleira. Já o equipamento e a pessoa são apontados pelo histórico, e
+por isso a única saída para os dois é a inativação.</p>
+<p><strong>O que quebraria.</strong> Se a recusa morasse só na tela, um caminho que não passasse
+por ela deixaria equipamentos apontando para uma categoria que não existe mais —
+e eles sumiriam do portal inteiro, porque a grade é organizada por categoria.</p>
+<div class="admonition note">
+<p class="admonition-title">Inativar os equipamentos não libera a exclusão</p>
+<p>O item inativo continua vinculado e o banco recusa igual. Como não existe
+tela que mova um equipamento de categoria, e equipamento nunca é apagado,
+<strong>categoria com equipamento não é excluível pelo painel</strong> — o que inativar
+faz é tirá-la do tablet, porque item inativo não conta na grade.</p>
+<p>O comportamento e a saída estão em
+<a href="../../painel/inventario/#por-que-nao-da-para-excluir-uma-categoria-que-tem-equipamento">Gestão de inventário, §7</a>.
+Até setembro de 2026 a mensagem de recusa mandava inativar "antes de
+excluí-la", como se isso liberasse; a frase foi corrigida.</p>
+</div>
+<hr />
+<h2 id="inativar-pessoa-e-inativar-equipamento-nao-sao-a-mesma-regra">Inativar pessoa e inativar equipamento não são a mesma regra</h2>
+<p><strong>O que o sistema faz.</strong> Os dois campos têm o mesmo nome e regras opostas quanto
+a empréstimo aberto:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Pessoa</th>
+<th>Equipamento</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Inativar com empréstimo aberto</td>
+<td><strong>Permitido</strong>, com aviso</td>
+<td><strong>Recusado</strong> até o ciclo fechar</td>
+</tr>
+<tr>
+<td>Efeito no portal</td>
+<td>Entra, mas não retira</td>
+<td>Some, inclusive das contagens</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Por que faz assim.</strong> Quem é inativado — trancou a matrícula, se formou, saiu da
+instituição — quase sempre está com um aparelho na mochila. É exatamente o
+momento em que a secretaria precisa inativar, e travar até a devolução deixaria o
+cadastro apto a retirar mais coisas até alguém lembrar de voltar lá.</p>
+<p>O equipamento é o oposto: mudar a situação dele no meio de um empréstimo aberto
+criaria a inconsistência que a
+<a href="../estados-e-transicoes/#as-duas-ao-mesmo-tempo">tabela cruzada</a> marca como
+impossível.</p>
+<p><strong>O que quebraria.</strong> Travar a inativação da pessoa produziria cadastros ativos
+que ninguém quer ativos. Liberar a do equipamento produziria um aparelho "em
+manutenção" que está na mão de alguém.</p>
+<hr />
+<h2 id="o-cadastro-inativo-pode-devolver-e-nao-pode-retirar">O cadastro inativo pode devolver, e não pode retirar</h2>
+<p><strong>O que o sistema faz.</strong> A matrícula de um
+<a href="../glossario/#cadastro-inativo-pessoa">cadastro inativo</a> entra normalmente no
+portal. A lista "Meus equipamentos" aparece e funciona; a grade de categorias dá
+lugar a uma explicação.</p>
+<p><strong>Por que faz assim.</strong> A assimetria é a regra inteira. Quem devolve não está
+pedindo nada ao sistema — está entregando. Bloquear os dois lados transformaria a
+inativação na garantia de que o equipamento nunca volta.</p>
+<p><strong>O que quebraria.</strong> O aparelho ficaria preso: fora de circulação no sistema,
+dentro de uma mochila na rua, e sem nenhum gesto disponível para quem quisesse
+devolvê-lo. A secretaria teria que reativar o cadastro só para deixar a pessoa
+devolver, e depois lembrar de inativar de novo.</p>
+<hr />
+<h2 id="a-matricula-e-texto-e-corrigi-la-leva-o-historico-junto">A matrícula é texto, e corrigi-la leva o histórico junto</h2>
+<p><strong>O que o sistema faz.</strong> A matrícula aceita <strong>só dígitos, no máximo quinze</strong>, e é
+guardada como texto. Ela pode ser corrigida no painel, e os empréstimos daquela
+pessoa acompanham a correção na mesma operação.</p>
+<p><strong>Por que faz assim.</strong> Guardada como número, <code>0012345</code> viraria <code>12345</code> — dois
+cadastros diferentes para a mesma pessoa, e a matrícula do crachá deixaria de
+funcionar no tablet. O limite de quinze dígitos e a recusa de letras vêm do
+teclado do portal, que é numérico: a regra é a do consumidor mais restrito, e não
+a da tela que cadastra.</p>
+<p><strong>O que quebraria.</strong> Uma validação mais frouxa no painel deixaria gravar uma
+matrícula que <strong>ninguém consegue digitar no tablet</strong> — um cadastro que existe,
+aparece nas listas e é inútil. E uma correção que não levasse o histórico junto
+deixaria os empréstimos antigos apontando para uma matrícula que não existe mais.</p>
+<hr />
+<h2 id="a-importacao-mostra-antes-de-escrever-e-preserva-o-que-a-planilha-nao-traz">A importação mostra antes de escrever, e preserva o que a planilha não traz</h2>
+<p><strong>O que o sistema faz.</strong> A importação de planilha tem uma prévia obrigatória, que
+não grava nada, separando as linhas em quatro grupos: cadastrar, atualizar, sem
+mudança e com erro. Na gravação, <strong>coluna que o arquivo não trouxe é campo que o
+banco preserva</strong>.</p>
+<p><strong>Por que faz assim.</strong> A operação não tem desfazer, e um arquivo errado
+sobrescreveria centenas de cadastros de uma vez. A prévia é a única chance de ver
+o estrago antes de ele acontecer.</p>
+<p>A preservação existe porque a planilha da coordenação não conhece tudo: ela não
+traz a coluna de situação, por exemplo. Se a ausência valesse como "apague",
+importar a lista de segunda-feira reativaria todos os cadastros que a secretaria
+inativou na semana passada.</p>
+<p><strong>O que quebraria.</strong> Sem a prévia, um relatório depois do fato só contaria o
+estrago. Sem a preservação, cada importação desfaria em silêncio o trabalho manual
+feito no painel desde a anterior.</p>
+<hr />
+<h2 id="o-portal-nao-tem-login-e-se-fecha-sozinho">O portal não tem login, e se fecha sozinho</h2>
+<p><strong>O que o sistema faz.</strong> O portal não pede senha: a identificação é a
+<a href="../glossario/#matricula">matrícula</a>, digitada a cada atendimento. Depois de dois
+minutos sem nenhum toque, a tela volta para o começo.</p>
+<p><strong>Por que faz assim.</strong> O tablet fica na bancada e é compartilhado. Senha em
+dispositivo compartilhado é senha que alguém escreve num papel colado atrás.</p>
+<p><strong>O que quebraria.</strong> Sem o encerramento automático, a próxima pessoa a chegar na
+bancada encontraria a tela de outra — e conseguiria retirar equipamento no nome
+dela, ou declarar uma devolução que não aconteceu.</p>
+<div class="admonition info">
+<p class="admonition-title">Isso vale só para o portal</p>
+<p>O painel da secretaria exige login e senha individuais, e o comportamento
+dele está em <a href="../conta-do-administrador/">Conta do administrador</a>.</p>
+</div>
+<hr />
+<h2 id="a-avaliacao-e-anonima-e-cada-pessoa-e-perguntada-uma-vez-a-cada-30-dias">A avaliação é anônima, e cada pessoa é perguntada uma vez a cada 30 dias</h2>
+<p><strong>O que o sistema faz.</strong> No fim de uma <a href="../glossario/#retirada">retirada</a>, a tela
+de confirmação pode mostrar quatro rostos sob a pergunta "Como foi a
+retirada?". Eles aparecem quando a pessoa nunca foi perguntada ou quando a
+última vez foi há <strong>30 dias ou mais</strong> — contados do dia em que os rostos
+<strong>apareceram</strong>, tenha ela tocado ou não. Um toque grava a nota (de 1, Muito
+ruim, a 4, Muito bom) e o dia. O sistema <strong>não grava</strong> quem tocou, com que
+perfil, nem a que horas: a linha de avaliação tem só a nota e o dia. O painel
+mostra médias, contagens e taxa de resposta, nunca um voto; a planilha baixada
+traz só <code>dia</code> e <code>nota</code>.</p>
+<p><strong>Por que faz assim.</strong> Quem retira equipamento todo dia não pode ser
+interrogado todo dia — a pesquisa que irrita é a pesquisa que ninguém responde,
+e quem a ignora seria justamente quem a veria mais. E o anonimato precisa ser
+uma propriedade do dado, não uma cortesia da tela: um carimbo com a hora
+cruzaria com a hora da retirada e apontaria quem deu a nota 1; o perfil
+apontaria o professor do dia. Sem esses campos, não há o que cruzar — nem para
+quem abre o banco.</p>
+<p><strong>O que quebraria.</strong> Contar os 30 dias a partir da <strong>resposta</strong>, e não da
+aparição, faria os rostos aparecerem em toda retirada para quem os ignora — e a
+taxa de resposta, que é a métrica que denuncia a fadiga, deixaria de existir.
+Gravar a hora "só para ordenar" recriaria o cruzamento que tirar o carimbo
+existe para impedir; o mesmo vale para um número de ordem que cresça com o
+tempo, que é uma hora disfarçada. O limite honesto é a população pequena: no
+dia em que <strong>uma pessoa só</strong> foi perguntada, quem lê o banco sabe de quem é a
+nota. A tela nunca mostra isso, e a wiki diz que o limite existe em vez de
+prometer mais do que o dado sustenta.</p>
+<div class="admonition info">
+<p class="admonition-title">O QR code é outra coisa</p>
+<p>Ao lado dos rostos pode aparecer um QR code que abre, no celular, um
+formulário de sugestões da secretaria — fora do sistema, porque o celular
+não alcança o computador da secretaria pela rede. Ele só aparece quando o
+link está configurado na aba <strong>Satisfação</strong> dos relatórios, e é
+independente dos rostos: um pode aparecer sem o outro.</p>
+</div>
+<hr />
+<h2 id="onde-continuar">Onde continuar</h2>
+<ul>
+<li>O desenho completo das transições está em
+  <a href="../estados-e-transicoes/">Estados e transições</a>.</li>
+<li>O vocabulário está no <a href="../glossario/">Glossário</a>.</li>
+<li>Cada regra aparece de novo, no contexto do gesto que a dispara, na seção 7
+  das cinco páginas de processo.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../estados-e-transicoes/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Estados e transições">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Estados e transições
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../conta-do-administrador/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Conta do administrador">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Conta do administrador
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Nome e logo da Unoesc usados com autorização da instituição.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.footer", "navigation.indexes", "toc.follow", "content.action.edit", "search.highlight", "search.suggest"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js"></script>
+      
+    
+  </body>
+</html>

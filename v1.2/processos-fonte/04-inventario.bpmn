@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definicoes_inventario" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:collaboration id="Colaboracao_inventario">
+    <bpmn:participant id="Participante_inventario" name="Gestão de inventário" processRef="Processo_inventario" />
+  </bpmn:collaboration>
+  <bpmn:process id="Processo_inventario" isExecutable="false">
+    <bpmn:laneSet id="Raias_inventario">
+      <bpmn:lane id="Raia_secretaria" name="Secretaria">
+        <bpmn:flowNodeRef>AbreInventario</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>QualGesto</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>PreencheCadastro</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>DigitaNovaEtiqueta</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EscolheSituacao</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Raia_sistema" name="Sistema">
+        <bpmn:flowNodeRef>EtiquetaLivre</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimCadastroRecusado</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CriaEquipamento</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimCadastrado</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ItemDisponivel</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimTrocaRecusada</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>RenomeiaEtiqueta</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimRenomeado</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>TemEmprestimoAberto</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimEmUso</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>TransicaoPermitida</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimTransicaoInvalida</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GravaSituacao</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>QualSituacao</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimManutencao</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimInativo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>FimDisponivel</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="AbreInventario" name="Abre a aba Inventário">
+      <bpmn:outgoing>Fluxo_ate_gesto</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="QualGesto" name="O que precisa ser feito?">
+      <bpmn:incoming>Fluxo_ate_gesto</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_cadastrar</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_corrigir_etiqueta</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_mudar_situacao</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="PreencheCadastro" name="Preenche a etiqueta e escolhe a categoria">
+      <bpmn:incoming>Fluxo_cadastrar</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_etiqueta_livre</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="EtiquetaLivre" name="Etiqueta válida e ainda não usada?">
+      <bpmn:incoming>Fluxo_ate_etiqueta_livre</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_etiqueta_recusada</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_etiqueta_aceita</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="FimCadastroRecusado" name="Cadastro recusado: cada adesivo é único no armário">
+      <bpmn:incoming>Fluxo_etiqueta_recusada</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="CriaEquipamento" name="Cria o equipamento já DISPONIVEL">
+      <bpmn:incoming>Fluxo_etiqueta_aceita</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_cadastrado</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="FimCadastrado" name="No inventário e visível no tablet">
+      <bpmn:incoming>Fluxo_ate_cadastrado</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:task id="DigitaNovaEtiqueta" name="Digita a nova etiqueta no aviso de edição">
+      <bpmn:incoming>Fluxo_corrigir_etiqueta</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_item_disponivel</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="ItemDisponivel" name="O item está DISPONIVEL?">
+      <bpmn:incoming>Fluxo_ate_item_disponivel</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_troca_recusada</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_troca_aceita</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="FimTrocaRecusada" name="Troca recusada: a etiqueta só muda com o aparelho na bancada">
+      <bpmn:incoming>Fluxo_troca_recusada</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="RenomeiaEtiqueta" name="Renomeia; o banco leva o histórico de empréstimos junto">
+      <bpmn:incoming>Fluxo_troca_aceita</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_renomeado</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="FimRenomeado" name="Etiqueta corrigida, histórico preservado">
+      <bpmn:incoming>Fluxo_ate_renomeado</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:task id="EscolheSituacao" name="Escolhe a nova situação na linha do equipamento">
+      <bpmn:incoming>Fluxo_mudar_situacao</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_emprestimo_aberto</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="TemEmprestimoAberto" name="Tem empréstimo aberto?">
+      <bpmn:incoming>Fluxo_ate_emprestimo_aberto</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_em_uso</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_livre_de_emprestimo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="FimEmUso" name="Mudança recusada: feche o ciclo do empréstimo primeiro">
+      <bpmn:incoming>Fluxo_em_uso</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="TransicaoPermitida" name="A situação atual permite esse destino?">
+      <bpmn:incoming>Fluxo_livre_de_emprestimo</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_transicao_invalida</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_transicao_valida</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="FimTransicaoInvalida" name="Transição recusada: a situação mudou em outra aba">
+      <bpmn:incoming>Fluxo_transicao_invalida</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="GravaSituacao" name="Grava a nova situação do equipamento">
+      <bpmn:incoming>Fluxo_transicao_valida</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_ate_qual_situacao</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="QualSituacao" name="Qual foi o destino?">
+      <bpmn:incoming>Fluxo_ate_qual_situacao</bpmn:incoming>
+      <bpmn:outgoing>Fluxo_para_manutencao</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_para_inativo</bpmn:outgoing>
+      <bpmn:outgoing>Fluxo_para_disponivel</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="FimManutencao" name="Em manutenção: sai do tablet e volta com um clique">
+      <bpmn:incoming>Fluxo_para_manutencao</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="FimInativo" name="Aposentado: sai do tablet e o histórico segue apontando para ele">
+      <bpmn:incoming>Fluxo_para_inativo</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="FimDisponivel" name="De volta ao inventário e ao tablet">
+      <bpmn:incoming>Fluxo_para_disponivel</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Fluxo_ate_gesto" sourceRef="AbreInventario" targetRef="QualGesto" />
+    <bpmn:sequenceFlow id="Fluxo_cadastrar" name="cadastrar um equipamento" sourceRef="QualGesto" targetRef="PreencheCadastro" />
+    <bpmn:sequenceFlow id="Fluxo_corrigir_etiqueta" name="corrigir a etiqueta" sourceRef="QualGesto" targetRef="DigitaNovaEtiqueta" />
+    <bpmn:sequenceFlow id="Fluxo_mudar_situacao" name="mudar a situação" sourceRef="QualGesto" targetRef="EscolheSituacao" />
+    <bpmn:sequenceFlow id="Fluxo_ate_etiqueta_livre" sourceRef="PreencheCadastro" targetRef="EtiquetaLivre" />
+    <bpmn:sequenceFlow id="Fluxo_etiqueta_recusada" name="não" sourceRef="EtiquetaLivre" targetRef="FimCadastroRecusado" />
+    <bpmn:sequenceFlow id="Fluxo_etiqueta_aceita" name="sim" sourceRef="EtiquetaLivre" targetRef="CriaEquipamento" />
+    <bpmn:sequenceFlow id="Fluxo_ate_cadastrado" sourceRef="CriaEquipamento" targetRef="FimCadastrado" />
+    <bpmn:sequenceFlow id="Fluxo_ate_item_disponivel" sourceRef="DigitaNovaEtiqueta" targetRef="ItemDisponivel" />
+    <bpmn:sequenceFlow id="Fluxo_troca_recusada" name="não" sourceRef="ItemDisponivel" targetRef="FimTrocaRecusada" />
+    <bpmn:sequenceFlow id="Fluxo_troca_aceita" name="sim" sourceRef="ItemDisponivel" targetRef="RenomeiaEtiqueta" />
+    <bpmn:sequenceFlow id="Fluxo_ate_renomeado" sourceRef="RenomeiaEtiqueta" targetRef="FimRenomeado" />
+    <bpmn:sequenceFlow id="Fluxo_ate_emprestimo_aberto" sourceRef="EscolheSituacao" targetRef="TemEmprestimoAberto" />
+    <bpmn:sequenceFlow id="Fluxo_em_uso" name="sim" sourceRef="TemEmprestimoAberto" targetRef="FimEmUso" />
+    <bpmn:sequenceFlow id="Fluxo_livre_de_emprestimo" name="não" sourceRef="TemEmprestimoAberto" targetRef="TransicaoPermitida" />
+    <bpmn:sequenceFlow id="Fluxo_transicao_invalida" name="não" sourceRef="TransicaoPermitida" targetRef="FimTransicaoInvalida" />
+    <bpmn:sequenceFlow id="Fluxo_transicao_valida" name="sim" sourceRef="TransicaoPermitida" targetRef="GravaSituacao" />
+    <bpmn:sequenceFlow id="Fluxo_ate_qual_situacao" sourceRef="GravaSituacao" targetRef="QualSituacao" />
+    <bpmn:sequenceFlow id="Fluxo_para_manutencao" name="Manutenção" sourceRef="QualSituacao" targetRef="FimManutencao" />
+    <bpmn:sequenceFlow id="Fluxo_para_inativo" name="Inativo" sourceRef="QualSituacao" targetRef="FimInativo" />
+    <bpmn:sequenceFlow id="Fluxo_para_disponivel" name="Disponível" sourceRef="QualSituacao" targetRef="FimDisponivel" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="Diagrama_inventario">
+    <bpmndi:BPMNPlane id="Plano_inventario" bpmnElement="Colaboracao_inventario">
+      <bpmndi:BPMNShape id="Participante_inventario_di" bpmnElement="Participante_inventario" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1230" height="1230" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Raia_secretaria_di" bpmnElement="Raia_secretaria" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1200" height="380" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Raia_sistema_di" bpmnElement="Raia_sistema" isHorizontal="true">
+        <dc:Bounds x="190" y="460" width="1200" height="850" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="AbreInventario_di" bpmnElement="AbreInventario">
+        <dc:Bounds x="212" y="132" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="QualGesto_di" bpmnElement="QualGesto" isMarkerVisible="true">
+        <dc:Bounds x="330" y="125" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="200" y="218" width="145" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PreencheCadastro_di" bpmnElement="PreencheCadastro">
+        <dc:Bounds x="510" y="110" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DigitaNovaEtiqueta_di" bpmnElement="DigitaNovaEtiqueta">
+        <dc:Bounds x="510" y="230" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EscolheSituacao_di" bpmnElement="EscolheSituacao">
+        <dc:Bounds x="510" y="350" width="120" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EtiquetaLivre_di" bpmnElement="EtiquetaLivre" isMarkerVisible="true">
+        <dc:Bounds x="695" y="515" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="585" width="145" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimCadastroRecusado_di" bpmnElement="FimCadastroRecusado">
+        <dc:Bounds x="702" y="632" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CriaEquipamento_di" bpmnElement="CriaEquipamento">
+        <dc:Bounds x="810" y="500" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimCadastrado_di" bpmnElement="FimCadastrado">
+        <dc:Bounds x="1002" y="522" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="ItemDisponivel_di" bpmnElement="ItemDisponivel" isMarkerVisible="true">
+        <dc:Bounds x="695" y="745" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="815" width="145" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimTrocaRecusada_di" bpmnElement="FimTrocaRecusada">
+        <dc:Bounds x="702" y="862" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RenomeiaEtiqueta_di" bpmnElement="RenomeiaEtiqueta">
+        <dc:Bounds x="810" y="730" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimRenomeado_di" bpmnElement="FimRenomeado">
+        <dc:Bounds x="1002" y="752" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="TemEmprestimoAberto_di" bpmnElement="TemEmprestimoAberto" isMarkerVisible="true">
+        <dc:Bounds x="695" y="975" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="1045" width="140" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimEmUso_di" bpmnElement="FimEmUso">
+        <dc:Bounds x="702" y="1092" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TransicaoPermitida_di" bpmnElement="TransicaoPermitida" isMarkerVisible="true">
+        <dc:Bounds x="845" y="975" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="880" y="1045" width="140" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimTransicaoInvalida_di" bpmnElement="FimTransicaoInvalida">
+        <dc:Bounds x="852" y="1092" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GravaSituacao_di" bpmnElement="GravaSituacao">
+        <dc:Bounds x="960" y="960" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="QualSituacao_di" bpmnElement="QualSituacao" isMarkerVisible="true">
+        <dc:Bounds x="1145" y="975" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1180" y="1045" width="145" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimManutencao_di" bpmnElement="FimManutencao">
+        <dc:Bounds x="1302" y="982" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimInativo_di" bpmnElement="FimInativo">
+        <dc:Bounds x="1302" y="1092" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FimDisponivel_di" bpmnElement="FimDisponivel">
+        <dc:Bounds x="1302" y="1202" width="36" height="36" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Fluxo_ate_gesto_di" bpmnElement="Fluxo_ate_gesto">
+        <di:waypoint x="248" y="150" />
+        <di:waypoint x="330" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_cadastrar_di" bpmnElement="Fluxo_cadastrar">
+        <di:waypoint x="380" y="150" />
+        <di:waypoint x="510" y="150" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="390" y="126" width="110" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_corrigir_etiqueta_di" bpmnElement="Fluxo_corrigir_etiqueta">
+        <di:waypoint x="355" y="175" />
+        <di:waypoint x="355" y="270" />
+        <di:waypoint x="510" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="365" y="200" width="110" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_mudar_situacao_di" bpmnElement="Fluxo_mudar_situacao">
+        <di:waypoint x="355" y="175" />
+        <di:waypoint x="355" y="390" />
+        <di:waypoint x="510" y="390" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="365" y="300" width="110" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_etiqueta_livre_di" bpmnElement="Fluxo_ate_etiqueta_livre">
+        <di:waypoint x="630" y="150" />
+        <di:waypoint x="720" y="150" />
+        <di:waypoint x="720" y="515" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_etiqueta_recusada_di" bpmnElement="Fluxo_etiqueta_recusada">
+        <di:waypoint x="720" y="565" />
+        <di:waypoint x="720" y="632" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="558" width="45" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_etiqueta_aceita_di" bpmnElement="Fluxo_etiqueta_aceita">
+        <di:waypoint x="745" y="540" />
+        <di:waypoint x="810" y="540" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_cadastrado_di" bpmnElement="Fluxo_ate_cadastrado">
+        <di:waypoint x="930" y="540" />
+        <di:waypoint x="1002" y="540" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_item_disponivel_di" bpmnElement="Fluxo_ate_item_disponivel">
+        <di:waypoint x="630" y="270" />
+        <di:waypoint x="670" y="270" />
+        <di:waypoint x="670" y="770" />
+        <di:waypoint x="695" y="770" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_troca_recusada_di" bpmnElement="Fluxo_troca_recusada">
+        <di:waypoint x="720" y="795" />
+        <di:waypoint x="720" y="862" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="788" width="45" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_troca_aceita_di" bpmnElement="Fluxo_troca_aceita">
+        <di:waypoint x="745" y="770" />
+        <di:waypoint x="810" y="770" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_renomeado_di" bpmnElement="Fluxo_ate_renomeado">
+        <di:waypoint x="930" y="770" />
+        <di:waypoint x="1002" y="770" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_emprestimo_aberto_di" bpmnElement="Fluxo_ate_emprestimo_aberto">
+        <di:waypoint x="630" y="390" />
+        <di:waypoint x="650" y="390" />
+        <di:waypoint x="650" y="1000" />
+        <di:waypoint x="695" y="1000" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_em_uso_di" bpmnElement="Fluxo_em_uso">
+        <di:waypoint x="720" y="1025" />
+        <di:waypoint x="720" y="1092" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="730" y="1018" width="45" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_livre_de_emprestimo_di" bpmnElement="Fluxo_livre_de_emprestimo">
+        <di:waypoint x="745" y="1000" />
+        <di:waypoint x="845" y="1000" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_transicao_invalida_di" bpmnElement="Fluxo_transicao_invalida">
+        <di:waypoint x="870" y="1025" />
+        <di:waypoint x="870" y="1092" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="880" y="1018" width="45" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_transicao_valida_di" bpmnElement="Fluxo_transicao_valida">
+        <di:waypoint x="895" y="1000" />
+        <di:waypoint x="960" y="1000" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_ate_qual_situacao_di" bpmnElement="Fluxo_ate_qual_situacao">
+        <di:waypoint x="1080" y="1000" />
+        <di:waypoint x="1145" y="1000" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_para_manutencao_di" bpmnElement="Fluxo_para_manutencao">
+        <di:waypoint x="1195" y="1000" />
+        <di:waypoint x="1302" y="1000" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_para_inativo_di" bpmnElement="Fluxo_para_inativo">
+        <di:waypoint x="1170" y="1025" />
+        <di:waypoint x="1170" y="1110" />
+        <di:waypoint x="1302" y="1110" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1180" y="1026" width="70" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Fluxo_para_disponivel_di" bpmnElement="Fluxo_para_disponivel">
+        <di:waypoint x="1170" y="1025" />
+        <di:waypoint x="1170" y="1220" />
+        <di:waypoint x="1302" y="1220" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1180" y="1160" width="80" height="18" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

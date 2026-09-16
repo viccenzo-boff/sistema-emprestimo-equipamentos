@@ -1,0 +1,90 @@
+/*
+  Paleta institucional da Unoesc aplicada ao MkDocs Material.
+
+  Os tons sao os mesmos do sistema -- os tokens `@theme` de
+  src/app/globals.css --, convertidos de oklch para hex porque o Material
+  monta as variantes de cor por interpolacao e nao aceita oklch em todas
+  elas. A conversao foi calculada, nao estimada:
+
+    --color-marca-azul        oklch(34.2% 0.111 255.2) = #023770
+    --color-marca-azul-escuro oklch(26%   0.095 255.2) = #002250
+    --color-marca-azul-claro  oklch(45%   0.13  255.2) = #18559b
+    --color-marca-verde       oklch(65.1% 0.185 142.5) = #3aaa35
+    --color-marca-verde-forte oklch(50.8% 0.154 142.4) = #1f7a1b
+
+  A REGRA DOS DOIS VERDES (AGENTS.md) vale aqui, e ela INVERTE com o esquema.
+  Contrastes medidos, nao estimados:
+
+                              sobre branco   sobre o fundo escuro do slate
+    azul       #023770 ......... 11,78:1 ....... 1,38:1
+    verde      #3aaa35 ..........  3,01:1 ....... 5,40:1
+    verde-forte #1f7a1b .........  5,44:1 ....... 2,98:1
+
+  Ou seja: o verde da logo, que no sistema nunca pode virar texto porque da
+  3,0:1 no branco, e justamente o que passa no modo escuro; e o verde-forte,
+  que existe para ser texto no claro, e o que reprova no escuro. Por isso o
+  `--md-accent-fg-color` troca de valor entre os dois esquemas em vez de ser
+  um so. Trocar os dois de lugar reprova nos dois modos ao mesmo tempo.
+
+  O fundo do esquema escuro do Material e hsla(232, 15%, 14%) = #1e2029 --
+  lido do palette.css do tema instalado, nao suposto.
+*/
+
+/* ---------------------------------------------------------------- claro -- */
+
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #023770;
+  --md-primary-fg-color--light: #18559b;
+  --md-primary-fg-color--dark: #002250;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: #ffffffb3;
+
+  /* Realce (link sob o cursor, item ativo do indice): verde-forte, 5,44:1. */
+  --md-accent-fg-color: #1f7a1b;
+  --md-accent-fg-color--transparent: #1f7a1b1a;
+
+  /* Link em repouso: o azul da marca, 11,78:1. */
+  --md-typeset-a-color: #023770;
+}
+
+/* ---------------------------------------------------------------- escuro -- */
+
+[data-md-color-scheme="slate"] {
+  /* O cabecalho continua no azul da marca: e a faixa que identifica o site, e
+     branco sobre ele da 11,78:1 nos dois esquemas. */
+  --md-primary-fg-color: #023770;
+  --md-primary-fg-color--light: #18559b;
+  --md-primary-fg-color--dark: #002250;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: #ffffffb3;
+
+  /* Realce: aqui quem passa e o verde da logo, 5,40:1 sobre #1e2029. */
+  --md-accent-fg-color: #3aaa35;
+  --md-accent-fg-color--transparent: #3aaa351a;
+
+  /* Este NAO e opcional. No esquema slate o Material define
+     `--md-typeset-a-color: var(--md-primary-fg-color)` -- lido no
+     palette.css do tema --, e o azul da marca sobre o fundo escuro da
+     1,38:1: link invisivel, sem nada acusando. O tom e o mesmo azul com a
+     luminosidade subida ate 75% na escala oklch da marca
+     (oklch(75% 0.13 255.2) = #74b1ff), que da 7,32:1. */
+  --md-typeset-a-color: #74b1ff;
+}
+
+/* ------------------------------------------------------------------ logo -- */
+
+/*
+  A logo tem exatamente duas cores sobre transparencia -- 18,2% dos pixels em
+  #023770 e 13,0% em #3aaa35, o resto vazado (contado no arquivo, nao
+  estimado). Sobre o cabecalho azul, a parte azul daria 1,0:1 e sumiria
+  inteira: some justamente o nome, que e a maior das duas areas. O verde
+  sobreviveria a 3,92:1, entao o resultado seria meia logo.
+
+  Achatar para branco resolve os dois de uma vez, a 11,78:1, e e o tratamento
+  normal de marca institucional sobre faixa colorida. A versao em cores
+  continua no arquivo, para quem for usa-la no corpo da pagina (D11).
+*/
+.md-header__button.md-logo img,
+.md-nav__button.md-logo img {
+  filter: brightness(0) invert(1);
+}
