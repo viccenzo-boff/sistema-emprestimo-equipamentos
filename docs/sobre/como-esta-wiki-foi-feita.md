@@ -283,9 +283,6 @@ casos.
 
 Honestidade sobre escopo vale mais que lista de conquistas.
 
-- **Não há sexta página de processo.** A funcionalidade de relatórios e ocupação
-  está especificada e **não** foi construída — a wiki descreve o que existe, e
-  ela não existe. Quando entrar, vira uma versão nova, publicada ao lado desta.
 - **A interface do sistema continua só em português.** A wiki é bilíngue; o
   produto não. Traduzir a interface é uma semana de trabalho que não cabia, e a
   solução foi um **glossário de interface** na trilha em inglês, com cada rótulo
@@ -304,17 +301,16 @@ Honestidade sobre escopo vale mais que lista de conquistas.
 - **Não se registra quem deu a baixa.** O sistema sabe **quando** cada
   conferência aconteceu e passou a ter contas individuais, mas o empréstimo não
   guarda qual conta confirmou o recebimento.
-- **A mensagem errada do inventário continua errada**, pelo motivo da decisão 8.
 
 ## Depois: o que existe hoje
 
 | O que | Quanto |
 | --- | --- |
-| Páginas | 16 em português, 15 em inglês |
+| Páginas | 17 em português, 16 em inglês |
 | Palavras | Cerca de 26.600 em português, 30.100 em inglês |
-| Processos documentados | 5, com as oito seções cada |
+| Processos documentados | 6 — cinco com as oito seções e o diagrama, e o de relatórios com sete, sem diagrama |
 | Diagramas BPMN | 5 fontes `.bpmn` versionadas, com o SVG derivado delas por comando |
-| Capturas de tela | 49, nenhuma com dado de pessoa real |
+| Capturas de tela | 58, nenhuma com dado de pessoa real |
 | Portões no CI | 3, e a publicação depende dos três |
 
 O número que importa não está na tabela: **quem chega com uma dúvida operacional

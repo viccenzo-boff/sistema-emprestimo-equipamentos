@@ -281,9 +281,6 @@ explicit branch for the two cases.
 
 Honesty about scope is worth more than a list of achievements.
 
-- **There is no sixth process page.** The reporting and occupancy feature is
-  specified and was **not** built. The wiki describes what exists, and it does
-  not exist. When it lands, it becomes a new version, published beside this one.
 - **The system interface is still Portuguese only.** The wiki is bilingual, the
   product is not. Translating the interface is a week of work that did not fit,
   and the answer was an
@@ -303,17 +300,16 @@ Honesty about scope is worth more than a list of achievements.
 - **Who performed the check-in is not recorded.** The system knows **when** each
   check happened and now has individual accounts, but the loan does not store
   which account confirmed the receipt.
-- **The wrong inventory message is still wrong**, for the reason in decision 8.
 
 ## After, what exists today
 
 | What | How much |
 | --- | --- |
-| Pages | 16 in Portuguese, 15 in English |
+| Pages | 17 in Portuguese, 16 in English |
 | Words | About 26,600 in Portuguese, 30,100 in English |
-| Documented processes | 5, with eight sections each |
+| Documented processes | 6: five with the eight sections and the diagram, and the reports one with seven, without a diagram |
 | BPMN diagrams | 5 `.bpmn` sources under version control, with the SVG derived from them by command |
-| Screenshots | 49, none holding real personal data |
+| Screenshots | 58, none holding real personal data |
 | Gates in CI | 3, and publication depends on all three |
 
 The number that matters is not in the table: **anyone arriving with an
