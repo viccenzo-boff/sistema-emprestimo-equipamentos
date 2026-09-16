@@ -2,230 +2,244 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/contribuir/guia-de-estilo/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/contribuir/guia-de-estilo/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/contribuir/guia-de-estilo/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/contribuir/template-processo/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/contribuir/template-processo/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/contribuir/template-processo/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/inicio-rapido/estudante-e-professor/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/inicio-rapido/estudante-e-professor/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/inicio-rapido/estudante-e-professor/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/inicio-rapido/secretaria/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/inicio-rapido/secretaria/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/inicio-rapido/secretaria/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/painel/baixa-fisica/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/painel/baixa-fisica/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/painel/baixa-fisica/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/painel/inventario/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/painel/inventario/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/painel/inventario/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/painel/pessoas/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/painel/pessoas/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/painel/pessoas/"/>
     </url>
     <url>
+        <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/painel/relatorios/</loc>
+        <lastmod>2026-09-16</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/painel/relatorios/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/painel/relatorios/"/>
+    </url>
+    <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/portal/devolucao/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/portal/devolucao/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/portal/devolucao/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/portal/retirada/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/portal/retirada/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/portal/retirada/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/referencia/conta-do-administrador/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/referencia/conta-do-administrador/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/referencia/conta-do-administrador/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/referencia/estados-e-transicoes/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/referencia/estados-e-transicoes/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/referencia/estados-e-transicoes/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/referencia/glossario/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/referencia/glossario/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/referencia/glossario/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/referencia/regras-de-negocio/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/referencia/regras-de-negocio/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/referencia/regras-de-negocio/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/sobre/arquitetura-do-sistema/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/sobre/arquitetura-do-sistema/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/sobre/arquitetura-do-sistema/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/sobre/como-esta-wiki-foi-feita/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/sobre/como-esta-wiki-foi-feita/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1en/sobre/como-esta-wiki-foi-feita/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/contribuir/guia-de-estilo/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/contribuir/guia-de-estilo/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1contribuir/guia-de-estilo/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/contribuir/template-processo/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/contribuir/template-processo/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1contribuir/template-processo/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/inicio-rapido/estudante-e-professor/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/inicio-rapido/estudante-e-professor/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1inicio-rapido/estudante-e-professor/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/inicio-rapido/secretaria/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/inicio-rapido/secretaria/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1inicio-rapido/secretaria/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/painel/baixa-fisica/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/painel/baixa-fisica/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1painel/baixa-fisica/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/painel/inventario/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/painel/inventario/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1painel/inventario/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/painel/pessoas/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/painel/pessoas/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1painel/pessoas/"/>
     </url>
     <url>
+        <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/painel/relatorios/</loc>
+        <lastmod>2026-09-16</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/painel/relatorios/"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1painel/relatorios/"/>
+    </url>
+    <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/portal/devolucao/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/portal/devolucao/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1portal/devolucao/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/portal/retirada/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/portal/retirada/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1portal/retirada/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/referencia/conta-do-administrador/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/referencia/conta-do-administrador/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1referencia/conta-do-administrador/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/referencia/estados-e-transicoes/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/referencia/estados-e-transicoes/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1referencia/estados-e-transicoes/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/referencia/glossario-ui/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/referencia/glossario-ui/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/referencia/glossario/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/referencia/glossario/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1referencia/glossario/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/referencia/regras-de-negocio/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/referencia/regras-de-negocio/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1referencia/regras-de-negocio/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/sobre/arquitetura-do-sistema/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/sobre/arquitetura-do-sistema/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1sobre/arquitetura-do-sistema/"/>
     </url>
     <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/sobre/como-esta-wiki-foi-feita/</loc>
-        <lastmod>2026-09-14</lastmod>
+        <lastmod>2026-09-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1/en/sobre/como-esta-wiki-foi-feita/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.1sobre/como-esta-wiki-foi-feita/"/>
