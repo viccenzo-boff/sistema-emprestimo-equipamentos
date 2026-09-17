@@ -52,7 +52,8 @@ secretário no mesmo instante.
 | Acesso ao banco | Prisma 7, com adaptador `better-sqlite3` | Esquema declarado em um arquivo e migrações versionadas |
 | Banco | SQLite, arquivo único | Ver a seção abaixo |
 | Senha | `bcryptjs` | JavaScript puro, sem compilador de C++ na máquina do secretário |
-| Planilha | SheetJS | Lê o `.xlsx` da coordenação sem conversão manual |
+| Planilha | SheetJS | Lê o `.xlsx` da coordenação sem conversão manual, e escreve o `.xlsx` dos relatórios |
+| Gráficos | Recharts 3, versão fixada | Barras o projeto já fazia em CSS; linha e pizza com eixo, legenda e tooltip à mão seriam centenas de linhas para manter. Entra só na tela de relatórios, carregado no clique da aba |
 
 ### Por que SQLite em arquivo único
 

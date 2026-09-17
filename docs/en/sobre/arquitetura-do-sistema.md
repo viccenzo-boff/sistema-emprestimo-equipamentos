@@ -54,7 +54,8 @@ queue at the same instant.
 | Database access | Prisma 7, with the `better-sqlite3` adapter | Schema declared in one file and migrations under version control |
 | Database | SQLite, single file | See the section below |
 | Passwords | `bcryptjs` | Pure JavaScript, no C++ toolchain on the front desk machine |
-| Spreadsheets | SheetJS | Reads the registrar's `.xlsx` without manual conversion |
+| Spreadsheets | SheetJS | Reads the registrar's `.xlsx` without manual conversion, and writes the reports' `.xlsx` |
+| Charts | Recharts 3, pinned version | Bars the project already drew in CSS; a line and a pie with axis, legend and tooltip by hand would be hundreds of lines to maintain. It enters only on the reports screen, loaded when the tab opens |
 
 ### Why SQLite in a single file
 

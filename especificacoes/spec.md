@@ -102,15 +102,15 @@ Registra os logs de movimentação (um log isolado por item).
   1. **Fila de Devoluções:** Uma visualização em destaque mostrando todos os empréstimos `AGUARDANDO_BAIXA`. O secretário pega o equipamento na bancada e clica em "Confirmar Recebimento". O `Emprestimo` vai para `CONCLUIDO` e o `Equipamento` volta para `DISPONIVEL`.
   2. **Gestão de Inventário:** Mudar o status de equipamentos para `MANUTENCAO` (removendo-os da visão do tablet) ou cadastrar novos.
   3. **Visão Geral:** Ver quem está com qual equipamento no momento (logs `ATIVO`).
-  4. **Relatórios:** Ler o que o sistema já registrou, sem mudar nada — o volume de retiradas do mês, quantos aparelhos estão fora da prateleira agora, e a taxa de ocupação de cada categoria, com alerta de estoque esgotado ou crítico. Desde a Tarefa 14, também a aba **Satisfação**: média, taxa de resposta e distribuição das avaliações anônimas em dois recortes fixos, com "Baixar planilha" (CSV `dia,nota`) e o cartão que configura a URL do formulário de sugestões — a única escrita da tela.
+  4. **Relatórios:** Ler o que o sistema já registrou, sem mudar nada. Um **seletor de período** (dia, mês, ano ou intervalo; padrão o mês corrente) acima das abas, com o período e a aba na URL (Tarefa 16). A aba **Ocupação e picos de uso** traz as retiradas no período, o gráfico de retiradas por dia (por semana ou por mês nos períodos longos) e a taxa de ocupação de cada categoria — esta é a fotografia do agora —, com alerta de estoque esgotado ou crítico. A aba **Satisfação** (Tarefa 14): média, taxa de resposta e distribuição das avaliações anônimas em dois recortes fixos, que **não** obedecem ao período, com "Baixar planilha" (CSV `dia,nota`) e o cartão que configura a URL do formulário de sugestões — a única escrita da tela. A aba **Ranking de Consumo** (Tarefa 16): retiradas, pessoas distintas, tempo de uso e tempo de prateleira em mediana, e os rankings por equipamento, categoria e pessoa, com o gráfico de retiradas por categoria. As duas abas com período exportam o que está na tela em `.xlsx`, gerado no navegador. A aba **Índice de Manutenção** continua declarada e não construída (Tarefa 17).
 
 > O item 4 entrou na **Tarefa 13**, e é a primeira funcionalidade do painel que
 > esta seção não previa. O motivo é externo ao sistema: a coordenação decide a
 > compra de equipamento e não tinha número nenhum para decidir com. As três
 > funcionalidades acima operam o sistema; esta só lê, e por isso não cria
 > regra de negócio nova — ela expõe as que já existem. A aba abre espaço para
-> outros relatórios (consumo e manutenção estão declarados no menu e ainda não
-> foram construídos).
+> outros relatórios: o Ranking de Consumo entrou na Tarefa 16, e o Índice de
+> Manutenção continua declarado no menu e ainda não foi construído.
 
 ## 5. Diretrizes para a IA (Claude)
 * Siga rigorosamente a arquitetura de dados descrita usando Prisma.

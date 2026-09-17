@@ -290,6 +290,35 @@ wiki says the limit exists instead of promising more than the data supports.
 
 ---
 
+## The ranking by person is deliberate, and the rating stays anonymous
+
+**What the system does.** The **Ranking de Consumo** (Usage ranking) tab of
+the reports shows, for the chosen period, who picked equipment up and how many
+times — with name, enrollment number and profile —, next to the rankings by
+device and by category. The exported spreadsheet carries the same list on its
+**Pessoas** (People) sheet; the **Retiradas** (Pickups) sheet, with one row per
+loan, leaves **without** name or enrollment number.
+
+**Why it works this way.** The information about who picks up was promised to
+the academic coordination at the delivery of the system, and the decision to
+expose it is theirs, taken in September 2026 — a usage policy, not a technical
+choice. The loan was never anonymous: the record has carried the enrollment
+number since day one, because that is what allows chasing a device that did not
+come back. What changes is only the aggregated reading. The **Retiradas** sheet
+has no name because it exists for the pivot (by category, by day, by usage
+time), and each person's named history does not need to leave the panel inside
+a file that will travel.
+
+**What would break.** Reading this rule as if it contradicted the previous
+one. They are two different tables: the loan has an enrollment number and the
+rating **does not** — and still does not. The ranking changes not one line of
+the anonymous rating rule, and nobody can get from a vote to a person through
+the ranking, because the vote has no time and no pickup day to cross with.
+Adding the rating to the ranking, or the enrollment number to the rating, is
+what would undo both rules at once.
+
+---
+
 ## Where to go next
 
 * The complete design of the transitions is in

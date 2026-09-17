@@ -119,6 +119,15 @@ levaria junto o semestre passado. Inativar é aposentadoria, não exclusão.
 [Regras de negócio](../referencia/regras-de-negocio.md#inativar-pessoa-e-inativar-equipamento-nao-sao-a-mesma-regra)
 — esta e as outras nove, com o porquê de cada uma.
 
+## Levar números à coordenação
+
+A aba **Relatórios**, a última do menu, é a única que só lê. A linha acima
+das abas escolhe o **período** — dia, mês, ano ou intervalo, com o mês
+corrente como padrão — e vale para a Ocupação e para o Ranking de Consumo;
+a Satisfação tem os seus dois recortes fixos e não a obedece. Cada aba com
+período tem um botão **Baixar planilha (.xlsx)** com o que está na tela. O
+passo a passo está em [Relatórios](../painel/relatorios.md).
+
 ## Se algo der errado
 
 Cada processo tem a sua tabela de erros, com a mensagem exata da tela:

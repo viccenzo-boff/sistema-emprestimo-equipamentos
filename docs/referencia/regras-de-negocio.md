@@ -280,6 +280,33 @@ prometer mais do que o dado sustenta.
 
 ---
 
+## O ranking por pessoa é deliberado, e a avaliação continua anônima
+
+**O que o sistema faz.** A aba **Ranking de Consumo** dos relatórios mostra,
+para o período escolhido, quem retirou equipamento e quantas vezes — com nome,
+matrícula e perfil —, ao lado dos rankings por equipamento e por categoria. A
+planilha exportada leva a mesma lista na aba **Pessoas**; a aba **Retiradas**,
+com uma linha por empréstimo, sai **sem** nome nem matrícula.
+
+**Por que faz assim.** A informação de quem retira foi prometida à
+coordenação na entrega do sistema, e a decisão de expô-la é dela, tomada em
+setembro de 2026 — política de uso, não escolha técnica. O empréstimo nunca
+foi anônimo: o registro tem a matrícula desde o primeiro dia, porque é o que
+permite cobrar um aparelho que não voltou. O que muda é só a leitura
+agregada. A aba **Retiradas** fica sem nome porque existe para o pivô (por
+categoria, por dia, por tempo de uso), e o histórico nominal de cada pessoa
+não precisa sair do painel dentro de um arquivo que vai circular.
+
+**O que quebraria.** Ler esta regra como se contradissesse a anterior. São
+duas tabelas diferentes: o empréstimo tem matrícula e a avaliação **não tem**
+— e continua sem ter. O ranking não muda uma linha da regra da avaliação
+anônima, e ninguém consegue chegar de um voto a uma pessoa pelo ranking,
+porque o voto não tem hora nem dia de retirada para cruzar. Acrescentar a
+nota ao ranking, ou a matrícula à avaliação, é o que desfaria as duas regras
+de uma vez.
+
+---
+
 ## Onde continuar
 
 * O desenho completo das transições está em

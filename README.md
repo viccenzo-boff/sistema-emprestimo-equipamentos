@@ -43,6 +43,8 @@ alternativa descartada em cada decisão.
 | Estilização   | TailwindCSS 4                               |
 | ORM           | Prisma 7 (driver adapter `better-sqlite3`)  |
 | Banco         | SQLite (arquivo único `dev.db`)             |
+| Gráficos      | Recharts 3 (versão fixada; só em `/admin/relatorios`) |
+| Planilhas     | SheetJS (`xlsx` 0.20, pelo CDN da SheetJS)  |
 
 ## Como rodar
 

@@ -107,11 +107,25 @@ physical check-in — are in the [Glossary](glossario.md) instead.
 | **Relatórios** | Reports — the last tab of the panel |
 | **Ocupação e picos de uso** | Occupancy and usage peaks — the first tab |
 | **Satisfação** | Satisfaction — the second tab, with the rating report |
-| **Ranking de Consumo** | Usage ranking — declared, not built |
+| **Ranking de Consumo** | Usage ranking — the third tab, with the three rankings |
 | **Índice de Manutenção** | Maintenance rate — declared, not built |
-| **Empréstimos no Mês** | Loans this month — pickups recorded since the first day |
+| **Dia** | Day — the first unit of the period selector |
+| **Mês** | Month — the second unit, and the default (the current month) |
+| **Ano** | Year — the third unit, a list of the years that have pickups |
+| **Período** | Period — the fourth unit, any interval, with two date fields |
+| **De** / **até** | From / until — the two date fields of the interval |
+| **Aplicar** | Apply — applies the interval; the other three units apply on their own |
+| **Mostrando setembro de 2026** | Showing September 2026 — the applied period, spelled out |
+| **Retiradas no período** | Pickups in the period — the first card of the occupancy tab and of the usage ranking |
 | **Equipamentos na Rua** | Devices out — off the shelf at this instant |
+| **Picos de uso** | Usage peaks — the section with the pickups chart |
+| **Retiradas por dia** | Pickups per day — the series chart; **Retiradas por semana** (per week) and **Retiradas por mês** (per month) above 31 and 182 days |
+| **Barras** | Bars — the default visualization of both charts |
+| **Linha** | Line — the other visualization of the series chart |
+| **Pizza** | Pie — the other visualization of the composition chart |
+| **Ver como tabela** | View as table — the twin table below the series chart |
 | **Esgotamento por categoria** | Stock depletion by category |
+| **Situação atual do estoque; o período acima não muda esta lista** | Current stock status; the period above does not change this list — the sentence above the category list |
 | **Estoque Esgotado** | Out of stock — the red badge, no unit available |
 | **Estoque Crítico** | Low stock — the amber badge, one or two units left |
 | **Satisfação com a retirada** | Satisfaction with the pickup — the heading of the satisfaction tab |
@@ -120,6 +134,18 @@ physical check-in — are in the [Glossary](glossario.md) instead.
 | "3,3 de 4" | 3.3 out of 4 — the average rating |
 | "33 respostas · 87% de taxa de resposta (33 de 38 pedidas)" | 33 answers, 87% response rate (33 of 38 asked) |
 | **Baixar planilha** | Download spreadsheet — the CSV with one row per time the faces showed up |
+| **Baixar planilha (.xlsx)** | Download spreadsheet — the `.xlsx` of the occupancy and usage ranking tabs, one file per period |
+| **Esta aba não usa o período acima** | This tab does not use the period above — the note on the satisfaction tab |
+| **Pessoas distintas** | Distinct people — the second card of the usage ranking |
+| **Tempo de uso (mediana)** | Usage time (median) — from the pickup to the declared return |
+| **Tempo de prateleira (mediana)** | Shelf time (median) — from the declared return to the physical check-in |
+| **Retiradas por categoria** | Pickups by category — the composition chart and the table next to it |
+| **Fatia** | Share — the category's part of the period's total |
+| **Uso mediano** | Median usage — the last column of the three rankings |
+| **Por equipamento** | By device — the second ranking |
+| **Por pessoa** | By person — the third ranking |
+| **Situação atual** | Current status — the device's status today, on the ranking by device |
+| **Período inválido. Mostrando o mês atual.** | Invalid period. Showing the current month. — the notice for a broken link |
 | **Formulário de sugestões** | Suggestion form — the card where the QR code link is set up |
 | **Endereço do formulário** | Form address — the link field |
 | "Como aparece no tablet" | As it appears on the tablet — the caption under the QR code preview |

@@ -128,6 +128,16 @@ semester with it. Deactivating is retirement, not deletion.
 [Business rules](../referencia/regras-de-negocio.md#deactivating-a-person-and-deactivating-a-device-are-not-the-same-rule)
 — this one and the other nine, with the reason behind each.
 
+## Taking numbers to the coordination
+
+The **Relatórios** (Reports) tab, the last one in the menu, is the only one
+that just reads. The line above the tabs chooses the **period** — day, month,
+year or interval, with the current month as the default — and applies to the
+occupancy and to the usage ranking; the satisfaction tab has its own two fixed
+windows and ignores it. Each tab with a period has a **Baixar planilha
+(.xlsx)** (Download spreadsheet) button with what is on screen. The step by
+step is in [Reports](../painel/relatorios.md).
+
 ## If something goes wrong
 
 Each process has its own error table, with the exact message from the screen:
