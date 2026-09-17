@@ -205,8 +205,9 @@ const PESSOAS: PessoaDemo[] = [
  * um id estável para o `upsert` endereçar. Id explícito em PK autoincrement foi
  * conferido nesta máquina antes de virar desenho, junto com o efeito colateral:
  * a sequência do SQLite passa a contar a partir daqui, e o próximo empréstimo
- * criado pela tela nasce com id 9011 em diante. Em banco de captura isso não
- * aparece em lugar nenhum — nenhuma tela exibe o id do empréstimo.
+ * criado pela tela nasce depois do último id do cenário (os dez fixos mais o
+ * histórico da Tarefa 16 — o console diz a faixa). Em banco de captura isso
+ * não aparece em lugar nenhum — nenhuma tela exibe o id do empréstimo.
  *
  * A faixa é alta de propósito: não colide com o que a tela criar enquanto
  * alguém testa antes de fotografar.
@@ -311,6 +312,102 @@ const EMPRESTIMOS: EmprestimoDemo[] = [
 /** Itens fora de circulação, para o inventário ter os quatro status na tela. */
 const EM_MANUTENCAO = ["NOTE-09", "EXT-05"];
 const APOSENTADOS = ["NOTE-10", "TAB-05"];
+
+/* ------------------------------------------------------------------------- *
+ * O histórico de retiradas (Tarefa 16)
+ * ------------------------------------------------------------------------- */
+
+/** Quantos dias de calendário para trás o histórico cobre. */
+const DIAS_DE_HISTORICO = 90;
+
+/**
+ * Quem concentra as retiradas — três estudantes e uma professora. O ranking
+ * por pessoa precisa de um topo que se leia: com onze pessoas tirando uma
+ * vez cada, a tabela seria uma lista de uns.
+ */
+const ASSIDUOS = ["0045678", "0056789", "0112345", "9002"];
+const EVENTUAIS = ["0067890", "0078901", "0090123", "0101234", "9003", "0012345"];
+
+/**
+ * O que sai: notebooks muito mais que o resto, para a pizza ter uma fatia
+ * grande e duas pequenas. O `NOTE-10` está aqui **de propósito**: ele é
+ * aposentado hoje, e a regra da Tarefa 16 (aposentado entra no ranking se
+ * tiver retirada no período) precisa de uma linha para aparecer na captura.
+ */
+const EQUIPAMENTOS_DO_HISTORICO = [
+  "NOTE-01", "NOTE-02", "NOTE-03", "NOTE-04", "NOTE-05", "NOTE-06", "NOTE-07", "NOTE-08", "NOTE-10",
+  "TAB-01", "TAB-02", "TAB-03",
+  "EXT-01", "EXT-02", "EXT-03",
+];
+
+type EmprestimoDoHistorico = {
+  pessoa: string;
+  equipamento: string;
+  retirada: Date;
+  devolucao: Date;
+  baixa: Date;
+};
+
+/**
+ * Uns quarenta empréstimos concluídos nos últimos 90 dias, só em dias úteis,
+ * com durações e prateleiras variadas — sem isso a captura do gráfico
+ * "Retiradas por dia" seria uma barra só, e as medianas do Ranking de Consumo
+ * não teriam amostra.
+ *
+ * Sorteio **determinístico** (mulberry32, semente fixa), como o das
+ * avaliações: rodar duas vezes produz a mesma estrutura, e só as datas andam
+ * com o calendário — a aba tem que mostrar "setembro" com dados dentro dele
+ * na captura tirada hoje e na tirada em novembro.
+ *
+ * A forma do que sai: por dia útil, zero a dois empréstimos (média ~0,6, o
+ * que dá ~40 em 65 dias úteis); 70% das retiradas com os quatro assíduos; uso
+ * de 1 a 8 horas na maioria, um em cada seis atravessando a noite ou o fim
+ * de semana (é o que a mediana existe para não deixar distorcer); prateleira
+ * de 10 minutos a 2 dias.
+ */
+function historicoDoCenario(hoje: Date): EmprestimoDoHistorico[] {
+  let estado = 0x16c0d1;
+  const sortear = () => {
+    estado = (estado + 0x6d2b79f5) | 0;
+    let t = Math.imul(estado ^ (estado >>> 15), 1 | estado);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const entre = (a: number, b: number) => a + sortear() * (b - a);
+  const escolher = <T,>(lista: readonly T[]) => lista[Math.floor(sortear() * lista.length)];
+
+  const historico: EmprestimoDoHistorico[] = [];
+
+  // Do mais antigo para o mais recente, e nunca hoje: hoje pertence aos dez
+  // empréstimos fixos acima, que a fila e "Meus equipamentos" precisam.
+  for (let atras = DIAS_DE_HISTORICO; atras >= 1; atras--) {
+    const dia = inicioDoDia(hoje, atras);
+    const diaDaSemana = dia.getDay();
+    if (diaDaSemana === 0 || diaDaSemana === 6) continue;
+
+    const s = sortear();
+    const quantos = s < 0.45 ? 0 : s < 0.85 ? 1 : 2;
+
+    for (let i = 0; i < quantos; i++) {
+      const retirada = new Date(dia.getTime() + entre(8, 17) * HORA);
+      const atravessaANoite = sortear() < 1 / 6;
+      const uso = atravessaANoite ? entre(18, 70) * HORA : entre(1, 8) * HORA;
+      const devolucao = new Date(retirada.getTime() + uso);
+      const prateleira = sortear() < 0.5 ? entre(10, 90) * 60 * 1000 : entre(2, 48) * HORA;
+      const baixa = new Date(devolucao.getTime() + prateleira);
+
+      historico.push({
+        pessoa: sortear() < 0.7 ? escolher(ASSIDUOS) : escolher(EVENTUAIS),
+        equipamento: escolher(EQUIPAMENTOS_DO_HISTORICO),
+        retirada,
+        devolucao,
+        baixa,
+      });
+    }
+  }
+
+  return historico;
+}
 
 /* ------------------------------------------------------------------------- *
  * Avaliações (Tarefa 14)
@@ -514,7 +611,42 @@ async function main() {
 
       id++;
     }
-    console.log(`Empréstimos: ${EMPRESTIMOS.length} nos três status.`);
+
+    // 2b. O histórico (Tarefa 16): concluídos, na mesma faixa de ids, logo
+    // depois dos dez fixos. Idempotente pelo mesmo `upsert`; o que a tela
+    // criar nasce depois de todos eles (ver o CONTRIBUTING, que registra que
+    // a sequência do SQLite avança junto).
+    const historico = historicoDoCenario(inicioDoDia(new Date(agora)));
+    for (const emprestimo of historico) {
+      if (!etiquetas.has(emprestimo.equipamento)) {
+        recusar(
+          `o equipamento ${emprestimo.equipamento} não existe no inventário.`,
+          `O histórico de demonstração espera o inventário que o seed cria.\n` +
+            `Rode: npm run db:reset && npm run db:seed && npm run db:demo`,
+        );
+      }
+
+      const dados = {
+        pessoa_id: emprestimo.pessoa,
+        equip_id: emprestimo.equipamento,
+        status: STATUS_EMPRESTIMO.concluido,
+        data_retirada: emprestimo.retirada,
+        data_devolucao: emprestimo.devolucao,
+        data_baixa: emprestimo.baixa,
+      };
+
+      await prisma.emprestimo.upsert({
+        where: { id },
+        update: dados,
+        create: { id, ...dados },
+      });
+
+      id++;
+    }
+    console.log(
+      `Empréstimos: ${EMPRESTIMOS.length} nos três status, mais ${historico.length} ` +
+        `concluídos nos últimos ${DIAS_DE_HISTORICO} dias (ids ${PRIMEIRO_ID}–${id - 1}).`,
+    );
 
     // 3. Equipamentos.
     //

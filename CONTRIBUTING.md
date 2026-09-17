@@ -324,7 +324,7 @@ O resultado é sempre o mesmo cenário:
 | O que                        | Quanto                                                      |
 | ---------------------------- | ----------------------------------------------------------- |
 | Pessoas                      | 15, sendo 2 inativas e 3 professores                        |
-| Empréstimos                  | 10 — 3 `ATIVO`, 4 `AGUARDANDO_BAIXA`, 3 `CONCLUIDO`         |
+| Empréstimos                  | 48 — os 10 do cenário (3 `ATIVO`, 4 `AGUARDANDO_BAIXA`, 3 `CONCLUIDO`) mais 38 `CONCLUIDO` sorteados nos últimos 90 dias úteis (Tarefa 16), com usos e prateleiras variados e quatro pessoas concentrando as retiradas; sorteio determinístico, só as datas andam com o calendário |
 | Equipamentos                 | 20 — 9 disponíveis, 7 emprestados, 2 manutenção, 2 inativos |
 | Fila de Devoluções           | 4 linhas, com esperas diferentes (há 5 h, 3 h, 2 h, 1 h)    |
 | "Meus equipamentos" (tablet) | matrícula `0012345` (Ana Souza), com 2 itens                |
@@ -337,9 +337,14 @@ original. Não é preciso resetar o banco entre uma captura e outra — só entr
 sessões, se algo tiver saído do lugar de vez.
 
 **Com uma exceção, medida na D05: o `db:demo` não desfaz uma retirada feita pelo
-tablet.** Ele faz `upsert` nos dez empréstimos da faixa de ids reservada
-(9001–9010) e reescreve o status de todo equipamento — mas um `Emprestimo` novo,
-criado pela tela, nasce com id próprio (9011 em diante) e ele não apaga. O efeito
+tablet.** Ele faz `upsert` nos empréstimos da faixa de ids reservada (9001 em
+diante — hoje 9001–9048, os dez do cenário mais o histórico da Tarefa 16; o
+console diz a faixa) e reescreve o status de todo equipamento — mas um
+`Emprestimo` novo, criado pela tela, nasce com id próprio, **depois do último
+da faixa**, e ele não apaga. **A sequência do SQLite avança junto com a faixa:**
+o id explícito no `upsert` empurra o `AUTOINCREMENT`, então o próximo
+empréstimo criado pela tela num banco de captura nasce em 9049, e não em 11.
+Nenhuma tela exibe o id, então isso não aparece em lugar nenhum. O efeito
 é traiçoeiro justamente porque metade se desfaz: o equipamento volta a
 `DISPONIVEL`, o empréstimo fica, e a pessoa aparece com item na mão na captura
 seguinte — trocando o título da tela inicial de "O que você vai levar?" para "O
