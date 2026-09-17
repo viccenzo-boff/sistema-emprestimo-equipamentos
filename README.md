@@ -5,7 +5,7 @@ Sistemas de Informação, Ciência da Computação e Engenharia da Computação.
 
 O escopo, os fluxos de usuário e as regras de negócio estão em [spec.md](especificacoes/spec.md).
 
-O sistema roda em rede local, hospedado no computador da secretaria, com duas frentes de acesso:
+O sistema roda em rede local, hospedado no computador do secretário, com duas frentes de acesso:
 
 - **`/`** — Portal do Estudante/Professor (tablet): retirada e devolução na bancada.
 - **`/admin`** — Painel Administrativo (desktop): fila de devoluções e gestão de inventário.
@@ -70,7 +70,7 @@ Não há senha de painel em variável de ambiente: as contas do `/admin` ficam n
 | -------------------- | ----------------------------------------------------------- |
 | `npm run dev`        | Servidor de desenvolvimento.                                |
 | `npm run build`      | Build de produção.                                          |
-| `npm start`          | Servidor de produção (usado na máquina da secretaria).      |
+| `npm start`          | Servidor de produção (usado na máquina do secretário).      |
 | `npm run lint`       | ESLint.                                                     |
 | `npm run db:migrate` | Cria e aplica migrations.                                   |
 | `npm run db:seed`    | Importa pessoas, inventário e administradores (idempotente). |
@@ -206,12 +206,12 @@ As quatro contas padrão nascem com `npm run db:seed`:
 
 | Usuário      | Nome       |
 | ------------ | ---------- |
-| `secretaria` | Secretaria |
+| `secretario` | Secretário |
 | `cidi`       | Cidi       |
 | `jeanzao`    | Jeanzão    |
 | `viccenzo`   | Viccenzo   |
 
-Todas com a senha inicial **`Mudar@123`** — troque antes de usar na secretaria. A troca é feita
+Todas com a senha inicial **`Mudar@123`** — troque antes de usar no balcão. A troca é feita
 pelo próprio painel: **Alterar senha**, no rodapé da barra lateral (Tarefa 11). O modal pede a
 senha atual, a nova e a confirmação; a nova precisa ter **pelo menos 8 caracteres** e no máximo
 72 bytes (é onde o bcrypt trunca — acentos contam 2 e emojis contam 4).
@@ -272,7 +272,7 @@ acrescentaram:
 - **Emprestimo** — um registro por item movimentado: `pessoa_id`, `equip_id`, `data_retirada`,
   `data_devolucao`, `data_baixa`, `status` (`ATIVO` | `AGUARDANDO_BAIXA` | `CONCLUIDO`). Os três
   marcadores de tempo têm donos distintos: a retirada no tablet, a **declaração** da devolução no
-  tablet (`data_devolucao`) e a **conferência física** na secretaria (`data_baixa`, Tarefa 12) —
+  tablet (`data_devolucao`) e a **conferência física** pelo secretário (`data_baixa`, Tarefa 12) —
   a diferença entre os dois últimos é o tempo que o equipamento passou na bancada.
 - **Avaliacao** — uma linha por vez que os quatro rostos apareceram no fim de uma retirada
   (Tarefa 14): `id` (**sorteado**, não sequencial — sequencial seria a ordem de gravação, e a
@@ -283,7 +283,7 @@ acrescentaram:
   só, `url_formulario_feedback`: a URL do formulário externo que o QR code da tela de sucesso
   abre. Sem a linha, o QR não aparece.
 
-O status `AGUARDANDO_BAIXA` é o que separa "a pessoa disse que devolveu" de "a secretaria
+O status `AGUARDANDO_BAIXA` é o que separa "a pessoa disse que devolveu" de "o secretário
 recolheu o equipamento": enquanto o empréstimo está nesse estado, o equipamento **não** volta a
 ficar disponível.
 

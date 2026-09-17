@@ -10,7 +10,7 @@ Publicar a documentação oficial do sistema como um site versionado, bilíngue 
 construído no mesmo repositório do código, servindo a dois propósitos ao mesmo
 tempo:
 
-1. **Uso real:** a secretaria e os estudantes precisam de um manual. Hoje o
+1. **Uso real:** o secretário e os estudantes precisam de um manual. Hoje o
    conhecimento operacional está espalhado entre o [AGENTS.md](../AGENTS.md), os
    enunciados de tarefa e a cabeça de quem construiu.
 2. **Portfólio:** demonstrar, num artefato público e verificável, quatro
@@ -63,10 +63,10 @@ corrigida.
 | --- | ------------------------ | --------------- | ------------------- | ------------------------------------------------------------------------ |
 | 1   | Retirada de equipamento  | Estudante/Professor | `/`                 | Cada item retirado gera um `Emprestimo` **separado**                     |
 | 2   | Devolução de equipamento | Estudante/Professor | `/`                 | Devolver é **declarar**; o equipamento não volta a `DISPONIVEL`          |
-| 3   | Baixa física             | Secretaria      | `/admin`            | O ciclo só fecha aqui; a diferença de tempo é o tempo de prateleira      |
-| 4   | Gestão de inventário     | Secretaria      | `/admin/inventario` | `INATIVO` é aposentadoria, não exclusão — o histórico aponta para o item |
-| 5   | Gestão de pessoas        | Secretaria      | `/admin/pessoas`    | `INATIVO` de pessoa é **assimétrico**: trava retirada, libera devolução  |
-| 6   | Relatórios               | Secretaria      | `/admin/relatorios` | Ocupado é tudo que não está disponível; o aposentado fica fora da conta  |
+| 3   | Baixa física             | Secretário      | `/admin`            | O ciclo só fecha aqui; a diferença de tempo é o tempo de prateleira      |
+| 4   | Gestão de inventário     | Secretário      | `/admin/inventario` | `INATIVO` é aposentadoria, não exclusão — o histórico aponta para o item |
+| 5   | Gestão de pessoas        | Secretário      | `/admin/pessoas`    | `INATIVO` de pessoa é **assimétrico**: trava retirada, libera devolução  |
+| 6   | Relatórios               | Secretário      | `/admin/relatorios` | Ocupado é tudo que não está disponível; o aposentado fica fora da conta  |
 
 **Os cinco primeiros têm diagrama BPMN; o sexto não**, e a seção era "Os cinco
 processos" até a Tarefa 13. Consultar relatório é **leitura, não transação**: não
@@ -78,9 +78,9 @@ Relatórios é, por isso, a única com sete seções em vez de oito — renumera
 
 ### 3.2 Páginas de apoio
 
-- **Início** — porta de entrada com escolha de perfil (estudante / secretaria)
+- **Início** — porta de entrada com escolha de perfil (estudante / secretário)
 - **Guia de Início Rápido do Estudante e Professor** — o tablet em 5 minutos
-- **Guia de Início Rápido da Secretaria** — o painel em 10 minutos
+- **Guia de Início Rápido do Secretário** — o painel em 10 minutos
 - **Glossário** — matrícula, etiqueta, baixa, prateleira, categoria, perfil
 - **Estados e transições** — as duas máquinas de estado, com diagrama
 - **Regras de negócio** — consolidação do que hoje está no [AGENTS.md](../AGENTS.md)
@@ -104,7 +104,7 @@ Relatórios é, por isso, a única com sete seções em vez de oito — renumera
 Início
 ├── Guia de Início Rápido
 │   ├── Estudante e Professor
-│   └── Secretaria
+│   └── Secretário
 ├── Processos do Portal
 │   ├── 1. Retirada de equipamento
 │   └── 2. Devolução de equipamento
@@ -159,7 +159,7 @@ tela; ela descreve a **decisão de produto**. Exemplo do tom esperado:
 >
 > Porque devolver no tablet é uma declaração, não uma conferência. Enquanto o
 > empréstimo está em `AGUARDANDO_BAIXA`, o aparelho está fisicamente na bancada
-> mas ninguém da secretaria o recolheu ainda. Se ele voltasse para `DISPONIVEL`
+> mas o secretário não o recolheu ainda. Se ele voltasse para `DISPONIVEL`
 > nesse momento, o tablet ofereceria a outro estudante um equipamento que continua
 > em cima da bancada.
 
@@ -425,7 +425,7 @@ A conferência foi por comando, item a item, e não por memória. Os números:
    escreveu o sistema, e essa pessoa acha rótulo errado e passo faltando, mas
    não acha o pressuposto que ela mesma não sabe que tem. O critério continua
    dependendo de uma pessoa de fora. **Decisão de 2026-09-14:** o dono do
-   repositório só terá essa pessoa na implantação na secretaria; o critério
+   repositório só terá essa pessoa na implantação no balcão; o critério
    fica aberto até lá, e o roteiro é: dar a página da retirada no celular de
    alguém que nunca usou o tablet, pedir uma retirada sem ajudar, e anotar
    onde travou. As anotações fecham o critério — inclusive se disserem "não

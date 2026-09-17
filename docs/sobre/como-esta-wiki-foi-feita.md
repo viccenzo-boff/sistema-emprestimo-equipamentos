@@ -22,8 +22,8 @@ deles falava com quem opera o sistema:
 
 O `CONTRIBUTING.md` existia com **zero byte**. A pasta `docs/` não existia.
 
-Ou seja: quem estivesse de pé na bancada com um tablet na frente, ou na
-secretaria com a fila de devoluções aberta, não tinha onde procurar. O
+Ou seja: quem estivesse de pé na bancada com um tablet na frente, ou no
+balcão com a fila de devoluções aberta, não tinha onde procurar. O
 conhecimento operacional estava inteiro na cabeça de quem construiu — e a única
 forma de consultá-lo era perguntar.
 
@@ -72,7 +72,7 @@ aparelho no tablet, ele **não** volta a ficar disponível:
 
 > Devolver no tablet é uma **declaração**, não uma conferência. Enquanto o
 > empréstimo está aguardando baixa, o aparelho está fisicamente na bancada mas
-> ninguém da secretaria o recolheu ainda. Se ele voltasse para disponível nesse
+> o secretário não o recolheu ainda. Se ele voltasse para disponível nesse
 > momento, o tablet ofereceria a outra pessoa um equipamento que continua em
 > cima da bancada.
 
@@ -111,7 +111,7 @@ seletor de versão no alto da página existe para que versões futuras convivam
 com ela, em vez de substituí-la.
 
 **A alternativa descartada.** Documentar a branch principal, que é o estado mais
-recente e o que a secretaria de fato usa.
+recente e o que o secretário de fato usa.
 
 **O motivo.** Captura de tela de alvo em movimento **nasce vencida**. A branch
 principal continua andando: um botão muda de lugar e as 49 capturas desta wiki
@@ -296,7 +296,7 @@ Honestidade sobre escopo vale mais que lista de conquistas.
   desde o começo: envelhecem pior que captura de tela e não têm diff no
   histórico.
 - **O tempo de prateleira é medido e não é lido por ninguém.** O sistema grava
-  quando a devolução foi declarada e quando a secretaria conferiu, mas não
+  quando a devolução foi declarada e quando o secretário conferiu, mas não
   existe tela que mostre a diferença. O dado está lá, esperando o relatório.
 - **Não se registra quem deu a baixa.** O sistema sabe **quando** cada
   conferência aconteceu e passou a ter contas individuais, mas o empréstimo não
@@ -330,6 +330,6 @@ coordenação — foi a contrapartida pelo trabalho.
 - GitHub: [viccenzo-boff](https://github.com/viccenzo-boff)
 - E-mail: [viccenzoboff@gmail.com](mailto:viccenzoboff@gmail.com)
 
-Para problema no sistema em uso, o caminho continua sendo a secretaria e o
+Para problema no sistema em uso, o caminho continua sendo o secretário e o
 [repositório do projeto](https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/issues);
 o contato acima é para quem quer falar sobre o trabalho.

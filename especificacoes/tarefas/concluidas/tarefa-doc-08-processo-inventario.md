@@ -1,6 +1,6 @@
 # Tarefa D08: Processo 4 — Gestão de inventário
 
-Página da secretaria sobre o cadastro e o ciclo de vida do equipamento. A regra
+Página do secretário sobre o cadastro e o ciclo de vida do equipamento. A regra
 que ela precisa ensinar é a diferença entre **tirar de circulação** e **apagar** —
 distinção que o sistema faz de propósito e que a interface não explica sozinha.
 
@@ -36,7 +36,7 @@ Cubra quatro procedimentos, cada um com sua sequência numerada:
   explícita, porque a interface oferece as duas lado a lado.
 * **Categoria, ao contrário, pode ser apagada de verdade** — nenhum empréstimo
   aponta para ela. Mas só quando está vazia, e quem recusa é o próprio banco de
-  dados, não uma validação de tela. Explique o que a secretária vê quando tenta.
+  dados, não uma validação de tela. Explique o que o secretário vê quando tenta.
 * **Item com empréstimo aberto tem a situação travada** até o ciclo fechar. Aqui
   o comportamento é o **oposto** do da pessoa (D09), e a página precisa dizer
   isso, porque a mesma palavra "inativar" produz resultados diferentes nas duas

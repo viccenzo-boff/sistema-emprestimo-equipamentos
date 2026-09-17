@@ -7,7 +7,7 @@ empréstimos passaram pelo balcão neste mês, quantos aparelhos estão fora da
 prateleira agora, o quanto cada categoria chegou perto de acabar — e, desde a
 `v1.2`, como as pessoas avaliam a retirada.
 
-Quando termina, a secretaria tem um número para levar à coordenação — e a
+Quando termina, o secretário tem um número para levar à coordenação — e a
 coordenação tem com que decidir se compra mais aparelho, ou se o atendimento
 precisa de atenção. É a única tela do painel que quase não muda nada: ela lê,
 e a única coisa que grava é o link do formulário de sugestões.
@@ -50,8 +50,8 @@ Estes são só desta página:
 
 | Papel                  | Faz                                                                                                          | Não faz                                                                                                             |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Secretaria             | Abre a aba, lê os números e leva à coordenação o que está esgotado ou crítico — e a média de satisfação. Configura o link do formulário de sugestões. | Não corrige nada aqui. O que aparece errado nesta tela se conserta nas abas **Inventário** e **Fila de Devoluções**. Não vê quem votou, porque ninguém vê. |
-| Coordenação            | Decide a compra, a partir do que a secretaria mostra.                                                            | Não abre o painel. Ela não tem conta — o painel é da secretaria.                                                          |
+| Secretário             | Abre a aba, lê os números e leva à coordenação o que está esgotado ou crítico — e a média de satisfação. Configura o link do formulário de sugestões. | Não corrige nada aqui. O que aparece errado nesta tela se conserta nas abas **Inventário** e **Fila de Devoluções**. Não vê quem votou, porque ninguém vê. |
+| Coordenação            | Decide a compra, a partir do que o secretário mostra.                                                            | Não abre o painel. Ela não tem conta — o painel é do secretário.                                                          |
 | Painel (o computador)  | Soma o que está gravado, no instante em que a página abre.                                                       | Não guarda histórico do relatório, não manda aviso e não compara com o mês passado. Cada abertura é uma fotografia nova.   |
 | Estudante ou professor | Toca num rosto no fim da retirada, no tablet, quando os rostos aparecem — ou não toca. É a única parte dele.      | Não vê esta tela. O que ele percebe é a consequência: a categoria que aparece esgotada aqui é a que ele acha vazia lá.     |
 
@@ -133,7 +133,7 @@ Uma sequência só, do login ao número que sai desta tela.
     !!! tip "Como criar o formulário"
 
         No Google Forms, com a **conta institucional do setor** — nunca a
-        pessoal de quem está na secretaria hoje, porque ela sai com a pessoa e
+        pessoal de quem está no balcão hoje, porque ela sai com a pessoa e
         o adesivo continua apontando para um formulário que ninguém abre. Em
         Configurações → Respostas, deixe **desligadas** a coleta de e-mail e a
         exigência de login: o formulário é anônimo como os rostos. Copie o link

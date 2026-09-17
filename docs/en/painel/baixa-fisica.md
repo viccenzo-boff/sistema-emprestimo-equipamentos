@@ -71,7 +71,7 @@ Portuguese pages use.
 
     | Label on the diagram | In English |
     | --- | --- |
-    | Secretaria | Front desk (the lane) |
+    | Secretário | Front desk (the lane) |
     | Sistema | System (the lane) |
     | Devolução declarada no tablet | Return declared on the tablet |
     | Põe o empréstimo na Fila de Devoluções com o tempo de espera | Puts the loan in the return queue with the waiting time |

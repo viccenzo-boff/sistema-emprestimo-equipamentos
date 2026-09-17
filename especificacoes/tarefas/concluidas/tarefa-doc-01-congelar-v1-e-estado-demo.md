@@ -38,7 +38,7 @@ linhas.
 
 Um script **separado** do seed. Não altere o `prisma/seed.ts`: a §1 da
 [spec-wiki.md](../../spec-wiki.md) diz que decisão que serve só ao portfólio e piora o
-produto não entra, e o seed é ferramenta de produção da secretaria.
+produto não entra, e o seed é ferramenta de produção do secretário.
 
 O script deve:
 

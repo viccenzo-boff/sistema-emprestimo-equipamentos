@@ -16,7 +16,7 @@ two account buttons.
 3. Click **Entrar** (Sign in).
 
 The **Usuário** (Username) field ignores capitals and surrounding spaces:
-`Secretaria` and `secretaria` get into the same account, and a stray space
+`Secretario` and `secretario` get into the same account, and a stray space
 before or after does no harm. The password does not: there, every character
 counts, case included.
 
@@ -48,8 +48,8 @@ records.
    **Confirmar nova senha** (Confirm new password).
 3. Click **Alterar senha** (Change password) in the dialog.
 
-The success notice names the account — "Senha da conta Secretaria alterada."
-(Password for the Secretaria account changed.) — and the dialog closes. There
+The success notice names the account — "Senha da conta Secretário alterada."
+(Password for the Secretário account changed.) — and the dialog closes. There
 are four accounts and a single computer: without the name, the sentence would
 not settle the question of which password had just changed.
 

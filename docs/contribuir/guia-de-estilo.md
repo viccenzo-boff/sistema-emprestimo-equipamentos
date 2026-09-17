@@ -50,7 +50,7 @@ CERTO
 3. O cadastro está ativo?
    - Se SIM → a grade de categorias aparece. Siga para o passo 4.
    - Se NÃO → a tela mostra "Este cadastro está inativo e não pode retirar
-     equipamento." Procure a secretaria.
+     equipamento." Procure o secretário.
 
 ERRADO
 3. Caso o cadastro esteja ativo, as categorias aparecerão normalmente;
@@ -106,7 +106,7 @@ O estado que as capturas mostram é montado por script, com gente fictícia. A
 receita está na seção "Reproduzir o estado de demonstração" do
 [CONTRIBUTING.md](https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/blob/main/CONTRIBUTING.md).
 
-Entre no painel sempre com a conta `secretaria`, que é a conta neutra: as outras
+Entre no painel sempre com a conta `secretario`, que é a conta neutra: as outras
 três têm nome de pessoa real e aparecem no rodapé da barra lateral em toda
 captura do painel.
 

@@ -11,7 +11,7 @@ Para evitar conflito de conceitos entre quem administra o sistema e quem retira 
 * **Banco de Dados:** Crie um novo model `Administrador` no `schema.prisma`.
   * `id` (Int, PK, autoincrement)
   * `nome` (String)
-  * `usuario` (String, unique) - Ex: 'cidi', 'secretaria'
+  * `usuario` (String, unique) - Ex: 'cidi', 'secretario'
   * `senha` (String) - Armazenará o hash da senha.
 * **Ação:** Após alterar o schema (Pessoas e Administradores), gere e aplique a migração no Prisma.
 
@@ -19,7 +19,7 @@ Para evitar conflito de conceitos entre quem administra o sistema e quem retira 
 Não criaremos uma tela de CRUD de administradores neste MVP. Eles nascerão direto pelo banco.
 * Instale as bibliotecas `bcryptjs` e `@types/bcryptjs`.
 * Atualize o arquivo `prisma/seed.ts` para criar os seguintes administradores padrão (lembre-se de fazer o hash da senha usando `bcryptjs` antes de salvar no banco):
-  * Administrador 1: nome: "Secretaria", usuario: "secretaria", senha: "Mudar@123"
+  * Administrador 1: nome: "Secretário", usuario: "secretario", senha: "Mudar@123"
   * Administrador 2: nome: "Cidi", usuario: "cidi", senha: "Mudar@123"
   * Administrador 3: nome: "Jeanzão", usuario: "jeanzao", senha: "Mudar@123"
   * Administrador 4: nome: "Viccenzo", usuario: "viccenzo", senha: "Mudar@123"

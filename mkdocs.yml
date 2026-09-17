@@ -67,7 +67,7 @@ markdown_extensions:
   # admonition e details dao as caixas de "regra que nao e obvia";
   # attr_list + md_in_html dao a captura de tela clicavel da spec-wiki §7;
   # superfences segura diagrama e bloco de codigo aninhado;
-  # tasklist com custom_checkbox da a lista de conferencia da secretaria.
+  # tasklist com custom_checkbox da a lista de conferencia do secretario.
   - admonition
   - attr_list
   - md_in_html
@@ -131,7 +131,7 @@ plugins:
             Início: Home
             Guia de Início Rápido: Quick Start
             Estudante e Professor: Students and Teachers
-            Secretaria: Front Desk
+            Secretário: Front Desk
             Processos do Portal: Portal Processes
             1. Retirada de equipamento: 1. Equipment pickup
             2. Devolução de equipamento: 2. Equipment return
@@ -187,7 +187,7 @@ nav:
   - Início: index.md
   - Guia de Início Rápido:
       - Estudante e Professor: inicio-rapido/estudante-e-professor.md
-      - Secretaria: inicio-rapido/secretaria.md
+      - Secretário: inicio-rapido/secretario.md
   - Processos do Portal:
       - 1. Retirada de equipamento: portal/retirada.md
       - 2. Devolução de equipamento: portal/devolucao.md

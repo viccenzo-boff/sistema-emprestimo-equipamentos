@@ -51,7 +51,7 @@ Login, logout e troca da própria senha. Curta e direta.
 Precisa dizer, sem rodeio, o que o sistema **não** faz: não há cadastro de
 administrador pela interface, não há papéis, não há recuperação de senha por
 e-mail. Senha esquecida se resolve apagando a linha no banco e ressemeando — o
-que exige quem tenha acesso ao servidor da secretaria.
+que exige quem tenha acesso ao servidor do secretário.
 
 Documente também o bloqueio por tentativas (cinco erros travam novas tentativas
 por um minuto), porque é comportamento que assusta quem não sabe que existe.

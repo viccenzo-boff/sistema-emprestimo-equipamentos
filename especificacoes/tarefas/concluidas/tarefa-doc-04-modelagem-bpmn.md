@@ -24,9 +24,9 @@ que o processo atravessa pessoas diferentes — é metade do valor de modelar.
 | ---------------------- | ---------------------- | ------------------------- | ---------------------------------------------------------------------------------------- |
 | `01-retirada.bpmn`     | Retirada               | Aluno/Professor · Sistema | O gateway de matrícula não encontrada e o de matrícula inativa levam a saídas diferentes |
 | `02-devolucao.bpmn`    | Devolução pelo usuário | Aluno/Professor · Sistema | Termina em `AGUARDANDO_BAIXA`, **não** em equipamento disponível                         |
-| `03-baixa-fisica.bpmn` | Baixa física           | Secretaria · Sistema      | É a continuação do 02; começa onde ele termina                                           |
-| `04-inventario.bpmn`   | Gestão de inventário   | Secretaria · Sistema      | Manutenção e aposentadoria são caminhos distintos, com regras distintas                  |
-| `05-pessoas.bpmn`      | Gestão de pessoas      | Secretaria · Sistema      | A importação de planilha tem prévia antes de gravar                                      |
+| `03-baixa-fisica.bpmn` | Baixa física           | Secretário · Sistema      | É a continuação do 02; começa onde ele termina                                           |
+| `04-inventario.bpmn`   | Gestão de inventário   | Secretário · Sistema      | Manutenção e aposentadoria são caminhos distintos, com regras distintas                  |
+| `05-pessoas.bpmn`      | Gestão de pessoas      | Secretário · Sistema      | A importação de planilha tem prévia antes de gravar                                      |
 
 ## 3. O processo 02 e o 03 são um ciclo partido ao meio
 

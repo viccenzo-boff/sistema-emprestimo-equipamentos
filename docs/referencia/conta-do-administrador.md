@@ -10,12 +10,12 @@ dos dois botões da conta.
 
 ## Entrar
 
-1. Abra `/admin` no computador da secretaria.
+1. Abra `/admin` no computador do secretário.
 2. Preencha **Usuário** e **Senha**.
 3. Toque em **Entrar**.
 
-O campo **Usuário** ignora maiúsculas e espaços em volta: `Secretaria` e
-`secretaria` entram na mesma conta, e um espaço sobrando antes ou depois não
+O campo **Usuário** ignora maiúsculas e espaços em volta: `Secretario` e
+`secretario` entram na mesma conta, e um espaço sobrando antes ou depois não
 atrapalha. A senha, não — nela cada caractere conta, inclusive a caixa.
 
 !!! info "A sessão dura oito horas, e sobrevive a reiniciar o servidor"
@@ -23,7 +23,7 @@ atrapalha. A senha, não — nela cada caractere conta, inclusive a caixa.
     Oito horas é um turno. Passou disso, o painel volta para a tela de entrada e
     a senha precisa ser digitada de novo.
 
-    Reiniciar o computador da secretaria **não** derruba ninguém — quem foi
+    Reiniciar o computador do secretário **não** derruba ninguém — quem foi
     desligado no fim do dia continua logado na manhã seguinte, se ainda estiver
     dentro das oito horas. Se o painel precisa ficar fechado, use **Sair do
     painel**; não basta fechar a janela.
@@ -43,7 +43,7 @@ a quem sentar ali o inventário inteiro, a fila de devoluções e os cadastros.
 2. Preencha **Senha atual**, **Nova senha** e **Confirmar nova senha**.
 3. Toque em **Alterar senha** no diálogo.
 
-O aviso de sucesso nomeia a conta — "Senha da conta Secretaria alterada." — e o
+O aviso de sucesso nomeia a conta — "Senha da conta Secretário alterada." — e o
 diálogo fecha. São quatro contas e um computador só: sem o nome, a frase não
 resolveria a dúvida de qual senha acabou de mudar.
 
@@ -99,7 +99,7 @@ O caminho de volta é **apagar a linha da conta no banco e semear de novo** — 
 comando de semeadura recria a conta com a senha padrão, e a pessoa troca no
 primeiro acesso.
 
-Isso exige **acesso ao servidor da secretaria**, com as ferramentas de
+Isso exige **acesso ao servidor do secretário**, com as ferramentas de
 desenvolvimento instaladas. Quem está no balcão não consegue fazer sozinho.
 
 !!! note "Se ainda houver outra conta funcionando, o caminho é mais curto"
@@ -143,7 +143,7 @@ do repositório, que é onde mora a nota de trabalho.
 
 ## Onde continuar
 
-* O que a secretaria faz depois de entrar está em
+* O que o secretário faz depois de entrar está em
   [Baixa física](../painel/baixa-fisica.md),
   [Gestão de inventário](../painel/inventario.md) e
   [Gestão de pessoas](../painel/pessoas.md).

@@ -2,7 +2,7 @@
 
 ## 1. Objetivo do processo
 
-Este processo entrega um equipamento da secretaria para quem vai usá-lo, sem
+Este processo entrega um equipamento do inventário para quem vai usá-lo, sem
 fila de papel e sem ninguém anotando nada à mão. Quem precisa de um notebook, de
 um tablet ou de uma extensão se identifica pela matrícula no tablet da bancada,
 escolhe o que vai levar e sai com o aparelho.
@@ -37,7 +37,7 @@ pelo nome:
 | Seleção             | Os itens já tocados e ainda **não** confirmados. Nada foi registrado enquanto o item está só aqui.                                            |
 | Barra de seleção    | A faixa fixa no rodapé que lista a seleção e traz o botão **Confirmar retirada**.                                                             |
 | Rostos da avaliação | Os quatro rostos sob a pergunta "Como foi a retirada?", na tela de retirada confirmada. Aparecem no máximo uma vez a cada 30 dias por pessoa. |
-| QR code             | O código ao lado dos rostos, que abre no celular o formulário de sugestões da secretaria. Só aparece quando a secretaria configurou o link.   |
+| QR code             | O código ao lado dos rostos, que abre no celular o formulário de sugestões do secretário. Só aparece quando o secretário configurou o link.   |
 
 ## 4. Papéis e responsabilidades
 
@@ -45,7 +45,7 @@ pelo nome:
 | ---------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | Estudante ou professor | Digita a matrícula, escolhe os itens, confirma a retirada e leva os aparelhos da bancada.       | Não escolhe qual unidade está livre — o portal só oferece as que estão.                                |
 | Portal (o tablet)      | Confere o cadastro, mostra o que está livre no momento do toque, registra um empréstimo por item e, no máximo uma vez a cada 30 dias, pergunta como foi. | Não guarda sessão: a identificação vale para um atendimento e acaba nele. Não guarda quem respondeu à pergunta. |
-| Secretaria             | Mantém o inventário em dia, deixa os aparelhos na bancada e configura o link do formulário de sugestões no painel. | **Não participa da retirada.** Não confirma nada, e não precisa estar presente para a retirada acontecer. |
+| Secretário             | Mantém o inventário em dia, deixa os aparelhos na bancada e configura o link do formulário de sugestões no painel. | **Não participa da retirada.** Não confirma nada, e não precisa estar presente para a retirada acontecer. |
 
 ## 5. Diagrama BPMN
 
@@ -84,7 +84,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
       matrícula de novo. Siga para o passo 4.
     - **Se NÃO** → a tela continua na matrícula e mostra
       "Matrícula 9999999 não encontrada." Confira os números e digite de novo.
-      Se estiverem certos, procure a secretaria.
+      Se estiverem certos, procure o secretário.
 
     [![A tela da matrícula com o alerta vermelho de matrícula não encontrada](../assets/images/retirada/02-matricula-nao-encontrada.png)](../assets/images/retirada/02-matricula-nao-encontrada.png)
 
@@ -92,8 +92,8 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
 
     - **Se SIM** → a grade de categorias aparece. Siga para o passo 5.
     - **Se NÃO** → no lugar da grade aparece
-      "Este cadastro está inativo e não pode retirar equipamento." Procure a
-      secretaria para reativar a matrícula. Se você está com algum aparelho, a
+      "Este cadastro está inativo e não pode retirar equipamento." Procure o
+      secretário para reativar a matrícula. Se você está com algum aparelho, a
       [devolução](devolucao.md) continua liberada.
 
     [![A tela inicial de um cadastro inativo: no lugar da grade de categorias, um aviso amarelo explicando o bloqueio](../assets/images/retirada/03-cadastro-inativo.png)](../assets/images/retirada/03-cadastro-inativo.png)
@@ -112,7 +112,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
     esquerda é a [devolução](devolucao.md), e ela não atrapalha a retirada.
 
 6. Confira o cartão da categoria que você quer. Cada um diz quantas unidades
-   estão livres agora — "4 de 9 disponíveis" quer dizer que a secretaria tem
+   estão livres agora — "4 de 9 disponíveis" quer dizer que o secretário tem
    nove notebooks em circulação e quatro deles estão na bancada neste momento.
 
     [![A grade com os três cartões de categoria: Notebooks, Tablets e Extensões, cada um com a contagem de unidades livres](../assets/images/retirada/04-grade-de-categorias.png)](../assets/images/retirada/04-grade-de-categorias.png)
@@ -121,7 +121,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
 
     - **Se SIM** → toque no cartão. Siga para o passo 8.
     - **Se NÃO** → o cartão fica cinza, diz "Nenhum disponível agora" e não
-      responde ao toque. Escolha outra categoria, ou fale com a secretaria.
+      responde ao toque. Escolha outra categoria, ou fale com o secretário.
 
     [![A mesma grade com o cartão de Tablets em cinza, dizendo que nenhum está disponível agora](../assets/images/retirada/05-categoria-sem-unidade-livre.png)](../assets/images/retirada/05-categoria-sem-unidade-livre.png)
 
@@ -177,7 +177,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
 
 14. Quer relatar um problema ou uma sugestão em texto? Aponte a câmera do
     celular para o QR code ao lado dos rostos: ele abre o formulário de
-    sugestões da secretaria. Também é opcional, e o mesmo QR costuma estar num
+    sugestões do secretário. Também é opcional, e o mesmo QR costuma estar num
     adesivo ao lado do tablet — dá para usar depois, sem pressa.
 
 15. Toque em **Concluir**.
@@ -193,7 +193,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
 
     É o que permite devolver um notebook na terça e ficar com a extensão até
     sexta. Se os três fossem um registro único, devolver um obrigaria a devolver
-    todos, e a secretaria não teria como saber qual aparelho já voltou.
+    todos, e o secretário não teria como saber qual aparelho já voltou.
 
     Na prática você vê isso na [devolução](devolucao.md): cada item aparece em
     uma linha própria, com o seu próprio botão.
@@ -210,7 +210,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
     entra normalmente, e o que muda é só a grade de categorias, que dá lugar à
     explicação.
 
-    Para voltar a retirar, procure a secretaria.
+    Para voltar a retirar, procure o secretário.
 
 !!! question "Por que a etiqueta aparece assim, `NOTE-01`, e nunca abreviada?"
 
@@ -229,7 +229,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
 
     O caminho é o processo seguinte: volte ao portal, informe a matrícula e
     [devolva](devolucao.md) o item que você não vai usar, deixando-o na bancada.
-    Ele só volta a ser oferecido a outra pessoa depois que a secretaria o
+    Ele só volta a ser oferecido a outra pessoa depois que o secretário o
     recolher.
 
 !!! question "Por que os rostos não apareceram hoje?"
@@ -249,24 +249,24 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
     só a nota e o dia: não há como achar "o seu" voto para trocar, porque não
     existe nada nele que diga que foi seu.
 
-    Um toque errado é uma nota entre dezenas do mês, e a secretaria lê médias,
+    Um toque errado é uma nota entre dezenas do mês, e o secretário lê médias,
     não votos. Se o que você queria dizer cabe em texto, o QR code ao lado
     abre o formulário de sugestões.
 
 !!! question "Não apareceu QR code nenhum. Está quebrado?"
 
-    Não. O QR só aparece quando a secretaria configurou o link do formulário
+    Não. O QR só aparece quando o secretário configurou o link do formulário
     de sugestões no painel; sem link, a tela mostra só os rostos. Os rostos e
     o QR são independentes: um pode aparecer sem o outro.
 
-    Se quiser relatar algo e o QR não estiver na tela, fale com a secretaria.
+    Se quiser relatar algo e o QR não estiver na tela, fale com o secretário.
 
 ## 8. Erros comuns e o que fazer
 
 | Mensagem na tela                                          | Causa                                                                                              | O que fazer                                                                                                       |
 | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| "Matrícula 9999999 não encontrada."                       | Dígito trocado, zero da frente esquecido, ou cadastro que nunca foi importado.                     | Confira os números e digite de novo. Se estiverem certos, procure a secretaria.                                    |
-| "Este cadastro está inativo e não pode retirar equipamento." | O cadastro saiu de circulação.                                                                     | Procure a secretaria para reativar. A devolução do que já está com você continua liberada.                         |
+| "Matrícula 9999999 não encontrada."                       | Dígito trocado, zero da frente esquecido, ou cadastro que nunca foi importado.                     | Confira os números e digite de novo. Se estiverem certos, procure o secretário.                                    |
+| "Este cadastro está inativo e não pode retirar equipamento." | O cadastro saiu de circulação.                                                                     | Procure o secretário para reativar. A devolução do que já está com você continua liberada.                         |
 | "Nenhuma unidade de Tablet está livre agora."              | A última unidade da categoria saiu entre a sua entrada no portal e o toque no cartão.              | Volte pela seta no alto à esquerda e escolha outra categoria.                                                       |
 | "O equipamento NOTE-06 acabou de sair."                    | Outra pessoa confirmou a retirada desse mesmo aparelho antes de você.                              | Nada foi registrado. O item já saiu da sua lista: confira o que sobrou e confirme de novo.                          |
-| "São no máximo 10 itens por retirada."                     | A seleção passou do teto de dez itens.                                                             | Tire itens da seleção até sobrarem dez. Para levar mais de uma vez só, fale com a secretaria.                       |
+| "São no máximo 10 itens por retirada."                     | A seleção passou do teto de dez itens.                                                             | Tire itens da seleção até sobrarem dez. Para levar mais de uma vez só, fale com o secretário.                       |

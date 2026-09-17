@@ -48,13 +48,13 @@ Estes são só desta página — são as partes da tela que os passos citam pelo
 | Papel                  | Faz                                                                                                                             | Não faz                                                                                                                                    |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | Coordenação            | Entrega a planilha com quem está matriculado no semestre. É dela que sai a lista.                                               | Não abre o painel. O contato dela com o sistema é o arquivo.                                                                               |
-| Secretaria             | Baixa o modelo, confere a prévia, confirma a importação, corrige cadastro à mão e decide quem sai de circulação.                | Não apaga cadastro — não existe essa ação, e a [regra abaixo](#por-que-nao-existe-um-botao-de-excluir-cadastro) explica por quê.            |
+| Secretário             | Baixa o modelo, confere a prévia, confirma a importação, corrige cadastro à mão e decide quem sai de circulação.                | Não apaga cadastro — não existe essa ação, e a [regra abaixo](#por-que-nao-existe-um-botao-de-excluir-cadastro) explica por quê.            |
 | Painel (o computador)  | Lê a planilha, corrige a grafia sozinho, mostra o que vai mudar antes de mudar, e recusa a linha que não dá para aproveitar.    | Não adivinha. Perfil que não é Estudante nem Professor reprova a linha em vez de escolher um.                                               |
 | Estudante ou professor | Nada. Não participa deste processo.                                                                                            | Não vê esta tela. O que ele percebe é indireto: a matrícula passar — ou não — no tablet.                                                    |
 
 ## 5. Diagrama BPMN
 
-[![Diagrama BPMN da gestão de pessoas: a secretaria abre a aba Pessoas e escolhe entre importar a planilha, corrigir um cadastro ou ativar e inativar; na importação o sistema confere se o arquivo é mesmo uma planilha, lê as linhas, sanitiza e mostra a prévia, e só grava depois da confirmação.](../assets/diagramas/05-pessoas.svg)](../assets/diagramas/05-pessoas.svg)
+[![Diagrama BPMN da gestão de pessoas: o secretário abre a aba Pessoas e escolhe entre importar a planilha, corrigir um cadastro ou ativar e inativar; na importação o sistema confere se o arquivo é mesmo uma planilha, lê as linhas, sanitiza e mostra a prévia, e só grava depois da confirmação.](../assets/diagramas/05-pessoas.svg)](../assets/diagramas/05-pessoas.svg)
 
 Clique no diagrama para abri-lo em tamanho cheio — na largura da página ele
 entra com cerca de metade do tamanho, e os rótulos ficam apertados.
@@ -371,7 +371,7 @@ Coutinho — está inativa **e** com um aparelho na mão: é a regra que a
 
     Travar os dois lados seria o pior desenho possível: a inativação viraria a
     garantia de que aquele aparelho **nunca** volta. Quem devolve não está
-    pedindo nada ao sistema — está entregando algo que a secretaria quer de
+    pedindo nada ao sistema — está entregando algo que o secretário quer de
     volta.
 
     Na prática, a matrícula inativa entra no tablet normalmente. No lugar da
@@ -548,7 +548,7 @@ Estas não impedem a importação: o resto do arquivo entra normalmente.
 | "A matrícula 0012345 já é de outro cadastro." | O número novo já pertence a outra pessoa.                                                 | Cada matrícula é única. Confira o número antes de salvar — pode ser que o cadastro certo já exista.             |
 | "A matrícula 0099999 não existe."             | O cadastro foi alterado em outro computador entre a abertura da tela e o clique.           | Atualize a página. A lista pode estar desatualizada.                                                            |
 | "O cadastro de Ana Souza já está inativo."    | A situação mudou em outra aba.                                                            | Nenhuma ação. A lista já foi atualizada.                                                                        |
-| "Informe o nome completo."                    | O campo foi enviado vazio, ou com mais de 120 caracteres.                                 | É o nome que a secretaria vê na fila de devoluções — escreva o completo.                                        |
+| "Informe o nome completo."                    | O campo foi enviado vazio, ou com mais de 120 caracteres.                                 | É o nome que o secretário vê na fila de devoluções — escreva o completo.                                        |
 | "Perfil inválido."                            | Chegou um perfil que não é Estudante nem Professor.                                       | Use o seletor. Só existem os dois.                                                                              |
 | "Informe pelo menos um curso."                | O campo foi enviado vazio, ou com mais de 200 caracteres.                                 | Separe vários por vírgula. Ex.: Sistemas de Informação, Direito.                                                 |
 | "Não foi possível concluir a operação."       | O painel não conseguiu falar com o banco de dados.                                        | Tente de novo. Se continuar, avise quem cuida do servidor.                                                       |

@@ -14,8 +14,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Sistema de Empréstimo de Equipamentos — Unoesc
 
 MVP para empréstimo de notebooks, tablets e extensões, rodando em rede local no
-computador da secretaria. Duas frentes: `/` (tablet, retirada e devolução) e
-`/admin` (desktop, secretaria).
+computador do secretário. Duas frentes: `/` (tablet, retirada e devolução) e
+`/admin` (desktop, secretário).
 
 **A especificação é [`especificacoes/spec.md`](especificacoes/spec.md) e ela
 manda.** Esse é o caminho canônico — a spec morou na raiz até 2026-08-27 e foi
@@ -177,7 +177,7 @@ O mesmo vale para o Next 16: os guias estão em `node_modules/next/dist/docs/`.
   assets" do [README.md](README.md).
 - **Rotas que leem o banco** precisam ser dinâmicas — sem isso o Next congela os
   dados no build. Confira a classificação das rotas no relatório do `build`.
-- Textos de interface em português, voltados a aluno e secretaria.
+- Textos de interface em português, voltados a estudante e secretário.
 
 ### Commits e sincronização
 
@@ -207,7 +207,7 @@ o primeiro.
 
 ### Regra de negócio que não é óbvia pelo código
 
-O status `AGUARDANDO_BAIXA` separa "o usuário disse que devolveu" de "a secretaria
+O status `AGUARDANDO_BAIXA` separa "o usuário disse que devolveu" de "o secretário
 recolheu". Enquanto o empréstimo está nesse estado, o equipamento **não** volta
 para `DISPONIVEL` — só a confirmação no `/admin` fecha o ciclo. Quebrar isso faz o
 sistema oferecer no tablet um equipamento que ainda está na bancada.
@@ -216,7 +216,7 @@ Cada item emprestado gera um registro **separado** em `Emprestimo`.
 
 **São três marcadores temporais, e cada um tem um dono só** (Tarefa 12):
 `data_retirada` é o tablet entregando, `data_devolucao` é o tablet **declarando**
-a devolução (`ATIVO` -> `AGUARDANDO_BAIXA`) e `data_baixa` é a secretaria
+a devolução (`ATIVO` -> `AGUARDANDO_BAIXA`) e `data_baixa` é o secretário
 **conferindo fisicamente** (`AGUARDANDO_BAIXA` -> `CONCLUIDO`). A diferença entre
 os dois últimos é o tempo de prateleira — o aparelho parado na bancada, invisível
 para o tablet e para o inventário. Até a Tarefa 12 a baixa **sobrescrevia** a
@@ -339,8 +339,8 @@ normalização de etiqueta e categoria, e o bloqueio por tentativas.
   individuais: a chave do HMAC passou a ser o hash bcrypt do administrador
   logado, e a carga passou a levar `id` e `nome`. As propriedades continuam as
   mesmas, agora por conta em vez de globais — ver as decisões da Tarefa 10. O
-  que **não** mudou: `secure` fica **falso** de propósito, porque a rede da
-  secretaria é HTTP e com a flag ligada o navegador descartaria o cookie.
+  que **não** mudou: `secure` fica **falso** de propósito, porque a rede do
+  secretário é HTTP e com a flag ligada o navegador descartaria o cookie.
 - **`temSessaoAdmin()` é chamada em cada página e em cada action**, nunca no
   layout. Layout não re-renderiza entre rotas irmãs e não impede um POST direto
   no endpoint da Server Action — usar layout como porta dá sensação de proteção
@@ -409,7 +409,7 @@ sessão. O banco foi devolvido ao estado em que estava antes da verificação.
   enviados a lugar nenhum, o estado deles *é* o filtro. Não "corrija" um pelo
   outro.
 - **A baixa em lote do painel é melhor-esforço, item a item.** O gesto físico já
-  aconteceu — a secretaria recolheu a pilha. Uma linha que saiu da fila em outra
+  aconteceu — o secretário recolheu a pilha. Uma linha que saiu da fila em outra
   aba não pode desfazer a conferência das outras quatro. O resumo conta tudo:
   confirmados, presos em manutenção, fora da fila e falhos.
 - **A devolução em lote do aluno é uma transação só.** Ao contrário da do
@@ -519,7 +519,7 @@ vazio.
 - **A filtragem é no cliente, e a spec deixava a escolha.** O inventário inteiro
   já chega no render, a página é `force-dynamic` e o componente já é ilha de
   cliente com a lista na mão. Por `searchParams` no servidor, cada tecla custaria
-  um render inteiro do Server Component — no computador da própria secretaria,
+  um render inteiro do Server Component — no computador do próprio secretário,
   mas com a lista piscando enquanto se digita. O preço aceito: os filtros não
   sobrevivem ao F5 nem entram no histórico. Para uma tela operada de pé, em uma
   sessão, ninguém compartilha link de inventário filtrado — e o `router.refresh()`
@@ -545,7 +545,7 @@ vazio.
   mora dentro da própria linha, e `relerSeDesencontrou` relê o banco quando tela
   e banco discordam — a releitura pode trocar o status para um que o filtro
   exclui. Sem a exceção, o pedido falharia, a linha sumiria levando a explicação
-  junto, e a secretaria veria o clique não fazer nada. Exercitado de verdade:
+  junto, e o secretário veria o clique não fazer nada. Exercitado de verdade:
   com o filtro em `Disponível`, o `NOTE-04` foi mudado para `MANUTENCAO` por
   fora, o clique falhou com `STATUS_INVALIDO`, e a linha ficou na tela mostrando
   o motivo.
@@ -631,7 +631,7 @@ de sessão**, inclusive a de upload multipart (7 asserções).
   o React 19 limpa o formulário quando a action termina, e um
   `<input type="file">` limpo perderia o arquivo que a segunda etapa precisa.
 - **A gravação é uma transação só.** Ao contrário da baixa em lote da fila (que
-  é melhor-esforço porque o gesto físico já aconteceu), aqui a secretaria
+  é melhor-esforço porque o gesto físico já aconteceu), aqui o secretário
   conferiu uma lista e clicou uma vez: metade aplicada deixaria a base em um
   estado que ninguém revisou.
 - **Matrícula é só dígito, até 15 — e a regra veio do tablet.** Uma validação
@@ -684,8 +684,8 @@ de sessão**, inclusive a de upload multipart (7 asserções).
   framework e a pessoa veria um erro genérico de rede em vez da frase que diz o
   que fazer.
 - **O seed não toca no `status` ao reimportar.** Mesma regra da planilha: o CSV
-  não tem a coluna, então `db:seed` não pode ressuscitar um cadastro que a
-  secretaria inativou na semana passada.
+  não tem a coluna, então `db:seed` não pode ressuscitar um cadastro que o
+  secretário inativou na semana passada.
 - **A aba Usuários fica por último no menu.** As quatro acima são o trabalho do
   dia; cadastro é manutenção de início de semestre. Pôr uma tarefa rara no topo
   empurraria para baixo as que acontecem toda hora.
@@ -714,7 +714,7 @@ de edição e o cabeçalho do tablet.
 
 - **Partícula fica minúscula, contra a letra do enunciado.** Ele escreveu o
   exemplo como "Nome Do Aluno", mas isso valeria para todo nome importado, e
-  "Ana Maria De Souza" não é como o cartório escreve nem como a secretaria lê o
+  "Ana Maria De Souza" não é como o cartório escreve nem como o secretário lê o
   nome na fila. Levantado antes de escrever código; a decisão foi do dono do
   repositório. A primeira palavra é sempre capitalizada, mesmo sendo partícula —
   planilha exportada com o sobrenome à frente ("de souza ana") começaria em
@@ -906,7 +906,7 @@ fronteira exata do freio de tentativas (12).
   As três foram exercitadas por HTTP contra o servidor de verdade.
 - **O cookie carrega `id` e `nome`, os dois dentro da assinatura** — e o nome
   exibido vem do banco, não da carga. Estar assinado é o que impede trocar
-  "Secretaria" por outra coisa no navegador; vir do banco é o que faz um nome
+  "Secretário" por outra coisa no navegador; vir do banco é o que faz um nome
   corrigido no seed aparecer sem a pessoa precisar sair e entrar.
 - **A migration foi escrita à mão, e a automática era destrutiva.** O que o
   `prisma migrate diff` propôs para este mesmo schema foi `DROP TABLE "Usuario"`
@@ -957,13 +957,13 @@ fronteira exata do freio de tentativas (12).
   silencioso.
 - **bcrypt custo 10, e o número foi medido nesta máquina:** ~209ms para gerar e
   ~159ms para conferir. O `bcryptjs` é JavaScript puro, e o custo 12 subiu para
-  ~630ms — caro demais para uma tela que a secretaria abre várias vezes por dia,
+  ~630ms — caro demais para uma tela que o secretário abre várias vezes por dia,
   sem ganho proporcional numa rede fechada que já tem freio de tentativas.
   Também conferido: **bcrypt trunca em 72 bytes** (uma senha de 72 caracteres
   valida contra uma entrada de 81), e `compare` contra hash corrompido devolve
   `false` em vez de lançar — uma linha estragada no banco recusa o login em vez
   de derrubar a tela.
-- **A barra lateral mostra o nome de quem entrou, no lugar do "Secretaria" que
+- **A barra lateral mostra o nome de quem entrou, no lugar do "Secretário" que
   era fixo.** É o motivo declarado da tarefa (responsabilização) aparecendo na
   tela: com senha única, quem estava de pé no balcão não sabia sequer com qual
   conta o navegador ficou aberto desde o turno anterior.
@@ -985,7 +985,7 @@ fronteira exata do freio de tentativas (12).
   comando que resolve (`npm run db:seed`).
 - **O CSV do seed virou `pessoas.csv`, e `usuarios.csv` continua sendo aceito**
   (com aviso no console), assim como `USUARIOS_CSV` ao lado de `PESSOAS_CSV`. O
-  arquivo real está no `.gitignore` e mora na máquina da secretaria, onde
+  arquivo real está no `.gitignore` e mora na máquina do secretário, onde
   ninguém vai renomeá-lo por causa de um commit — sem o atalho, o seed não
   acharia a planilha, cairia nos quatro registros de exemplo e **não daria erro
   nenhum**. A falha apareceria semanas depois, como um aluno "não cadastrado".
@@ -1115,7 +1115,7 @@ ressemear — em cópia.
   Tailwind 4 já registrada. O login foi medido de novo depois da extração, e
   continua cabendo: o "Entrar" termina em 599px sem erro e 629px com erro, em
   uma janela de 768px.
-- **O aviso de sucesso nomeia a conta** ("Senha da conta Secretaria alterada").
+- **O aviso de sucesso nomeia a conta** ("Senha da conta Secretário alterada").
   São quatro contas e um computador só — "Senha alterada" sem o nome é
   justamente a frase que não resolve a dúvida que a sprint existe para resolver.
 
@@ -1136,7 +1136,7 @@ banco foi devolvido à linha de base item a item.
 - **A baixa deixou de sobrescrever `data_devolucao`, e essa é a mudança que a
   tarefa de fato exigia.** O enunciado só pedia o campo novo, descrevendo
   `data_devolucao` como "quando o aluno clica em devolver no tablet" — o que era
-  verdade até a secretaria dar baixa, porque `darBaixa` regravava o campo com o
+  verdade até o secretário dar baixa, porque `darBaixa` regravava o campo com o
   próprio instante (decisão da Tarefa 4, quando havia um campo de data para dois
   eventos). Aplicado ao pé da letra, `data_baixa - data_devolucao` daria ~0 ms
   para sempre: a métrica de gargalo nasceria morta, e nada acusaria — o tipo está
@@ -1214,7 +1214,7 @@ esgotado montado e desmontado (14).
   dez notebooks cadastrados. Denominadores diferentes dariam à coordenação duas
   respostas para "quantos notebooks temos", dependendo da tela em que
   perguntasse. O `resumirInventario`, ao contrário, **conta** o inativo de
-  propósito (a secretaria ali olha patrimônio), e por isso a linha do relatório
+  propósito (o secretário ali olha patrimônio), e por isso a linha do relatório
   mostra os aposentados entre parênteses, fora da conta: sem eles os números não
   fechariam com a aba Inventário.
 - **Existe um quarto nível, `vazio`, que o enunciado não previa.** Desde a
@@ -1473,7 +1473,7 @@ recebeu as migrations.
   varredura de reversibilidade: o gesto de ida existe e o de volta não — e não
   pode existir, porque não há como achar "o seu" voto numa linha sem dono. A
   resposta honesta está na §7 da página da retirada: uma nota entre dezenas do
-  mês, e a secretaria lê médias.
+  mês, e o secretário lê médias.
 - **`clicarAte` não serve para envio de formulário.** Dois falsos negativos
   na mesma sessão: o auxiliar repete o clique até o efeito aparecer, e um
   envio repetido depois de a action terminar (a) no login acerta o primeiro
@@ -1620,7 +1620,7 @@ fim.
   cadastro a mais e ele **recusa**.
 - **O `db:demo` restaura o cenário; o `db:seed` preserva a edição. A inversão é
   deliberada.** No seed, campo que a origem não menciona é campo que o banco
-  preserva, porque os dados são da secretaria. Aqui os dados são cenário de
+  preserva, porque os dados são do secretário. Aqui os dados são cenário de
   captura: depois de clicar nos botões testando uma tela, rodar de novo tem que
   devolver o enquadramento. Exercitado — dar baixa pela tela, reativar a pessoa
   inativa e liberar o equipamento, e a re-execução desfaz os três (inclusive
@@ -1649,11 +1649,11 @@ fim.
   procedimento de captura.** O critério do enunciado ("nenhum nome real em
   `db:studio`") não é alcançável sem alterar o `prisma/seed.ts`, que o próprio
   enunciado proíbe — duas das quatro contas são de pessoas reais. Levantado como
-  conflito; a decisão foi capturar sempre logado como `secretaria`, a conta
+  conflito; a decisão foi capturar sempre logado como `secretario`, a conta
   neutra, e registrar isso no CONTRIBUTING. Reescrever os nomes pelo demo criaria
   dois donos para o mesmo campo, e o próximo `db:seed` devolveria os reais em
   silêncio. Exercitado no navegador: nenhuma das telas do painel mostra
-  "Jeanzão" nem "Viccenzo" quando se entra como `secretaria`.
+  "Jeanzão" nem "Viccenzo" quando se entra como `secretario`.
 - **O elenco tem casos escolhidos, não variedade.** Ana Souza leva dois itens
   porque o "Devolver tudo" e o "Confirmar Todas as Devoluções" só nascem a partir
   de dois (Tarefa 5) — com um item só, as duas telas não teriam o botão que a
@@ -1971,7 +1971,7 @@ aparecesse `- -`, o formato estaria errado.
   de início que o consome**, os dois chamados "Devolução declarada". É o que a §3
   do enunciado pede, e é o que impede o erro que a regra de negócio existe para
   impedir: o 02 **não** termina em "equipamento disponível", termina em "o
-  equipamento segue EMPRESTADO e espera a secretaria".
+  equipamento segue EMPRESTADO e espera o secretário".
 - **Não existe sexto diagrama de visão geral.** O enunciado deixa opcional; a D10
   já reserva as duas máquinas de estado para Mermaid, em `docs/referencia/`,
   dizendo "não force BPMN onde ele não é a notação certa". Um BPMN de visão geral
@@ -2222,12 +2222,10 @@ rodada.
   omiti-lo faria o texto contradizer a figura ao lado. A ramificação usa "Se for
   UM → / Se forem TODOS →" em vez de SIM/NÃO, porque escolher entre dois caminhos
   não é pergunta de sim ou não.
-- **Duas palavras do enunciado não sobreviveram ao vocabulário da wiki.** Ele
-  escreve "a declaração do usuário" e "a secretária"; `usuário` em minúscula é
-  grafia proibida desde a D03 (naquele vocabulário a palavra quer dizer **login
-  de administrador**), e neste projeto "a secretaria" é o setor, não a pessoa. O
-  Vale pega a primeira e não pega a segunda — a segunda é convenção do
-  [AGENTS.md](AGENTS.md), lida à mão.
+- **Uma palavra do enunciado não sobreviveu ao vocabulário da wiki.** Ele
+  escreve "a declaração do usuário"; `usuário` em minúscula é grafia proibida
+  desde a D03 (naquele vocabulário a palavra quer dizer **login de
+  administrador**), e quem confere a devolução é "o secretário". O Vale pega.
 - **A pergunta da reversibilidade é a quarta caixa da §7, e o enunciado não a
   pedia.** Ele cobre o clique repetido ("pode clicar sem medo") e não cobre o
   **item errado** — que é o gesto sem volta: confirmar o recebimento de um
@@ -2240,14 +2238,14 @@ rodada.
   A D07 manda pô-la aqui "ou na página de regras de negócio da D10", e a D10
   manda pô-la lá "se ela não tiver ficado" aqui — as duas devolvem a escolha uma
   para a outra, e a D10 ainda é um arquivo de uma linha. Link para página vazia
-  não entrega nada ao leitor. O bloco é `???` (nasce fechado): a secretaria não
+  não entrega nada ao leitor. O bloco é `???` (nasce fechado): o secretário não
   esbarra nele, e quem for mexer no `darBaixa` acha. **A D10 não deve duplicá-la.**
 - **A tela avisa "Continua em manutenção" e a página NÃO documenta esse caso,
   porque a interface da v1.0 não consegue produzi-lo.** O `darBaixa` tem o ramo
   (`liberados.count !== 1`) e o resumo do lote tem o campo `presas`, mas o
   `ORIGENS_PERMITIDAS` só deixa `MANUTENCAO` vir de `DISPONIVEL`: equipamento
-  `EMPRESTADO` não tem botão nenhum no inventário. Documentar mandaria a
-  secretaria procurar um caso que não acontece. Se um dia a Tarefa 13 (ou outra)
+  `EMPRESTADO` não tem botão nenhum no inventário. Documentar mandaria o
+  secretário procurar um caso que não acontece. Se um dia a Tarefa 13 (ou outra)
   abrir esse caminho, a linha entra na §8.
 - **A prova de que só a baixa devolve o aparelho ao estoque é a contagem do
   tablet, não a linha do inventário.** Ler `Equipamento.status` prova a linha; a
@@ -2278,8 +2276,8 @@ rodada.
   ao leitor uma tela que ele não vai ver.
 - **A recusa que FICA na linha é a de sessão encerrada**, e é ela que ilustra a
   §8. `SEM_SESSAO` não dispara releitura, então o alerta vermelho permanece
-  embaixo do botão com a linha ainda na fila — que é exatamente o sinal que a
-  secretaria precisa ler: nada foi conferido.
+  embaixo do botão com a linha ainda na fila — que é exatamente o sinal que o
+  secretário precisa ler: nada foi conferido.
 - **A tabela de erros é conferida EXTRAINDO as frases do código**, como a da D06,
   e a extração tem duas armadilhas que produziram falso negativo antes de virar
   regra: o texto de JSX chega **quebrado em várias linhas** (comparar byte a byte
@@ -2605,7 +2603,7 @@ da wiki e as duas trilhas de persona — a [home](docs/index.md) com a escolha d
 perfil em cartões, os atalhos das duas trilhas, a declaração de versão e onde
 pedir ajuda; o [guia do estudante e professor](docs/inicio-rapido/estudante-e-professor.md)
 (o tablet em cinco minutos, com as três dúvidas mais prováveis); e o
-[guia da secretaria](docs/inicio-rapido/secretaria.md) (o painel em dez minutos,
+[guia do secretário](docs/inicio-rapido/secretario.md) (o painel em dez minutos,
 com as duas inativações lado a lado). A home em inglês perdeu o parágrafo que
 anunciava esta tarefa como pendente. `mkdocs build --strict` e `vale docs/` (17
 arquivos) em 0.
@@ -2687,7 +2685,7 @@ conferidor de links foi **exercitado até reprovar** antes de ser aceito.
   é justamente o que a §4 manda não fazer. Por isso esta tarefa não encostou no
   `dev.db` nem no banco de demonstração, e não precisou da receita de captura do
   CONTRIBUTING.
-- **A tabela das duas inativações fica no guia da secretaria, e não em
+- **A tabela das duas inativações fica no guia do secretário, e não em
   Referência.** Ela já existe, mais completa, em
   [regras-de-negocio.md](docs/referencia/regras-de-negocio.md) — mas o enunciado
   pede as duas confusões "ditas lado a lado" para quem assumiu a função esta
@@ -2884,7 +2882,7 @@ do mundo externo envelhece, e se reconfere por execução antes de ser citada.
   repositório: 569 linhas por execução sobre decisões já tomadas soterram o erro
   real, e é assim que a próxima pessoa desliga o linter inteiro. O 1 erro real
   (`Microsoft.HeadingColons`, em
-  [secretaria.md](docs/en/inicio-rapido/secretaria.md)) foi corrigido no texto.
+  [secretario.md](docs/en/inicio-rapido/secretario.md)) foi corrigido no texto.
 - **As páginas em inglês recebem o vocabulário controlado TAMBÉM, e isso não é
   redundância.** Elas citam rótulo de tela em português o tempo todo (a regra da
   spec-wiki §7, `**Devolver** (Return)`), e sem o vocabulário um "aluno" ou um
@@ -3086,12 +3084,12 @@ aberto.
 
 - **Não existe mais `ADMIN_PASSWORD`** (Tarefa 10). As contas do painel estão na
   tabela `Administrador` e nascem com `npm run db:seed`, todas com a senha
-  `Mudar@123` — **trocar antes de usar na secretaria**, e a partir da Tarefa 11
+  `Mudar@123` — **trocar antes de usar no balcão**, e a partir da Tarefa 11
   isso se faz pelo próprio painel ("Alterar senha", no rodapé da barra lateral).
   O `.env` agora só tem `DATABASE_URL`.
 - **`bcryptjs` (não `bcrypt`) e sem `@types/bcryptjs`.** O `bcryptjs` é
   JavaScript puro, sem compilação nativa — o que importa numa máquina Windows
-  de secretaria sem toolchain de C++. E o pacote `@types/bcryptjs` que o
+  do secretário sem toolchain de C++. E o pacote `@types/bcryptjs` que o
   enunciado da Tarefa 10 pedia é um **stub deprecado**: o próprio npm avisa que
   "bcryptjs provides its own type definitions, so you do not need this
   installed". Instalá-lo só somaria um pacote inútil.

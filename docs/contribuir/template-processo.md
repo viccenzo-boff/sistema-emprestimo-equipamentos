@@ -60,7 +60,7 @@ O que precisa ser verdade ANTES de começar. Lista curta, cada item
 verificável por quem vai executar.
 
 Exemplos do tipo certo: "o cadastro está ativo", "há pelo menos um
-equipamento DISPONIVEL na categoria", "a secretaria está com sessão aberta
+equipamento DISPONIVEL na categoria", "o secretário está com sessão aberta
 no painel".
 
 NÃO entra aqui: passo do processo. Pré-condição é estado, não ação.
@@ -87,7 +87,7 @@ correção que só uma delas receber.
 
 <!--
 Quem executa cada parte. Neste sistema são dois papéis: quem opera o tablet
-(estudante ou professor) e quem opera o painel (secretaria).
+(estudante ou professor) e quem opera o painel (secretário).
 
 Diga também o que cada papel NÃO faz — é a metade que evita a pergunta
 "então por que não apareceu para mim?".
@@ -154,7 +154,7 @@ Ramificação SEMPRE explícita:
 
     3. O cadastro está ativo?
        - Se SIM → ... Siga para o passo 4.
-       - Se NÃO → ... Procure a secretaria.
+       - Se NÃO → ... Procure o secretário.
 
 Rótulo de tela citado literalmente, em negrito, com a grafia exata.
 
@@ -210,7 +210,7 @@ os do seu processo.
 
     Porque devolver no tablet é uma **declaração**, não uma conferência.
     Enquanto o empréstimo está em `AGUARDANDO_BAIXA`, o aparelho está
-    fisicamente na bancada mas ninguém da secretaria o recolheu ainda. Se ele
+    fisicamente na bancada mas o secretário não o recolheu ainda. Se ele
     voltasse para `DISPONIVEL` nesse momento, o tablet ofereceria a outro
     estudante um equipamento que continua em cima da bancada.
 

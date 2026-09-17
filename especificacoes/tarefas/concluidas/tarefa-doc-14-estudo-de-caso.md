@@ -7,7 +7,7 @@ as pontas soltas da série.
 
 Visão técnica do sistema para quem lê a wiki e quer entender o que está por trás:
 stack, modelo de dados, as duas frentes, e por que SQLite em arquivo único (a
-portabilidade para a máquina da secretaria).
+portabilidade para a máquina do secretário).
 
 Curta. Quem quiser profundidade tem o [README.md](../../../README.md) e o
 [AGENTS.md](../../../AGENTS.md), e esta página deve linkar para os dois.

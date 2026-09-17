@@ -1,6 +1,6 @@
 # Tarefa 12: Auditoria de Baixa Física (Tempo de Prateleira)
 
-Esta tarefa adiciona um novo marcador temporal no banco de dados para medir o gargalo operacional entre o momento em que o aluno devolve o equipamento no tablet e o momento em que a secretaria recolhe fisicamente e dá a baixa no sistema.
+Esta tarefa adiciona um novo marcador temporal no banco de dados para medir o gargalo operacional entre o momento em que o aluno devolve o equipamento no tablet e o momento em que o secretário recolhe fisicamente e dá a baixa no sistema.
 
 ## 1. Atualização do Banco de Dados (Prisma)
 * **Model `Emprestimo`:** 

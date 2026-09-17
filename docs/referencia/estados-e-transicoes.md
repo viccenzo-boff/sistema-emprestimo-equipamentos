@@ -36,7 +36,7 @@ stateDiagram-v2
 | --- | --- | --- | --- |
 | (nasce) → `ATIVO` | Estudante ou professor | [Portal](glossario.md#portal), botão **Confirmar retirada** | `data_retirada` |
 | `ATIVO` → `AGUARDANDO_BAIXA` | Estudante ou professor | [Portal](glossario.md#portal), botão **Confirmar devolução** (ou **Devolver tudo**) | `data_devolucao` |
-| `AGUARDANDO_BAIXA` → `CONCLUIDO` | Secretaria | [Painel](glossario.md#painel), botão **Confirmar Recebimento Físico** (ou **Confirmar Todas as Devoluções**) | `data_baixa` |
+| `AGUARDANDO_BAIXA` → `CONCLUIDO` | Secretário | [Painel](glossario.md#painel), botão **Confirmar Recebimento Físico** (ou **Confirmar Todas as Devoluções**) | `data_baixa` |
 
 Os três marcadores são **três campos diferentes**, e cada um tem um dono só. A
 distância entre os dois últimos é o
@@ -48,8 +48,8 @@ ficou parado na bancada depois de alguém dizer que o devolveu.
 * **Não volta.** Não existe `AGUARDANDO_BAIXA` → `ATIVO` nem `CONCLUIDO` →
   qualquer coisa. Um empréstimo encerrado por engano não reabre por nenhuma
   tela — o caminho é registrar uma retirada nova.
-* **Não pula.** `ATIVO` nunca vai direto para `CONCLUIDO`. A conferência da
-  secretaria é o único caminho até o fim, e é por isso que ela existe.
+* **Não pula.** `ATIVO` nunca vai direto para `CONCLUIDO`. A conferência do
+  secretário é o único caminho até o fim, e é por isso que ela existe.
 * **Não apaga.** Empréstimo `CONCLUIDO` fica no banco para sempre. É ele que
   responde "quem estava com este aparelho no semestre passado".
 
@@ -69,14 +69,14 @@ stateDiagram-v2
 
 | Transição | Quem dispara | Em que tela |
 | --- | --- | --- |
-| (nasce) → `DISPONIVEL` | Secretaria | Painel, aba **Inventário**, formulário de cadastro |
+| (nasce) → `DISPONIVEL` | Secretário | Painel, aba **Inventário**, formulário de cadastro |
 | `DISPONIVEL` → `EMPRESTADO` | Estudante ou professor | Portal, na confirmação da retirada |
-| `EMPRESTADO` → `DISPONIVEL` | Secretaria | Painel, na [baixa física](glossario.md#baixa-fisica) |
-| `DISPONIVEL` → `MANUTENCAO` | Secretaria | Painel, botão **Manutenção** na linha |
-| `MANUTENCAO` → `DISPONIVEL` | Secretaria | Painel, botão **Disponível** na linha |
-| `DISPONIVEL` → `INATIVO` | Secretaria | Painel, botão **Inativar** na linha |
-| `MANUTENCAO` → `INATIVO` | Secretaria | Painel, botão **Inativar** na linha |
-| `INATIVO` → `DISPONIVEL` | Secretaria | Painel, botão **Reativar** na linha |
+| `EMPRESTADO` → `DISPONIVEL` | Secretário | Painel, na [baixa física](glossario.md#baixa-fisica) |
+| `DISPONIVEL` → `MANUTENCAO` | Secretário | Painel, botão **Manutenção** na linha |
+| `MANUTENCAO` → `DISPONIVEL` | Secretário | Painel, botão **Disponível** na linha |
+| `DISPONIVEL` → `INATIVO` | Secretário | Painel, botão **Inativar** na linha |
+| `MANUTENCAO` → `INATIVO` | Secretário | Painel, botão **Inativar** na linha |
+| `INATIVO` → `DISPONIVEL` | Secretário | Painel, botão **Reativar** na linha |
 
 ### As três ausências, e o motivo de cada uma
 
@@ -84,7 +84,7 @@ stateDiagram-v2
 
 !!! warning "`EMPRESTADO` não é um botão"
 
-    A secretaria move o equipamento entre `DISPONIVEL`, `MANUTENCAO` e
+    O secretário move o equipamento entre `DISPONIVEL`, `MANUTENCAO` e
     `INATIVO`, e só. `EMPRESTADO` entra e sai sozinho, pelos dois gestos que
     envolvem uma pessoa de verdade levando o aparelho.
 
@@ -97,7 +97,7 @@ stateDiagram-v2
 
     Aparelho aposentado volta para `DISPONIVEL` primeiro; o conserto se decide
     depois. São duas perguntas diferentes — "este item volta a circular?" e
-    "ele precisa de conserto?" —, e juntá-las num clique só faria a secretaria
+    "ele precisa de conserto?" —, e juntá-las num clique só faria o secretário
     responder as duas sem ser perguntada.
 
 !!! warning "Com empréstimo aberto, nada muda"
@@ -121,7 +121,7 @@ empréstimo aberto", contra as quatro situações do equipamento.
 | `ATIVO` | `DISPONIVEL` | Inconsistência | O portal ofereceria a outra pessoa um aparelho que está numa mochila. Nenhuma tela produz isso. |
 | `ATIVO` | `MANUTENCAO` | Não acontece | O painel recusa mudar a situação enquanto há empréstimo aberto. |
 | `ATIVO` | `INATIVO` | Não acontece | Mesma recusa. |
-| `AGUARDANDO_BAIXA` | `EMPRESTADO` | **Normal** | **A regra das duas fases.** A pessoa declarou a devolução, o aparelho está na bancada, e ele continua fora de circulação até a secretaria conferir. |
+| `AGUARDANDO_BAIXA` | `EMPRESTADO` | **Normal** | **A regra das duas fases.** A pessoa declarou a devolução, o aparelho está na bancada, e ele continua fora de circulação até o secretário conferir. |
 | `AGUARDANDO_BAIXA` | `DISPONIVEL` | Inconsistência | Seria o portal oferecendo um aparelho que ninguém recolheu ainda. |
 | `AGUARDANDO_BAIXA` | `MANUTENCAO` | Não acontece | Mesma recusa do painel. |
 | `AGUARDANDO_BAIXA` | `INATIVO` | Não acontece | Mesma recusa. |

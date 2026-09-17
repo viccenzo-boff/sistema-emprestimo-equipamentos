@@ -7,7 +7,7 @@ entra, o que quebrou sai de circulação, o que chegou ao fim da vida útil é
 aposentado, e o adesivo que descolou é corrigido.
 
 Quando termina, o portal do tablet oferece exatamente o que existe e está em
-condição de sair. Tudo o que a secretaria faz aqui muda o que a próxima pessoa
+condição de sair. Tudo o que o secretário faz aqui muda o que a próxima pessoa
 vê na grade de categorias.
 
 ## 2. Pré-condições
@@ -45,13 +45,13 @@ Estes são só desta página — são as partes da tela que os passos citam pelo
 
 | Papel                  | Faz                                                                                                              | Não faz                                                                                                          |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| Secretaria             | Cadastra o aparelho que chegou, corrige a etiqueta, separa para conserto, aposenta o que não serve mais, e cria as categorias. | Não apaga equipamento — não existe essa ação, e a [regra abaixo](#por-que-nao-existe-um-botao-de-excluir-equipamento) explica por quê. |
+| Secretário             | Cadastra o aparelho que chegou, corrige a etiqueta, separa para conserto, aposenta o que não serve mais, e cria as categorias. | Não apaga equipamento — não existe essa ação, e a [regra abaixo](#por-que-nao-existe-um-botao-de-excluir-equipamento) explica por quê. |
 | Painel (o computador)  | Guarda a situação de cada item, recusa as mudanças que quebrariam o histórico, e esconde do tablet o que saiu de circulação. | Não decide nada sozinho. Ele não sabe se o aparelho quebrou — quem olha o aparelho é você.                        |
 | Estudante ou professor | Nada. Não participa deste processo.                                                                              | Não vê esta tela. O que ele percebe é indireto: um aparelho que some da grade de categorias no tablet.            |
 
 ## 5. Diagrama BPMN
 
-[![Diagrama BPMN da gestão de inventário: a secretaria abre a aba Inventário e escolhe entre cadastrar um equipamento, corrigir a etiqueta ou mudar a situação; o sistema valida a etiqueta, confere se o item tem empréstimo aberto e se a transição é permitida, e grava — ou recusa dizendo o motivo.](../assets/diagramas/04-inventario.svg)](../assets/diagramas/04-inventario.svg)
+[![Diagrama BPMN da gestão de inventário: o secretário abre a aba Inventário e escolhe entre cadastrar um equipamento, corrigir a etiqueta ou mudar a situação; o sistema valida a etiqueta, confere se o item tem empréstimo aberto e se a transição é permitida, e grava — ou recusa dizendo o motivo.](../assets/diagramas/04-inventario.svg)](../assets/diagramas/04-inventario.svg)
 
 Clique no diagrama para abri-lo em tamanho cheio — na largura da página ele
 entra a pouco mais da metade do tamanho, e os rótulos ficam apertados.

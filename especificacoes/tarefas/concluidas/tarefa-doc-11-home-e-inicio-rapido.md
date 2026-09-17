@@ -9,8 +9,8 @@ escreveu o conteúdo sabe para onde mandar o leitor. Home escrita primeiro vira
 Estrutura, na ordem:
 
 1. Uma frase dizendo o que o sistema é. Sem adjetivo.
-2. **Escolha de perfil, logo no alto:** "Sou aluno ou professor" e "Sou da
-   secretaria", cada um levando ao seu guia de início rápido. Essa bifurcação é
+2. **Escolha de perfil, logo no alto:** "Sou aluno ou professor" e "Sou o
+   secretário", cada um levando ao seu guia de início rápido. Essa bifurcação é
    a decisão de arquitetura de informação mais importante da wiki — quem opera o
    tablet nunca precisa abrir a trilha do painel.
 3. Atalhos para as tarefas mais frequentes de cada trilha.
@@ -28,10 +28,10 @@ O tablet em cinco minutos. Público: alguém em pé na bancada, com pressa.
   "devolvi e o sistema ainda mostra o item comigo".
 
 A terceira é a mais importante da página. Ela é a manifestação, para o usuário
-final, da regra das duas fases — e é a pergunta que a secretaria mais vai
+final, da regra das duas fases — e é a pergunta que o secretário mais vai
 receber.
 
-## 3. `docs/inicio-rapido/secretaria.md`
+## 3. `docs/inicio-rapido/secretario.md`
 
 O painel em dez minutos. Público: alguém que assumiu a função esta semana.
 

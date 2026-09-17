@@ -76,7 +76,7 @@ Portuguese pages use.
 
     | Label on the diagram | In English |
     | --- | --- |
-    | Secretaria | Front desk (the lane) |
+    | Secretário | Front desk (the lane) |
     | Sistema | System (the lane) |
     | Abre a aba Pessoas | Opens the **Pessoas** (People) tab |
     | O que precisa ser feito? | What needs doing? |

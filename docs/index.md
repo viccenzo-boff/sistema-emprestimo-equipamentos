@@ -1,7 +1,7 @@
 # Sistema de Empréstimo de Equipamentos
 
 Este sistema registra o empréstimo de notebooks, tablets e extensões da Unoesc:
-quem retirou cada aparelho, quando declarou a devolução e quando a secretaria
+quem retirou cada aparelho, quando declarou a devolução e quando o secretário
 conferiu o recebimento.
 
 ## Por onde começar
@@ -14,12 +14,12 @@ conferiu o recebimento.
 
     [**O tablet em 5 minutos →**](inicio-rapido/estudante-e-professor.md)
 
--   **Sou da secretaria**
+-   **Sou o secretário**
 
     Você usa o painel no computador para conferir as devoluções e cuidar do
     inventário e dos cadastros.
 
-    [**O painel em 10 minutos →**](inicio-rapido/secretaria.md)
+    [**O painel em 10 minutos →**](inicio-rapido/secretario.md)
 
 </div>
 
@@ -84,7 +84,7 @@ página do painel, e o contrário também vale.
 
 ## Onde pedir ajuda
 
-**No tablet**, quem resolve é a secretaria — matrícula que não entra, cadastro
+**No tablet**, quem resolve é o secretário — matrícula que não entra, cadastro
 inativo e aparelho que sumiu da lista dependem de alguém com o painel aberto. A
 tabela de erros de cada processo diz o que fazer antes de sair da bancada:
 [retirada](portal/retirada.md#8-erros-comuns-e-o-que-fazer) e

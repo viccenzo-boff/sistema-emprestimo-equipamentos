@@ -2,12 +2,12 @@
 
 ## 1. Objetivo do processo
 
-Este processo devolve à secretaria um equipamento que estava emprestado. Quem
+Este processo devolve ao secretário um equipamento que estava emprestado. Quem
 está com o aparelho o deixa na bancada e **declara** a entrega no tablet, pela
 mesma matrícula com que retirou.
 
 Quando termina, o item sai da lista de quem o levou e entra na fila de conferência
-da secretaria. O aparelho ainda **não** volta para a prateleira: quem fecha o
+do secretário. O aparelho ainda **não** volta para a prateleira: quem fecha o
 ciclo é a [baixa física](../painel/baixa-fisica.md), no painel.
 
 ## 2. Pré-condições
@@ -43,19 +43,19 @@ nome:
 
 | Papel                  | Faz                                                                                                        | Não faz                                                                                                              |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| Estudante ou professor | Deixa o aparelho na bancada e declara a devolução no tablet, item a item ou tudo de uma vez.                | Não dá baixa. Declarar não é o mesmo que a secretaria conferir.                                                        |
+| Estudante ou professor | Deixa o aparelho na bancada e declara a devolução no tablet, item a item ou tudo de uma vez.                | Não dá baixa. Declarar não é o mesmo que o secretário conferir.                                                        |
 | Portal (o tablet)      | Lista os empréstimos abertos da matrícula, registra a declaração e grava o horário dela.                    | **Não devolve o aparelho ao inventário.** O equipamento continua emprestado até a conferência física.                  |
-| Secretaria             | Recolhe o que está na bancada e confirma o recebimento no painel — é o [processo 3](../painel/baixa-fisica.md). | Não participa da devolução no tablet. Não precisa estar presente para você declarar.                                   |
+| Secretário             | Recolhe o que está na bancada e confirma o recebimento no painel — é o [processo 3](../painel/baixa-fisica.md). | Não participa da devolução no tablet. Não precisa estar presente para você declarar.                                   |
 
 ## 5. Diagrama BPMN
 
-[![Diagrama BPMN da devolução: a pessoa digita a matrícula, o portal lista os empréstimos abertos, ela escolhe um item ou a lista inteira, confirma no aviso, e o portal marca o empréstimo como aguardando baixa enquanto o equipamento segue emprestado e espera a secretaria.](../assets/diagramas/02-devolucao.svg)](../assets/diagramas/02-devolucao.svg)
+[![Diagrama BPMN da devolução: a pessoa digita a matrícula, o portal lista os empréstimos abertos, ela escolhe um item ou a lista inteira, confirma no aviso, e o portal marca o empréstimo como aguardando baixa enquanto o equipamento segue emprestado e espera o secretário.](../assets/diagramas/02-devolucao.svg)](../assets/diagramas/02-devolucao.svg)
 
 Clique no diagrama para abri-lo em tamanho cheio — na largura da página ele
 entra a pouco mais de um terço do tamanho, e os rótulos não se leem.
 
 Repare em como o diagrama **termina**: o último evento não é "equipamento
-disponível", é "o equipamento segue emprestado e espera a secretaria". A seta que
+disponível", é "o equipamento segue emprestado e espera o secretário". A seta que
 sai dele é a mensagem que o [processo 3](../painel/baixa-fisica.md) consome.
 
 [Baixar o arquivo `.bpmn`](../processos-fonte/02-devolucao.bpmn) — a fonte do
@@ -86,7 +86,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
     caractere — é por ela que você confere qual é qual.
 
     Só aparecem aqui os aparelhos que ainda estão no seu nome. O que você já
-    devolveu some da lista, mesmo que a secretaria ainda não o tenha recolhido.
+    devolveu some da lista, mesmo que o secretário ainda não o tenha recolhido.
 
 4. Deixe na bancada o aparelho que você veio devolver.
 
@@ -117,7 +117,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
 
     E, logo abaixo:
 
-    > A secretaria confere e dá baixa depois. Até lá o item continua registrado
+    > O secretário confere e dá baixa depois. Até lá o item continua registrado
     > no seu nome.
 
     No **Devolver tudo** o modal se chama **Devolver todos os equipamentos**,
@@ -169,7 +169,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
     Porque devolver no tablet é uma **declaração**, e não uma conferência.
 
     Quando você confirma, o empréstimo passa a *aguardando baixa* — o aparelho
-    está fisicamente na bancada, mas ninguém da secretaria o recolheu ainda. Se
+    está fisicamente na bancada, mas o secretário não o recolheu ainda. Se
     ele voltasse para *disponível* nesse momento, o tablet ofereceria a outra
     pessoa um equipamento que continua em cima da bancada, e ela iria procurá-lo
     na prateleira sem encontrar.
@@ -178,7 +178,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
     fácil conferir na captura do passo 8: o aviso verde diz que o `NOTE-01` foi
     devolvido, e "Notebooks" continua em "4 de 9 disponíveis".
 
-    O aparelho volta a ser oferecido quando a secretaria confirmar o recebimento
+    O aparelho volta a ser oferecido quando o secretário confirmar o recebimento
     — é a [baixa física](../painel/baixa-fisica.md), o processo seguinte.
 
 !!! question "Por que o aviso insiste em 'Deixe o equipamento na bancada'?"
@@ -186,7 +186,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
     Porque essa é a única parte do processo que o sistema não consegue verificar.
 
     O tablet registra o que você declara. Se você confirmar e sair com o aparelho
-    na mochila, o registro diz que ele foi devolvido e a secretaria o procura na
+    na mochila, o registro diz que ele foi devolvido e o secretário o procura na
     bancada, onde ele não está. Não há erro na tela para avisar
     disso — a divergência só aparece na conferência física, e aí ela aparece como
     equipamento sumido, no seu nome.
@@ -206,8 +206,8 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
     horários não podem ser o mesmo campo.
 
     Para você isso tem uma consequência prática: o que conta como a hora da sua
-    devolução é o momento em que você confirmou, e não o momento em que a
-    secretaria chegou na bancada.
+    devolução é o momento em que você confirmou, e não o momento em que o
+    secretário chegou na bancada.
 
 !!! question "Meu cadastro está inativo. Consigo devolver?"
 
@@ -223,7 +223,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
 
     Na tela, o título passa a ser **Devolver equipamento**, a lista continua
     inteira e a grade de categorias dá lugar à explicação. Para voltar a retirar,
-    procure a secretaria.
+    procure o secretário.
 
 !!! question "Levei três itens de uma vez. Por que posso devolver só um?"
 
@@ -232,7 +232,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
 
     É o que permite devolver o notebook na terça e ficar com a extensão até
     sexta. Se os três fossem um registro único, devolver um obrigaria a devolver
-    todos, e a secretaria não teria como saber qual aparelho já voltou.
+    todos, e o secretário não teria como saber qual aparelho já voltou.
 
     O **Devolver tudo** é um atalho por cima disso, não uma exceção: ele declara
     os empréstimos um por um, na mesma transação. Ou todos entram na fila, ou
@@ -242,21 +242,21 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
 !!! question "Cliquei em Devolver no item errado. Como desfaço?"
 
     Não há como desfazer pelo tablet. Depois da confirmação, o item sai da sua
-    lista e entra na fila da secretaria.
+    lista e entra na fila do secretário.
 
     O que resolve é fazer valer o que você declarou: **leve o aparelho até a
     bancada**. Se você ainda precisa dele, deixe-o lá assim mesmo e retire de
-    novo depois que a secretaria confirmar o recebimento — só então ele volta a
+    novo depois que o secretário confirmar o recebimento — só então ele volta a
     ser oferecido no portal.
 
     Se o aparelho já estava na bancada e o problema foi ter devolvido o item
-    errado da sua lista, avise a secretaria antes da conferência: quem consegue
-    corrigir o registro é ela, pelo painel.
+    errado da sua lista, avise o secretário antes da conferência: quem consegue
+    corrigir o registro é ele, pelo painel.
 
 !!! info "Onde este processo termina"
 
     Aqui, não. A devolução que você acabou de declarar fica esperando a
-    conferência da secretaria — e é ela que devolve o aparelho ao inventário,
+    conferência do secretário — e é ela que devolve o aparelho ao inventário,
     fecha o empréstimo e faz a contagem de disponíveis subir.
 
     Esse é o **[Processo 3 — Baixa física](../painel/baixa-fisica.md)**, na
@@ -267,7 +267,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
 | Mensagem na tela                                        | Causa                                                                                                    | O que fazer                                                                                                          |
 | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | "Digite a sua matrícula para continuar."                | O toque em **Continuar** aconteceu com o campo vazio.                                                    | Digite a matrícula no teclado da tela e toque em **Continuar** de novo.                                              |
-| "Matrícula 9999999 não encontrada."                     | Dígito trocado, zero da frente esquecido, ou cadastro que nunca foi importado.                            | Confira os números e digite de novo. Se estiverem certos, procure a secretaria.                                      |
-| "Esse item já não consta como emprestado para você."    | O mesmo aparelho foi declarado duas vezes, ou a secretaria já deu baixa nele.                             | A lista é relida sozinha. Confira o que sobrou nela: se o item sumiu, a devolução dele já está registrada.            |
+| "Matrícula 9999999 não encontrada."                     | Dígito trocado, zero da frente esquecido, ou cadastro que nunca foi importado.                            | Confira os números e digite de novo. Se estiverem certos, procure o secretário.                                      |
+| "Esse item já não consta como emprestado para você."    | O mesmo aparelho foi declarado duas vezes, ou o secretário já deu baixa nele.                             | A lista é relida sozinha. Confira o que sobrou nela: se o item sumiu, a devolução dele já está registrada.            |
 | "Nenhum equipamento seu está pendente de devolução."    | O **Devolver tudo** foi confirmado depois de a lista já ter esvaziado.                                    | Confira a lista atualizada. Se ela sumiu da tela, não há mais nada no seu nome.                                      |
-| "Não foi possível falar com o sistema agora."           | O tablet não conseguiu falar com o computador da secretaria.                                             | Toque em **Confirmar devolução** de novo em alguns segundos. Se continuar, avise a secretaria — e deixe o aparelho na bancada. |
+| "Não foi possível falar com o sistema agora."           | O tablet não conseguiu falar com o computador do secretário.                                             | Toque em **Confirmar devolução** de novo em alguns segundos. Se continuar, avise o secretário — e deixe o aparelho na bancada. |

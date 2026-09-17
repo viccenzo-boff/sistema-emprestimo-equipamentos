@@ -80,7 +80,7 @@
       <bpmn:outgoing>Fluxo_ate_fim</bpmn:outgoing>
       <bpmn:messageEventDefinition id="Definicao_devolucao_declarada" messageRef="Mensagem_devolucao_declarada" />
     </bpmn:intermediateThrowEvent>
-    <bpmn:endEvent id="FimAguardandoBaixa" name="O equipamento segue EMPRESTADO e espera a secretaria">
+    <bpmn:endEvent id="FimAguardandoBaixa" name="O equipamento segue EMPRESTADO e espera o secretário">
       <bpmn:incoming>Fluxo_ate_fim</bpmn:incoming>
     </bpmn:endEvent>
 

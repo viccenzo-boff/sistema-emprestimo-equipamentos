@@ -1,6 +1,6 @@
 # Guia de Início Rápido — Estudante e Professor
 
-O tablet fica na bancada da secretaria e faz duas coisas: entrega equipamento e
+O tablet fica na bancada do secretário e faz duas coisas: entrega equipamento e
 recebe a declaração de que ele voltou. Não há login nem senha — a sua matrícula
 é a identificação.
 
@@ -53,7 +53,7 @@ cada passo e as cinco mensagens de erro possíveis.
     O aviso diz **"Deixe o equipamento na bancada"** porque é isso mesmo que
     você precisa fazer antes de confirmar. O tablet registra o que você declara:
     se você confirmar e sair com o aparelho na mochila, o registro diz que ele
-    voltou, a secretaria o procura na bancada e não encontra. Não existe erro na
+    voltou, o secretário o procura na bancada e não encontra. Não existe erro na
     tela para avisar disso — a divergência aparece depois, como equipamento
     sumido, no seu nome.
 
@@ -71,7 +71,7 @@ Quase sempre é dígito trocado ou zero da frente esquecido: `0012345` e `12345`
 são matrículas diferentes para o sistema, e o teclado da tela não completa
 nenhuma delas. Confira os números e digite de novo.
 
-Se estiverem certos, o cadastro nunca foi importado — procure a secretaria, que
+Se estiverem certos, o cadastro nunca foi importado — procure o secretário, que
 resolve isso em um minuto pelo painel.
 
 ### O cadastro está inativo
@@ -87,7 +87,7 @@ travasse os dois lados, a inativação viraria a garantia de que aquele
 equipamento nunca volta para o armário.
 
 Ou seja: se você está com algum aparelho, devolva normalmente. Para voltar a
-retirar, procure a secretaria.
+retirar, procure o secretário.
 
 ### Devolvi e o aparelho ainda consta comigo
 
@@ -95,12 +95,12 @@ retirar, procure a secretaria.
 **Meus equipamentos** — se ele ainda está lá, a devolução não foi confirmada, e
 o caminho é repetir os passos acima.
 
-**Para a secretaria, ele continua no seu nome** até alguém recolher o aparelho
-da bancada e confirmar isso no painel. No inventário dela, a linha do aparelho
+**Para o secretário, ele continua no seu nome** até alguém recolher o aparelho
+da bancada e confirmar isso no painel. No inventário dele, a linha do aparelho
 diz **"Devolução informada por … — aguarda conferência"**.
 
-Devolver no tablet é uma **declaração**, não uma conferência. Enquanto ninguém
-da secretaria pegou o aparelho na mão, o sistema não tem como saber se ele está
+Devolver no tablet é uma **declaração**, não uma conferência. Enquanto o
+secretário não pegou o aparelho na mão, o sistema não tem como saber se ele está
 mesmo na bancada — e por isso não o oferece a mais ninguém. É fácil ver na
 própria tela: a contagem da grade de categorias **não sobe** com a sua
 devolução.
@@ -108,9 +108,9 @@ devolução.
 Isso tem duas consequências práticas:
 
 - **Você não consegue retirar de novo o aparelho que acabou de devolver.** Ele
-  volta a ser oferecido quando a secretaria confirmar o recebimento.
+  volta a ser oferecido quando o secretário confirmar o recebimento.
 - **O horário que fica registrado como a sua devolução é o do seu toque**, e não
-  o da conferência. A demora da secretaria não conta contra você.
+  o da conferência. A demora do secretário não conta contra você.
 
 Se a espera passar do razoável, avise no balcão: o que falta é o passo físico,
 não um registro travado. É a [baixa física](../painel/baixa-fisica.md), do outro
@@ -121,4 +121,4 @@ lado do balcão.
 A tabela de erros de cada processo diz o que fazer sem sair da bancada:
 [retirada](../portal/retirada.md#8-erros-comuns-e-o-que-fazer) e
 [devolução](../portal/devolucao.md#8-erros-comuns-e-o-que-fazer). O que essas
-tabelas não resolvem, a secretaria resolve — é ela que tem o painel.
+tabelas não resolvem, o secretário resolve — é ele que tem o painel.

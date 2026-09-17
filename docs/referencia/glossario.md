@@ -8,7 +8,7 @@ Termo que só aparece em uma página mora no glossário daquela página.
 
 ## Administrador
 
-Quem opera o [painel](#painel) da secretaria. Cada pessoa tem a sua conta, com
+Quem opera o [painel](#painel) do secretário. Cada pessoa tem a sua conta, com
 login e senha próprios — não existe senha compartilhada.
 
 O campo de login chama-se **Usuário** na tela de entrada
@@ -54,7 +54,7 @@ e o relatório que a lê é a aba **Satisfação** de
 
 ## Baixa física
 
-A conferência da secretaria: o equipamento foi recolhido da bancada e o
+A conferência do secretário: o equipamento foi recolhido da bancada e o
 [empréstimo](#emprestimo) está encerrado de verdade (`Emprestimo.status`
 passa de `AGUARDANDO_BAIXA` para `CONCLUIDO`, e a hora fica em
 `Emprestimo.data_baixa`).
@@ -104,7 +104,7 @@ equipamento e o deixou na bancada (`Emprestimo.status` passa de `ATIVO` para
 `AGUARDANDO_BAIXA`, e a hora fica em `Emprestimo.data_devolucao`).
 
 Devolver **não** libera o equipamento para outra pessoa. Quem faz isso é a
-[baixa física](#baixa-fisica), na secretaria. A diferença entre os dois
+[baixa física](#baixa-fisica), pelo secretário. A diferença entre os dois
 momentos é o [tempo de prateleira](#tempo-de-prateleira).
 
 ## Emprestado
@@ -132,7 +132,7 @@ na mesma ida ao balcão tem dois empréstimos, que podem ser devolvidos em
 momentos diferentes.
 
 Um empréstimo passa por três situações: `ATIVO` (está com a pessoa),
-`AGUARDANDO_BAIXA` (foi declarado devolvido, aguarda a secretaria) e
+`AGUARDANDO_BAIXA` (foi declarado devolvido, aguarda o secretário) e
 `CONCLUIDO` (encerrado).
 
 ## Empréstimos ativos
@@ -180,8 +180,8 @@ forma diferente de propósito:
   juntos para a [bancada](#bancada), e devolver metade faria a pessoa sair
   achando que entregou tudo.
 * **"Confirmar Todas as Devoluções"**, no [painel](#painel): item a item, e uma
-  linha que falha não derruba as outras. O gesto físico já aconteceu — a
-  secretaria recolheu a pilha —, e uma linha que saiu da fila em outra aba não
+  linha que falha não derruba as outras. O gesto físico já aconteceu — o
+  secretário recolheu a pilha —, e uma linha que saiu da fila em outra aba não
   pode desfazer a conferência das demais. O resumo diz o que fechou e o que não
   fechou.
 
@@ -213,7 +213,7 @@ histórico de empréstimos junto.
 
 ## Painel
 
-A tela da secretaria, no computador, em `/admin`. Exige login de
+A tela do secretário, no computador, em `/admin`. Exige login de
 [administrador](#administrador).
 
 Reúne a [fila de devoluções](#fila-de-devolucoes), os empréstimos ativos, o
@@ -280,7 +280,7 @@ O passeio completo entre as situações está em
 ## Tempo de prateleira
 
 O intervalo entre a [devolução](#devolucao) declarada no tablet e a
-[baixa física](#baixa-fisica) feita na secretaria — o tempo em que o aparelho
+[baixa física](#baixa-fisica) feita pelo secretário — o tempo em que o aparelho
 ficou parado na bancada, invisível para o portal e para o inventário.
 
 É a medida do gargalo operacional do sistema: enquanto ele existe, há

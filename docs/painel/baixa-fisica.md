@@ -3,7 +3,7 @@
 ## 1. Objetivo do processo
 
 Este processo fecha o ciclo que a [devolução](../portal/devolucao.md) deixou
-aberto. A secretaria recolhe da bancada o aparelho que alguém declarou ter
+aberto. O secretário recolhe da bancada o aparelho que alguém declarou ter
 devolvido, confere a etiqueta e confirma o recebimento no painel.
 
 Quando termina, o empréstimo é encerrado e o equipamento volta para a
@@ -45,18 +45,18 @@ nome:
 
 | Papel                  | Faz                                                                                                                       | Não faz                                                                                                     |
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Secretaria             | Recolhe o aparelho da bancada, confere a etiqueta contra a linha e confirma o recebimento no painel.                       | Não devolve pelo tablet. A declaração é de quem levou o aparelho.                                            |
+| Secretário             | Recolhe o aparelho da bancada, confere a etiqueta contra a linha e confirma o recebimento no painel.                       | Não devolve pelo tablet. A declaração é de quem levou o aparelho.                                            |
 | Painel (o computador)  | Lista o que está esperando conferência, encerra o empréstimo, carimba a hora da baixa e devolve o equipamento ao estoque.  | **Não confere nada sozinho.** Ele registra que você conferiu; quem olha a etiqueta é você.                    |
 | Estudante ou professor | Deixou o aparelho na bancada e declarou a devolução no tablet.                                                            | Não participa deste processo. Para quem devolveu, o aparelho já saiu da lista desde a declaração.            |
 
 ## 5. Diagrama BPMN
 
-[![Diagrama BPMN da baixa física: a devolução declarada no tablet põe o empréstimo na fila, a secretaria recolhe o equipamento da bancada e confere a etiqueta, escolhe entre confirmar um item ou a fila inteira, e o sistema fecha o empréstimo carimbando a data da baixa e devolvendo o equipamento à prateleira.](../assets/diagramas/03-baixa-fisica.svg)](../assets/diagramas/03-baixa-fisica.svg)
+[![Diagrama BPMN da baixa física: a devolução declarada no tablet põe o empréstimo na fila, o secretário recolhe o equipamento da bancada e confere a etiqueta, escolhe entre confirmar um item ou a fila inteira, e o sistema fecha o empréstimo carimbando a data da baixa e devolvendo o equipamento à prateleira.](../assets/diagramas/03-baixa-fisica.svg)](../assets/diagramas/03-baixa-fisica.svg)
 
 Clique no diagrama para abri-lo em tamanho cheio — na largura da página ele
 entra a pouco mais de um terço do tamanho, e os rótulos não se leem.
 
-Repare em como o diagrama **começa**: o evento de início não é "a secretaria
+Repare em como o diagrama **começa**: o evento de início não é "o secretário
 abre o painel", é **Devolução declarada no tablet** — a mensagem que o
 [processo 2](../portal/devolucao.md) emite quando alguém confirma a devolução.
 Os dois diagramas se encaixam nesse ponto, e é por isso que a fila pode estar
@@ -67,7 +67,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
 
 ## 6. Passo a passo
 
-1. Abra o painel no computador da secretaria.
+1. Abra o painel no computador do secretário.
 
     [![A tela de entrada do painel: o cartão com os campos Usuário e Senha e o botão Entrar](../assets/images/baixa-fisica/01-tela-de-login.png)](../assets/images/baixa-fisica/01-tela-de-login.png)
 
@@ -220,7 +220,7 @@ diagrama, que abre no [bpmn.io](https://bpmn.io) sem instalar nada.
     sinal de que registrou é o aviso verde com a etiqueta e a linha sumindo da
     lista.
 
-    Se o aparelho já tiver saído da fila por outro caminho — a colega confirmou
+    Se o aparelho já tiver saído da fila por outro caminho — um colega confirmou
     em outro computador —, a linha mostra por um instante "Esse item já saiu da
     fila." e desaparece. A lista é relida na hora: o que sobrou nela é o que
     ainda falta conferir.

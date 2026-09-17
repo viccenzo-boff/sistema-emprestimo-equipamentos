@@ -14,7 +14,7 @@ Quem vai mexer no **código** deve ler o [README.md](README.md) e o
 
 O site da wiki é gerado pelo MkDocs, que é Python. As ferramentas **não estão
 no `package.json`** de propósito: o projeto é Node, e misturar as duas árvores
-faria um `npm ci` na máquina da secretaria baixar um gerador de site estático.
+faria um `npm ci` na máquina do secretário baixar um gerador de site estático.
 Elas vivem em [docs-requirements.txt](docs-requirements.txt), com as versões
 fixadas — o site é publicado por uma Action, e faixa de versão faria o build de
 amanhã ser outro build sem que nenhum commit mudasse.
@@ -480,7 +480,7 @@ antes.
 | Onde                   | Janela     | Por quê                                                                           |
 | ---------------------- | ---------- | --------------------------------------------------------------------------------- |
 | Portal do tablet (`/`) | 1280 x 800 | É a medida de paisagem que o [AGENTS.md](AGENTS.md) usa como referência do tablet |
-| Painel (`/admin/...`)  | 1440 x 900 | Desktop da secretaria; é a maior das três larguras já medidas no painel           |
+| Painel (`/admin/...`)  | 1440 x 900 | Desktop do secretário; é a maior das três larguras já medidas no painel           |
 
 O portal tem layout diferente em retrato e em paisagem (as duas colunas viram
 uma pilha). **Capture em paisagem**, que é como o tablet fica no balcão — foi
@@ -488,11 +488,11 @@ para essa orientação que a divisão de tela foi medida.
 
 ### Com qual conta capturar o painel
 
-**Sempre `secretaria` / `Mudar@123`.**
+**Sempre `secretario` / `Mudar@123`.**
 
 O nome de quem está logado aparece na barra lateral de toda tela do painel, e
 duas das quatro contas do seed (`jeanzao`, `viccenzo`) são de pessoas reais.
-`secretaria` é a conta neutra, e é a única que pode aparecer em captura pública.
+`secretario` é a conta neutra, e é a única que pode aparecer em captura pública.
 
 Isso vale só para a captura. As quatro contas continuam existindo no banco e no
 `npm run db:studio` — o `db:demo` **não** as altera, porque quem é dono da tabela
@@ -647,14 +647,14 @@ diretório de arquivos no Git.
 
 O QR code da tela de retirada confirmada aponta para um formulário **fora do
 sistema**, e tem que ser assim: o celular de quem retira não alcança o
-computador da secretaria (rede local, HTTP), então um formulário interno seria
+computador do secretário (rede local, HTTP), então um formulário interno seria
 um QR morto. O sistema só guarda a URL, na tabela `Configuracao`, editável pelo
 cartão **Formulário de sugestões** da aba Satisfação em `/admin/relatorios`.
 
 A receita, que é procedimento e não código:
 
 1. Crie o formulário no **Google Forms** com a **conta institucional do setor**
-   — nunca com a conta pessoal de quem está na secretaria hoje. A conta pessoal
+   — nunca com a conta pessoal de quem está no balcão hoje. A conta pessoal
    sai com a pessoa, e o QR impresso no adesivo continua apontando para um
    formulário que ninguém mais abre.
 2. Em **Configurações → Respostas**, deixe **desligadas** as opções de coletar

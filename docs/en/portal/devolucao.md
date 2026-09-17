@@ -82,7 +82,7 @@ Portuguese pages use.
     | Esse item já não consta como emprestado para você | That item is no longer recorded as on loan to you |
     | Marca AGUARDANDO_BAIXA e grava a data da declaração | Marks it `AGUARDANDO_BAIXA` (awaiting check-in) and stamps the declaration time |
     | Devolução declarada | Return declared |
-    | O equipamento segue EMPRESTADO e espera a secretaria | The device stays `EMPRESTADO` (on loan) and waits for the front desk |
+    | O equipamento segue EMPRESTADO e espera o secretário | The device stays `EMPRESTADO` (on loan) and waits for the front desk |
     | sim / não | yes / no |
     | um item / a lista inteira | one item / the whole list |
 
@@ -149,7 +149,7 @@ install.
 
     And just below it:
 
-    > A secretaria confere e dá baixa depois. Até lá o item continua registrado
+    > O secretário confere e dá baixa depois. Até lá o item continua registrado
     > no seu nome.
 
     (The front desk checks it and checks it in later. Until then the item stays

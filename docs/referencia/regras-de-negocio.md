@@ -27,7 +27,7 @@ saber o que estava segurando.
 **O que o sistema faz.** Quando alguém toca em **Confirmar devolução** no
 [portal](glossario.md#portal), o empréstimo sai de `ATIVO` e vai para
 `AGUARDANDO_BAIXA`. O aparelho **não** volta a ficar disponível: ele continua
-`EMPRESTADO` até a secretaria confirmar o recebimento no
+`EMPRESTADO` até o secretário confirmar o recebimento no
 [painel](glossario.md#painel).
 
 **Por que faz assim.** Porque o tablet não tem como conferir nada. Ele registra
@@ -57,7 +57,7 @@ a exceção.
 **O que quebraria.** Uma devolução parcial não teria como ser registrada. A
 pessoa devolveria um item e o sistema teria que escolher entre encerrar o
 empréstimo inteiro (perdendo o notebook de vista) ou não encerrar nada (mantendo
-a extensão fora de circulação). Na fila da secretaria, cada linha deixaria de ser
+a extensão fora de circulação). Na fila do secretário, cada linha deixaria de ser
 uma tarefa física com um aparelho e uma [etiqueta](glossario.md#etiqueta).
 
 ---
@@ -97,7 +97,7 @@ tela apaga equipamento.
 Apagar o `NOTE-03` levaria junto o registro de quem o usou no semestre passado, e
 com ele a resposta para "quem estava com este notebook quando a tela quebrou".
 
-**O que quebraria.** O sistema perderia justamente a informação que a secretaria
+**O que quebraria.** O sistema perderia justamente a informação que o secretário
 procura quando um aparelho volta com defeito. Por isso o ícone da ação é um
 círculo cortado e não uma lixeira: lixeira promete que o registro some, e ele não
 some.
@@ -147,7 +147,7 @@ a empréstimo aberto:
 
 **Por que faz assim.** Quem é inativado — trancou a matrícula, se formou, saiu da
 instituição — quase sempre está com um aparelho na mochila. É exatamente o
-momento em que a secretaria precisa inativar, e travar até a devolução deixaria o
+momento em que o secretário precisa inativar, e travar até a devolução deixaria o
 cadastro apto a retirar mais coisas até alguém lembrar de voltar lá.
 
 O equipamento é o oposto: mudar a situação dele no meio de um empréstimo aberto
@@ -174,7 +174,7 @@ inativação na garantia de que o equipamento nunca volta.
 
 **O que quebraria.** O aparelho ficaria preso: fora de circulação no sistema,
 dentro de uma mochila na rua, e sem nenhum gesto disponível para quem quisesse
-devolvê-lo. A secretaria teria que reativar o cadastro só para deixar a pessoa
+devolvê-lo. O secretário teria que reativar o cadastro só para deixar a pessoa
 devolver, e depois lembrar de inativar de novo.
 
 ---
@@ -211,7 +211,7 @@ o estrago antes de ele acontecer.
 
 A preservação existe porque a planilha da coordenação não conhece tudo: ela não
 traz a coluna de situação, por exemplo. Se a ausência valesse como "apague",
-importar a lista de segunda-feira reativaria todos os cadastros que a secretaria
+importar a lista de segunda-feira reativaria todos os cadastros que o secretário
 inativou na semana passada.
 
 **O que quebraria.** Sem a prévia, um relatório depois do fato só contaria o
@@ -235,7 +235,7 @@ dela, ou declarar uma devolução que não aconteceu.
 
 !!! info "Isso vale só para o portal"
 
-    O painel da secretaria exige login e senha individuais, e o comportamento
+    O painel do secretário exige login e senha individuais, e o comportamento
     dele está em [Conta do administrador](conta-do-administrador.md).
 
 ---
@@ -273,8 +273,8 @@ prometer mais do que o dado sustenta.
 !!! info "O QR code é outra coisa"
 
     Ao lado dos rostos pode aparecer um QR code que abre, no celular, um
-    formulário de sugestões da secretaria — fora do sistema, porque o celular
-    não alcança o computador da secretaria pela rede. Ele só aparece quando o
+    formulário de sugestões do secretário — fora do sistema, porque o celular
+    não alcança o computador do secretário pela rede. Ele só aparece quando o
     link está configurado na aba **Satisfação** dos relatórios, e é
     independente dos rostos: um pode aparecer sem o outro.
 

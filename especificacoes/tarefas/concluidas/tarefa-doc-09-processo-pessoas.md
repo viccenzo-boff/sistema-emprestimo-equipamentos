@@ -35,13 +35,13 @@ risco da wiki inteira.
 ## 3. Regras que não são óbvias (seção 7)
 
 * **A importação mostra prévia antes de gravar**, e a prévia existe porque a
-  operação não tem desfazer. Explique que a secretária deve conferir a lista
+  operação não tem desfazer. Explique que o secretário deve conferir a lista
   antes de confirmar.
 * **O sistema corrige a grafia sozinho, na gravação.** Nome vira Title Case com
   partícula minúscula, perfil vira "Estudante" ou "Professor", e os cursos são
   reordenados na ordem hierárquica (Sistemas de Informação, Ciência da
   Computação, Engenharia da Computação, e o resto em ordem alfabética). Mostre um
-  antes/depois em tabela — é a forma mais rápida de a secretária entender que
+  antes/depois em tabela — é a forma mais rápida de o secretário entender que
   não precisa formatar a planilha à mão.
 * **A inativação de pessoa é assimétrica: bloqueia retirar, libera devolver.**
   Quem foi inativado costuma estar com um aparelho na mochila; travar os dois

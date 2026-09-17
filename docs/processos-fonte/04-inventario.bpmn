@@ -5,7 +5,7 @@
   </bpmn:collaboration>
   <bpmn:process id="Processo_inventario" isExecutable="false">
     <bpmn:laneSet id="Raias_inventario">
-      <bpmn:lane id="Raia_secretaria" name="Secretaria">
+      <bpmn:lane id="Raia_secretario" name="Secretário">
         <bpmn:flowNodeRef>AbreInventario</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>QualGesto</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>PreencheCadastro</bpmn:flowNodeRef>
@@ -151,7 +151,7 @@
       <bpmndi:BPMNShape id="Participante_inventario_di" bpmnElement="Participante_inventario" isHorizontal="true">
         <dc:Bounds x="160" y="80" width="1230" height="1230" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Raia_secretaria_di" bpmnElement="Raia_secretaria" isHorizontal="true">
+      <bpmndi:BPMNShape id="Raia_secretario_di" bpmnElement="Raia_secretario" isHorizontal="true">
         <dc:Bounds x="190" y="80" width="1200" height="380" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Raia_sistema_di" bpmnElement="Raia_sistema" isHorizontal="true">

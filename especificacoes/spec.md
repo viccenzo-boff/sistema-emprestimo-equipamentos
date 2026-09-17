@@ -3,7 +3,7 @@
 ## 1. Visão Geral do Projeto
 O objetivo deste projeto é construir um MVP para gerenciar o empréstimo de equipamentos (notebooks, tablets, extensões) para os cursos de Sistemas de Informação, Ciência da Computação e Engenharia da Computação da Unoesc. 
 
-O sistema rodará em uma rede local, hospedado no computador Windows da secretaria, e será acessado por duas frentes:
+O sistema rodará em uma rede local, hospedado no computador Windows do secretário, e será acessado por duas frentes:
 1. **Portal do Aluno/Professor (Tablet):** Focado em usabilidade touch, rodando como PWA para retirada e devolução ágil na bancada.
 2. **Painel Administrativo (Desktop):** Acessado pelos computadores da coordenação via navegador, focado na gestão de inventário e confirmação de devoluções físicas.
 
@@ -54,12 +54,12 @@ Registra os logs de movimentação (um log isolado por item).
 * `pessoa_id` (String, FK): Relacionamento com `Pessoa.matricula`. (Chamava-se `usuario_id` até a Tarefa 10.)
 * `equip_id` (String, FK): Relacionamento com `Equipamento.id`.
 * `data_retirada` (DateTime): Preenchido na criação.
-* `data_devolucao` (DateTime, Nullable): Preenchido quando o usuário **declara** a devolução no tablet (`ATIVO` -> `AGUARDANDO_BAIXA`). (Até a Tarefa 12 a baixa da secretaria sobrescrevia este campo; hoje ele guarda a declaração e nada mais escreve nele.)
-* `data_baixa` (DateTime, Nullable): Preenchido quando a secretaria **confere fisicamente** o equipamento (`AGUARDANDO_BAIXA` -> `CONCLUIDO`). A diferença para `data_devolucao` é o tempo de prateleira. (Tarefa 12; nulo nos empréstimos concluídos antes dela.)
+* `data_devolucao` (DateTime, Nullable): Preenchido quando o usuário **declara** a devolução no tablet (`ATIVO` -> `AGUARDANDO_BAIXA`). (Até a Tarefa 12 a baixa do secretário sobrescrevia este campo; hoje ele guarda a declaração e nada mais escreve nele.)
+* `data_baixa` (DateTime, Nullable): Preenchido quando o secretário **confere fisicamente** o equipamento (`AGUARDANDO_BAIXA` -> `CONCLUIDO`). A diferença para `data_devolucao` é o tempo de prateleira. (Tarefa 12; nulo nos empréstimos concluídos antes dela.)
 * `status` (String): 
   * "ATIVO": O usuário está com o equipamento.
-  * "AGUARDANDO_BAIXA": O usuário informou no tablet que devolveu, mas a secretaria ainda não recolheu fisicamente.
-  * "CONCLUIDO": A secretaria conferiu e guardou o equipamento.
+  * "AGUARDANDO_BAIXA": O usuário informou no tablet que devolveu, mas o secretário ainda não recolheu fisicamente.
+  * "CONCLUIDO": O secretário conferiu e guardou o equipamento.
 
 ## 4. Fluxos de Usuário e Regras de Negócio
 
@@ -71,7 +71,7 @@ Registra os logs de movimentação (um log isolado por item).
   3. Ao clicar na categoria, exibe apenas os equipamentos com status `DISPONIVEL`.
   4. O usuário seleciona os itens (por número da etiqueta) e confirma.
   5. O sistema gera **logs individuais** na tabela `Emprestimo` (status `ATIVO`) e muda o status dos `Equipamentos` para `EMPRESTADO`.
-  6. *(Tarefa 14, opcional)* Na tela de confirmação, se a pessoa nunca foi perguntada ou a última vez foi há 30 dias ou mais, aparecem quatro rostos sob "Como foi a retirada?". Um toque grava nota e dia numa linha anônima de `Avaliacao` e a tela volta ao início; sem toque, o "Concluir" e o auto-fechamento fazem o de sempre, e a linha fica com nota nula (é a taxa de resposta). Ao lado, quando a secretaria configurou a URL, um QR code abre um formulário de sugestões externo. A devolução **não** pergunta.
+  6. *(Tarefa 14, opcional)* Na tela de confirmação, se a pessoa nunca foi perguntada ou a última vez foi há 30 dias ou mais, aparecem quatro rostos sob "Como foi a retirada?". Um toque grava nota e dia numa linha anônima de `Avaliacao` e a tela volta ao início; sem toque, o "Concluir" e o auto-fechamento fazem o de sempre, e a linha fica com nota nula (é a taxa de resposta). Ao lado, quando o secretário configurou a URL, um QR code abre um formulário de sugestões externo. A devolução **não** pergunta.
 
 > O passo 6 entrou na **Tarefa 14** e não muda o resultado do processo — por isso o diagrama
 > BPMN da retirada na wiki continua o mesmo. O anonimato é do dado, não da tela: a `Avaliacao`
@@ -99,7 +99,7 @@ Registra os logs de movimentação (um log isolado por item).
 > troca a senha precisa saber a senha atual, e senha esquecida ainda se resolve
 > apagando a linha no `db:studio` e ressemeando.
 * **Funcionalidades:**
-  1. **Fila de Devoluções:** Uma visualização em destaque mostrando todos os empréstimos `AGUARDANDO_BAIXA`. A secretária pega o equipamento na bancada e clica em "Confirmar Recebimento". O `Emprestimo` vai para `CONCLUIDO` e o `Equipamento` volta para `DISPONIVEL`.
+  1. **Fila de Devoluções:** Uma visualização em destaque mostrando todos os empréstimos `AGUARDANDO_BAIXA`. O secretário pega o equipamento na bancada e clica em "Confirmar Recebimento". O `Emprestimo` vai para `CONCLUIDO` e o `Equipamento` volta para `DISPONIVEL`.
   2. **Gestão de Inventário:** Mudar o status de equipamentos para `MANUTENCAO` (removendo-os da visão do tablet) ou cadastrar novos.
   3. **Visão Geral:** Ver quem está com qual equipamento no momento (logs `ATIVO`).
   4. **Relatórios:** Ler o que o sistema já registrou, sem mudar nada — o volume de retiradas do mês, quantos aparelhos estão fora da prateleira agora, e a taxa de ocupação de cada categoria, com alerta de estoque esgotado ou crítico. Desde a Tarefa 14, também a aba **Satisfação**: média, taxa de resposta e distribuição das avaliações anônimas em dois recortes fixos, com "Baixar planilha" (CSV `dia,nota`) e o cartão que configura a URL do formulário de sugestões — a única escrita da tela.

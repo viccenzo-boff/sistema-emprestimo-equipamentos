@@ -1,6 +1,6 @@
-# Guia de Início Rápido — Secretaria
+# Guia de Início Rápido — Secretário
 
-O painel abre no computador da secretaria e tem cinco abas. Uma delas tem prazo
+O painel abre no computador do secretário e tem cinco abas. Uma delas tem prazo
 — a **Fila de Devoluções**, que é onde ficam os aparelhos já entregues na
 bancada e ainda não conferidos. As outras quatro são consulta e manutenção.
 
@@ -9,7 +9,7 @@ com as telas e a lista de mensagens de erro.
 
 ## Entrar no painel
 
-1. Abra o painel no computador da secretaria.
+1. Abra o painel no computador do secretário.
 2. Digite o seu login no campo **Usuário**.
 3. Digite a sua senha no campo **Senha**.
 4. Clique em **Entrar**.

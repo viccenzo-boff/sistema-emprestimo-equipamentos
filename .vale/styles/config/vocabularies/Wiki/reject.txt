@@ -22,6 +22,12 @@ usuários
 # manda o leitor procurar um filtro que tem outro nome na tela.
 [Aa]lunos?
 
+# Quem opera o painel e "o secretario" (e assim que a interface, a raia dos
+# diagramas e a conta neutra o chamam). As duas formas femininas ficam fora
+# do vocabulario, como "aluno": a tela e a wiki tem que usar a mesma palavra.
+[Ss]ecretárias?
+[Ss]ecretarias?
+
 # A senha mestre unica do .env deixou de existir na Tarefa 10, substituida por
 # contas individuais. Descrever o sistema com ela e descrever um sistema que
 # nao existe mais.

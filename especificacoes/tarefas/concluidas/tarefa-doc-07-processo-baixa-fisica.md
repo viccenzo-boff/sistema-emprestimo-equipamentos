@@ -1,6 +1,6 @@
 # Tarefa D07: Processo 3 — Baixa física (Fila de Devoluções)
 
-Primeira página da trilha da secretaria, e o fechamento do ciclo que a D06
+Primeira página da trilha do secretário, e o fechamento do ciclo que a D06
 deixou aberto. É a página mais valiosa da wiki: ela documenta a decisão de
 produto que dá identidade ao sistema.
 
@@ -32,11 +32,11 @@ omiti-la faz a página descrever um processo que não é o real.
   contando como fora.
 * **Três marcadores de tempo, cada um com um dono.** `data_retirada` é o tablet
   entregando; `data_devolucao` é o tablet registrando a declaração do usuário;
-  `data_baixa` é a secretaria conferindo. A diferença entre os dois últimos é o
+  `data_baixa` é o secretário conferindo. A diferença entre os dois últimos é o
   **tempo de prateleira** — o aparelho parado na bancada, invisível para o
   tablet e para o inventário. Serve para medir gargalo de operação.
 * **Confirmar duas vezes o mesmo item não causa efeito duplicado.** O sistema
-  trata a repetição; explique que a secretária pode clicar sem medo se ficar em
+  trata a repetição; explique que o secretário pode clicar sem medo se ficar em
   dúvida se o clique registrou.
 
 ## 4. Uma nota de manutenção que vale registrar
@@ -47,7 +47,7 @@ sempre zero. Se alguém reintroduzir aquela linha no `updateMany` da baixa, a
 métrica volta a mentir **sem nenhum erro aparecer**. Documentar isso é o que
 transforma a wiki em defesa contra regressão, e não só em manual.
 
-Se preferir manter a página limpa para a secretaria, ponha essa nota na página de
+Se preferir manter a página limpa para o secretário, ponha essa nota na página de
 regras de negócio da D10 e deixe aqui só o link.
 
 ## 5. Capturas

@@ -30,7 +30,7 @@ confirmed receiving it.
     You use the admin panel to check returns in and to look after the inventory
     and the people records.
 
-    [**The admin panel in 10 minutes →**](inicio-rapido/secretaria.md)
+    [**The admin panel in 10 minutes →**](inicio-rapido/secretario.md)
 
 </div>
 

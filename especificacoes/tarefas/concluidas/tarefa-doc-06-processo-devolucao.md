@@ -32,7 +32,7 @@ citada e a mais mal compreendida do sistema:
 * **Devolver no tablet é declarar, não entregar.** O empréstimo passa a
   `AGUARDANDO_BAIXA` e o equipamento **não** volta para disponível. Se voltasse,
   o tablet ofereceria a outro aluno um aparelho que continua em cima da bancada.
-  Quem fecha o ciclo é a secretaria, no processo da D07.
+  Quem fecha o ciclo é o secretário, no processo da D07.
 * **O horário registrado é o do clique**, não o da conferência. A diferença
   entre os dois é o tempo de prateleira, e existe para medir o gargalo — está
   explicada na página da D07.

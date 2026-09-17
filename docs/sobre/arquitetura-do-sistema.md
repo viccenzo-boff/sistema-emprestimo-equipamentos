@@ -14,7 +14,7 @@ motivo, tarefa por tarefa.
 
 ## Onde o sistema roda
 
-Não há nuvem. O sistema roda **no computador da secretaria**, em rede local, e o
+Não há nuvem. O sistema roda **no computador do secretário**, em rede local, e o
 tablet da bancada o alcança pelo endereço dessa máquina. É uma decisão do
 [escopo do produto](https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/blob/main/especificacoes/spec.md),
 e ela explica quase todo o resto desta página.
@@ -34,14 +34,14 @@ São duas interfaces bem diferentes dentro de **uma aplicação só**.
 | Frente | Rota | Aparelho | Quem usa | O que faz |
 | --- | --- | --- | --- | --- |
 | Portal | `/` | Tablet na bancada | Estudante e professor | [Retirada](../portal/retirada.md) e [devolução](../portal/devolucao.md) |
-| Painel | `/admin` | Computador da secretaria | Secretaria | [Baixa física](../painel/baixa-fisica.md), [inventário](../painel/inventario.md) e [pessoas](../painel/pessoas.md) |
+| Painel | `/admin` | Computador do secretário | Secretário | [Baixa física](../painel/baixa-fisica.md), [inventário](../painel/inventario.md) e [pessoas](../painel/pessoas.md) |
 
 O portal **não tem login**: a matrícula é a identificação, e ela vale para um
 atendimento só. O painel tem [conta e senha](../referencia/conta-do-administrador.md).
 
 A separação é de audiência, não de servidor: as duas frentes compartilham o
-banco, e é isso que faz a devolução declarada no tablet aparecer na fila da
-secretaria no mesmo instante.
+banco, e é isso que faz a devolução declarada no tablet aparecer na fila do
+secretário no mesmo instante.
 
 ## A stack
 
@@ -51,23 +51,23 @@ secretaria no mesmo instante.
 | Interface | React 19 e Tailwind CSS 4 | Alvo de toque grande no tablet, tabela densa no painel |
 | Acesso ao banco | Prisma 7, com adaptador `better-sqlite3` | Esquema declarado em um arquivo e migrações versionadas |
 | Banco | SQLite, arquivo único | Ver a seção abaixo |
-| Senha | `bcryptjs` | JavaScript puro, sem compilador de C++ na máquina da secretaria |
+| Senha | `bcryptjs` | JavaScript puro, sem compilador de C++ na máquina do secretário |
 | Planilha | SheetJS | Lê o `.xlsx` da coordenação sem conversão manual |
 
 ### Por que SQLite em arquivo único
 
-O banco inteiro é **um arquivo** na máquina da secretaria. Não há servidor de
+O banco inteiro é **um arquivo** na máquina do secretário. Não há servidor de
 banco para instalar, configurar, atualizar nem reiniciar.
 
 A alternativa considerada era um banco de servidor — PostgreSQL ou MySQL. Ela
 foi descartada porque acrescenta uma peça que alguém precisa manter viva em um
-computador de secretaria, sem equipe de infraestrutura por perto: se o serviço
+computador do secretário, sem equipe de infraestrutura por perto: se o serviço
 não sobe depois de um reinício do Windows, a bancada para e ninguém no prédio
 sabe por quê. Com arquivo único, **fazer cópia de segurança é copiar o arquivo**,
 e restaurar é colocá-lo de volta.
 
-O preço é conhecido e cabe no problema: uma escrita por vez, e a máquina da
-secretaria é o limite de tudo. Para uma bancada com dezenas de aparelhos e um
+O preço é conhecido e cabe no problema: uma escrita por vez, e a máquina do
+secretário é o limite de tudo. Para uma bancada com dezenas de aparelhos e um
 punhado de pessoas por hora, é folga.
 
 ## O modelo de dados
@@ -149,7 +149,7 @@ Quatro pontos do modelo que a wiki explica por inteiro nas
   na mesma confirmação. É o que permite devolver um e ficar com os outros.
 - **O `Emprestimo` tem três marcadores de tempo, com donos distintos**: a
   retirada no tablet, a **declaração** da devolução no tablet, e a
-  **conferência física** na secretaria. A diferença entre os dois últimos é o
+  **conferência física** pelo secretário. A diferença entre os dois últimos é o
   [tempo de prateleira](../referencia/glossario.md#tempo-de-prateleira).
 
 ### Nada é apagado

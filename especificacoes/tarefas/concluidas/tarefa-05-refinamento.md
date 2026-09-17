@@ -13,9 +13,9 @@ Esta tarefa contém melhorias de usabilidade e correções de bugs identificados
 * **Solução:** 
   * Altere este componente. Transforme-o em um `<select>` HTML padrão (estilizado com Tailwind) ou em um componente de dropdown simples onde clicar nele sempre abre as opções, permitindo a troca com 1 clique, sem precisar apagar o texto.
 
-## 3. Nova Funcionalidade UX: Botão "Devolver Tudo" (Secretaria)
+## 3. Nova Funcionalidade UX: Botão "Devolver Tudo" (Secretário)
 * **Local:** Painel Admin (`/admin`) -> Aba "Fila de Devoluções".
-* **Problema:** Se houver 5 equipamentos aguardando baixa na bancada, a secretária precisa clicar em 5 botões individuais.
+* **Problema:** Se houver 5 equipamentos aguardando baixa na bancada, o secretário precisa clicar em 5 botões individuais.
 * **Solução:** 
   * Adicione um botão "Confirmar Todas as Devoluções" no topo da lista.
   * Ao clicar neste botão, o sistema deve executar a ação de conclusão (mudar log para `CONCLUIDO` e equipamento para `DISPONIVEL`) para **todos** os itens que estão na tela no status `AGUARDANDO_BAIXA`.
