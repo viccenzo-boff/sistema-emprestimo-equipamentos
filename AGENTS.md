@@ -34,7 +34,7 @@ descreve o sistema, não o define.
 | --- | --- |
 | [`especificacoes/spec.md`](especificacoes/spec.md) | A base arquitetural. Manda sobre o sistema inteiro. |
 | [`especificacoes/spec-wiki.md`](especificacoes/spec-wiki.md) | Manda sobre `docs/` e sobre a série `tarefa-doc-NN`. |
-| [`especificacoes/tarefas/pendentes/`](especificacoes/tarefas/pendentes/) | Enunciado de tarefa ainda **não** executada. Hoje, nenhum — a Tarefa 15 foi a última. |
+| [`especificacoes/tarefas/pendentes/`](especificacoes/tarefas/pendentes/) | Enunciado de tarefa ainda **não** executada. Hoje, um: a Tarefa 16. |
 | [`especificacoes/tarefas/concluidas/`](especificacoes/tarefas/concluidas/) | Enunciados já executados, guardados como histórico. Não são fonte de trabalho novo. |
 | `docs/` | A wiki publicada pelo MkDocs. **Enunciado de tarefa nunca entra aqui** — o Vale lintaria e o MkDocs publicaria. |
 
@@ -45,15 +45,31 @@ arquivos que as ferramentas exigem lá: `README.md`, `CLAUDE.md`, `AGENTS.md` e
 
 ### Fila de trabalho — "faça a próxima tarefa" quer dizer isto
 
-Atualizada em 2026-09-16, depois da Tarefa 15. O dono do repositório abre a
-sessão só com esse prompt; esta seção é a resposta.
+Atualizada em 2026-09-17, depois da sessão de alinhamento dos relatórios. O
+dono do repositório abre a sessão só com esse prompt; esta seção é a resposta.
 
-**Não há enunciado pendente.** `especificacoes/tarefas/pendentes/` está vazio:
-a Tarefa 15 foi executada e o enunciado dela está em `concluidas/`. Se a
-próxima sessão receber "faça a próxima tarefa" sem um enunciado novo, a
-resposta é dizer isso e perguntar qual — as ideias de "Próximos passos
-possíveis", no fim do estado atual, **não estão na spec** e precisam de um
-enunciado antes de virar código.
+**A próxima é a Tarefa 16**, e o enunciado está em
+[tarefa-16-ranking-de-consumo.md](especificacoes/tarefas/pendentes/tarefa-16-ranking-de-consumo.md):
+o relatório Ranking de Consumo, o seletor de período (dia, mês, ano ou
+intervalo, nos `searchParams`) e a exportação em .xlsx — as duas peças
+compartilhadas nascem ali. Ele saiu de uma sessão de alinhamento em
+2026-09-17 (varredura → estratégia → decisões em lote), e a §0 dele registra
+as treze decisões com o porquê; **não as reabra sem motivo novo**. Execute pela
+`executar-tarefa-especificada`, com a varredura de conflitos antes da primeira
+edição. Duas dependências de leitura antes de escrever: o guia de
+`searchParams` e de *shallow routing* em `node_modules/next/dist/docs/`, e a
+documentação da versão instalada do Recharts (dependência nova aprovada na
+§0).
+
+**A Tarefa 17 (Índice de Manutenção) ainda não tem enunciado** — ele será
+escrito depois que a 16 fechar, porque consome o seletor e a exportação que
+ela cria e precisa de schema novo (histórico de status do equipamento; hoje
+`Equipamento` não guarda quando entrou ou saiu de `MANUTENCAO`). As decisões
+já tomadas para ela estão na §0 da Tarefa 16: tabela de histórico gravada por
+`alterarStatusEquipamento` com o `administrador_id`, histórico vazio antes da
+migration, e o índice em `Emprestimo.data_retirada` de carona na mesma
+migration. As demais ideias de "Próximos passos possíveis", no fim do estado
+atual, **não estão na spec** e precisam de um enunciado antes de virar código.
 
 O que **não** precisa ser refeito: o Pages está no ar; a tag `v1.0` está no
 remoto; a **`v1.2` está aberta** — o workflow publica `v1.2 (em andamento)`, o
