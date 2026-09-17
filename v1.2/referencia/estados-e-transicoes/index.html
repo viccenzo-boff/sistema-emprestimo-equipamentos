@@ -411,14 +411,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../inicio-rapido/secretaria/" class="md-nav__link">
+      <a href="../../inicio-rapido/secretario/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Secretaria
+    Secretário
   
 
     
@@ -1504,7 +1504,7 @@ independente.</p>
 </tr>
 <tr>
 <td><code>AGUARDANDO_BAIXA</code> → <code>CONCLUIDO</code></td>
-<td>Secretaria</td>
+<td>Secretário</td>
 <td><a href="../glossario/#painel">Painel</a>, botão <strong>Confirmar Recebimento Físico</strong> (ou <strong>Confirmar Todas as Devoluções</strong>)</td>
 <td><code>data_baixa</code></td>
 </tr>
@@ -1519,8 +1519,8 @@ ficou parado na bancada depois de alguém dizer que o devolveu.</p>
 <li><strong>Não volta.</strong> Não existe <code>AGUARDANDO_BAIXA</code> → <code>ATIVO</code> nem <code>CONCLUIDO</code> →
   qualquer coisa. Um empréstimo encerrado por engano não reabre por nenhuma
   tela — o caminho é registrar uma retirada nova.</li>
-<li><strong>Não pula.</strong> <code>ATIVO</code> nunca vai direto para <code>CONCLUIDO</code>. A conferência da
-  secretaria é o único caminho até o fim, e é por isso que ela existe.</li>
+<li><strong>Não pula.</strong> <code>ATIVO</code> nunca vai direto para <code>CONCLUIDO</code>. A conferência do
+  secretário é o único caminho até o fim, e é por isso que ela existe.</li>
 <li><strong>Não apaga.</strong> Empréstimo <code>CONCLUIDO</code> fica no banco para sempre. É ele que
   responde "quem estava com este aparelho no semestre passado".</li>
 </ul>
@@ -1545,7 +1545,7 @@ ficou parado na bancada depois de alguém dizer que o devolveu.</p>
 <tbody>
 <tr>
 <td>(nasce) → <code>DISPONIVEL</code></td>
-<td>Secretaria</td>
+<td>Secretário</td>
 <td>Painel, aba <strong>Inventário</strong>, formulário de cadastro</td>
 </tr>
 <tr>
@@ -1555,32 +1555,32 @@ ficou parado na bancada depois de alguém dizer que o devolveu.</p>
 </tr>
 <tr>
 <td><code>EMPRESTADO</code> → <code>DISPONIVEL</code></td>
-<td>Secretaria</td>
+<td>Secretário</td>
 <td>Painel, na <a href="../glossario/#baixa-fisica">baixa física</a></td>
 </tr>
 <tr>
 <td><code>DISPONIVEL</code> → <code>MANUTENCAO</code></td>
-<td>Secretaria</td>
+<td>Secretário</td>
 <td>Painel, botão <strong>Manutenção</strong> na linha</td>
 </tr>
 <tr>
 <td><code>MANUTENCAO</code> → <code>DISPONIVEL</code></td>
-<td>Secretaria</td>
+<td>Secretário</td>
 <td>Painel, botão <strong>Disponível</strong> na linha</td>
 </tr>
 <tr>
 <td><code>DISPONIVEL</code> → <code>INATIVO</code></td>
-<td>Secretaria</td>
+<td>Secretário</td>
 <td>Painel, botão <strong>Inativar</strong> na linha</td>
 </tr>
 <tr>
 <td><code>MANUTENCAO</code> → <code>INATIVO</code></td>
-<td>Secretaria</td>
+<td>Secretário</td>
 <td>Painel, botão <strong>Inativar</strong> na linha</td>
 </tr>
 <tr>
 <td><code>INATIVO</code> → <code>DISPONIVEL</code></td>
-<td>Secretaria</td>
+<td>Secretário</td>
 <td>Painel, botão <strong>Reativar</strong> na linha</td>
 </tr>
 </tbody>
@@ -1589,7 +1589,7 @@ ficou parado na bancada depois de alguém dizer que o devolveu.</p>
 <p><a id="ausencias-do-equipamento"></a></p>
 <div class="admonition warning">
 <p class="admonition-title"><code>EMPRESTADO</code> não é um botão</p>
-<p>A secretaria move o equipamento entre <code>DISPONIVEL</code>, <code>MANUTENCAO</code> e
+<p>O secretário move o equipamento entre <code>DISPONIVEL</code>, <code>MANUTENCAO</code> e
 <code>INATIVO</code>, e só. <code>EMPRESTADO</code> entra e sai sozinho, pelos dois gestos que
 envolvem uma pessoa de verdade levando o aparelho.</p>
 <p>Se houvesse um botão, marcá-lo à mão deixaria um empréstimo aberto
@@ -1601,7 +1601,7 @@ mostra <strong>o nome de quem está com ele</strong> no lugar do botão.</p>
 <p class="admonition-title"><code>INATIVO</code> não vai direto para <code>MANUTENCAO</code></p>
 <p>Aparelho aposentado volta para <code>DISPONIVEL</code> primeiro; o conserto se decide
 depois. São duas perguntas diferentes — "este item volta a circular?" e
-"ele precisa de conserto?" —, e juntá-las num clique só faria a secretaria
+"ele precisa de conserto?" —, e juntá-las num clique só faria o secretário
 responder as duas sem ser perguntada.</p>
 </div>
 <div class="admonition warning">
@@ -1654,7 +1654,7 @@ empréstimo aberto", contra as quatro situações do equipamento.</p>
 <td><code>AGUARDANDO_BAIXA</code></td>
 <td><code>EMPRESTADO</code></td>
 <td><strong>Normal</strong></td>
-<td><strong>A regra das duas fases.</strong> A pessoa declarou a devolução, o aparelho está na bancada, e ele continua fora de circulação até a secretaria conferir.</td>
+<td><strong>A regra das duas fases.</strong> A pessoa declarou a devolução, o aparelho está na bancada, e ele continua fora de circulação até o secretário conferir.</td>
 </tr>
 <tr>
 <td><code>AGUARDANDO_BAIXA</code></td>

@@ -411,14 +411,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../inicio-rapido/secretaria/" class="md-nav__link">
+      <a href="../../inicio-rapido/secretario/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Secretaria
+    Secretário
   
 
     
@@ -1798,7 +1798,7 @@ correspondente técnico — um campo ou um status do banco de dados —, ele vem
 entre parênteses, para quem precisar ligar a palavra da tela ao dado gravado.</p>
 <p>Termo que só aparece em uma página mora no glossário daquela página.</p>
 <h2 id="administrador">Administrador</h2>
-<p>Quem opera o <a href="#painel">painel</a> da secretaria. Cada pessoa tem a sua conta, com
+<p>Quem opera o <a href="#painel">painel</a> do secretário. Cada pessoa tem a sua conta, com
 login e senha próprios — não existe senha compartilhada.</p>
 <p>O campo de login chama-se <strong>Usuário</strong> na tela de entrada
 (<code>Administrador.usuario</code>). É o único sentido em que a palavra <strong>Usuário</strong>
@@ -1831,7 +1831,7 @@ os rostos apareceram. A regra inteira está em
 e o relatório que a lê é a aba <strong>Satisfação</strong> de
 <a href="../../painel/relatorios/">Relatórios</a>.</p>
 <h2 id="baixa-fisica">Baixa física</h2>
-<p>A conferência da secretaria: o equipamento foi recolhido da bancada e o
+<p>A conferência do secretário: o equipamento foi recolhido da bancada e o
 <a href="#emprestimo">empréstimo</a> está encerrado de verdade (<code>Emprestimo.status</code>
 passa de <code>AGUARDANDO_BAIXA</code> para <code>CONCLUIDO</code>, e a hora fica em
 <code>Emprestimo.data_baixa</code>).</p>
@@ -1866,7 +1866,7 @@ mesmo armário. Categoria só pode ser excluída quando está vazia.</p>
 equipamento e o deixou na bancada (<code>Emprestimo.status</code> passa de <code>ATIVO</code> para
 <code>AGUARDANDO_BAIXA</code>, e a hora fica em <code>Emprestimo.data_devolucao</code>).</p>
 <p>Devolver <strong>não</strong> libera o equipamento para outra pessoa. Quem faz isso é a
-<a href="#baixa-fisica">baixa física</a>, na secretaria. A diferença entre os dois
+<a href="#baixa-fisica">baixa física</a>, pelo secretário. A diferença entre os dois
 momentos é o <a href="#tempo-de-prateleira">tempo de prateleira</a>.</p>
 <h2 id="emprestado">Emprestado</h2>
 <p>A <a href="#situacao">situação</a> de um equipamento que está fora da prateleira porque
@@ -1886,7 +1886,7 @@ emprestado mostra o nome de quem está com ele no lugar do botão.</p>
 na mesma ida ao balcão tem dois empréstimos, que podem ser devolvidos em
 momentos diferentes.</p>
 <p>Um empréstimo passa por três situações: <code>ATIVO</code> (está com a pessoa),
-<code>AGUARDANDO_BAIXA</code> (foi declarado devolvido, aguarda a secretaria) e
+<code>AGUARDANDO_BAIXA</code> (foi declarado devolvido, aguarda o secretário) e
 <code>CONCLUIDO</code> (encerrado).</p>
 <h2 id="emprestimos-ativos">Empréstimos ativos</h2>
 <p>A aba do <a href="#painel">painel</a> que lista tudo o que está com alguém agora — os
@@ -1921,8 +1921,8 @@ forma diferente de propósito:</p>
   juntos para a <a href="#bancada">bancada</a>, e devolver metade faria a pessoa sair
   achando que entregou tudo.</li>
 <li><strong>"Confirmar Todas as Devoluções"</strong>, no <a href="#painel">painel</a>: item a item, e uma
-  linha que falha não derruba as outras. O gesto físico já aconteceu — a
-  secretaria recolheu a pilha —, e uma linha que saiu da fila em outra aba não
+  linha que falha não derruba as outras. O gesto físico já aconteceu — o
+  secretário recolheu a pilha —, e uma linha que saiu da fila em outra aba não
   pode desfazer a conferência das demais. O resumo diz o que fechou e o que não
   fechou.</li>
 </ul>
@@ -1944,7 +1944,7 @@ consegue digitar. É guardada como texto — os zeros à esquerda contam, e
 <p>A matrícula pode ser corrigida no <a href="#painel">painel</a>, e a correção leva o
 histórico de empréstimos junto.</p>
 <h2 id="painel">Painel</h2>
-<p>A tela da secretaria, no computador, em <code>/admin</code>. Exige login de
+<p>A tela do secretário, no computador, em <code>/admin</code>. Exige login de
 <a href="#administrador">administrador</a>.</p>
 <p>Reúne a <a href="#fila-de-devolucoes">fila de devoluções</a>, os empréstimos ativos, o
 inventário, as categorias e os cadastros de pessoas.</p>
@@ -2007,7 +2007,7 @@ empréstimo aberto, e bloqueia só a <a href="#retirada">retirada</a>.</p>
 <a href="../estados-e-transicoes/">Estados e transições</a>.</p>
 <h2 id="tempo-de-prateleira">Tempo de prateleira</h2>
 <p>O intervalo entre a <a href="#devolucao">devolução</a> declarada no tablet e a
-<a href="#baixa-fisica">baixa física</a> feita na secretaria — o tempo em que o aparelho
+<a href="#baixa-fisica">baixa física</a> feita pelo secretário — o tempo em que o aparelho
 ficou parado na bancada, invisível para o portal e para o inventário.</p>
 <p>É a medida do gargalo operacional do sistema: enquanto ele existe, há
 equipamento fisicamente livre que ninguém consegue pegar.</p>
