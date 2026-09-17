@@ -1,25 +1,41 @@
+import { tomDaPosicao } from "@/lib/cores-de-grafico";
 import { gerarQrDoFormulario, lerUrlDoFormulario } from "@/lib/formulario-feedback";
+import { baldesDaSerie, graoDaSerie, type GraoDaSerie, type Periodo } from "@/lib/periodo";
 import { prisma } from "@/lib/prisma";
-import { dataHora, diaLocal, haQuantoTempo, inicioDoDia } from "@/lib/texto";
+import {
+  dataHora,
+  dataHoraDePlanilha,
+  diaLocal,
+  formatarDuracao,
+  haQuantoTempo,
+  inicioDoDia,
+} from "@/lib/texto";
 import {
   NOTAS_DE_AVALIACAO,
   PERFIL,
+  ROTULO_DO_STATUS_DE_EMPRESTIMO,
   STATUS_EMPRESTIMO,
   STATUS_EQUIPAMENTO,
   STATUS_PESSOA,
   type CategoriaDoPainel,
+  type CategoriaNoRanking,
   type EmprestimoEmCurso,
+  type EquipamentoNoRanking,
   type ItemDaFila,
   type ItemDeInventario,
   type NivelDeEstoque,
   type OcupacaoDeCategoria,
   type OpcaoDeCategoria,
+  type PessoaNoRanking,
   type RecorteDeSatisfacao,
+  type RelatorioDeConsumo,
   type RelatorioDeOcupacao,
   type RelatorioDeSatisfacao,
   type ResumoDePessoas,
   type ResumoDoInventario,
   type PessoaDoPainel,
+  type RetiradaExportada,
+  type SerieDeRetiradas,
 } from "@/lib/tipos";
 
 /**
@@ -351,11 +367,6 @@ export async function resumirPessoas(): Promise<ResumoDePessoas> {
  * Relatórios (Tarefa 13)
  * ------------------------------------------------------------------------- */
 
-const MES_POR_EXTENSO = new Intl.DateTimeFormat("pt-BR", {
-  month: "long",
-  year: "numeric",
-});
-
 /**
  * Acima deste número de unidades livres a categoria não pede nada de ninguém.
  * Com 1 ou 2 ela é "Estoque Crítico"; com 0, "Estoque Esgotado".
@@ -367,7 +378,8 @@ const MES_POR_EXTENSO = new Intl.DateTimeFormat("pt-BR", {
 const LIMITE_DE_ESTOQUE_CRITICO = 2;
 
 /**
- * O relatório de Ocupação e picos de uso (Tarefa 13, item 2).
+ * O relatório de Ocupação e picos de uso (Tarefa 13, item 2; período e série
+ * na Tarefa 16).
  *
  * **Não é uma Server Action, de propósito.** O enunciado pede
  * "`/admin/relatorios/actions.ts` ou similar", mas o painel lê o banco no
@@ -375,20 +387,28 @@ const LIMITE_DE_ESTOQUE_CRITICO = 2;
  * cabeçalho deste arquivo. Uma action aqui seria um endpoint POST público
  * criado para uma leitura que nunca precisa de um.
  *
- * Quatro consultas em paralelo, e nenhuma delas carrega tabela para contar no
- * Node: o inventário cresce por semestre e o relatório continua sendo uma
- * dúzia de números.
+ * Quatro consultas em paralelo. A primeira carrega as retiradas do período
+ * (só o carimbo, um `Date` por linha) porque a série "Retiradas por dia"
+ * precisa distribuí-las em baldes e o Prisma não agrupa por dia de calendário
+ * no fuso da máquina — é a exceção declarada à regra "conte no banco", pelo
+ * mesmo motivo do Ranking de Consumo abaixo: ~1.300 linhas por ano custam
+ * milissegundos. As outras três continuam contando no banco.
+ *
+ * **A ocupação por categoria não obedece ao período**: ela é a fotografia do
+ * agora, e não existe "ocupação em 3 de agosto" — o banco não guarda o status
+ * de cada dia. `lidoEm` é o carimbo dessa fotografia, e a tela diz isso numa
+ * linha para o leitor não ler as barras como se fossem do período.
  */
-export async function montarRelatorioDeOcupacao(): Promise<RelatorioDeOcupacao> {
+export async function montarRelatorioDeOcupacao(periodo: Periodo): Promise<RelatorioDeOcupacao> {
   const agora = new Date();
-  const inicioDoMes = new Date(agora.getFullYear(), agora.getMonth(), 1);
 
-  const [emprestimosNoMes, abertos, categorias, porCategoria] = await Promise.all([
+  const [retiradasDoPeriodo, abertos, categorias, porCategoria] = await Promise.all([
     /*
-      A comparação é feita pelo Prisma com um `Date`, e isso foi conferido
-      nesta máquina contra o banco real, na fronteira exata do mês: o
-      empréstimo do primeiro instante entra e o do último instante do mês
-      anterior fica de fora.
+      A comparação é feita pelo Prisma com `Date`, e isso foi conferido nesta
+      máquina contra o banco real, na fronteira exata: o primeiro instante de
+      `de` entra, o último instante de `ate` entra, e o primeiro instante do
+      dia seguinte fica de fora (Tarefa 13 para o mês, Tarefa 16 para as duas
+      pontas do período).
 
       Não troque por SQL cru sem refazer a prova. O SQLite guarda `DateTime`
       como TEXTO ISO-8601 com o sufixo `+00:00`, e as duas formas óbvias de
@@ -396,9 +416,14 @@ export async function montarRelatorioDeOcupacao(): Promise<RelatorioDeOcupacao> 
       o epoch conta a tabela inteira (pela regra de afinidade de tipos,
       INTEGER é sempre menor que TEXT), e comparar com `toISOString()` perde
       justamente a linha da fronteira (o `+` vem antes do `Z` na ordem de
-      caracteres). Medido nas duas direções.
+      caracteres). Medido nas duas direções. E um `$queryRaw` que devolva a
+      coluna **re-serializa** o texto com `Z` no lugar de `+00:00` — quem
+      quiser ver o formato gravado precisa ler pelo driver.
     */
-    prisma.emprestimo.count({ where: { data_retirada: { gte: inicioDoMes } } }),
+    prisma.emprestimo.findMany({
+      where: { data_retirada: { gte: periodo.de, lt: periodo.fim } },
+      select: { data_retirada: true },
+    }),
 
     /*
       "Equipamentos na rua" contado pelos EMPRÉSTIMOS, e não pelo status do
@@ -453,13 +478,74 @@ export async function montarRelatorioDeOcupacao(): Promise<RelatorioDeOcupacao> 
   }
 
   return {
-    emprestimosNoMes,
-    mes: MES_POR_EXTENSO.format(agora),
+    retiradasNoPeriodo: retiradasDoPeriodo.length,
+    periodo: periodo.porExtenso,
+    serie: montarSerie(
+      periodo,
+      retiradasDoPeriodo.map((retirada) => retirada.data_retirada),
+    ),
+    lidoEm: dataHora(agora),
     naRua: { total: comPessoas + naBancada, comPessoas, naBancada },
     categorias: categorias.map((categoria) =>
       medirOcupacao(categoria, contagem.get(categoria.id)),
     ),
   };
+}
+
+const TITULO_DA_SERIE: Record<GraoDaSerie, string> = {
+  dia: "Retiradas por dia",
+  semana: "Retiradas por semana",
+  mes: "Retiradas por mês",
+};
+
+/**
+ * Distribui as retiradas nos baldes do período. Os baldes vêm de
+ * [periodo.ts](periodo.ts) **com os vazios incluídos**, e é isso que faz um
+ * dia sem retirada aparecer com zero em vez de sumir — o buraco é a
+ * informação. O título diz o grão ("Retiradas por semana"), porque a barra
+ * sozinha não diz se é um dia ou um mês.
+ */
+function montarSerie(periodo: Periodo, datas: readonly Date[]): SerieDeRetiradas {
+  const grao = graoDaSerie(periodo);
+  const baldes = baldesDaSerie(periodo, grao);
+  const contagem = baldes.map(() => 0);
+
+  for (const data of datas) {
+    const instante = data.getTime();
+    const indice = baldes.findIndex(
+      (balde) => instante >= balde.inicio.getTime() && instante < balde.fim.getTime(),
+    );
+    if (indice >= 0) contagem[indice] += 1;
+  }
+
+  return {
+    grao,
+    titulo: TITULO_DA_SERIE[grao],
+    pontos: baldes.map((balde, i) => ({
+      rotulo: balde.rotulo,
+      detalhe: balde.detalhe,
+      valor: contagem[i],
+    })),
+  };
+}
+
+/**
+ * Os anos que o `<select>` do seletor oferece: do ano da primeira retirada
+ * até o corrente, sem buraco. Um `aggregate` de mínimo, e não uma varredura
+ * das datas — e **não** `strftime` em SQL cru: o texto gravado é UTC, e uma
+ * retirada às 23h de 31 de dezembro cairia no ano seguinte.
+ *
+ * Sem nenhuma retirada, só o ano corrente.
+ */
+export async function anosComRetirada(hoje: Date = new Date()): Promise<number[]> {
+  const primeira = await prisma.emprestimo.aggregate({ _min: { data_retirada: true } });
+  const anoInicial = primeira._min.data_retirada?.getFullYear() ?? hoje.getFullYear();
+
+  const anos: number[] = [];
+  for (let ano = Math.min(anoInicial, hoje.getFullYear()); ano <= hoje.getFullYear(); ano++) {
+    anos.push(ano);
+  }
+  return anos;
 }
 
 /**
@@ -536,6 +622,221 @@ function nivelDeEstoque(emCirculacao: number, disponiveis: number): NivelDeEstoq
   if (disponiveis <= LIMITE_DE_ESTOQUE_CRITICO) return "critico";
 
   return "normal";
+}
+
+/* ------------------------------------------------------------------------- *
+ * Ranking de Consumo (Tarefa 16)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * O relatório Ranking de Consumo (Tarefa 16, §2).
+ *
+ * **Carrega as linhas do período e agrega em Node — exceção declarada à regra
+ * "conte no banco".** O Prisma não soma diferença de datas, e mediana exige a
+ * lista inteira; a ~1.300 retiradas por ano, a leitura custa milissegundos, e
+ * o relatório de um ano inteiro cabe no render. A lista de equipamentos e a
+ * de categorias vêm das próprias tabelas (o `groupBy` não devolve linha para
+ * grupo vazio — Tarefa 13), e o nome da pessoa vem de `Pessoa` no momento da
+ * leitura: quem corrigiu o nome no painel vê o nome corrigido aqui.
+ *
+ * **O que entra no período é a retirada** — ver `RelatorioDeConsumo` em
+ * [tipos.ts](tipos.ts).
+ */
+export async function montarRelatorioDeConsumo(periodo: Periodo): Promise<RelatorioDeConsumo> {
+  const [emprestimos, equipamentos, categorias] = await Promise.all([
+    prisma.emprestimo.findMany({
+      where: { data_retirada: { gte: periodo.de, lt: periodo.fim } },
+      select: {
+        equip_id: true,
+        pessoa_id: true,
+        status: true,
+        data_retirada: true,
+        data_devolucao: true,
+        data_baixa: true,
+        pessoa: { select: { nome: true, perfil: true } },
+        equipamento: { select: { categoria_id: true } },
+      },
+      orderBy: [{ data_retirada: "asc" }, { id: "asc" }],
+    }),
+    prisma.equipamento.findMany({
+      select: { id: true, status: true, categoria: { select: { id: true, nome: true } } },
+    }),
+    prisma.categoria.findMany({ select: { id: true, nome: true }, orderBy: { id: "asc" } }),
+  ]);
+
+  const nomeDaCategoria = new Map(categorias.map((categoria) => [categoria.id, categoria.nome]));
+
+  /*
+    Um empréstimo do período, com os dois intervalos já calculados. `uso` só
+    existe com `data_devolucao` (os `ATIVO` contam na retirada e ficam fora da
+    mediana); `prateleira` só nos `CONCLUIDO` com os dois carimbos — os seis
+    concluídos antes da Tarefa 12 têm `data_baixa` nula e se excluem sozinhos,
+    que é o motivo de ela ser nula em vez de copiada.
+  */
+  const linhas = emprestimos.map((emprestimo) => {
+    const uso = emprestimo.data_devolucao
+      ? emprestimo.data_devolucao.getTime() - emprestimo.data_retirada.getTime()
+      : null;
+    const prateleira =
+      emprestimo.status === STATUS_EMPRESTIMO.concluido &&
+      emprestimo.data_devolucao &&
+      emprestimo.data_baixa
+        ? emprestimo.data_baixa.getTime() - emprestimo.data_devolucao.getTime()
+        : null;
+
+    return { ...emprestimo, uso, prateleira };
+  });
+
+  // Por equipamento: todo item em circulação entra, com zero incluído; o
+  // aposentado só entra se tiver retirada no período (decisão do dono).
+  const porEquipamento = agrupar(linhas, (linha) => linha.equip_id);
+  const equipamentosNoRanking = equipamentos
+    .map((equipamento) => ({
+      id: equipamento.id,
+      categoria: equipamento.categoria.nome,
+      ordemDaCategoria: equipamento.categoria.id,
+      status: equipamento.status,
+      ...medirGrupo(porEquipamento.get(equipamento.id)),
+    }))
+    .filter(
+      (equipamento) => equipamento.status !== STATUS_EQUIPAMENTO.inativo || equipamento.retiradas > 0,
+    )
+    .sort(
+      (a, b) =>
+        b.retiradas - a.retiradas ||
+        a.ordemDaCategoria - b.ordemDaCategoria ||
+        a.id.localeCompare(b.id, "pt-BR", { numeric: true }),
+    );
+
+  // Por categoria: todas, com zero incluído. A cor vem da posição na ordem de
+  // `id` ANTES de ordenar por retiradas — é o que faz a mesma categoria ter a
+  // mesma cor em qualquer período.
+  const porCategoria = agrupar(linhas, (linha) => linha.equipamento.categoria_id);
+  const categoriasNoRanking = categorias
+    .map((categoria, posicao) => {
+      const tom = tomDaPosicao(posicao);
+      return {
+        id: categoria.id,
+        nome: categoria.nome,
+        cor: tom.cor,
+        corDoRotulo: tom.corDoRotulo,
+        ...medirGrupo(porCategoria.get(categoria.id)),
+      };
+    })
+    .sort((a, b) => b.retiradas - a.retiradas || a.id - b.id);
+
+  // Por pessoa: só quem retirou ao menos uma vez — o cadastro tem centenas de
+  // linhas, e a lista de zeros seria o roster inteiro.
+  const porPessoa = agrupar(linhas, (linha) => linha.pessoa_id);
+  const pessoasNoRanking = [...porPessoa.entries()]
+    .map(([matricula, grupo]) => ({
+      matricula,
+      nome: grupo[0].pessoa.nome,
+      perfil: grupo[0].pessoa.perfil,
+      ...medirGrupo(grupo),
+    }))
+    .sort(
+      (a, b) =>
+        b.retiradas - a.retiradas ||
+        a.nome.localeCompare(b.nome, "pt-BR", { sensitivity: "base" }),
+    );
+
+  const total = linhas.length;
+  const usoMediano = mediana(linhas.map((linha) => linha.uso));
+  const prateleiraMediana = mediana(linhas.map((linha) => linha.prateleira));
+
+  return {
+    periodo: periodo.porExtenso,
+    retiradas: total,
+    pessoasDistintas: porPessoa.size,
+    usoMediano: usoMediano === null ? null : formatarDuracao(usoMediano),
+    usoMedianoMin: emMinutos(usoMediano),
+    prateleiraMediana: prateleiraMediana === null ? null : formatarDuracao(prateleiraMediana),
+    prateleiraMedianaMin: emMinutos(prateleiraMediana),
+    equipamentos: comBarra(equipamentosNoRanking).map(
+      ({ id, categoria, status, retiradas, usoMediano, usoMedianoMin, barra }): EquipamentoNoRanking => ({
+        id,
+        categoria,
+        status,
+        retiradas,
+        usoMediano,
+        usoMedianoMin,
+        barra,
+      }),
+    ),
+    categorias: comBarra(categoriasNoRanking).map(
+      (categoria): CategoriaNoRanking => ({
+        ...categoria,
+        fatia: total === 0 ? 0 : Math.round((categoria.retiradas / total) * 100),
+      }),
+    ),
+    pessoas: comBarra(pessoasNoRanking) satisfies PessoaNoRanking[],
+    linhas: linhas.map(
+      (linha): RetiradaExportada => ({
+        etiqueta: linha.equip_id,
+        categoria: nomeDaCategoria.get(linha.equipamento.categoria_id) ?? "",
+        retirada: dataHoraDePlanilha(linha.data_retirada),
+        devolucao: linha.data_devolucao ? dataHoraDePlanilha(linha.data_devolucao) : null,
+        baixa: linha.data_baixa ? dataHoraDePlanilha(linha.data_baixa) : null,
+        situacao: ROTULO_DO_STATUS_DE_EMPRESTIMO[linha.status] ?? linha.status,
+        usoMin: emMinutos(linha.uso),
+        prateleiraMin: emMinutos(linha.prateleira),
+      }),
+    ),
+  };
+}
+
+type LinhaDoPeriodo = { uso: number | null };
+
+function agrupar<T, K>(linhas: readonly T[], chave: (linha: T) => K): Map<K, T[]> {
+  const grupos = new Map<K, T[]>();
+  for (const linha of linhas) {
+    const k = chave(linha);
+    grupos.set(k, [...(grupos.get(k) ?? []), linha]);
+  }
+  return grupos;
+}
+
+/** As duas medidas de um grupo (equipamento, categoria ou pessoa): contagem e uso mediano. */
+function medirGrupo(grupo: readonly LinhaDoPeriodo[] | undefined) {
+  const uso = mediana((grupo ?? []).map((linha) => linha.uso));
+  return {
+    retiradas: grupo?.length ?? 0,
+    usoMediano: uso === null ? null : formatarDuracao(uso),
+    usoMedianoMin: emMinutos(uso),
+  };
+}
+
+/**
+ * A largura da barra em linha, de 0 a 100, proporcional ao **maior da
+ * tabela** — e não ao total: numa tabela de vinte equipamentos, o mais
+ * retirado tem a barra cheia, e é isso que faz o olho achar o topo.
+ */
+function comBarra<T extends { retiradas: number }>(linhas: T[]): (T & { barra: number })[] {
+  const maior = Math.max(0, ...linhas.map((linha) => linha.retiradas));
+  return linhas.map((linha) => ({
+    ...linha,
+    barra: maior === 0 ? 0 : Math.round((linha.retiradas / maior) * 100),
+  }));
+}
+
+/**
+ * Mediana, **e não média**, por decisão da §0 da Tarefa 16: um notebook
+ * esquecido no fim de semana distorce a média de uma semana inteira. Os nulos
+ * ficam de fora (não são zero — são "ainda não devolvido" ou "sem baixa"), e
+ * sem amostra o resultado é nulo, que a tela mostra como "—".
+ */
+function mediana(valores: readonly (number | null)[]): number | null {
+  const amostra = valores.filter((valor): valor is number => valor !== null).sort((a, b) => a - b);
+  if (amostra.length === 0) return null;
+
+  const meio = Math.floor(amostra.length / 2);
+  return amostra.length % 2 === 1 ? amostra[meio] : (amostra[meio - 1] + amostra[meio]) / 2;
+}
+
+/** Milissegundos em minutos inteiros, para a planilha. */
+function emMinutos(milissegundos: number | null): number | null {
+  return milissegundos === null ? null : Math.round(milissegundos / 60_000);
 }
 
 /* ------------------------------------------------------------------------- *
