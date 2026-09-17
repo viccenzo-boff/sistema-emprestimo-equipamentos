@@ -16,7 +16,7 @@ datasource db {
 ///
 /// Chamava-se `Usuario` até a Tarefa 10. O nome mudou porque o sistema passou a
 /// ter **duas** espécies de gente dentro dele: quem retira equipamento e quem
-/// administra o painel. Com `Administrador.usuario` sendo o login da secretaria,
+/// administra o painel. Com `Administrador.usuario` sendo o login do secretário,
 /// "usuário" ficou querendo dizer duas coisas — e a que aparece no tablet é uma
 /// pessoa, não uma conta.
 model Pessoa {
@@ -135,7 +135,7 @@ model Configuracao {
 /// senha padrão.
 model Administrador {
   id      Int    @id @default(autoincrement())
-  /// Nome de quem opera — é o que aparece no painel ("Secretaria", "Cidi").
+  /// Nome de quem opera — é o que aparece no painel ("Secretário", "Cidi").
   nome    String
   /// Login digitado na tela de login. Único: é a chave da busca.
   ///
@@ -206,7 +206,7 @@ model Emprestimo {
   ///
   /// Nulo enquanto o empréstimo está `ATIVO`.
   data_devolucao DateTime?
-  /// **A conferência física**: a secretaria recolheu o item da bancada e
+  /// **A conferência física**: o secretário recolheu o item da bancada e
   /// confirmou o recebimento no painel (`AGUARDANDO_BAIXA` -> `CONCLUIDO`,
   /// Fluxo 3). Terceiro marcador temporal, criado na Tarefa 12.
   ///

@@ -59,8 +59,8 @@ export function GestaoCategorias({ categorias }: Props) {
           detalhe: resultado.detalhe,
         });
 
-        // A linha na tela não corresponde mais ao banco: em vez de deixar a
-        // secretaria clicando de novo, relê a lista com a contagem atual.
+        // A linha na tela não corresponde mais ao banco: em vez de deixar o
+        // secretário clicando de novo, relê a lista com a contagem atual.
         router.refresh();
         setExcluindoId(null);
         return;

@@ -385,7 +385,7 @@ export function IconePlanilha({ className }: PropsDeIcone) {
  *
  * Deliberadamente **não** é a grade do [IconePlanilha] com a seta invertida,
  * que era a forma prevista ali para um futuro "baixar a lista". Os dois botões
- * vivem no mesmo cartão, e a versão espelhada obrigaria a secretaria a
+ * vivem no mesmo cartão, e a versão espelhada obrigaria o secretário a
  * distinguir importar de baixar pela direção de uma seta de 20px. A forma
  * genérica de download não tem esse problema — e deixa a grade espelhada livre
  * para quando existir exportação de dados de verdade.

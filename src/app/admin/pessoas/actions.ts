@@ -82,7 +82,7 @@ function codigoDoPrisma(erro: unknown): string | null {
  * A prévia existe porque a importação não tem desfazer. Um arquivo errado
  * sobrescreve centenas de cadastros, e um relatório depois do fato só conta o
  * estrago. Foi levantado como conflito de reversibilidade antes de existir
- * código, e a resposta foi esta etapa: a secretaria vê a lista do que vai
+ * código, e a resposta foi esta etapa: o secretário vê a lista do que vai
  * mudar, campo a campo, e só então confirma.
  */
 export async function analisarPlanilha(
@@ -129,8 +129,8 @@ export async function analisarPlanilha(
  * o que vale é o estado de agora, não o do render.
  *
  * **Uma transação só, e não linha a linha.** Ao contrário da baixa em lote da
- * fila (que é melhor-esforço porque o gesto físico já aconteceu), aqui a
- * secretaria conferiu uma lista e clicou uma vez: aplicar metade dela deixaria
+ * fila (que é melhor-esforço porque o gesto físico já aconteceu), aqui o
+ * secretário conferiu uma lista e clicou uma vez: aplicar metade dela deixaria
  * a base em um estado que ninguém revisou. Ou entra tudo, ou não entra nada.
  */
 export async function importarPlanilha(
@@ -167,7 +167,7 @@ export async function importarPlanilha(
  * O `timeout` é esticado porque o padrão do Prisma para transação interativa é
  * de 5 segundos, e uma planilha de curso inteiro passa disso sem ser um
  * problema — abortar no meio por relógio seria o pior dos dois mundos: nada
- * gravado depois de a secretaria confirmar.
+ * gravado depois de o secretário confirmar.
  */
 async function gravar(operacoes: OperacaoDaLinha[]): Promise<ImportacaoConcluida> {
   const resultado: ImportacaoConcluida = {
@@ -228,7 +228,7 @@ async function carregarExistentes(): Promise<Map<string, PessoaExistente>> {
  * Tira o arquivo do formulário e recusa o que não é planilha do Excel.
  *
  * A extensão é conferida além do tipo MIME porque o navegador informa o tipo a
- * partir do registro do sistema operacional, e em máquina de secretaria ele vem
+ * partir do registro do sistema operacional, e na máquina do secretário ele vem
  * vazio com frequência. Quem decide de verdade é a biblioteca de leitura, logo
  * depois: um `.xlsx` que não seja um `.xlsx` por dentro cai no `catch` dela.
  */
@@ -300,7 +300,7 @@ const ORIGENS_PERMITIDAS = new Map<string, readonly string[]>([
  *
  * **Empréstimo aberto não bloqueia.** É diferente do equipamento, e de
  * propósito: inativa-se justamente quem saiu da faculdade, e essa pessoa quase
- * sempre ainda está com um aparelho. Travar aqui obrigaria a secretaria a
+ * sempre ainda está com um aparelho. Travar aqui obrigaria o secretário a
  * lembrar de voltar depois, e o cadastro ficaria ativo — ou seja, apto a
  * retirar mais — no intervalo. O empréstimo continua aberto e visível na aba
  * Empréstimos Ativos, que é onde a cobrança acontece.
@@ -356,7 +356,7 @@ export async function alterarStatusPessoa(
         nenhuma origem permitida; como só há dois status e a origem de um é o
         outro, isso quer dizer que ele já está no destino. A versão anterior
         anunciava justamente o contrário ("já está inativo" ao tentar ativar),
-        mandando a secretaria clicar de novo no mesmo botão.
+        mandando o secretário clicar de novo no mesmo botão.
 
         É a mesma forma que a troca de status do equipamento já usava: dizer o
         estado real, e não adivinhar o oposto.
@@ -390,7 +390,7 @@ export async function alterarStatusPessoa(
  * 15 — de propósito, porque o portal é operado com o dedo, em pé.
  *
  * Uma validação mais frouxa aqui foi tentada e **reprovada na verificação**:
- * ela deixava a secretaria gravar "TROCADA-01" com sucesso, criando um cadastro
+ * ela deixava o secretário gravar "TROCADA-01" com sucesso, criando um cadastro
  * que existe no banco, aparece no painel, e que **ninguém consegue digitar no
  * tablet** — uma pessoa que nunca mais retira nem devolve nada. A regra do
  * campo mais restrito é que vale para o sistema inteiro; se um dia a
@@ -470,7 +470,7 @@ export async function editarPessoa(
     return falha(
       "NOME_INVALIDO",
       "Informe o nome completo.",
-      "Até 120 caracteres. É o nome que a secretaria vê na fila de devoluções.",
+      "Até 120 caracteres. É o nome que o secretário vê na fila de devoluções.",
     );
   }
 
@@ -536,7 +536,7 @@ export async function editarPessoa(
  * A tabela já traz esse número no render, mas o modal de inativação relê antes
  * de perguntar: entre carregar a página e clicar em Inativar cabe uma retirada
  * inteira no tablet, e a frase "está com 2 equipamentos" tem que ser verdade no
- * momento em que é lida — é ela que a secretaria usa para decidir.
+ * momento em que é lida — é ela que o secretário usa para decidir.
  */
 export async function contarEmprestimosAbertos(
   matriculaBruta: string,

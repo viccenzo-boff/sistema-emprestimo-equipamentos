@@ -47,7 +47,7 @@ type Props = {
   /**
    * Quem está logado agora (Tarefa 10).
    *
-   * O nome substituiu a palavra "Secretaria", que era escrita à mão. Não é
+   * O nome substituiu a palavra "Secretário", que era escrita à mão. Não é
    * enfeite: é o motivo declarado daquela tarefa. Com senha única, "quem
    * confirmou o recebimento deste equipamento?" não tinha resposta possível, e
    * quem está de pé no balcão não sabia sequer com qual conta o navegador ficou
@@ -96,7 +96,7 @@ const ABAS = [
   /*
     As duas últimas não são o trabalho do dia, e é por isso que ficam no fim.
 
-    As quatro abas acima acontecem toda hora — a secretaria entra no painel para
+    As quatro abas acima acontecem toda hora — o secretário entra no painel para
     conferir devolução e mexer no inventário. Cadastro de pessoa é manutenção de
     início de semestre: a planilha da coordenação chega uma vez, é importada, e a
     aba fica meses sem ser aberta. Pôr uma tarefa rara no topo empurraria para

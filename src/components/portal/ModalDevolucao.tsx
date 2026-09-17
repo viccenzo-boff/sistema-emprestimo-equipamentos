@@ -12,8 +12,8 @@ import type { EmprestimoAtivo } from "@/lib/tipos";
  * A frase "Atenção: Deixe o equipamento na bancada. Confirma a devolução?" é
  * literal da especificação e fica em um parágrafo só, sem quebrar entre título e
  * corpo: é a única instrução física do sistema inteiro. Quem confirma aqui está
- * dizendo que largou o aparelho na bancada; se sair com ele na mochila, a
- * secretaria vai procurar um equipamento que não está lá.
+ * dizendo que largou o aparelho na bancada; se sair com ele na mochila, o
+ * secretário vai procurar um equipamento que não está lá.
  *
  * A etiqueta aparece em destaque acima do aviso porque o erro caro aqui é
  * devolver o item errado quando se está com três na mão.
@@ -105,7 +105,7 @@ export function ModalDevolucao({
         </div>
 
         <p className="text-base leading-relaxed text-tinta-suave">
-          A secretaria confere e dá baixa depois. Até lá{" "}
+          O secretário confere e dá baixa depois. Até lá{" "}
           {varios ? "os itens continuam registrados" : "o item continua registrado"} no
           seu nome.
         </p>

@@ -117,7 +117,7 @@ export function TelaLogin({ temContas }: Props) {
                   aria-describedby={erro ? "erro-login" : undefined}
                   aria-invalid={erro ? true : undefined}
                   className={campoComErro(Boolean(erro))}
-                  placeholder="ex: secretaria"
+                  placeholder="ex: secretario"
                 />
               </div>
 

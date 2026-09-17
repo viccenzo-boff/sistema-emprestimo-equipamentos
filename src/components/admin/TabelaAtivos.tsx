@@ -32,7 +32,7 @@ export function TabelaAtivos({ emprestimos }: Props) {
             Nenhum equipamento fora
           </h2>
           <p className="mt-2 text-lg text-tinta-suave">
-            Todo o inventário está na secretaria ou em manutenção.
+            Todo o inventário está com o secretário ou em manutenção.
           </p>
         </div>
       </section>
@@ -113,8 +113,8 @@ export function TabelaAtivos({ emprestimos }: Props) {
 
       <p className="px-1 text-base text-tinta-tenue">
         {emprestimos.length === 1
-          ? "1 equipamento fora da secretaria."
-          : `${emprestimos.length} equipamentos fora da secretaria.`}{" "}
+          ? "1 equipamento com uma pessoa."
+          : `${emprestimos.length} equipamentos com as pessoas.`}{" "}
         A lista mostra apenas empréstimos ativos — o que já foi devolvido no tablet
         está na Fila de Devoluções.
       </p>

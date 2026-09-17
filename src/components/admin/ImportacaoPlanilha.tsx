@@ -45,7 +45,7 @@ import type {
  * Quantas linhas da prévia são desenhadas.
  *
  * Planilha de curso inteiro tem centenas de linhas, e desenhar todas trava a
- * página do computador da secretaria sem informar mais: a decisão de confirmar
+ * página do computador do secretário sem informar mais: a decisão de confirmar
  * se toma pelos totais e por uma amostra do que muda. Os **erros escapam deste
  * teto** — eles são a lista que alguém vai usar para corrigir o arquivo.
  */

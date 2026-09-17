@@ -7,8 +7,8 @@ import { CHAVE_URL_FORMULARIO, type QrDoFormulario } from "@/lib/tipos";
  * O formulário externo de sugestões e o QR code que aponta para ele
  * (Tarefa 14, item 6).
  *
- * O QR existe porque o celular do estudante **não alcança** o computador da
- * secretaria — a rede é local e HTTP —, então um formulário dentro do sistema
+ * O QR existe porque o celular do estudante **não alcança** o computador do
+ * secretário — a rede é local e HTTP —, então um formulário dentro do sistema
  * seria um QR morto. O destino é um formulário do Google numa conta
  * institucional do setor (procedimento no CONTRIBUTING.md), e a URL mora no
  * banco porque "anos sem atualização" corta dos dois lados: se o link mudar,

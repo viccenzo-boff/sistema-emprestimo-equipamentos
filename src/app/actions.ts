@@ -32,8 +32,8 @@ import {
  * chamá-la sem passar pela interface. Por isso nenhuma delas confia no que
  * chega do cliente — matrícula, etiquetas e número de empréstimo são sempre
  * reconferidos no banco antes de virar escrita. O MVP não tem autenticação no
- * tablet (decisão da spec: a barreira é física, o tablet fica na bancada da
- * secretaria), então a matrícula é a única identidade que existe: toda escrita
+ * tablet (decisão da spec: a barreira é física, o tablet fica na bancada do
+ * secretário), então a matrícula é a única identidade que existe: toda escrita
  * filtra por ela, e nunca só pelo id que veio da tela.
  */
 
@@ -91,7 +91,7 @@ export async function identificarPessoa(matriculaBruta: string): Promise<
       return falha(
         "MATRICULA_NAO_ENCONTRADA",
         `Matrícula ${matricula} não encontrada.`,
-        "Confira os números digitados. Se estiver certo, procure a secretaria.",
+        "Confira os números digitados. Se estiver certo, procure o secretário.",
       );
     }
 
@@ -177,7 +177,7 @@ async function listarCategorias(): Promise<Categoria[]> {
  * Passo 3 do fluxo: equipamentos livres de uma categoria.
  *
  * Relê o banco a cada abertura de categoria em vez de reaproveitar a contagem
- * do login — entre um toque e outro a secretaria pode ter posto um item em
+ * do login — entre um toque e outro o secretário pode ter posto um item em
  * manutenção.
  */
 export async function listarDisponiveis(
@@ -245,7 +245,7 @@ export async function confirmarRetirada(
     return falha(
       "SELECAO_EXCEDIDA",
       `São no máximo ${MAXIMO_ITENS_POR_RETIRADA} itens por retirada.`,
-      "Para levar mais, fale com a secretaria.",
+      "Para levar mais, fale com o secretário.",
     );
   }
 
@@ -279,13 +279,13 @@ export async function confirmarRetirada(
 
       A devolução (`confirmarDevolucao`) não tem trava equivalente, e é
       deliberado: quem devolve não está pedindo nada ao sistema — está
-      entregando um aparelho que a secretaria quer de volta.
+      entregando um aparelho que o secretário quer de volta.
     */
     if (pessoa.status === STATUS_PESSOA.inativo) {
       return falha(
         "PESSOA_INATIVA",
         "Este cadastro está inativo.",
-        "Procure a secretaria para reativar a sua matrícula. Se você está com algum equipamento, a devolução continua liberada.",
+        "Procure o secretário para reativar a sua matrícula. Se você está com algum equipamento, a devolução continua liberada.",
       );
     }
 
@@ -566,7 +566,7 @@ export async function listarEmprestimosAtivos(
  * - `Emprestimo.status`: `ATIVO` -> `AGUARDANDO_BAIXA`.
  * - `Emprestimo.data_devolucao`: recebe o instante da declaração.
  * - `Equipamento.status`: continua `EMPRESTADO`. Ele só volta a `DISPONIVEL`
- *   quando a secretaria confirmar o recebimento no /admin (Fluxo 3). Liberar
+ *   quando o secretário confirmar o recebimento no /admin (Fluxo 3). Liberar
  *   aqui faria o tablet oferecer um aparelho que ainda está na bancada — é
  *   exatamente o buraco que o estado `AGUARDANDO_BAIXA` existe para tapar.
  *
@@ -613,7 +613,7 @@ export async function confirmarDevolucao(
       if (!emprestimo) throw new EmprestimoNaoAtivoError();
 
       // O mesmo filtro de novo, agora na escrita: entre a leitura acima e esta
-      // linha, um duplo-toque (ou a secretaria dando baixa no /admin) pode ter
+      // linha, um duplo-toque (ou o secretário dando baixa no /admin) pode ter
       // mudado o status. `updateMany` conta as linhas afetadas; zero significa
       // que alguém chegou antes, e aí a transação inteira volta atrás.
       const alterados = await tx.emprestimo.updateMany({
@@ -634,8 +634,8 @@ export async function confirmarDevolucao(
       return { ...resto, tipo: equipamento.categoria.nome };
     });
 
-    // Relê a lista em vez de deixar a tela filtrar o item na mão: se a
-    // secretaria mexeu em outro empréstimo enquanto isso, o tablet já corrige.
+    // Relê a lista em vez de deixar a tela filtrar o item na mão: se o
+    // secretário mexeu em outro empréstimo enquanto isso, o tablet já corrige.
     return {
       ok: true,
       dados: { devolvido, restantes: await buscarEmprestimosAtivos(matricula) },
@@ -666,7 +666,7 @@ class EmprestimoNaoAtivoError extends Error {
  * da matrícula de uma vez só.
  *
  * Vale a mesma regra do item avulso — o `Equipamento` **não** muda de status.
- * Quem devolve ao inventário é a secretaria, no /admin.
+ * Quem devolve ao inventário é o secretário, no /admin.
  *
  * O alvo é decidido no servidor a partir da matrícula, e não por uma lista de
  * ids vinda da tela. Duas razões:
@@ -675,7 +675,7 @@ class EmprestimoNaoAtivoError extends Error {
  *   matrícula. Aceitar ids soltos daria a um POST forjado a chance de dar baixa
  *   no empréstimo de outra pessoa.
  * - Correção: entre o render da lista e o toque no botão, um item pode ter
- *   saído (a secretaria deu baixa). "Todos os ativos agora" é exatamente o que
+ *   saído (o secretário deu baixa). "Todos os ativos agora" é exatamente o que
  *   o botão promete, e é o que o `updateMany` faz em uma linha.
  *
  * Tudo em uma transação só: os itens vão juntos para a bancada, então a
@@ -745,8 +745,8 @@ export async function devolverTudo(
 
 /**
  * Falha não prevista (banco fora do ar, arquivo .db travado). O aluno vê uma
- * frase que ele pode agir sobre; o detalhe técnico fica no terminal da
- * secretaria, onde alguém pode usá-lo.
+ * frase que ele pode agir sobre; o detalhe técnico fica no terminal do
+ * secretário, onde alguém pode usá-lo.
  */
 function falhaInterna(erro: unknown): Resultado<never> {
   console.error("[retirada] falha inesperada:", erro);
@@ -754,6 +754,6 @@ function falhaInterna(erro: unknown): Resultado<never> {
   return falha(
     "FALHA_INTERNA",
     "Não foi possível falar com o sistema agora.",
-    "Tente de novo em alguns segundos. Se continuar, avise a secretaria.",
+    "Tente de novo em alguns segundos. Se continuar, avise o secretário.",
   );
 }

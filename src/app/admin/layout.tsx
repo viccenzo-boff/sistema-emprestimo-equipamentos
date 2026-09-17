@@ -4,7 +4,7 @@ import type { Metadata } from "next";
  * Layout do Painel Administrativo.
  *
  * Faz duas coisas e nenhuma delas é autenticação: troca o título da aba do
- * navegador (a secretaria costuma deixar tablet e painel abertos lado a lado)
+ * navegador (o secretário costuma deixar tablet e painel abertos lado a lado)
  * e marca o segmento `/admin` como um nó de layout, que é o alvo do
  * `revalidatePath("/admin", "layout")` das actions — uma invalidação sozinha
  * atualiza a fila, os ativos e o inventário.

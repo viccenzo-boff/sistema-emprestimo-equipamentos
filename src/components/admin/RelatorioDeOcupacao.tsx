@@ -6,7 +6,7 @@ import type { OcupacaoDeCategoria, RelatorioDeOcupacao as Dados } from "@/lib/ti
 /**
  * Ocupação e picos de uso — o primeiro relatório do painel (Tarefa 13).
  *
- * A pergunta que ele existe para responder não é da secretaria: é da
+ * A pergunta que ele existe para responder não é do secretário: é da
  * coordenação, na hora de decidir se compra mais aparelho. Por isso o que a
  * tela mostra é **esgotamento**, e não movimento — quantas prateleiras estão
  * no fim, e não quantos empréstimos aconteceram.
@@ -32,7 +32,7 @@ export function RelatorioDeOcupacao({ emprestimosNoMes, mes, naRua, categorias }
             <span className="text-base font-semibold text-tinta">Equipamentos na Rua</span>
             {/*
               A quebra em duas parcelas não é enfeite: "na bancada" é o aparelho
-              que a pessoa já declarou como devolvido e que a secretaria ainda
+              que a pessoa já declarou como devolvido e que o secretário ainda
               não recolheu. Ele não está com ninguém e também não está na
               prateleira — e é a única parcela deste número sobre a qual o
               painel pode agir hoje, pela Fila de Devoluções.

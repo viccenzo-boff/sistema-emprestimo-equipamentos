@@ -20,7 +20,7 @@
  * Custo do bcrypt. 10 é o padrão da biblioteca e o que foi medido nesta
  * máquina na Tarefa 10: ~209ms para gerar e ~159ms para conferir. O `bcryptjs`
  * é JavaScript puro (sem compilação nativa), então o custo 12 subiu para
- * ~630ms — caro demais para uma tela que a secretaria abre várias vezes por
+ * ~630ms — caro demais para uma tela que o secretário abre várias vezes por
  * dia, e sem ganho proporcional numa rede fechada que já tem freio de
  * tentativas.
  */

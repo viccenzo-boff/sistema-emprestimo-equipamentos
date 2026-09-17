@@ -7,7 +7,7 @@ import { existeAdministrador, sessaoAdmin } from "@/lib/sessao-admin";
 /**
  * Fila de Devoluções — a tela inicial do painel (spec, seção 4, Fluxo 3).
  *
- * É a primeira porque é a única com prazo: enquanto a secretaria não confirma o
+ * É a primeira porque é a única com prazo: enquanto o secretário não confirma o
  * recebimento, o equipamento está na bancada, fora do inventário do tablet e
  * fora das mãos de quem o levou.
  *

@@ -23,7 +23,7 @@ import {
  *
  * ## Por que isto não é o seed
  *
- * O `prisma/seed.ts` é ferramenta de produção da secretaria: ele deixa o banco
+ * O `prisma/seed.ts` é ferramenta de produção do secretário: ele deixa o banco
  * **utilizável**, e por isso nunca cria um `Emprestimo` — todo equipamento
  * nasce `DISPONIVEL`. A consequência para a wiki é que metade das telas não tem
  * como ser fotografada: a Fila de Devoluções nasce vazia, "Meus equipamentos"
@@ -44,7 +44,7 @@ import {
  *
  * Rodar duas vezes não duplica nada, e ao contrário do seed este script
  * **restaura** o que encontrar mexido. A inversão é deliberada: o seed preserva
- * a edição da secretaria porque os dados são dela; aqui os dados são cenário de
+ * a edição do secretário porque os dados são dele; aqui os dados são cenário de
  * captura, e o valor está em voltar ao mesmo enquadramento depois de você ter
  * clicado nos botões testando a tela.
  *
@@ -223,7 +223,7 @@ type EmprestimoDemo = {
   retiradaHa: number;
   /** Horas atrás em que a pessoa declarou a devolução no tablet (Fluxo 2). */
   devolucaoHa?: number;
-  /** Horas atrás em que a secretaria conferiu fisicamente (Fluxo 3). */
+  /** Horas atrás em que o secretário conferiu fisicamente (Fluxo 3). */
   baixaHa?: number;
 };
 
@@ -460,7 +460,7 @@ async function main() {
       await prisma.pessoa.upsert({
         where: { matricula: pessoa.matricula },
         // O `status` **é** atualizado, ao contrário do seed. Lá ele é preservado
-        // porque a inativação é decisão da secretaria; aqui ele é cenário, e
+        // porque a inativação é decisão do secretário; aqui ele é cenário, e
         // reativar alguém pela tela enquanto se testa não pode desfazer o
         // enquadramento da captura seguinte.
         update: dados,
@@ -598,7 +598,7 @@ async function main() {
     console.log(
       `\nBanco de demonstração: ${pessoas} pessoas, ${emprestimos} empréstimos ` +
         `(${fila} na fila de devoluções), ${avaliacoes.length} avaliações.\n` +
-        `Capturas do painel: entre como "secretaria" — ver o CONTRIBUTING.md.`,
+        `Capturas do painel: entre como "secretario" — ver o CONTRIBUTING.md.`,
     );
   } finally {
     await prisma.$disconnect();

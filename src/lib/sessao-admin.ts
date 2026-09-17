@@ -33,7 +33,7 @@ import { CUSTO_BCRYPT, problemaDaNovaSenha } from "@/lib/senha";
  *   não um segredo sorteado a cada boot.
  * - **Trocar a senha de alguém — ou apagar a conta — derruba a sessão daquela
  *   pessoa, e só dela.** O hash muda, a assinatura para de bater. Com uma chave
- *   global isso custaria deslogar a secretaria inteira.
+ *   global isso custaria deslogar todas as contas.
  *
  * O preço é uma leitura de banco por verificação. Em SQLite local, num painel
  * cujas telas já consultam o banco a cada render, é ruído.
@@ -46,7 +46,7 @@ import { CUSTO_BCRYPT, problemaDaNovaSenha } from "@/lib/senha";
 /** Nome do cookie. Não é `session` genérico para não colidir com nada futuro. */
 const NOME_DO_COOKIE = "sessao_admin";
 
-/** Um turno da secretaria. Passou disso, digita de novo. */
+/** Um turno do secretário. Passou disso, digita de novo. */
 const DURACAO_DA_SESSAO_MS = 8 * 60 * 60 * 1000;
 
 /** Rótulo dentro da assinatura: impede reaproveitar o HMAC para outro fim. */
@@ -95,7 +95,7 @@ function iguaisEmTempoConstante(a: string, b: string): boolean {
  * O nome vai em base64url porque nome de gente tem acento, espaço e — em tese —
  * qualquer coisa; o separador precisa continuar sendo um caractere que o nome
  * não pode conter. Estar **dentro** da assinatura é o que impede alguém de
- * trocar "Secretaria" por outra coisa no próprio navegador e aparecer no painel
+ * trocar "Secretário" por outra coisa no próprio navegador e aparecer no painel
  * com o crachá de outra pessoa.
  */
 function montarCarga(id: number, nome: string, expiraEm: number): string {
@@ -329,8 +329,8 @@ export async function autenticar(
 /**
  * Grava o cookie de sessão do administrador que acabou de entrar.
  *
- * `secure` fica **falso** de propósito: o sistema roda em HTTP na rede local da
- * secretaria (spec, seção 1). Com `secure: true` o navegador simplesmente
+ * `secure` fica **falso** de propósito: o sistema roda em HTTP na rede local do
+ * secretário (spec, seção 1). Com `secure: true` o navegador simplesmente
  * descartaria o cookie e ninguém conseguiria entrar. Se um dia isso for
  * publicado com HTTPS, este é o primeiro lugar a mexer.
  */

@@ -30,7 +30,7 @@ import { semAcento } from "@/lib/texto";
  *
  * O enunciado escreveu o exemplo como "Nome Do Aluno", capitalizando a
  * partícula, mas isso valeria para todo nome importado — e "Ana Maria De
- * Souza" não é como o cartório escreve nem como a secretaria lê o nome na fila
+ * Souza" não é como o cartório escreve nem como o secretário lê o nome na fila
  * de devoluções. Decisão tomada com o dono do repositório antes de existir
  * código: partícula fica minúscula.
  *

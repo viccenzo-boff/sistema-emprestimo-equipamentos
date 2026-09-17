@@ -12,7 +12,7 @@ import { COLUNAS_CANONICAS } from "@/lib/planilha-pessoas";
  * **É carregado por `import()` dinâmico**, e isso não é preferência de estilo:
  * o SheetJS tem cerca de 1 MB, e um `import` estático em componente de cliente
  * o colocaria no pacote inicial de `/admin/pessoas` — que carrega a cada visita
- * à tela, para um botão que a secretaria clica uma vez por semestre. Com o
+ * à tela, para um botão que o secretário clica uma vez por semestre. Com o
  * `import()` dentro do clique, o pacote vai pela rede só quando alguém pede o
  * modelo. A tela continua sem recarregar, que é o que o enunciado exige.
  */

@@ -70,7 +70,7 @@ export function FilaDeDevolucoes({ itens }: Props) {
           detalhe: resultado.detalhe,
         });
 
-        // A linha saiu da fila por outra via (outra aba da secretaria). Manter
+        // A linha saiu da fila por outra via (outra aba do secretário). Manter
         // o cartão na tela convidaria a clicar de novo no que já não existe.
         if (resultado.motivo === "EMPRESTIMO_NAO_ENCONTRADO") router.refresh();
 
@@ -93,7 +93,7 @@ export function FilaDeDevolucoes({ itens }: Props) {
    *
    * Manda os ids que estão nesta tela, e não um "tudo que estiver na fila": um
    * aluno pode ter declarado uma devolução depois deste render, com o aparelho
-   * ainda na mochila. O botão confirma o que a secretaria tem diante dos olhos.
+   * ainda na mochila. O botão confirma o que o secretário tem diante dos olhos.
    */
   function confirmarTudo() {
     if (ocupada || itens.length === 0) return;
@@ -284,7 +284,7 @@ export function FilaDeDevolucoes({ itens }: Props) {
  * Uma frase que conta o lote inteiro, incluindo o que não deu certo.
  *
  * O lote é melhor-esforço no servidor, então "5 recebidos" pode esconder duas
- * linhas que ficaram para trás. Omitir isso faria a secretaria fechar a tela
+ * linhas que ficaram para trás. Omitir isso faria o secretário fechar a tela
  * achando que a bancada está limpa.
  */
 function resumirLote({

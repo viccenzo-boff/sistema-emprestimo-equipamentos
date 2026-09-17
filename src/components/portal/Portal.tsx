@@ -264,7 +264,7 @@ export function Portal() {
    * Passo 4: a confirmação do modal.
    *
    * O equipamento continua `EMPRESTADO` de propósito — quem devolve para o
-   * inventário é a secretaria, no /admin. Por isso as categorias não são
+   * inventário é o secretário, no /admin. Por isso as categorias não são
    * relidas aqui: a contagem de disponíveis não mudou.
    */
   async function efetivarDevolucao() {
@@ -291,7 +291,7 @@ export function Portal() {
         return;
       }
 
-      // O empréstimo não está mais ativo (duplo-toque, ou a secretaria deu
+      // O empréstimo não está mais ativo (duplo-toque, ou o secretário deu
       // baixa antes). Insistir no modal não leva a lugar nenhum: fecha, relê a
       // lista e explica na tela de onde o item sumiu.
       if (resultado.motivo === "EMPRESTIMO_NAO_ENCONTRADO") {

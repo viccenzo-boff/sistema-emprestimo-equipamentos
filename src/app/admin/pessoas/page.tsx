@@ -15,7 +15,7 @@ import { sessaoAdmin } from "@/lib/sessao-admin";
  * Gestão de Pessoas (Tarefa 8).
  *
  * `force-dynamic` pela regra do projeto: rota que lê o banco não pode ser
- * pré-renderizada, senão o Next congela os dados no build e a secretaria passa
+ * pré-renderizada, senão o Next congela os dados no build e o secretário passa
  * a semana olhando o cadastro de sexta-feira passada. A classificação sai como
  * `ƒ` no relatório do build — é lá que isso se confere, não aqui.
  *

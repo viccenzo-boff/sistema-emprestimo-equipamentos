@@ -50,7 +50,7 @@ const RAIZ_DO_PAINEL = "/admin";
 /**
  * Teto de baixas em uma chamada de "Confirmar Todas".
  *
- * A fila real da secretaria tem unidades, não centenas — o número existe para
+ * A fila real do secretário tem unidades, não centenas — o número existe para
  * que um POST forjado não vire uma varredura do banco inteiro em uma requisição
  * só. Se a fila passar disso, a tela pede duas rodadas.
  */
@@ -246,7 +246,7 @@ export async function alterarSenhaDoAdmin(
  * ------------------------------------------------------------------------- */
 
 /**
- * "Confirmar Recebimento Físico": a secretaria pegou o equipamento na bancada.
+ * "Confirmar Recebimento Físico": o secretário pegou o equipamento na bancada.
  *
  * É aqui — e só aqui — que o ciclo fecha:
  * - `Emprestimo`: `AGUARDANDO_BAIXA` -> `CONCLUIDO`.
@@ -256,10 +256,10 @@ export async function alterarSenhaDoAdmin(
  * Os dois na mesma transação, porque metade disso é pior que nada: empréstimo
  * concluído com equipamento preso em `EMPRESTADO` some do inventário para
  * sempre; equipamento liberado com empréstimo aberto é oferecido no tablet e
- * some da fila da secretaria.
+ * some da fila do secretário.
  *
  * O `updateMany` filtrando por `status: AGUARDANDO_BAIXA` é o que segura o
- * duplo-clique e as duas abas abertas na secretaria: a segunda chamada muda
+ * duplo-clique e as duas abas abertas pelo secretário: a segunda chamada muda
  * zero linhas e a transação inteira volta atrás.
  *
  * Equipamento em `MANUTENCAO` é o único caso em que o empréstimo fecha sem
@@ -334,7 +334,7 @@ async function darBaixa(emprestimoId: number): Promise<RecebimentoConfirmado> {
         // esta linha era `data_devolucao: new Date()`: os dois eventos
         // dividiam um campo só, e a baixa apagava a declaração. O intervalo
         // entre os dois — o tempo em que o aparelho ficou na bancada, que é o
-        // gargalo que a secretaria quer enxergar — dava sempre zero, sem que
+        // gargalo que o secretário quer enxergar — dava sempre zero, sem que
         // nada acusasse.
         data_baixa: new Date(),
       },
@@ -363,14 +363,14 @@ async function darBaixa(emprestimoId: number): Promise<RecebimentoConfirmado> {
  * "Confirmar Todas as Devoluções": dá baixa em tudo o que está na fila.
  *
  * **Cada item é uma transação própria, e o lote é melhor-esforço.** Não é
- * descuido: o gesto físico já aconteceu — a secretaria recolheu a pilha da
- * bancada. Se a linha 3 saiu da fila porque a colega deu baixa nela em outra
+ * descuido: o gesto físico já aconteceu — o secretário recolheu a pilha da
+ * bancada. Se a linha 3 saiu da fila porque um colega deu baixa nela em outra
  * aba, abortar o lote inteiro desfaria a conferência das outras quatro, que
  * estão na mão de quem clicou. O resumo diz o que fechou e o que não fechou.
  *
  * Os ids vêm da tela — e não de um "tudo que estiver em AGUARDANDO_BAIXA
  * agora" — de propósito: um aluno pode ter declarado uma devolução depois do
- * render, com o aparelho ainda na mochila. O botão confirma o que a secretaria
+ * render, com o aparelho ainda na mochila. O botão confirma o que o secretário
  * viu na lista, não o que apareceu depois.
  *
  * A sessão é conferida aqui, como em toda action do painel: este é um endpoint

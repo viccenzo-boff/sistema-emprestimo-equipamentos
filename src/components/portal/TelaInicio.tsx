@@ -100,8 +100,8 @@ export function TelaInicio({
             mensagem="Este cadastro está inativo e não pode retirar equipamento."
             detalhe={
               temEmprestimos
-                ? "A devolução continua liberada — use o botão ao lado de cada item acima. Para voltar a retirar, procure a secretaria."
-                : "Procure a secretaria para reativar a sua matrícula."
+                ? "A devolução continua liberada — use o botão ao lado de cada item acima. Para voltar a retirar, procure o secretário."
+                : "Procure o secretário para reativar a sua matrícula."
             }
           />
         ) : (

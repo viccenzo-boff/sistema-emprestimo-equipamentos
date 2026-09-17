@@ -43,8 +43,8 @@ import { PERFIL } from "../src/lib/tipos";
  * O CSV mudou de nome na Tarefa 10 (`usuarios.csv` -> `pessoas.csv`), e o nome
  * antigo continua sendo aceito.
  *
- * Não é gentileza: o arquivo real está no `.gitignore` e mora na máquina da
- * secretaria, onde ninguém vai renomeá-lo por causa de um commit. Sem o
+ * Não é gentileza: o arquivo real está no `.gitignore` e mora na máquina do
+ * secretário, onde ninguém vai renomeá-lo por causa de um commit. Sem o
  * atalho, o seed não acharia a planilha, cairia nos quatro registros de
  * exemplo e **não daria erro nenhum** — a falha apareceria semanas depois, na
  * forma de um aluno que "não está cadastrado".
@@ -133,7 +133,7 @@ const PESSOAS_EXEMPLO: PessoaSeed[] = [
  * com a senha padrão.
  */
 const ADMINISTRADORES: { nome: string; usuario: string }[] = [
-  { nome: "Secretaria", usuario: "secretaria" },
+  { nome: "Secretário", usuario: "secretario" },
   { nome: "Cidi", usuario: "cidi" },
   { nome: "Jeanzão", usuario: "jeanzao" },
   { nome: "Viccenzo", usuario: "viccenzo" },
@@ -336,7 +336,7 @@ async function main() {
           É a mesma regra da importação de .xlsx pelo painel: campo que a
           origem não menciona é campo que o banco preserva. O CSV do seed não
           tem coluna de status, então rodar `db:seed` de novo não pode
-          ressuscitar um cadastro que a secretaria inativou na semana passada.
+          ressuscitar um cadastro que o secretário inativou na semana passada.
           `status` também não aparece no `create`: quem cadastra novo nasce
           `ATIVO` pelo padrão da coluna.
         */
@@ -433,7 +433,7 @@ async function main() {
       console.log(
         `Administradores: ${criados.length} criado(s) - ${criados.join(", ")}.\n` +
           `  Senha inicial de todos: ${SENHA_PADRAO}\n` +
-          `  TROQUE ANTES DE USAR NA SECRETARIA.`,
+          `  TROQUE ANTES DE USAR NO BALCÃO.`,
       );
     } else {
       console.log(

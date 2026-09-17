@@ -167,7 +167,7 @@ export function SeloPerfil({ perfil, className = "" }: { perfil: string; classNa
  *   está bem treina o olho a ignorar a coluna inteira — e é justamente nela
  *   que o vermelho precisa saltar.
  * - `vazio` (categoria sem unidade em circulação) também não. Ela tem zero
- *   disponíveis sem estar esgotada, e um vermelho ali mandaria a secretaria
+ *   disponíveis sem estar esgotada, e um vermelho ali mandaria o secretário
  *   comprar o que ninguém pediu. Quem explica esse caso é a linha de texto da
  *   própria categoria, que não tem barra nenhuma para desenhar.
  */

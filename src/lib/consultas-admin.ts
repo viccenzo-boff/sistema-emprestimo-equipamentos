@@ -37,7 +37,7 @@ import {
  */
 
 /**
- * A fila que a secretaria trabalha: a pessoa declarou a devolução no tablet e
+ * A fila que o secretário trabalha: a pessoa declarou a devolução no tablet e
  * o equipamento (em tese) está na bancada esperando conferência.
  *
  * Mais antigo primeiro: o que está esperando há mais tempo é o que corre risco
@@ -267,7 +267,7 @@ export async function listarOpcoesDeCategoria(): Promise<OpcaoDeCategoria[]> {
  * Todos os cadastros, com o que cada pessoa está devendo agora.
  *
  * O empréstimo aberto (`ATIVO` ou `AGUARDANDO_BAIXA`) vem junto porque é o que
- * a inativação precisa dizer antes de acontecer: a secretaria **pode** inativar
+ * a inativação precisa dizer antes de acontecer: o secretário **pode** inativar
  * quem ainda está com equipamento — é o caso comum, alguém que saiu da
  * faculdade — mas o modal mostra o que a pessoa tem, e não pergunta às cegas.
  *
@@ -529,8 +529,8 @@ function percentualDeOcupacao(ocupados: number, emCirculacao: number): number {
 function nivelDeEstoque(emCirculacao: number, disponiveis: number): NivelDeEstoque {
   // Antes de tudo: sem unidade em circulação não há estoque para esgotar. Uma
   // categoria recém-criada, ou com todos os aparelhos aposentados, tem zero
-  // disponíveis sem estar esgotada — e o vermelho permanente diria a uma
-  // secretaria que ela precisa comprar o que ninguém nunca pediu.
+  // disponíveis sem estar esgotada — e o vermelho permanente diria a um
+  // secretário que ele precisa comprar o que ninguém nunca pediu.
   if (emCirculacao <= 0) return "vazio";
   if (disponiveis <= 0) return "esgotado";
   if (disponiveis <= LIMITE_DE_ESTOQUE_CRITICO) return "critico";

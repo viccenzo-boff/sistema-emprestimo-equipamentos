@@ -140,7 +140,7 @@ function Vazio({ tipo }: { tipo: string }) {
     <Alerta
       tom="info"
       mensagem={`Nenhuma unidade de ${tipo} está livre agora.`}
-      detalhe="Todas estão emprestadas ou em manutenção. Volte e escolha outra categoria, ou fale com a secretaria."
+      detalhe="Todas estão emprestadas ou em manutenção. Volte e escolha outra categoria, ou fale com o secretário."
     />
   );
 }

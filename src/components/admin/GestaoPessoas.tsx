@@ -93,7 +93,7 @@ export function GestaoPessoas({ pessoas }: Props) {
         Regra herdada da Tarefa 7, e ela vale ainda mais aqui: `relerSeDesencontrou`
         relê o banco quando tela e banco discordam, e a releitura pode trocar o
         status para um que o filtro exclui. Sem esta saída, o pedido falharia, a
-        linha sumiria levando a explicação junto, e a secretaria veria o clique
+        linha sumiria levando a explicação junto, e o secretário veria o clique
         não fazer nada.
       */
       if (pessoa.matricula === comFalha) return true;
@@ -803,7 +803,7 @@ function ModalDeEdicao({
  *
  * A lista de etiquetas é relida do servidor no clique, não herdada do render:
  * "está com NOTE-03" tem que ser verdade no instante em que é lido, porque é
- * essa frase que decide se a secretaria confirma ou vai atrás do aparelho.
+ * essa frase que decide se o secretário confirma ou vai atrás do aparelho.
  */
 function ModalDeInativacao({
   alvo,

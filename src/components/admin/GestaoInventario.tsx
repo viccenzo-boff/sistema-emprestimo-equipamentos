@@ -53,7 +53,7 @@ import {
  * cadastrar equipamento, trocar a etiqueta, tirar de circulação e aposentar.
  *
  * A tela oferece três destinos — `DISPONIVEL`, `MANUTENCAO` e `INATIVO`.
- * `EMPRESTADO` não é um botão porque não é uma decisão da secretaria: quem
+ * `EMPRESTADO` não é um botão porque não é uma decisão do secretário: quem
  * coloca é a retirada no tablet, quem tira é a confirmação de recebimento. Uma
  * linha com empréstimo aberto mostra o nome de quem está com o item, em vez de
  * um botão apagado sem explicação — a pergunta seguinte de quem olha é sempre
@@ -113,11 +113,11 @@ export function GestaoInventario({ itens, categorias }: Props) {
     A filtragem é no cliente, sobre os itens que já chegaram no render.
 
     A spec deixava a escolha entre isto e `searchParams` no servidor. O
-    inventário inteiro cabe em um render (22 itens hoje, e a secretaria compra
+    inventário inteiro cabe em um render (22 itens hoje, e o secretário compra
     aparelho por caixa, não por milhar), a página já é `force-dynamic` e este
     componente já é ilha de cliente com a lista inteira na mão. Pelo servidor,
-    cada tecla digitada custaria uma ida ao Next — no computador da própria
-    secretaria, com o banco SQLite ao lado, mas ainda assim um render inteiro do
+    cada tecla digitada custaria uma ida ao Next — no computador do próprio
+    secretário, com o banco SQLite ao lado, mas ainda assim um render inteiro do
     Server Component por caractere, e a lista piscando enquanto se digita.
 
     A troca é que os filtros não sobrevivem ao F5 nem entram no histórico do
@@ -136,7 +136,7 @@ export function GestaoInventario({ itens, categorias }: Props) {
         O `Alerta` da falha mora dentro da própria linha, e `relerSeDesencontrou`
         relê o banco quando a tela e o banco discordam — a releitura pode trocar
         o status do item para um que o filtro exclui. Sem esta saída, o pedido
-        falharia, a linha sumiria levando a explicação junto, e a secretaria
+        falharia, a linha sumiria levando a explicação junto, e o secretário
         veria o clique não fazer nada.
       */
       if (item.id === comFalha) return true;
@@ -155,8 +155,8 @@ export function GestaoInventario({ itens, categorias }: Props) {
   }, [itens, termo, categoriaFiltrada, statusFiltrado, falha?.id]);
 
   /**
-   * A linha na tela não corresponde mais ao banco: relê em vez de deixar a
-   * secretaria clicando em um botão que não pode dar certo.
+   * A linha na tela não corresponde mais ao banco: relê em vez de deixar o
+   * secretário clicando em um botão que não pode dar certo.
    */
   function relerSeDesencontrou(motivo: string) {
     if (

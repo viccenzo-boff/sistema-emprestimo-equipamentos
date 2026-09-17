@@ -17,8 +17,8 @@ export const STATUS_EQUIPAMENTO = {
    *
    * Existe porque apagar um equipamento levaria junto o histórico de
    * empréstimos que aponta para ele — o `Emprestimo` do semestre passado
-   * deixaria de saber qual aparelho foi. `INATIVO` é o "deletar" que a
-   * secretaria quer, com o histórico intacto.
+   * deixaria de saber qual aparelho foi. `INATIVO` é o "deletar" que o
+   * secretário quer, com o histórico intacto.
    */
   inativo: "INATIVO",
 } as const;
@@ -95,7 +95,7 @@ export const INTERVALO_ENTRE_AVALIACOES_DIAS = 30;
  * Quatro e não cinco porque o neutro vira depósito de indiferença (20–30% das
  * respostas em escalas ímpares); quatro força um lado. O pior rosto é
  * **triste**, nunca bravo: a escala tem um eixo só (valência), raiva é outra
- * dimensão, e ninguém aperta "bravo" num tablet compartilhado com a secretaria
+ * dimensão, e ninguém aperta "bravo" num tablet compartilhado com o secretário
  * a dois metros — a ponta baixa esvaziaria.
  *
  * É um `Map`, e não um objeto literal, porque a `nota` chega de um POST
@@ -326,7 +326,7 @@ export type EmprestimoEmCurso = {
   matricula: string;
   perfil: string;
   retiradoEm: string;
-  /** "há 3 dias" — o dado que faz a secretaria cobrar ou não. */
+  /** "há 3 dias" — o dado que faz o secretário cobrar ou não. */
   ha: string;
 };
 
@@ -357,8 +357,8 @@ export type EstadoDoLogin = {
 /**
  * O que a troca de senha devolve quando dá certo (Tarefa 11).
  *
- * `nome` volta para o aviso poder dizer de quem é a senha que mudou — na
- * secretaria há quatro contas e um computador só, e "Senha alterada" sem o nome
+ * `nome` volta para o aviso poder dizer de quem é a senha que mudou — no
+ * balcão há quatro contas e um computador só, e "Senha alterada" sem o nome
  * é justamente a frase que não resolve a dúvida que a tarefa existe para
  * resolver.
  */
@@ -388,7 +388,7 @@ export type RecebimentoConfirmado = {
 /**
  * O que a Fila devolve depois de "Confirmar Todas as Devoluções".
  *
- * O lote é conferido item a item, e não tudo-ou-nada: a secretaria está com uma
+ * O lote é conferido item a item, e não tudo-ou-nada: o secretário está com uma
  * pilha de aparelhos na bancada, e uma linha que saiu da fila por outra aba não
  * pode desfazer a baixa das outras quatro que ela acabou de recolher. Por isso
  * o resultado é um resumo, e não um `ok` seco.
@@ -432,7 +432,7 @@ export type ResumoDoInventario = {
   inativos: number;
   /**
    * Todos os equipamentos cadastrados, inativos inclusive. Aqui — ao contrário
-   * do tablet — o inativo conta: a secretaria está olhando o patrimônio, e o
+   * do tablet — o inativo conta: o secretário está olhando o patrimônio, e o
    * aparelho aposentado continua sendo um aparelho que existe no armário.
    */
   total: number;
@@ -448,8 +448,8 @@ export type EstadoDaCategoria = EstadoDoCadastro;
 /**
  * Uma linha da tabela de `/admin/pessoas`.
  *
- * `emprestimosAbertos` vem junto porque é o que a inativação precisa dizer: a
- * secretaria pode inativar quem ainda está com equipamento — é justamente o
+ * `emprestimosAbertos` vem junto porque é o que a inativação precisa dizer: o
+ * secretário pode inativar quem ainda está com equipamento — é justamente o
  * caso comum, alguém que saiu da faculdade —, mas não às cegas. O modal mostra
  * o que a pessoa tem antes de confirmar, e o empréstimo continua na aba
  * Empréstimos Ativos para cobrança.
@@ -516,7 +516,7 @@ export type LinhaDaImportacao = {
  *
  * A prévia existe porque a importação não tem desfazer: um arquivo errado
  * sobrescreveria centenas de cadastros, e o relatório depois do fato só contaria
- * o estrago. Aqui a secretaria vê o que vai acontecer e decide.
+ * o estrago. Aqui o secretário vê o que vai acontecer e decide.
  */
 export type PreviaDaImportacao = {
   /** Nome do arquivo lido, para a tela poder repeti-lo na confirmação. */

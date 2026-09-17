@@ -36,7 +36,7 @@ export function semAcento(texto: string): string {
  *
  * É uma heurística, não um flexionador de português: cobre as terminações que
  * aparecem em nome de equipamento. Até a Tarefa 6 bastavam duas regras, porque
- * as categorias eram três e estavam fixas no código. Agora a secretaria cria
+ * as categorias eram três e estavam fixas no código. Agora o secretário cria
  * categoria pela tela — e a primeira que se tenta criar depois de "Notebook" e
  * "Tablet" costuma ser "Projetor" ou "Monitor", que a regra do `+s` estragava
  * ("Projetors"). Por isso a tela de Categorias mostra o plural calculado ao
@@ -132,7 +132,7 @@ const DATA_E_HORA = new Intl.DateTimeFormat("pt-BR", {
 });
 
 /**
- * "18/08/2026, 14:32" — data completa, para o painel da secretaria.
+ * "18/08/2026, 14:32" — data completa, para o painel do secretário.
  *
  * Aqui, diferente do tablet, o valor exato importa: é o que vai para a conversa
  * com o aluno ("saiu na terça de manhã"). Roda no servidor, no render das
@@ -145,7 +145,7 @@ export function dataHora(data: Date): string {
 /**
  * "há 12 min", "há 3 h", "há 2 dias" — o quanto o relógio já andou.
  *
- * É a coluna que faz a secretaria agir: na fila diz há quanto tempo o
+ * É a coluna que faz o secretário agir: na fila diz há quanto tempo o
  * equipamento devia estar na bancada; nos ativos, há quanto tempo está fora.
  * Formatado no servidor junto com a data absoluta ao lado — sozinho, um texto
  * relativo envelhece na tela aberta o dia inteiro.

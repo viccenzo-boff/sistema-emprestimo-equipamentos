@@ -94,7 +94,7 @@ function Recorte({
         <p className="flex items-baseline gap-2">
           {/*
             "—" e não "0,0" sem resposta: uma média zero num intervalo de 1 a
-            4 é um número que não existe, e a secretaria leria "todo mundo
+            4 é um número que não existe, e o secretário leria "todo mundo
             odiou".
           */}
           <span className="numeros-tabulares text-4xl font-semibold tracking-tight text-marca-azul">
