@@ -207,7 +207,16 @@ export function CascaAdmin({
         </div>
       </aside>
 
-      <main className="flex-1 px-6 py-8 lg:px-10 lg:py-10">
+      {/*
+        `min-w-0` é o que faz uma tabela larga rolar dentro do próprio
+        contêiner em vez de empurrar a página inteira: item flex tem
+        `min-width: auto`, e sem isto o `main` não encolhe abaixo do `min-w`
+        da tabela — o `overflow-x-auto` de dentro nunca chega a rolar. Medido
+        em 1024 px na Tarefa 16: o inventário fazia a página rolar 1266 px de
+        largura, e o relatório novo, 1131; com a classe, 1024 nos dois e os
+        contêineres das tabelas rolando sozinhos.
+      */}
+      <main className="min-w-0 flex-1 px-6 py-8 lg:px-10 lg:py-10">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
           <header>
             <h1 className="text-3xl font-semibold tracking-tight text-balance text-marca-azul lg:text-4xl">
