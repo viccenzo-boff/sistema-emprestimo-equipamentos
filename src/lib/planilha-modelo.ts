@@ -20,9 +20,13 @@ import { COLUNAS_CANONICAS } from "@/lib/planilha-pessoas";
 /** O nome do arquivo que chega na pasta de downloads, como o enunciado pede. */
 export const NOME_DA_PLANILHA_MODELO = "modelo_importacao_pessoas.xlsx";
 
-/** O tipo MIME de .xlsx, para o navegador saber o que está recebendo. */
-export const TIPO_XLSX =
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+/**
+ * O tipo MIME de .xlsx. **Mora em [exportar-xlsx.ts](exportar-xlsx.ts) desde
+ * a Tarefa 16** — a exportação dos relatórios precisa do mesmo valor, e uma
+ * constante com dois donos diverge na primeira correção que só um receber.
+ * Reexportado daqui para quem já o importava deste módulo.
+ */
+export { TIPO_XLSX } from "@/lib/exportar-xlsx";
 
 /**
  * Um .xlsx com uma aba, uma linha, e nada mais: os cinco cabeçalhos.

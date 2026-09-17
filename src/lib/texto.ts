@@ -143,6 +143,21 @@ export function dataHora(data: Date): string {
 }
 
 /**
+ * "2026-09-03 08:15" — data e hora para a célula da planilha exportada
+ * (Tarefa 16), no fuso da máquina.
+ *
+ * Texto, e não número de série do Excel: como número chegaria certo e
+ * apareceria como 46000,3 até alguém formatar a coluna. E neste formato
+ * (ano primeiro, dois dígitos em tudo) a coluna ordena como texto na ordem
+ * cronológica, que é o que a coordenação vai fazer com ela.
+ */
+export function dataHoraDePlanilha(data: Date): string {
+  const horas = String(data.getHours()).padStart(2, "0");
+  const minutos = String(data.getMinutes()).padStart(2, "0");
+  return `${diaLocal(data)} ${horas}:${minutos}`;
+}
+
+/**
  * "há 12 min", "há 3 h", "há 2 dias" — o quanto o relógio já andou.
  *
  * É a coluna que faz o secretário agir: na fila diz há quanto tempo o
@@ -161,6 +176,36 @@ export function haQuantoTempo(data: Date): string {
 
   const dias = Math.floor(horas / 24);
   return dias === 1 ? "há 1 dia" : `há ${dias} dias`;
+}
+
+/**
+ * Uma duração por extenso, para os relatórios (Tarefa 16): "2 h 15 min",
+ * "3 dias 4 h", "45 min", "menos de 1 min".
+ *
+ * Duas unidades no máximo, e a menor some quando é zero ("3 dias", e não
+ * "3 dias 0 h"): é uma mediana lida de relance ao lado de uma contagem, não um
+ * cronômetro. Não reaproveita `haQuantoTempo` de propósito — aquele mede a
+ * partir de agora e fala em uma unidade só ("há 3 h"), porque o valor exato
+ * importa menos que a ordem de grandeza na fila; aqui o intervalo é entre dois
+ * carimbos gravados e o leitor compara linhas entre si.
+ *
+ * Formatado no servidor, como toda data do painel. A planilha exportada
+ * recebe o mesmo intervalo em **minutos**, como número, para o Excel somar.
+ */
+export function formatarDuracao(milissegundos: number): string {
+  const minutosTotais = Math.floor(milissegundos / 60_000);
+  if (minutosTotais < 1) return "menos de 1 min";
+
+  const dias = Math.floor(minutosTotais / 1_440);
+  const horas = Math.floor((minutosTotais % 1_440) / 60);
+  const minutos = minutosTotais % 60;
+
+  if (dias > 0) {
+    const d = dias === 1 ? "1 dia" : `${dias} dias`;
+    return horas > 0 ? `${d} ${horas} h` : d;
+  }
+  if (horas > 0) return minutos > 0 ? `${horas} h ${minutos} min` : `${horas} h`;
+  return `${minutos} min`;
 }
 
 /**

@@ -31,6 +31,30 @@ export const STATUS_EMPRESTIMO = {
 } as const;
 
 /**
+ * Os rótulos exibidos de cada status, num lugar só (Tarefa 16).
+ *
+ * Até a Tarefa 15 o rótulo do equipamento vivia dentro do
+ * [SeloStatus](../components/admin/SeloStatus.tsx), que era o único leitor.
+ * A planilha exportada passou a escrever a mesma palavra numa célula, e uma
+ * segunda cópia divergiria na primeira correção — é a mesma regra que tirou
+ * `semAcento` das actions na Tarefa 7. O selo continua sendo quem escolhe a
+ * cor; a palavra vem daqui.
+ */
+export const ROTULO_DO_STATUS_DE_EQUIPAMENTO: Readonly<Record<string, string>> = {
+  [STATUS_EQUIPAMENTO.disponivel]: "Disponível",
+  [STATUS_EQUIPAMENTO.emprestado]: "Emprestado",
+  [STATUS_EQUIPAMENTO.manutencao]: "Manutenção",
+  [STATUS_EQUIPAMENTO.inativo]: "Inativo",
+};
+
+/** O empréstimo nunca teve selo na tela; o rótulo nasce para a planilha exportada. */
+export const ROTULO_DO_STATUS_DE_EMPRESTIMO: Readonly<Record<string, string>> = {
+  [STATUS_EMPRESTIMO.ativo]: "Ativo",
+  [STATUS_EMPRESTIMO.aguardandoBaixa]: "Aguardando baixa",
+  [STATUS_EMPRESTIMO.concluido]: "Concluído",
+};
+
+/**
  * Status possíveis de um cadastro de pessoa (Tarefa 8).
  *
  * `INATIVO` **bloqueia a retirada e permite a devolução**. A assimetria é a
@@ -580,6 +604,18 @@ export type AbaDeRelatorio =
   (typeof ABA_DE_RELATORIO)[keyof typeof ABA_DE_RELATORIO];
 
 /**
+ * A aba que a URL pede (`?aba=consumo`, Tarefa 16), ou a primeira quando o
+ * valor não é nenhuma das quatro. Mora aqui, e não no componente de abas,
+ * porque quem a chama é a página no **servidor** — e um export de módulo
+ * `"use client"` chamado do servidor não é uma função, é uma referência.
+ */
+export function abaDaUrl(valor: string | string[] | undefined): AbaDeRelatorio {
+  const texto = Array.isArray(valor) ? valor[0] : valor;
+  const conhecida = Object.values(ABA_DE_RELATORIO).find((aba) => aba === texto);
+  return conhecida ?? ABA_DE_RELATORIO.ocupacao;
+}
+
+/**
  * O quanto falta na prateleira de uma categoria, em uma palavra.
  *
  * Os três primeiros são os do enunciado da Tarefa 13; `vazio` é o quarto, e
@@ -632,10 +668,21 @@ export type OcupacaoDeCategoria = {
  * de fuso em texto de tempo.
  */
 export type RelatorioDeOcupacao = {
-  /** Retiradas com `data_retirada` dentro do mês corrente. */
-  emprestimosNoMes: number;
-  /** "setembro de 2026" — para o cartão dizer de que mês está falando. */
-  mes: string;
+  /**
+   * Retiradas com `data_retirada` dentro do período (Tarefa 16). Era "no mês
+   * corrente" até a Tarefa 15; hoje o período vem da URL, e o padrão continua
+   * sendo o mês corrente.
+   */
+  retiradasNoPeriodo: number;
+  /** "setembro de 2026", "3 a 9 de agosto de 2026" — o período por extenso, para o cartão dizer de que janela fala. */
+  periodo: string;
+  /** "Retiradas por dia" (ou por semana, ou por mês): a série temporal do período, com os baldes vazios incluídos. */
+  serie: SerieDeRetiradas;
+  /**
+   * "17/09/2026, 14:32" — o instante da leitura. A ocupação por categoria é
+   * a fotografia do agora, e a planilha exportada diz isso na primeira linha.
+   */
+  lidoEm: string;
   /**
    * Os equipamentos que não estão na prateleira agora, contados pelos
    * **empréstimos abertos**.
@@ -711,3 +758,157 @@ export type EstadoDaUrlDoFormulario =
   | { fase: "inicial" }
   | { fase: "erro"; mensagem: string; detalhe?: string }
   | { fase: "sucesso"; mensagem: string };
+
+/* ------------------------------------------------------------------------- *
+ * Período, gráficos e exportação (Tarefa 16)
+ * ------------------------------------------------------------------------- */
+
+/** Um ponto da série temporal: o rótulo do eixo, o texto do tooltip e o valor. */
+export type PontoDaSerie = {
+  /** "03/09", "01/09" (segunda da semana) ou "set/26" — o que o eixo escreve. */
+  rotulo: string;
+  /** "3 de setembro de 2026", "semana de 1 a 7 de setembro de 2026" — o que o tooltip diz. */
+  detalhe: string;
+  valor: number;
+};
+
+/**
+ * A série "Retiradas por dia" (Tarefa 16, §3). O grão é automático pelo
+ * tamanho do período — dia até 31 dias, semana até 182, mês acima — e o título
+ * diz qual é ("Retiradas por semana"). Os baldes sem retirada vêm com zero:
+ * o buraco **é** a informação.
+ */
+export type SerieDeRetiradas = {
+  grao: "dia" | "semana" | "mes";
+  titulo: string;
+  pontos: PontoDaSerie[];
+};
+
+/**
+ * Uma fatia do gráfico de composição ("Retiradas por categoria"). A cor vem
+ * de [cores-de-grafico.ts](cores-de-grafico.ts) pela posição da categoria
+ * na ordem de `id`, e desce pronta: o componente de gráfico não decide cor.
+ */
+export type FatiaDeComposicao = {
+  nome: string;
+  valor: number;
+  cor: string;
+  corDoRotulo: string;
+};
+
+/** Uma célula da planilha exportada. Número vai como número — o Excel soma. */
+export type CelulaDeExportacao = string | number | null;
+
+/**
+ * Uma aba do .xlsx exportado (Tarefa 16, §5). `notas` são linhas de texto
+ * antes do cabeçalho — a data e hora da leitura, na fotografia da ocupação.
+ * O título obedece ao limite do formato (31 caracteres, sem `/ \ ? * [ ] :`),
+ * conferido em [exportar-xlsx.ts](exportar-xlsx.ts).
+ */
+export type AbaDeExportacao = {
+  titulo: string;
+  cabecalho: string[];
+  linhas: CelulaDeExportacao[][];
+  notas?: string[];
+};
+
+/* ------------------------------------------------------------------------- *
+ * Ranking de Consumo (Tarefa 16)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * O que os três rankings têm em comum: quantas retiradas no período, a
+ * mediana do tempo de uso (só nos empréstimos que já têm `data_devolucao`),
+ * e a largura da barra em linha — proporcional ao **maior da tabela**, de 0 a
+ * 100, para a barra CSS da Tarefa 13.
+ *
+ * A mediana desce duas vezes: formatada ("2 h 15 min") para a tela e em
+ * minutos, como número, para a planilha. Nula quando não há amostra — mediana
+ * sem amostra não é zero, e a tela mostra "—".
+ */
+type LinhaDeRanking = {
+  retiradas: number;
+  usoMediano: string | null;
+  usoMedianoMin: number | null;
+  barra: number;
+};
+
+/**
+ * Uma linha do ranking por equipamento. **Todo equipamento em circulação
+ * entra, inclusive com zero retiradas** — "nunca sai da prateleira" é
+ * argumento de compra tanto quanto "está sempre fora". O aposentado entra só
+ * se tiver retirada no período (decisão do dono, Tarefa 16): sem ela, a soma
+ * das linhas não fecharia com o cartão nem com a tabela por categoria.
+ */
+export type EquipamentoNoRanking = LinhaDeRanking & {
+  id: string;
+  categoria: string;
+  /** A situação **atual** do aparelho, não a do período. */
+  status: string;
+};
+
+/** Uma linha do ranking por categoria: todas as categorias, com zero incluído. */
+export type CategoriaNoRanking = LinhaDeRanking & {
+  id: number;
+  nome: string;
+  /** A parte desta categoria no total de retiradas do período, em inteiro de 0 a 100. */
+  fatia: number;
+  cor: string;
+  corDoRotulo: string;
+};
+
+/** Uma linha do ranking por pessoa: **só quem retirou ao menos uma vez**. */
+export type PessoaNoRanking = LinhaDeRanking & {
+  matricula: string;
+  nome: string;
+  perfil: string;
+};
+
+/**
+ * Uma retirada do período, como vai para a aba `Retiradas` da planilha:
+ * **sem nome nem matrícula**, de propósito. O ranking já responde "quem"; a
+ * aba crua dá o pivô sem o histórico nominal de cada pessoa sair do painel.
+ * Datas como texto `AAAA-MM-DD HH:MM` no fuso da máquina; durações em minutos.
+ */
+export type RetiradaExportada = {
+  etiqueta: string;
+  categoria: string;
+  retirada: string;
+  devolucao: string | null;
+  baixa: string | null;
+  situacao: string;
+  usoMin: number | null;
+  prateleiraMin: number | null;
+};
+
+/**
+ * O relatório Ranking de Consumo (Tarefa 16, §2).
+ *
+ * **O que entra no período é a retirada**: um empréstimo pertence ao período
+ * em que `data_retirada` cai, e só a esse. Devolução fora do período não muda
+ * a atribuição. É a regra única do relatório, e mora no tipo para ninguém
+ * reimplementá-la diferente na Tarefa 17.
+ *
+ * As medianas do topo são sobre todos os empréstimos do período: a de uso só
+ * nos que já têm `data_devolucao` (os `ATIVO` contam na retirada e ficam fora
+ * dela), a de prateleira só nos `CONCLUIDO` com os dois carimbos — os
+ * concluídos antes da Tarefa 12 têm `data_baixa` nula e se excluem sozinhos.
+ */
+export type RelatorioDeConsumo = {
+  /** O período por extenso, formatado no servidor. */
+  periodo: string;
+  retiradas: number;
+  pessoasDistintas: number;
+  usoMediano: string | null;
+  usoMedianoMin: number | null;
+  prateleiraMediana: string | null;
+  prateleiraMedianaMin: number | null;
+  /** Ordenado por retiradas, e os zeros ao fim; desempate pela ordem do inventário. */
+  equipamentos: EquipamentoNoRanking[];
+  /** Ordenado por retiradas, desempate pela ordem de `id`. */
+  categorias: CategoriaNoRanking[];
+  /** Ordenado por retiradas, desempate por nome. */
+  pessoas: PessoaNoRanking[];
+  /** Uma linha por empréstimo do período, para a aba crua da planilha. */
+  linhas: RetiradaExportada[];
+};

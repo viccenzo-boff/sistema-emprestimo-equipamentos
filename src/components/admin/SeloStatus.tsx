@@ -1,5 +1,10 @@
 import { rotuloDePerfil } from "@/lib/sanitizacao";
-import { STATUS_EQUIPAMENTO, STATUS_PESSOA, type NivelDeEstoque } from "@/lib/tipos";
+import {
+  ROTULO_DO_STATUS_DE_EQUIPAMENTO,
+  STATUS_EQUIPAMENTO,
+  STATUS_PESSOA,
+  type NivelDeEstoque,
+} from "@/lib/tipos";
 
 /**
  * A situação de um equipamento, em uma palavra.
@@ -24,24 +29,22 @@ type Props = {
   className?: string;
 };
 
-const SELOS: Record<string, { rotulo: string; caixa: string; ponto: string }> = {
+// A palavra vem de `ROTULO_DO_STATUS_DE_EQUIPAMENTO` (Tarefa 16): a planilha
+// exportada escreve a mesma, e uma cópia aqui divergiria dela.
+const SELOS: Record<string, { caixa: string; ponto: string }> = {
   [STATUS_EQUIPAMENTO.disponivel]: {
-    rotulo: "Disponível",
     caixa: "border-sucesso-borda bg-sucesso-fundo text-sucesso",
     ponto: "bg-marca-verde-forte",
   },
   [STATUS_EQUIPAMENTO.emprestado]: {
-    rotulo: "Emprestado",
     caixa: "border-borda bg-marca-azul-tenue text-marca-azul",
     ponto: "bg-marca-azul-claro",
   },
   [STATUS_EQUIPAMENTO.manutencao]: {
-    rotulo: "Manutenção",
     caixa: "border-aviso-borda bg-aviso-fundo text-aviso",
     ponto: "bg-aviso",
   },
   [STATUS_EQUIPAMENTO.inativo]: {
-    rotulo: "Inativo",
     caixa: "border-borda bg-superficie-2 text-tinta-tenue",
     ponto: "bg-tinta-tenue",
   },
@@ -49,10 +52,10 @@ const SELOS: Record<string, { rotulo: string; caixa: string; ponto: string }> = 
 
 export function SeloStatus({ status, className = "" }: Props) {
   const selo = SELOS[status] ?? {
-    rotulo: status,
     caixa: "border-borda bg-superficie-2 text-tinta-suave",
     ponto: "bg-tinta-tenue",
   };
+  const rotulo = ROTULO_DO_STATUS_DE_EQUIPAMENTO[status] ?? status;
 
   return (
     <span
@@ -66,7 +69,7 @@ export function SeloStatus({ status, className = "" }: Props) {
         .join(" ")}
     >
       <span className={["size-2 rounded-full", selo.ponto].join(" ")} aria-hidden="true" />
-      {selo.rotulo}
+      {rotulo}
     </span>
   );
 }
