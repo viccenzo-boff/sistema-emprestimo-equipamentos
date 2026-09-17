@@ -1420,14 +1420,16 @@
 
 <h1 id="6-relatorios">6. Relatórios</h1>
 <h2 id="1-objetivo-do-processo">1. Objetivo do processo</h2>
-<p>Este processo transforma o que o sistema já registrou em um argumento: quantos
-empréstimos passaram pelo balcão neste mês, quantos aparelhos estão fora da
-prateleira agora, o quanto cada categoria chegou perto de acabar — e, desde a
-<code>v1.2</code>, como as pessoas avaliam a retirada.</p>
-<p>Quando termina, o secretário tem um número para levar à coordenação — e a
-coordenação tem com que decidir se compra mais aparelho, ou se o atendimento
-precisa de atenção. É a única tela do painel que quase não muda nada: ela lê,
-e a única coisa que grava é o link do formulário de sugestões.</p>
+<p>Este processo transforma o que o sistema já registrou em um argumento: quantas
+retiradas passaram pelo balcão no período escolhido, quantos aparelhos estão
+fora da prateleira agora, o quanto cada categoria chegou perto de acabar — e,
+desde a <code>v1.2</code>, como as pessoas avaliam a retirada e <strong>o que sai, quem leva e
+por quanto tempo</strong>, no Ranking de Consumo.</p>
+<p>Quando termina, o secretário tem um número para levar à coordenação — ou uma
+planilha, porque as abas com período exportam o que está na tela em <code>.xlsx</code> —
+e a coordenação tem com que decidir se compra mais aparelho, ou se o
+atendimento precisa de atenção. É a única tela do painel que quase não muda
+nada: ela lê, e a única coisa que grava é o link do formulário de sugestões.</p>
 <h2 id="2-pre-condicoes">2. Pré-condições</h2>
 <ul>
 <li>Você está com a sessão aberta no painel. Se não estiver, entre com seu login e
@@ -1436,6 +1438,9 @@ e a única coisa que grava é o link do formulário de sugestões.</p>
   manda para a aba <strong>Categorias</strong>.</li>
 <li>Os números são do <strong>momento em que a página abre</strong>. Para ver o efeito de uma
   baixa que você acabou de confirmar, recarregue a página.</li>
+<li>Sem período escolhido, a tela mostra o <strong>mês corrente</strong>. O período fica no
+  endereço da página, então um link guardado abre sempre o mesmo período — e
+  não "o mês de agora".</li>
 </ul>
 <h2 id="3-glossario-do-processo">3. Glossário do processo</h2>
 <p>Os termos que atravessam vários processos moram no
@@ -1443,8 +1448,9 @@ e a única coisa que grava é o link do formulário de sugestões.</p>
 <a href="../../referencia/glossario/#categoria">categoria</a>,
 <a href="../../referencia/glossario/#manutencao">manutenção</a>,
 <a href="../../referencia/glossario/#aposentadoria-item-inativo">aposentadoria</a>,
-<a href="../../referencia/glossario/#bancada">bancada</a> e
-<a href="../../referencia/glossario/#emprestimo">empréstimo</a>.</p>
+<a href="../../referencia/glossario/#bancada">bancada</a>,
+<a href="../../referencia/glossario/#emprestimo">empréstimo</a> e
+<a href="../../referencia/glossario/#tempo-de-prateleira">tempo de prateleira</a>.</p>
 <p>Estes são só desta página:</p>
 <table>
 <thead>
@@ -1454,6 +1460,18 @@ e a única coisa que grava é o link do formulário de sugestões.</p>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>Período</td>
+<td>A janela de datas que os relatórios obedecem: um dia, um mês, um ano ou um intervalo qualquer, escolhido na linha acima das abas. O padrão é o mês corrente.</td>
+</tr>
+<tr>
+<td>Retiradas no período</td>
+<td>Quantas <strong>retiradas</strong> foram registradas dentro do período. Conta o que saiu, não o que está fora. Um empréstimo pertence ao período em que foi retirado, e só a esse.</td>
+</tr>
+<tr>
+<td>Retiradas por dia</td>
+<td>O gráfico de picos de uso: quantas retiradas houve em cada dia do período. Acima de 31 dias o gráfico agrupa por semana; acima de 182, por mês — e o título diz qual.</td>
+</tr>
 <tr>
 <td>Ocupação</td>
 <td>A fatia do estoque em circulação que <strong>não</strong> está na prateleira agora — emprestada ou em manutenção. Vai de 0% a 100%.</td>
@@ -1471,12 +1489,28 @@ e a única coisa que grava é o link do formulário de sugestões.</p>
 <td>O selo amarelo: sobraram uma ou duas unidades disponíveis.</td>
 </tr>
 <tr>
-<td>Empréstimos no Mês</td>
-<td>Quantas <strong>retiradas</strong> foram registradas desde o dia 1º. Conta o que saiu, não o que está fora.</td>
-</tr>
-<tr>
 <td>Equipamentos na Rua</td>
 <td>Quantos aparelhos estão fora da prateleira neste instante, somando os que estão com as pessoas e os que esperam conferência na bancada.</td>
+</tr>
+<tr>
+<td>Tempo de uso</td>
+<td>Da retirada até a devolução declarada no tablet. Só conta nos empréstimos que já foram devolvidos.</td>
+</tr>
+<tr>
+<td>Tempo de prateleira</td>
+<td>Da devolução declarada até a baixa física — o tempo em que o aparelho ficou na bancada. Só conta nos empréstimos concluídos com os dois registros.</td>
+</tr>
+<tr>
+<td>Mediana</td>
+<td>O valor do meio: metade dos empréstimos ficou abaixo dele, metade acima. Os tempos desta tela são medianas, e não médias — ver a <a href="#por-que-mediana">regra abaixo</a>.</td>
+</tr>
+<tr>
+<td>Ranking</td>
+<td>Uma tabela ordenada por retiradas, com uma barra em cada linha proporcional ao maior da tabela. São três: por equipamento, por categoria e por pessoa.</td>
+</tr>
+<tr>
+<td>Fatia</td>
+<td>No ranking por categoria, a parte daquela categoria no total de retiradas do período, em %.</td>
 </tr>
 <tr>
 <td>Avaliação</td>
@@ -1508,18 +1542,18 @@ e a única coisa que grava é o link do formulário de sugestões.</p>
 <tbody>
 <tr>
 <td>Secretário</td>
-<td>Abre a aba, lê os números e leva à coordenação o que está esgotado ou crítico — e a média de satisfação. Configura o link do formulário de sugestões.</td>
+<td>Escolhe o período, abre a aba, lê os números e leva à coordenação o que está esgotado ou crítico, quem mais retira e a média de satisfação — na tela ou na planilha exportada. Configura o link do formulário de sugestões.</td>
 <td>Não corrige nada aqui. O que aparece errado nesta tela se conserta nas abas <strong>Inventário</strong> e <strong>Fila de Devoluções</strong>. Não vê quem votou, porque ninguém vê.</td>
 </tr>
 <tr>
 <td>Coordenação</td>
-<td>Decide a compra, a partir do que o secretário mostra.</td>
+<td>Decide a compra e a política de uso, a partir do que o secretário mostra — ou da planilha que recebe.</td>
 <td>Não abre o painel. Ela não tem conta — o painel é do secretário.</td>
 </tr>
 <tr>
 <td>Painel (o computador)</td>
-<td>Soma o que está gravado, no instante em que a página abre.</td>
-<td>Não guarda histórico do relatório, não manda aviso e não compara com o mês passado. Cada abertura é uma fotografia nova.</td>
+<td>Soma o que está gravado, no instante em que a página abre, dentro do período escolhido.</td>
+<td>Não guarda histórico do relatório, não manda aviso e não compara com o período anterior. Cada abertura é uma fotografia nova.</td>
 </tr>
 <tr>
 <td>Estudante ou professor</td>
@@ -1529,18 +1563,43 @@ e a única coisa que grava é o link do formulário de sugestões.</p>
 </tbody>
 </table>
 <h2 id="5-passo-a-passo">5. Passo a passo</h2>
-<p>Uma sequência só, do login ao número que sai desta tela.</p>
+<p>Uma sequência só, do login à planilha que sai desta tela.</p>
 <ol>
 <li>Entre no painel com seu login e senha.</li>
 <li>
 <p>Clique em <strong>Relatórios</strong>, o último item do menu à esquerda.</p>
-<p><a href="../../assets/images/relatorios/01-relatorios-ocupacao.png"><img alt="A tela de Relatórios com a aba Ocupação e picos de uso aberta: dois cartões no topo e as três categorias com suas barras" src="../../assets/images/relatorios/01-relatorios-ocupacao.png" /></a></p>
+<p><a href="../../assets/images/relatorios/01-relatorios-ocupacao.png"><img alt="A tela de Relatórios: a linha do seletor de período, a barra de abas com Ocupação e picos de uso aberta, os dois cartões e o gráfico de retiradas por dia" src="../../assets/images/relatorios/01-relatorios-ocupacao.png" /></a></p>
+</li>
+<li>
+<p>Escolha o período na linha acima das abas. Ela vale para a tela inteira, e
+   nasce no <strong>mês corrente</strong>: o campo mostra o mês, e a frase <strong>Mostrando
+   setembro de 2026</strong> diz por extenso a que janela os números se referem.
+   São quatro unidades: <strong>Dia</strong>, <strong>Mês</strong>, <strong>Ano</strong> e <strong>Período</strong>.</p>
+<p><a href="../../assets/images/relatorios/02-periodo-mes.png"><img alt="A linha do seletor com Mês selecionado, o campo mostrando setembro de 2026 e a frase Mostrando setembro de 2026" src="../../assets/images/relatorios/02-periodo-mes.png" /></a></p>
+<ul>
+<li>
+<p><strong>Se for Dia, Mês ou Ano</strong> → clique na unidade e mude o campo ao lado. O
+  relatório recarrega sozinho assim que a data está completa; enquanto o
+  servidor responde, o quadro fica esmaecido e o número antigo continua
+  legível.</p>
+<p><a href="../../assets/images/relatorios/03-periodo-dia.png"><img alt="O seletor com Dia selecionado e um campo de data" src="../../assets/images/relatorios/03-periodo-dia.png" /></a></p>
+<p><a href="../../assets/images/relatorios/04-periodo-ano.png"><img alt="O seletor com Ano selecionado e uma lista com os anos que têm retirada" src="../../assets/images/relatorios/04-periodo-ano.png" /></a></p>
+</li>
+<li>
+<p><strong>Se for Período</strong> → preencha os dois campos, <strong>De</strong> e <strong>até</strong>, e clique
+  em <strong>Aplicar</strong>. Aqui a tela espera o clique de propósito: dois campos
+  aplicados um a um recarregariam o relatório com o segundo ainda por
+  preencher.</p>
+<p><a href="../../assets/images/relatorios/05-periodo-intervalo.png"><img alt="O seletor com Período selecionado: os campos De e até, e o botão Aplicar" src="../../assets/images/relatorios/05-periodo-intervalo.png" /></a></p>
+</li>
+</ul>
 </li>
 <li>
 <p>A aba <strong>Ocupação e picos de uso</strong> já vem aberta. Leia os dois cartões do
-   topo: <strong>Empréstimos no Mês</strong> é o volume de trabalho que passou pelo balcão, e
-   <strong>Equipamentos na Rua</strong> é o que está fora da prateleira agora.</p>
-<p><a href="../../assets/images/relatorios/02-indicadores-do-mes.png"><img alt="Os dois cartões do topo: 10 empréstimos no mês e 7 equipamentos na rua, com a quebra em 3 com as pessoas e 4 na bancada" src="../../assets/images/relatorios/02-indicadores-do-mes.png" /></a></p>
+   topo: <strong>Retiradas no período</strong> é o volume de trabalho que passou pelo
+   balcão na janela escolhida, e <strong>Equipamentos na Rua</strong> é o que está fora da
+   prateleira agora — este não muda com o período.</p>
+<p><a href="../../assets/images/relatorios/06-indicadores-do-periodo.png"><img alt="Os dois cartões do topo: 15 retiradas no período e 7 equipamentos na rua, com a quebra em 3 com as pessoas e 4 na bancada" src="../../assets/images/relatorios/06-indicadores-do-periodo.png" /></a></p>
 </li>
 <li>
 <p>Repare na segunda linha do cartão <strong>Equipamentos na Rua</strong>: ela separa os que
@@ -1549,9 +1608,30 @@ e a única coisa que grava é o link do formulário de sugestões.</p>
    <a href="../baixa-fisica/">baixa física</a> é confirmada.</p>
 </li>
 <li>
+<p>Desça até <strong>Picos de uso</strong>. O gráfico <strong>Retiradas por dia</strong> tem uma barra
+   por dia do período, inclusive os dias sem retirada, que aparecem com zero.
+   O número em cima da barra mais alta é o pico; passe o mouse (ou navegue com
+   as setas do teclado) para ler os outros dias.</p>
+<p><a href="../../assets/images/relatorios/07-retiradas-por-dia-barras.png"><img alt="O gráfico Retiradas por dia em barras, com uma barra por dia de setembro e o número 3 em cima do pico" src="../../assets/images/relatorios/07-retiradas-por-dia-barras.png" /></a></p>
+<ul>
+<li>
+<p><strong>Se preferir uma linha</strong> → clique em <strong>Linha</strong>, no canto do gráfico. A
+  escolha fica guardada neste computador para as próximas visitas.</p>
+<p><a href="../../assets/images/relatorios/08-retiradas-por-dia-linha.png"><img alt="O mesmo gráfico em linha" src="../../assets/images/relatorios/08-retiradas-por-dia-linha.png" /></a></p>
+</li>
+<li>
+<p><strong>Se precisar dos números exatos</strong> → clique em <strong>Ver como tabela</strong>,
+  abaixo do gráfico. É a mesma série, uma linha por dia.</p>
+</li>
+</ul>
+</li>
+<li>
 <p>Desça até <strong>Esgotamento por categoria</strong>. Cada linha é uma prateleira, com a
-   barra mostrando a ocupação e, embaixo dela, a composição em números.</p>
-<p><a href="../../assets/images/relatorios/03-esgotamento-por-categoria.png"><img alt="As três categorias com suas barras: Notebooks em 56%, Tablets em 50% com o selo Estoque Crítico, e Extensões em 40%" src="../../assets/images/relatorios/03-esgotamento-por-categoria.png" /></a></p>
+   barra mostrando a ocupação e, embaixo dela, a composição em números. A
+   frase logo acima da lista — <strong>Situação atual do estoque; o período acima
+   não muda esta lista</strong> — não é enfeite: esta parte da aba é a fotografia do
+   agora.</p>
+<p><a href="../../assets/images/relatorios/09-esgotamento-por-categoria.png"><img alt="As três categorias com suas barras: Notebooks em 56%, Tablets em 50% com o selo Estoque Crítico, e Extensões em 40%" src="../../assets/images/relatorios/09-esgotamento-por-categoria.png" /></a></p>
 </li>
 <li>
 <p>Leia a linha da categoria da direita para a esquerda: <strong>56% de ocupação
@@ -1567,7 +1647,7 @@ e a única coisa que grava é o link do formulário de sugestões.</p>
   <a href="../baixa-fisica/">Fila de Devoluções</a>: se houver aparelho esperando
   conferência, confirmar o recebimento devolve unidade à prateleira na hora.
   Se a fila estiver vazia, o número é o argumento de compra.</p>
-<p><a href="../../assets/images/relatorios/04-estoque-esgotado.png"><img alt="A linha dos Tablets com 100% de ocupação, 0 livres e o selo vermelho Estoque Esgotado" src="../../assets/images/relatorios/04-estoque-esgotado.png" /></a></p>
+<p><a href="../../assets/images/relatorios/10-estoque-esgotado.png"><img alt="A linha dos Tablets com 100% de ocupação, 0 livres e o selo vermelho Estoque Esgotado" src="../../assets/images/relatorios/10-estoque-esgotado.png" /></a></p>
 </li>
 <li>
 <p>Se aparece <strong>Estoque Crítico</strong> (amarelo) → sobraram uma ou duas unidades.
@@ -1580,27 +1660,29 @@ e a única coisa que grava é o link do formulário de sugestões.</p>
 </li>
 <li>
 <p>Clique na aba <strong>Satisfação</strong>. Os dois cartões são dois recortes fixos —
-   <strong>Últimos 30 dias</strong> e <strong>Desde o início</strong> —, e cada um traz a média na escala
-   de 1 a 4, quantas respostas houve e a taxa de resposta, e a distribuição em
-   quatro barras, uma por rosto.</p>
-<p><a href="../../assets/images/relatorios/06-satisfacao.png"><img alt="A aba Satisfação: dois cartões lado a lado, cada um com a média, as respostas, a taxa de resposta e quatro barras com um rosto colorido em cada, e o botão Baixar planilha abaixo" src="../../assets/images/relatorios/06-satisfacao.png" /></a></p>
+    <strong>Últimos 30 dias</strong> e <strong>Desde o início</strong> —, e cada um traz a média na
+    escala de 1 a 4, quantas respostas houve e a taxa de resposta, e a
+    distribuição em quatro barras, uma por rosto. A linha <strong>Esta aba não usa o
+    período acima</strong> está ali para lembrar: os dois recortes não mudam com o
+    seletor.</p>
+<p><a href="../../assets/images/relatorios/11-satisfacao.png"><img alt="A aba Satisfação: a nota de que a aba não usa o período, dois cartões lado a lado com a média, as respostas, a taxa de resposta e quatro barras com um rosto colorido em cada, e o botão Baixar planilha abaixo" src="../../assets/images/relatorios/11-satisfacao.png" /></a></p>
 </li>
 <li>
 <p>Leia o cartão de cima para baixo: <strong>3,3 de 4</strong> é a média das notas; <strong>33
-   respostas · 87% de taxa de resposta (33 de 38 pedidas)</strong> diz que os rostos
-   apareceram 38 vezes e 33 pessoas tocaram; e as barras dizem quantas tocaram
-   em cada rosto. A barra é a fatia entre as respostas, e o número ao lado é a
-   contagem.</p>
+    respostas · 87% de taxa de resposta (33 de 38 pedidas)</strong> diz que os rostos
+    apareceram 38 vezes e 33 pessoas tocaram; e as barras dizem quantas tocaram
+    em cada rosto. A barra é a fatia entre as respostas, e o número ao lado é a
+    contagem.</p>
 </li>
 <li>
 <p>Há alguma linha? Se a aba diz "Nenhuma avaliação ainda. Os rostos aparecem
     no tablet ao fim da retirada, uma vez a cada 30 dias por pessoa.", ninguém
     foi perguntado ainda — os cartões e o botão de baixar só aparecem com a
     primeira linha.</p>
-<p><a href="../../assets/images/relatorios/08-satisfacao-vazia.png"><img alt="A aba Satisfação sem nenhuma avaliação: só o título, a explicação e a frase de que nenhuma avaliação existe ainda" src="../../assets/images/relatorios/08-satisfacao-vazia.png" /></a></p>
+<p><a href="../../assets/images/relatorios/13-satisfacao-vazia.png"><img alt="A aba Satisfação sem nenhuma avaliação: só o título, a explicação e a frase de que nenhuma avaliação existe ainda" src="../../assets/images/relatorios/13-satisfacao-vazia.png" /></a></p>
 </li>
 <li>
-<p>Quer cruzar os dados de outro jeito? Clique em <strong>Baixar planilha</strong>. O
+<p>Quer cruzar as avaliações de outro jeito? Clique em <strong>Baixar planilha</strong>. O
     arquivo <code>avaliacoes-AAAA-MM-DD.csv</code> chega à pasta de downloads com uma
     linha por vez que os rostos apareceram, nas colunas <code>dia</code> e <code>nota</code> — a
     nota em branco quando ninguém respondeu. Não há hora, matrícula nem nome no
@@ -1612,7 +1694,7 @@ e a única coisa que grava é o link do formulário de sugestões.</p>
     <code>https://</code>, e clique em <strong>Salvar</strong>. A prévia ao lado mostra o QR exatamente
     como ele aparece no tablet. Para o QR sumir do tablet, salve com o campo em
     branco.</p>
-<p><a href="../../assets/images/relatorios/07-formulario-de-sugestoes.png"><img alt="O cartão Formulário de sugestões, com o campo do endereço preenchido, o botão Salvar e a prévia do QR code à direita" src="../../assets/images/relatorios/07-formulario-de-sugestoes.png" /></a></p>
+<p><a href="../../assets/images/relatorios/12-formulario-de-sugestoes.png"><img alt="O cartão Formulário de sugestões, com o campo do endereço preenchido, o botão Salvar e a prévia do QR code à direita" src="../../assets/images/relatorios/12-formulario-de-sugestoes.png" /></a></p>
 <div class="admonition tip">
 <p class="admonition-title">Como criar o formulário</p>
 <p>No Google Forms, com a <strong>conta institucional do setor</strong> — nunca a
@@ -1625,12 +1707,103 @@ de Enviar, cole aqui e imprima o mesmo QR num adesivo ao lado do tablet
 </div>
 </li>
 <li>
-<p>As abas <strong>Ranking de Consumo</strong> e <strong>Índice de Manutenção</strong> ainda não têm
-    relatório. Abrir uma delas mostra um aviso, e não um erro.</p>
-<p><a href="../../assets/images/relatorios/05-aba-sem-relatorio.png"><img alt="A aba Ranking de Consumo selecionada, mostrando a caixa tracejada com o aviso de relatório em desenvolvimento" src="../../assets/images/relatorios/05-aba-sem-relatorio.png" /></a></p>
+<p>Clique na aba <strong>Ranking de Consumo</strong>. Ela obedece ao mesmo período do topo.
+    Os quatro cartões dizem quantas retiradas houve, quantas pessoas distintas
+    retiraram, e as duas medianas: <strong>Tempo de uso</strong> (da retirada à devolução
+    declarada) e <strong>Tempo de prateleira</strong> (da devolução à baixa física). Um
+    cartão com "—" é uma mediana sem amostra — ninguém devolveu ainda, ou
+    ninguém retirou.</p>
+<p><a href="../../assets/images/relatorios/14-ranking-de-consumo.png"><img alt="A aba Ranking de Consumo: quatro cartões no topo, o gráfico Retiradas por categoria em barras à esquerda e a tabela por categoria à direita" src="../../assets/images/relatorios/14-ranking-de-consumo.png" /></a></p>
+</li>
+<li>
+<p>Leia <strong>Retiradas por categoria</strong>: o gráfico e a tabela ao lado dizem a
+    mesma coisa. A tabela lista todas as categorias, inclusive as que ninguém
+    retirou, com a <strong>fatia</strong> de cada uma no total.</p>
+<p><a href="../../assets/images/relatorios/15-retiradas-por-categoria-barras.png"><img alt="O gráfico Retiradas por categoria em barras horizontais, uma por categoria, cada uma com a sua cor" src="../../assets/images/relatorios/15-retiradas-por-categoria-barras.png" /></a></p>
+<ul>
+<li>
+<p><strong>Se preferir a pizza</strong> → clique em <strong>Pizza</strong>. É a única composição da
+  tela em que a pizza faz sentido; acima de seis categorias, as menores
+  viram "Outras".</p>
+<p><a href="../../assets/images/relatorios/16-retiradas-por-categoria-pizza.png"><img alt="O mesmo gráfico em pizza, com o percentual escrito nas fatias e a legenda embaixo" src="../../assets/images/relatorios/16-retiradas-por-categoria-pizza.png" /></a></p>
+</li>
+</ul>
+</li>
+<li>
+<p>Desça até <strong>Por equipamento</strong>. Todo aparelho em circulação entra, inclusive
+    com zero retiradas — as linhas de zero vão para o fim, em cinza. Um
+    aparelho aposentado só aparece se tiver retirada no período, com a
+    situação <strong>Inativo</strong> na linha.</p>
+<p><a href="../../assets/images/relatorios/17-ranking-por-equipamento.png"><img alt="O ranking por equipamento: etiqueta, categoria, situação atual, retiradas, a barra e o uso mediano, do mais retirado para o menos" src="../../assets/images/relatorios/17-ranking-por-equipamento.png" /></a></p>
+</li>
+<li>
+<p>Desça até <strong>Por pessoa</strong>. Só quem retirou ao menos uma vez no período
+    entra; o nome é o do cadastro de hoje.</p>
+<p><a href="../../assets/images/relatorios/18-ranking-por-pessoa.png"><img alt="O ranking por pessoa: nome, matrícula, perfil, retiradas, a barra e o uso mediano" src="../../assets/images/relatorios/18-ranking-por-pessoa.png" /></a></p>
+</li>
+<li>
+<p>Quer levar os números à coordenação? Clique em <strong>Baixar planilha (.xlsx)</strong>,
+    no alto da aba. O arquivo <code>consumo-AAAA-MM-DD-a-AAAA-MM-DD.xlsx</code> chega à
+    pasta de downloads com quatro abas: <strong>Equipamentos</strong>, <strong>Categorias</strong> e
+    <strong>Pessoas</strong> são as três tabelas da tela, coluna a coluna; <strong>Retiradas</strong> é
+    uma linha por empréstimo do período, com etiqueta, categoria, retirada,
+    devolução declarada, baixa, situação e os dois tempos — <strong>sem nome nem
+    matrícula</strong>. Contagens e tempos vão como número (os tempos em minutos), para
+    o Excel somar e tirar média. A aba <strong>Ocupação e picos de uso</strong> tem o mesmo
+    botão, e o arquivo dela (<code>ocupacao-…xlsx</code>) traz <strong>Categorias</strong> (a fotografia
+    do estoque, com a data e hora da leitura na primeira linha) e a série
+    <strong>Retiradas por dia</strong>. A tela não recarrega.</p>
+</li>
+<li>
+<p>Colou um link com uma data que não existe, ou com o fim antes do início? A
+    tela avisa e mostra o mês atual, em vez de dar erro.</p>
+<p><a href="../../assets/images/relatorios/19-periodo-invalido.png"><img alt="O seletor de período e, abaixo dele, o aviso amarelo Período inválido. Mostrando o mês atual." src="../../assets/images/relatorios/19-periodo-invalido.png" /></a></p>
+</li>
+<li>
+<p>A aba <strong>Índice de Manutenção</strong> ainda não tem relatório. Abri-la mostra um
+    aviso, e não um erro.</p>
+<p><a href="../../assets/images/relatorios/20-aba-sem-relatorio.png"><img alt="A aba Índice de Manutenção selecionada, mostrando a caixa tracejada com o aviso de relatório em desenvolvimento e os três relatórios que existem" src="../../assets/images/relatorios/20-aba-sem-relatorio.png" /></a></p>
 </li>
 </ol>
 <h2 id="6-regras-que-nao-sao-obvias">6. Regras que não são óbvias</h2>
+<p><a id="a-aba-e-o-periodo-ficam-no-endereco"></a></p>
+<div class="admonition question">
+<p class="admonition-title">Por que a aba e o período ficam no endereço da página?</p>
+<p>Porque trocar o período é uma consulta nova ao banco, e a forma de fazer
+uma consulta nova é navegar: o endereço carrega <code>de</code> e <code>ate</code> com as datas
+resolvidas — nunca "este mês". Um link guardado hoje mostra setembro em
+novembro, e recarregar a página (F5) mantém o período <strong>e</strong> a aba.</p>
+<p>Trocar de aba, por sua vez, não vai ao servidor: os quatro painéis já
+chegaram prontos, e o endereço só é atualizado para o link ficar certo.
+Isso inverte uma escolha da primeira versão desta tela, em que a aba
+voltava para a primeira a cada recarga — o motivo daquela escolha
+(nenhum link para compartilhar) deixou de existir quando o período
+passou a morar no endereço.</p>
+</div>
+<p><a id="o-que-entra-no-periodo-e-a-retirada"></a></p>
+<div class="admonition question">
+<p class="admonition-title">Um aparelho retirado em agosto e devolvido em setembro conta em qual mês?</p>
+<p>Em <strong>agosto</strong>. O que entra no período é a <strong>retirada</strong>: um empréstimo
+pertence ao período em que foi retirado, e só a esse. A devolução fora do
+período não muda a atribuição, e o tempo de uso dele — que atravessa a
+virada do mês — entra na mediana de agosto.</p>
+<p>A regra é uma só para os três rankings, os cartões e o gráfico, porque
+duas regras dariam dois totais para a mesma pergunta.</p>
+</div>
+<p><a id="por-que-mediana"></a></p>
+<div class="admonition question">
+<p class="admonition-title">Por que os tempos são medianas, e não médias?</p>
+<p>Porque um notebook esquecido no fim de semana distorce a média de uma
+semana inteira: dez empréstimos de duas horas e um de três dias dão uma
+média de oito horas que não descreve nenhum deles. A mediana é o valor
+do meio — metade ficou abaixo, metade acima — e um caso extremo não a
+arrasta.</p>
+<p>Os empréstimos ainda em aberto contam nas retiradas e ficam <strong>fora</strong> da
+mediana de uso: eles não têm devolução ainda. E o tempo de prateleira só
+conta nos concluídos que têm os dois registros; os concluídos antes de o
+sistema gravar a baixa física ficam de fora sozinhos, em vez de entrar
+como zero.</p>
+</div>
 <p><a id="por-que-a-ocupacao-conta-o-que-esta-em-manutencao"></a></p>
 <div class="admonition question">
 <p class="admonition-title">Por que a ocupação conta o aparelho em manutenção junto com o emprestado?</p>
@@ -1647,6 +1820,16 @@ as duas coisas estariam certas ao mesmo tempo.</p>
 perder: manutenção é aparelho que <strong>pode voltar</strong>, e empréstimo é aparelho
 que <strong>vai voltar</strong>.</p>
 </div>
+<p><a id="por-que-a-ocupacao-nao-obedece-ao-periodo"></a></p>
+<div class="admonition question">
+<p class="admonition-title">Escolhi agosto e a lista de categorias não mudou. Está certo?</p>
+<p>Está. A ocupação por categoria é a <strong>fotografia do agora</strong>, e não existe
+"ocupação em 3 de agosto": o sistema não guarda a situação de cada
+aparelho em cada dia, só a de hoje. O que obedece ao período nessa aba
+são o cartão <strong>Retiradas no período</strong> e o gráfico <strong>Retiradas por dia</strong>.
+A frase acima da lista diz isso, para ninguém ler as barras como se
+fossem do mês escolhido.</p>
+</div>
 <p><a id="por-que-o-aposentado-fica-fora-da-conta"></a></p>
 <div class="admonition question">
 <p class="admonition-title">Por que o aparelho aposentado fica fora da conta?</p>
@@ -1662,13 +1845,18 @@ disponíveis" com dez notebooks cadastrados, porque um está aposentado. Os
 aposentados aparecem nesta tela entre parênteses, <strong>fora da conta</strong>, para os
 números continuarem fechando com a aba <strong>Inventário</strong> — que, ao contrário,
 mostra o patrimônio inteiro.</p>
+<p>No <strong>Ranking de Consumo</strong> a regra é outra, e é deliberada: o aposentado
+<strong>entra</strong> no ranking por equipamento se tiver retirada no período, com a
+situação <strong>Inativo</strong> na linha. Um relatório do ano inteiro cobre meses em
+que ele ainda circulava, e escondê-lo faria a soma das linhas não fechar
+com o cartão de retiradas. Sem retirada no período, ele não aparece.</p>
 </div>
 <p><a id="por-que-os-emprestimos-do-mes-nao-caem-quando-alguem-devolve"></a></p>
 <div class="admonition question">
-<p class="admonition-title">Por que Empréstimos no Mês não diminui quando alguém devolve?</p>
+<p class="admonition-title">Por que Retiradas no período não diminui quando alguém devolve?</p>
 <p>Porque ele conta <strong>retiradas</strong>, e uma retirada que aconteceu não desacontece.
-O número responde "quanto trabalho passou pelo balcão neste mês" e sobe até o
-dia 1º do mês seguinte, quando volta a zero.</p>
+O número responde "quanto trabalho passou pelo balcão" na janela escolhida,
+e só muda se a janela mudar.</p>
 <p>Quem responde "quanto está fora agora" é o cartão ao lado, <strong>Equipamentos na
 Rua</strong>. Os dois medem coisas diferentes de propósito: um é o movimento, o
 outro é o estoque.</p>
@@ -1701,27 +1889,42 @@ seria um vermelho permanente, que ensina o olho a ignorar os outros. A linha
 aparece sem barra, em texto cinza, e some da grade do tablet pelo mesmo
 motivo.</p>
 </div>
-<p><a id="por-que-a-aba-volta-para-a-primeira"></a></p>
+<p><a id="por-que-a-satisfacao-nao-usa-o-periodo"></a></p>
 <div class="admonition question">
-<p class="admonition-title">Por que a aba volta para a primeira quando eu recarrego a página?</p>
-<p>Porque a aba escolhida não entra no endereço. É uma escolha de projeto: o
-relatório inteiro já chega pronto quando a página abre, e trocar de aba não
-consulta o banco de novo — a troca é instantânea porque nada vai ao servidor.</p>
-<p>O preço é este: recarregar volta para <strong>Ocupação e picos de uso</strong>, e não
-existe link que abra direto numa aba específica. Para uma tela consultada de
-pé, em uma sessão, ninguém compartilha link de aba de relatório.</p>
+<p class="admonition-title">Por que a aba Satisfação não obedece ao período?</p>
+<p>Porque o dado dela é diferente: uma nota inteira por dia, sem hora, sem
+matrícula e sem perfil — é o que faz a avaliação ser anônima. Um filtro de
+um dia, num dia em que uma pessoa só foi perguntada, deixaria a nota dessa
+pessoa a um clique. Os dois recortes são fixos (<strong>Últimos 30 dias</strong> e
+<strong>Desde o início</strong>), a aba diz isso numa linha, e quem quer outro corte
+baixa o CSV.</p>
 </div>
 <p><a id="por-que-nao-da-para-comparar-com-o-mes-passado"></a></p>
 <div class="admonition question">
-<p class="admonition-title">Por que não dá para ver o mês passado, nem exportar a ocupação?</p>
-<p>Porque o relatório de ocupação é uma fotografia do agora, e esta é a
-primeira versão dele. O sistema guarda todos os empréstimos com as datas —
-o dado para comparar meses <strong>existe</strong> —, mas a tela que faria essa leitura
-ainda não foi construída. A aba <strong>Satisfação</strong> é a única que exporta, e o
-que ela exporta é a lista crua, para o cruzamento ser feito fora.</p>
-<p>O mesmo vale para as abas <strong>Ranking de Consumo</strong> e <strong>Índice de Manutenção</strong>:
-os nomes estão no menu para dizer o que vem por aí, e o aviso dentro delas
-diz que ainda não vem.</p>
+<p class="admonition-title">Dá para comparar com o mês passado?</p>
+<p>Só olhando os dois: escolha um mês, anote o número, escolha o outro. A
+tela não mostra a diferença nem uma seta de tendência — cada abertura é
+uma fotografia de um período só. Para comparar vários meses de uma vez, o
+caminho é o ano inteiro no seletor (o gráfico de retiradas passa a ser por
+mês) ou a planilha exportada, onde a coordenação faz o pivô que quiser.</p>
+<p>A aba <strong>Índice de Manutenção</strong> continua declarada e não construída: o
+nome está no menu para dizer o que vem por aí, e o aviso dentro dela diz
+que ainda não vem.</p>
+</div>
+<p><a id="por-que-a-planilha-nao-tem-nome"></a></p>
+<div class="admonition question">
+<p class="admonition-title">A aba Retiradas da planilha não tem o nome de quem retirou. Por quê?</p>
+<p>De propósito. O ranking por pessoa, na tela e na aba <strong>Pessoas</strong> do
+arquivo, já responde "quem" — com nome, matrícula e a contagem. A aba
+<strong>Retiradas</strong> existe para o pivô (por categoria, por dia, por tempo de
+uso), e para isso o nome não faz falta. Sem ele, o histórico nominal de
+cada pessoa não sai do painel dentro de um arquivo que vai circular por
+e-mail.</p>
+<p>O ranking por pessoa é uma exposição deliberada, decidida pela
+coordenação em setembro de 2026 — ver
+<a href="../../referencia/regras-de-negocio/#o-ranking-por-pessoa-e-deliberado-e-a-avaliacao-continua-anonima">Regras de negócio</a>.
+Ela não muda a promessa de anonimato da avaliação, que é outra tabela,
+sem matrícula.</p>
 </div>
 <p><a id="por-que-nao-aparece-quem-votou"></a></p>
 <div class="admonition question">
@@ -1760,13 +1963,14 @@ porque passaram a ignorá-los mais.</p>
 </div>
 <p><a id="por-que-o-csv-abre-numa-coluna-so"></a></p>
 <div class="admonition question">
-<p class="admonition-title">Abri a planilha no Excel e veio tudo numa coluna só</p>
+<p class="admonition-title">Abri a planilha de avaliações no Excel e veio tudo numa coluna só</p>
 <p>Porque o arquivo separa as colunas por vírgula (é o formato padrão de CSV),
 e o Excel em português espera ponto e vírgula quando você clica duas vezes
 no arquivo. Ele não está errado — está lendo com o separador do sistema.</p>
 <p>O caminho é importar em vez de abrir: <strong>Dados → De Texto/CSV</strong>, escolha o
 arquivo, e o Excel reconhece a vírgula sozinho. O Google Planilhas e o
-LibreOffice abrem direto.</p>
+LibreOffice abrem direto. As planilhas de <strong>Consumo</strong> e de <strong>Ocupação</strong> não
+têm esse problema: são <code>.xlsx</code>, e abrem com duas colunas ou mais no clique.</p>
 </div>
 <h2 id="7-erros-comuns-e-o-que-fazer">7. Erros comuns e o que fazer</h2>
 <table>
@@ -1779,9 +1983,19 @@ LibreOffice abrem direto.</p>
 </thead>
 <tbody>
 <tr>
+<td>"Período inválido. Mostrando o mês atual."</td>
+<td>O endereço trazia uma data que não existe (30 de fevereiro), um formato errado, ou um início depois do fim — quase sempre um link copiado pela metade.</td>
+<td>Nada se perdeu: a tela mostra o mês atual. Escolha o período de novo no seletor. Não é erro do sistema: é o link.</td>
+</tr>
+<tr>
+<td>"Nenhuma retirada em …"</td>
+<td>O período escolhido não tem nenhuma retirada registrada. Os cartões mostram 0 e "—".</td>
+<td>Confira a janela no seletor. Se o período está certo, o número é esse mesmo — ninguém retirou.</td>
+</tr>
+<tr>
 <td>"Relatório em desenvolvimento..."</td>
-<td>Você abriu <strong>Ranking de Consumo</strong> ou <strong>Índice de Manutenção</strong>. Esses dois ainda não existem.</td>
-<td>Volte para <strong>Ocupação e picos de uso</strong>, que é a única aba com dados. Não é erro: a tela está avisando.</td>
+<td>Você abriu <strong>Índice de Manutenção</strong>. Esse ainda não existe.</td>
+<td>Volte para uma das outras três abas. Não é erro: a tela está avisando.</td>
 </tr>
 <tr>
 <td>"Nenhuma categoria cadastrada ainda."</td>
@@ -1797,6 +2011,11 @@ LibreOffice abrem direto.</p>
 <td>"Nenhuma avaliação ainda. Os rostos aparecem no tablet ao fim da retirada, uma vez a cada 30 dias por pessoa."</td>
 <td>Os rostos ainda não apareceram para ninguém — o sistema acabou de ser instalado, ou ninguém retirou equipamento desde então.</td>
 <td>Nada a fazer. O primeiro cartão aparece com a primeira retirada. Não é erro: a tela está avisando.</td>
+</tr>
+<tr>
+<td>"Não foi possível gerar a planilha. Recarregue a página e tente de novo."</td>
+<td>O pedaço do programa que monta o arquivo não chegou ao navegador — a rede caiu no meio, ou a página ficou aberta por muito tempo.</td>
+<td>Recarregue a página e clique de novo. Nada foi gravado nem perdido: a planilha é montada na hora, a partir do que está na tela.</td>
 </tr>
 <tr>
 <td>"Endereço inválido."</td>

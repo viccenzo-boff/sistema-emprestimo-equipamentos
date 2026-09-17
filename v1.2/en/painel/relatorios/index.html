@@ -1428,14 +1428,16 @@ appears on screen, in bold, with the English meaning in parentheses:
 </div>
 <h2 id="1-purpose-of-the-process">1. Purpose of the process</h2>
 <p>This process turns what the system already recorded into an argument: how many
-pickups went through the counter this month, how many devices are off the shelf
-right now, how close each category came to running out — and, since <code>v1.2</code>,
-how people rate the pickup.</p>
-<p>When it ends, the front desk has a number to take to the academic coordination —
-and the coordination has something to decide a purchase with, or to tell
-whether the service needs attention. It is the only panel screen that changes
-almost nothing: it reads, and the only thing it stores is the suggestion form
-link.</p>
+pickups went through the counter in the chosen period, how many devices are off
+the shelf right now, how close each category came to running out — and, since
+<code>v1.2</code>, how people rate the pickup and <strong>what goes out, who takes it and for how
+long</strong>, in the usage ranking.</p>
+<p>When it ends, the front desk has a number to take to the academic coordination
+— or a spreadsheet, because the tabs with a period export what is on screen as
+<code>.xlsx</code> — and the coordination has something to decide a purchase with, or to
+tell whether the service needs attention. It is the only panel screen that
+changes almost nothing: it reads, and the only thing it stores is the suggestion
+form link.</p>
 <h2 id="2-preconditions">2. Preconditions</h2>
 <ul>
 <li>You are signed in to the panel. If you are not, sign in with your username and
@@ -1444,6 +1446,9 @@ link.</p>
   <strong>Categorias</strong> (Categories) tab.</li>
 <li>The numbers belong to <strong>the moment the page opened</strong>. To see the effect of a
   check-in you just confirmed, reload the page.</li>
+<li>With no period chosen, the screen shows the <strong>current month</strong>. The period
+  lives in the page address, so a saved link always opens the same period —
+  not "whatever month it is now".</li>
 </ul>
 <h2 id="3-process-glossary">3. Process glossary</h2>
 <p>Terms that cross several processes live in the
@@ -1451,8 +1456,9 @@ link.</p>
 <a href="../../referencia/glossario/#category">category</a>,
 <a href="../../referencia/glossario/#maintenance">maintenance</a>,
 <a href="../../referencia/glossario/#retirement-inactive-item">retirement</a>,
-<a href="../../referencia/glossario/#counter">counter</a> and
-<a href="../../referencia/glossario/#loan">loan</a>.</p>
+<a href="../../referencia/glossario/#counter">counter</a>,
+<a href="../../referencia/glossario/#loan">loan</a> and
+<a href="../../referencia/glossario/#shelf-time">shelf time</a>.</p>
 <p>These belong to this page only:</p>
 <table>
 <thead>
@@ -1462,6 +1468,18 @@ link.</p>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><strong>Período</strong> (Period)</td>
+<td>The date window the reports obey: a day, a month, a year or any interval, chosen on the line above the tabs. The default is the current month.</td>
+</tr>
+<tr>
+<td><strong>Retiradas no período</strong> (Pickups in the period)</td>
+<td>How many <strong>pickups</strong> were recorded inside the period. It counts what went out, not what is out. A loan belongs to the period it was picked up in, and to that one only.</td>
+</tr>
+<tr>
+<td><strong>Retiradas por dia</strong> (Pickups per day)</td>
+<td>The usage peaks chart: how many pickups there were on each day of the period. Above 31 days the chart groups by week; above 182, by month — and the title says which.</td>
+</tr>
 <tr>
 <td><strong>Ocupação</strong> (Occupancy)</td>
 <td>The share of the circulating stock that is <strong>not</strong> on the shelf right now, either on loan or under maintenance. Runs from 0% to 100%.</td>
@@ -1479,12 +1497,28 @@ link.</p>
 <td>The amber badge. One or two units are still available.</td>
 </tr>
 <tr>
-<td><strong>Empréstimos no Mês</strong> (Loans this month)</td>
-<td>How many <strong>pickups</strong> were recorded since the first day of the month. It counts what went out, not what is out.</td>
-</tr>
-<tr>
 <td><strong>Equipamentos na Rua</strong> (Devices out)</td>
 <td>How many devices are off the shelf at this instant, adding the ones people hold to the ones waiting for check-in at the counter.</td>
+</tr>
+<tr>
+<td><strong>Tempo de uso</strong> (Usage time)</td>
+<td>From the pickup to the return declared at the tablet. It only counts on loans already returned.</td>
+</tr>
+<tr>
+<td><strong>Tempo de prateleira</strong> (Shelf time)</td>
+<td>From the declared return to the physical check-in — the time the device sat at the counter. It only counts on completed loans that carry both records.</td>
+</tr>
+<tr>
+<td><strong>Mediana</strong> (Median)</td>
+<td>The middle value: half of the loans fell below it, half above. The times on this screen are medians, not averages — see the <a href="#why-medians">rule below</a>.</td>
+</tr>
+<tr>
+<td>Ranking</td>
+<td>A table ordered by pickups, with a bar on each row proportional to the largest in the table. There are three: by device, by category and by person.</td>
+</tr>
+<tr>
+<td><strong>Fatia</strong> (Share)</td>
+<td>In the ranking by category, that category's part of the period's total pickups, in %.</td>
 </tr>
 <tr>
 <td><strong>Avaliação</strong> (Rating)</td>
@@ -1516,18 +1550,18 @@ link.</p>
 <tbody>
 <tr>
 <td>Front desk</td>
-<td>Opens the tab, reads the numbers, and takes what is out of stock or low to the coordination — and the satisfaction average. Sets the suggestion form link up.</td>
+<td>Chooses the period, opens the tab, reads the numbers, and takes to the coordination what is out of stock or low, who picks up the most, and the satisfaction average — on screen or in the exported spreadsheet. Sets the suggestion form link up.</td>
 <td>Fixes nothing here. Whatever looks wrong on this screen is corrected in <strong>Inventário</strong> (Inventory) and <strong>Fila de Devoluções</strong> (Return queue). Does not see who voted, because nobody does.</td>
 </tr>
 <tr>
 <td>Academic coordination</td>
-<td>Decides the purchase, based on what the front desk shows.</td>
+<td>Decides the purchase and the usage policy, based on what the front desk shows — or on the spreadsheet it receives.</td>
 <td>Does not open the panel. It has no account — the panel belongs to the front desk.</td>
 </tr>
 <tr>
 <td>Panel (the computer)</td>
-<td>Adds up what is stored, at the instant the page opens.</td>
-<td>Keeps no report history, sends no alert, and compares nothing with last month. Every opening is a fresh snapshot.</td>
+<td>Adds up what is stored, at the instant the page opens, inside the chosen period.</td>
+<td>Keeps no report history, sends no alert, and compares nothing with the previous period. Every opening is a fresh snapshot.</td>
 </tr>
 <tr>
 <td>Student or teacher</td>
@@ -1537,19 +1571,45 @@ link.</p>
 </tbody>
 </table>
 <h2 id="5-step-by-step">5. Step by step</h2>
-<p>A single sequence, from sign-in to the number that comes out of this screen.</p>
+<p>A single sequence, from sign-in to the spreadsheet that comes out of this screen.</p>
 <ol>
 <li>Sign in to the panel with your username and password.</li>
 <li>
 <p>Select <strong>Relatórios</strong> (Reports), the last item in the left menu.</p>
-<p><a href="../../../assets/images/relatorios/01-relatorios-ocupacao.png"><img alt="The Reports screen with the occupancy tab open: two cards at the top and the three categories with their bars" src="../../../assets/images/relatorios/01-relatorios-ocupacao.png" /></a></p>
+<p><a href="../../../assets/images/relatorios/01-relatorios-ocupacao.png"><img alt="The Reports screen: the period selector line, the tab bar with the occupancy tab open, the two cards and the pickups per day chart" src="../../../assets/images/relatorios/01-relatorios-ocupacao.png" /></a></p>
+</li>
+<li>
+<p>Choose the period on the line above the tabs. It applies to the whole
+   screen, and it starts on the <strong>current month</strong>: the field shows the month,
+   and the sentence <strong>Mostrando setembro de 2026</strong> (Showing September 2026)
+   spells out which window the numbers refer to. There are four units: <strong>Dia</strong>
+   (Day), <strong>Mês</strong> (Month), <strong>Ano</strong> (Year) and <strong>Período</strong> (Period).</p>
+<p><a href="../../../assets/images/relatorios/02-periodo-mes.png"><img alt="The selector line with Month selected, the field showing September 2026 and the sentence Showing September 2026" src="../../../assets/images/relatorios/02-periodo-mes.png" /></a></p>
+<ul>
+<li>
+<p><strong>If it is Day, Month or Year</strong> → select the unit and change the field
+  next to it. The report reloads on its own as soon as the date is
+  complete; while the server answers, the frame dims and the old number
+  stays readable.</p>
+<p><a href="../../../assets/images/relatorios/03-periodo-dia.png"><img alt="The selector with Day selected and a date field" src="../../../assets/images/relatorios/03-periodo-dia.png" /></a></p>
+<p><a href="../../../assets/images/relatorios/04-periodo-ano.png"><img alt="The selector with Year selected and a list of the years that have pickups" src="../../../assets/images/relatorios/04-periodo-ano.png" /></a></p>
+</li>
+<li>
+<p><strong>If it is Period</strong> → fill in both fields, <strong>De</strong> (From) and <strong>até</strong>
+  (until), and select <strong>Aplicar</strong> (Apply). Here the screen waits for the
+  click on purpose: two fields applied one at a time would reload the
+  report with the second one still to be filled.</p>
+<p><a href="../../../assets/images/relatorios/05-periodo-intervalo.png"><img alt="The selector with Period selected: the From and until fields, and the Apply button" src="../../../assets/images/relatorios/05-periodo-intervalo.png" /></a></p>
+</li>
+</ul>
 </li>
 <li>
 <p>The <strong>Ocupação e picos de uso</strong> (Occupancy and usage peaks) tab opens by
-   default. Read the two cards at the top: <strong>Empréstimos no Mês</strong> is the workload
-   that went through the counter, and <strong>Equipamentos na Rua</strong> is what is off the
-   shelf now.</p>
-<p><a href="../../../assets/images/relatorios/02-indicadores-do-mes.png"><img alt="The two cards at the top: 10 loans this month and 7 devices out, split into 3 with people and 4 at the counter" src="../../../assets/images/relatorios/02-indicadores-do-mes.png" /></a></p>
+   default. Read the two cards at the top: <strong>Retiradas no período</strong> is the
+   workload that went through the counter in the chosen window, and
+   <strong>Equipamentos na Rua</strong> is what is off the shelf now — this one does not
+   change with the period.</p>
+<p><a href="../../../assets/images/relatorios/06-indicadores-do-periodo.png"><img alt="The two cards at the top: 15 pickups in the period and 7 devices out, split into 3 with people and 4 at the counter" src="../../../assets/images/relatorios/06-indicadores-do-periodo.png" /></a></p>
 </li>
 <li>
 <p>Look at the second line of the <strong>Equipamentos na Rua</strong> card: it separates the
@@ -1558,10 +1618,31 @@ link.</p>
    <a href="../baixa-fisica/">physical check-in</a> is confirmed.</p>
 </li>
 <li>
+<p>Scroll down to <strong>Picos de uso</strong> (Usage peaks). The <strong>Retiradas por dia</strong>
+   chart has one bar per day of the period, including the days with no pickup,
+   which show up as zero. The number above the tallest bar is the peak; hover
+   (or move with the keyboard arrows) to read the other days.</p>
+<p><a href="../../../assets/images/relatorios/07-retiradas-por-dia-barras.png"><img alt="The pickups per day chart in bars, one bar per day of September and the number 3 above the peak" src="../../../assets/images/relatorios/07-retiradas-por-dia-barras.png" /></a></p>
+<ul>
+<li>
+<p><strong>If you prefer a line</strong> → select <strong>Linha</strong> (Line), in the corner of the
+  chart. The choice is kept on this computer for the next visits.</p>
+<p><a href="../../../assets/images/relatorios/08-retiradas-por-dia-linha.png"><img alt="The same chart as a line" src="../../../assets/images/relatorios/08-retiradas-por-dia-linha.png" /></a></p>
+</li>
+<li>
+<p><strong>If you need the exact numbers</strong> → select <strong>Ver como tabela</strong> (View as
+  table), below the chart. It is the same series, one row per day.</p>
+</li>
+</ul>
+</li>
+<li>
 <p>Scroll down to <strong>Esgotamento por categoria</strong> (Stock depletion by category).
    Each row is a shelf, with the bar showing the occupancy and, below it, the
-   breakdown in numbers.</p>
-<p><a href="../../../assets/images/relatorios/03-esgotamento-por-categoria.png"><img alt="The three categories with their bars: notebooks at 56%, tablets at 50% with the low stock badge, and power strips at 40%" src="../../../assets/images/relatorios/03-esgotamento-por-categoria.png" /></a></p>
+   breakdown in numbers. The sentence right above the list — <strong>Situação atual
+   do estoque; o período acima não muda esta lista</strong> (Current stock status; the
+   period above does not change this list) — is not decoration: this part of
+   the tab is the snapshot of now.</p>
+<p><a href="../../../assets/images/relatorios/09-esgotamento-por-categoria.png"><img alt="The three categories with their bars: notebooks at 56%, tablets at 50% with the low stock badge, and power strips at 40%" src="../../../assets/images/relatorios/09-esgotamento-por-categoria.png" /></a></p>
 </li>
 <li>
 <p>Read the category row from right to left. <strong>56% de ocupação (5 de 9)</strong> means
@@ -1578,7 +1659,7 @@ link.</p>
   <a href="../baixa-fisica/">return queue</a>: if a device is waiting for check-in,
   confirming receipt puts a unit back on the shelf right away. If the queue
   is empty, the number is the purchase argument.</p>
-<p><a href="../../../assets/images/relatorios/04-estoque-esgotado.png"><img alt="The tablet row at 100% occupancy, 0 free, with the red out of stock badge" src="../../../assets/images/relatorios/04-estoque-esgotado.png" /></a></p>
+<p><a href="../../../assets/images/relatorios/10-estoque-esgotado.png"><img alt="The tablet row at 100% occupancy, 0 free, with the red out of stock badge" src="../../../assets/images/relatorios/10-estoque-esgotado.png" /></a></p>
 </li>
 <li>
 <p>If <strong>Estoque Crítico</strong> shows up (amber) → one or two units are left. Tell
@@ -1591,18 +1672,20 @@ link.</p>
 </li>
 <li>
 <p>Select the <strong>Satisfação</strong> (Satisfaction) tab. The two cards are two fixed
-   windows — <strong>Últimos 30 dias</strong> (Last 30 days) and <strong>Desde o início</strong> (Since
-   the beginning) — and each one brings the average on the 1 to 4 scale, how
-   many answers there were and the response rate, and the distribution in four
-   bars, one per face.</p>
-<p><a href="../../../assets/images/relatorios/06-satisfacao.png"><img alt="The satisfaction tab: two cards side by side, each with the average, the answers, the response rate and four bars with a colored face on each, and the download button below" src="../../../assets/images/relatorios/06-satisfacao.png" /></a></p>
+    windows — <strong>Últimos 30 dias</strong> (Last 30 days) and <strong>Desde o início</strong> (Since
+    the beginning) — and each one brings the average on the 1 to 4 scale, how
+    many answers there were and the response rate, and the distribution in four
+    bars, one per face. The line <strong>Esta aba não usa o período acima</strong> (This tab
+    does not use the period above) is there as a reminder: the two windows do
+    not change with the selector.</p>
+<p><a href="../../../assets/images/relatorios/11-satisfacao.png"><img alt="The satisfaction tab: the note that the tab does not use the period, two cards side by side with the average, the answers, the response rate and four bars with a colored face on each, and the download button below" src="../../../assets/images/relatorios/11-satisfacao.png" /></a></p>
 </li>
 <li>
 <p>Read the card from top to bottom: <strong>3,3 de 4</strong> (3.3 out of 4) is the
-   average of the ratings; <strong>33 respostas · 87% de taxa de resposta (33 de 38
-   pedidas)</strong> says the faces showed up 38 times and 33 people tapped; and the
-   bars say how many tapped each face. The bar is the share among the answers,
-   and the number next to it is the count.</p>
+    average of the ratings; <strong>33 respostas · 87% de taxa de resposta (33 de 38
+    pedidas)</strong> says the faces showed up 38 times and 33 people tapped; and the
+    bars say how many tapped each face. The bar is the share among the answers,
+    and the number next to it is the count.</p>
 </li>
 <li>
 <p>Is there any row? If the tab says "Nenhuma avaliação ainda. Os rostos
@@ -1610,10 +1693,10 @@ link.</p>
     (No rating yet. The faces show up on the tablet at the end of a pickup,
     once every 30 days per person.), nobody has been asked yet — the cards and
     the download button only show up with the first row.</p>
-<p><a href="../../../assets/images/relatorios/08-satisfacao-vazia.png"><img alt="The satisfaction tab with no rating at all: only the title, the explanation and the sentence saying no rating exists yet" src="../../../assets/images/relatorios/08-satisfacao-vazia.png" /></a></p>
+<p><a href="../../../assets/images/relatorios/13-satisfacao-vazia.png"><img alt="The satisfaction tab with no rating at all: only the title, the explanation and the sentence saying no rating exists yet" src="../../../assets/images/relatorios/13-satisfacao-vazia.png" /></a></p>
 </li>
 <li>
-<p>Want to cross the data some other way? Select <strong>Baixar planilha</strong>
+<p>Want to cross the ratings some other way? Select <strong>Baixar planilha</strong>
     (Download spreadsheet). The <code>avaliacoes-YYYY-MM-DD.csv</code> file lands in the
     downloads folder with one row per time the faces showed up, in the <code>dia</code>
     (day) and <code>nota</code> (rating) columns — the rating blank when nobody answered.
@@ -1626,7 +1709,7 @@ link.</p>
     starting with <code>https://</code>, and select <strong>Salvar</strong> (Save). The preview next to
     it shows the QR code exactly as it appears on the tablet. To take the QR
     code off the tablet, save with the field blank.</p>
-<p><a href="../../../assets/images/relatorios/07-formulario-de-sugestoes.png"><img alt="The suggestion form card, with the address field filled in, the Save button and the QR code preview on the right" src="../../../assets/images/relatorios/07-formulario-de-sugestoes.png" /></a></p>
+<p><a href="../../../assets/images/relatorios/12-formulario-de-sugestoes.png"><img alt="The suggestion form card, with the address field filled in, the Save button and the QR code preview on the right" src="../../../assets/images/relatorios/12-formulario-de-sugestoes.png" /></a></p>
 <div class="admonition tip">
 <p class="admonition-title">How to create the form</p>
 <p>In Google Forms, with the <strong>institutional account of the sector</strong> —
@@ -1640,13 +1723,104 @@ sticker covers whoever only came to return.</p>
 </div>
 </li>
 <li>
-<p>The <strong>Ranking de Consumo</strong> (Usage ranking) and <strong>Índice de Manutenção</strong>
-    (Maintenance rate) tabs have no report yet. Opening either one shows a
-    notice, not an error.</p>
-<p><a href="../../../assets/images/relatorios/05-aba-sem-relatorio.png"><img alt="The usage ranking tab selected, showing the dashed box with the report under development notice" src="../../../assets/images/relatorios/05-aba-sem-relatorio.png" /></a></p>
+<p>Select the <strong>Ranking de Consumo</strong> (Usage ranking) tab. It obeys the same
+    period as the top. The four cards say how many pickups there were, how many
+    distinct people picked up, and the two medians: <strong>Tempo de uso</strong> (usage
+    time, from pickup to the declared return) and <strong>Tempo de prateleira</strong>
+    (shelf time, from the return to the physical check-in). A card showing "—"
+    is a median with no sample — nobody returned yet, or nobody picked up.</p>
+<p><a href="../../../assets/images/relatorios/14-ranking-de-consumo.png"><img alt="The usage ranking tab: four cards at the top, the pickups by category chart in bars on the left and the table by category on the right" src="../../../assets/images/relatorios/14-ranking-de-consumo.png" /></a></p>
+</li>
+<li>
+<p>Read <strong>Retiradas por categoria</strong> (Pickups by category): the chart and the
+    table next to it say the same thing. The table lists every category,
+    including the ones nobody picked up from, with each one's <strong>fatia</strong> (share)
+    of the total.</p>
+<p><a href="../../../assets/images/relatorios/15-retiradas-por-categoria-barras.png"><img alt="The pickups by category chart in horizontal bars, one per category, each in its own color" src="../../../assets/images/relatorios/15-retiradas-por-categoria-barras.png" /></a></p>
+<ul>
+<li>
+<p><strong>If you prefer the pie</strong> → select <strong>Pizza</strong> (Pie). It is the only
+  composition on the screen where a pie makes sense; above six categories,
+  the smallest ones become "Outras" (Others).</p>
+<p><a href="../../../assets/images/relatorios/16-retiradas-por-categoria-pizza.png"><img alt="The same chart as a pie, with the percentage written on the slices and the legend below" src="../../../assets/images/relatorios/16-retiradas-por-categoria-pizza.png" /></a></p>
+</li>
+</ul>
+</li>
+<li>
+<p>Scroll down to <strong>Por equipamento</strong> (By device). Every device in circulation
+    is listed, including the ones with zero pickups — the zero rows go to the
+    end, in gray. A retired device only shows up if it has a pickup in the
+    period, with <strong>Inativo</strong> (Inactive) as its status on the row.</p>
+<p><a href="../../../assets/images/relatorios/17-ranking-por-equipamento.png"><img alt="The ranking by device: asset tag, category, current status, pickups, the bar and the median usage, from the most picked up to the least" src="../../../assets/images/relatorios/17-ranking-por-equipamento.png" /></a></p>
+</li>
+<li>
+<p>Scroll down to <strong>Por pessoa</strong> (By person). Only whoever picked up at least
+    once in the period is listed; the name is today's record.</p>
+<p><a href="../../../assets/images/relatorios/18-ranking-por-pessoa.png"><img alt="The ranking by person: name, enrollment number, profile, pickups, the bar and the median usage" src="../../../assets/images/relatorios/18-ranking-por-pessoa.png" /></a></p>
+</li>
+<li>
+<p>Want to take the numbers to the coordination? Select <strong>Baixar planilha
+    (.xlsx)</strong> (Download spreadsheet), at the top of the tab. The
+    <code>consumo-YYYY-MM-DD-a-YYYY-MM-DD.xlsx</code> file lands in the downloads folder
+    with four sheets: <strong>Equipamentos</strong>, <strong>Categorias</strong> and <strong>Pessoas</strong> are the
+    three tables on screen, column by column; <strong>Retiradas</strong> is one row per loan
+    in the period, with asset tag, category, pickup, declared return, check-in,
+    status and the two times — <strong>without name or enrollment number</strong>. Counts
+    and times go as numbers (the times in minutes), so Excel can add them up
+    and average them. The <strong>Ocupação e picos de uso</strong> tab has the same button,
+    and its file (<code>ocupacao-…xlsx</code>) brings <strong>Categorias</strong> (the stock snapshot,
+    with the reading date and time on the first row) and the <strong>Retiradas por
+    dia</strong> series. The screen does not reload.</p>
+</li>
+<li>
+<p>Pasted a link with a date that does not exist, or with the end before the
+    start? The screen warns you and shows the current month, instead of
+    failing.</p>
+<p><a href="../../../assets/images/relatorios/19-periodo-invalido.png"><img alt="The period selector and, below it, the amber notice Invalid period. Showing the current month." src="../../../assets/images/relatorios/19-periodo-invalido.png" /></a></p>
+</li>
+<li>
+<p>The <strong>Índice de Manutenção</strong> (Maintenance rate) tab has no report yet.
+    Opening it shows a notice, not an error.</p>
+<p><a href="../../../assets/images/relatorios/20-aba-sem-relatorio.png"><img alt="The maintenance rate tab selected, showing the dashed box with the report under development notice and the three reports that exist" src="../../../assets/images/relatorios/20-aba-sem-relatorio.png" /></a></p>
 </li>
 </ol>
 <h2 id="6-rules-that-are-not-obvious">6. Rules that are not obvious</h2>
+<p><a id="the-tab-and-the-period-live-in-the-address"></a></p>
+<div class="admonition question">
+<p class="admonition-title">Why do the tab and the period live in the page address?</p>
+<p>Because changing the period is a new query to the database, and the way to
+make a new query is to navigate: the address carries <code>de</code> and <code>ate</code> with
+resolved dates — never "this month". A link saved today shows September in
+November, and reloading the page (F5) keeps the period <strong>and</strong> the tab.</p>
+<p>Switching tabs, in turn, does not go to the server: the four panels
+already arrived ready, and the address is only updated so the link stays
+right. This reverses a choice from the first version of this screen, where
+the tab went back to the first one on every reload — the reason for that
+choice (no link worth sharing) went away when the period moved into the
+address.</p>
+</div>
+<p><a id="what-enters-the-period-is-the-pickup"></a></p>
+<div class="admonition question">
+<p class="admonition-title">A device picked up in August and returned in September counts in which month?</p>
+<p>In <strong>August</strong>. What enters the period is the <strong>pickup</strong>: a loan belongs to
+the period it was picked up in, and to that one only. A return outside the
+period does not change the attribution, and its usage time — which crosses
+the month boundary — enters August's median.</p>
+<p>The rule is the same for the three rankings, the cards and the chart,
+because two rules would give two totals for the same question.</p>
+</div>
+<p><a id="why-medians"></a></p>
+<div class="admonition question">
+<p class="admonition-title">Why are the times medians, and not averages?</p>
+<p>Because a notebook forgotten over the weekend skews the average of a whole
+week: ten two-hour loans and one three-day loan give an eight-hour average
+that describes none of them. The median is the middle value — half fell
+below, half above — and one extreme case does not drag it.</p>
+<p>Loans still open count as pickups and stay <strong>out</strong> of the usage median:
+they have no return yet. And shelf time only counts on completed loans
+that carry both records; the ones completed before the system recorded the
+physical check-in stay out on their own, instead of entering as zero.</p>
+</div>
 <p><a id="why-does-occupancy-count-devices-under-maintenance"></a></p>
 <div class="admonition question">
 <p class="admonition-title">Why does occupancy count a device under maintenance together with one on loan?</p>
@@ -1663,6 +1837,16 @@ saying the stock ran out — and both would be right at the same time.</p>
 not get lost. Maintenance is a device that <strong>can</strong> come back; a loan is a
 device that <strong>will</strong> come back.</p>
 </div>
+<p><a id="why-does-occupancy-not-obey-the-period"></a></p>
+<div class="admonition question">
+<p class="admonition-title">I chose August and the category list did not change. Is that right?</p>
+<p>It is. Occupancy by category is the <strong>snapshot of now</strong>, and there is no
+such thing as "occupancy on August 3rd": the system does not store each
+device's status on each day, only today's. What obeys the period on that
+tab is the <strong>Retiradas no período</strong> card and the <strong>Retiradas por dia</strong>
+chart. The sentence above the list says so, so nobody reads the bars as if
+they belonged to the chosen month.</p>
+</div>
 <p><a id="why-is-a-retired-device-left-out-of-the-count"></a></p>
 <div class="admonition question">
 <p class="admonition-title">Why is a retired device left out of the count?</p>
@@ -1678,13 +1862,19 @@ loan, would show 60% occupancy with an empty shelf.</p>
 is retired. Retired devices show up on this screen in parentheses, <strong>outside
 the count</strong>, so the numbers still add up against the <strong>Inventário</strong> tab,
 which shows the whole asset base instead.</p>
+<p>In the <strong>Ranking de Consumo</strong> the rule is different, and deliberately so: a
+retired device <strong>enters</strong> the ranking by device if it has a pickup in the
+period, with <strong>Inativo</strong> as its status on the row. A whole-year report
+covers months when it still circulated, and hiding it would make the rows
+stop adding up against the pickups card. With no pickup in the period, it
+does not show up.</p>
 </div>
 <p><a id="why-do-the-loans-this-month-not-drop-when-somebody-returns"></a></p>
 <div class="admonition question">
-<p class="admonition-title">Why does Empréstimos no Mês not drop when somebody returns a device?</p>
+<p class="admonition-title">Why does Retiradas no período not drop when somebody returns a device?</p>
 <p>Because it counts <strong>pickups</strong>, and a pickup that happened does not unhappen.
-The number answers "how much work went through the counter this month" and
-climbs until the first day of the next month, when it goes back to zero.</p>
+The number answers "how much work went through the counter" in the chosen
+window, and only changes if the window changes.</p>
 <p>The card next to it, <strong>Equipamentos na Rua</strong>, is the one that answers "how
 much is out right now". The two measure different things on purpose: one is
 the movement, the other is the stock.</p>
@@ -1719,28 +1909,43 @@ would be a permanent red, which teaches the eye to ignore the others. The row
 shows up with no bar, in gray text, and it disappears from the tablet grid
 for the same reason.</p>
 </div>
-<p><a id="why-does-the-tab-go-back-to-the-first-one"></a></p>
+<p><a id="why-does-satisfaction-not-use-the-period"></a></p>
 <div class="admonition question">
-<p class="admonition-title">Why does the tab go back to the first one when I reload the page?</p>
-<p>Because the chosen tab does not go into the address. It is a design choice:
-the whole report already arrives ready when the page opens, and switching
-tabs queries nothing — the switch is instant because nothing goes to the
-server.</p>
-<p>The price is this: reloading goes back to <strong>Ocupação e picos de uso</strong>, and no
-link opens a specific tab directly. For a screen consulted standing up, in
-one session, nobody shares a link to a report tab.</p>
+<p class="admonition-title">Why does the Satisfação tab not obey the period?</p>
+<p>Because its data is different: one whole-number rating per day, with no
+time, no enrollment number and no profile — that is what makes the rating
+anonymous. A one-day filter, on a day when a single person was asked,
+would leave that person's rating one click away. The two windows are fixed
+(<strong>Últimos 30 dias</strong> and <strong>Desde o início</strong>), the tab says so in one line,
+and whoever wants another cut downloads the CSV.</p>
 </div>
 <p><a id="why-can-i-not-compare-with-last-month"></a></p>
 <div class="admonition question">
-<p class="admonition-title">Why can I not see last month, or export the occupancy?</p>
-<p>Because the occupancy report is a snapshot of now, and this is its first
-version. The system stores every loan with its dates — the data to compare
-months <strong>exists</strong> — but the screen that would read it has not been built.
-The <strong>Satisfação</strong> tab is the only one that exports, and what it exports is
-the raw list, for the crossing to be done elsewhere.</p>
-<p>The same goes for the <strong>Ranking de Consumo</strong> and <strong>Índice de Manutenção</strong>
-tabs: the names are in the menu to say what is coming, and the notice inside
-them says it is not here yet.</p>
+<p class="admonition-title">Can I compare with last month?</p>
+<p>Only by looking at both: choose a month, note the number, choose the other.
+The screen shows no difference and no trend arrow — every opening is a
+snapshot of a single period. To compare several months at once, the way is
+the whole year in the selector (the pickups chart switches to months) or
+the exported spreadsheet, where the coordination builds whatever pivot it
+wants.</p>
+<p>The <strong>Índice de Manutenção</strong> tab is still declared and not built: the name
+is in the menu to say what is coming, and the notice inside it says it is
+not here yet.</p>
+</div>
+<p><a id="why-does-the-spreadsheet-carry-no-name"></a></p>
+<div class="admonition question">
+<p class="admonition-title">The Retiradas sheet in the spreadsheet has no name of who picked up. Why?</p>
+<p>On purpose. The ranking by person, on screen and in the <strong>Pessoas</strong> sheet
+of the file, already answers "who" — with name, enrollment number and the
+count. The <strong>Retiradas</strong> sheet exists for the pivot (by category, by day,
+by usage time), and the name is not needed for that. Without it, each
+person's named history does not leave the panel inside a file that will
+travel by e-mail.</p>
+<p>The ranking by person is a deliberate exposure, decided by the coordination
+in September 2026 — see
+<a href="../../referencia/regras-de-negocio/#the-ranking-by-person-is-deliberate-and-the-rating-stays-anonymous">Business rules</a>.
+It does not change the anonymity promise of the rating, which is another
+table, with no enrollment number.</p>
 </div>
 <p><a id="why-does-it-not-show-who-voted"></a></p>
 <div class="admonition question">
@@ -1780,13 +1985,15 @@ faces — it is because they started ignoring them more.</p>
 </div>
 <p><a id="why-does-the-csv-open-in-a-single-column"></a></p>
 <div class="admonition question">
-<p class="admonition-title">I opened the spreadsheet in Excel and everything came in a single column</p>
+<p class="admonition-title">I opened the ratings spreadsheet in Excel and everything came in a single column</p>
 <p>Because the file separates columns with commas (the standard CSV format),
 and Excel in Portuguese expects semicolons when you double-click the file.
 It is not wrong — it is reading with the system separator.</p>
 <p>The way is to import instead of opening: <strong>Data → From Text/CSV</strong>, pick the
 file, and Excel recognizes the comma on its own. Google Sheets and
-LibreOffice open it directly.</p>
+LibreOffice open it directly. The <strong>Consumo</strong> and <strong>Ocupação</strong> spreadsheets
+have no such problem: they are <code>.xlsx</code>, and open with two or more columns on
+a double-click.</p>
 </div>
 <h2 id="7-common-errors-and-what-to-do">7. Common errors and what to do</h2>
 <!-- vale Microsoft.Ellipses = NO -->
@@ -1801,9 +2008,19 @@ LibreOffice open it directly.</p>
 </thead>
 <tbody>
 <tr>
+<td>"Período inválido. Mostrando o mês atual."</td>
+<td>The address carried a date that does not exist (February 30th), a wrong format, or a start after the end — almost always a link copied halfway.</td>
+<td>Nothing is lost: the screen shows the current month. Choose the period again in the selector. It is not a system error: it is the link.</td>
+</tr>
+<tr>
+<td>"Nenhuma retirada em …"</td>
+<td>The chosen period has no pickup recorded. The cards show 0 and "—".</td>
+<td>Check the window in the selector. If the period is right, that is the number — nobody picked anything up.</td>
+</tr>
+<tr>
 <td>"Relatório em desenvolvimento..."</td>
-<td>You opened <strong>Ranking de Consumo</strong> or <strong>Índice de Manutenção</strong>. Neither exists yet.</td>
-<td>Go back to <strong>Ocupação e picos de uso</strong>, the only tab with data. It is not an error: the screen is telling you so.</td>
+<td>You opened <strong>Índice de Manutenção</strong>. That one does not exist yet.</td>
+<td>Go back to one of the other three tabs. It is not an error: the screen is telling you so.</td>
 </tr>
 <tr>
 <td>"Nenhuma categoria cadastrada ainda."</td>
@@ -1819,6 +2036,11 @@ LibreOffice open it directly.</p>
 <td>"Nenhuma avaliação ainda. Os rostos aparecem no tablet ao fim da retirada, uma vez a cada 30 dias por pessoa."</td>
 <td>The faces have not shown up for anybody yet — the system was just installed, or nobody picked equipment up since.</td>
 <td>Nothing to do. The first card shows up with the first pickup. It is not an error: the screen is telling you so.</td>
+</tr>
+<tr>
+<td>"Não foi possível gerar a planilha. Recarregue a página e tente de novo."</td>
+<td>The piece of the program that builds the file did not reach the browser — the network dropped halfway, or the page stayed open for too long.</td>
+<td>Reload the page and select the button again. Nothing was stored or lost: the spreadsheet is built on the spot, from what is on screen.</td>
 </tr>
 <tr>
 <td>"Endereço inválido."</td>
