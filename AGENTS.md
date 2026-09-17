@@ -34,7 +34,7 @@ descreve o sistema, não o define.
 | --- | --- |
 | [`especificacoes/spec.md`](especificacoes/spec.md) | A base arquitetural. Manda sobre o sistema inteiro. |
 | [`especificacoes/spec-wiki.md`](especificacoes/spec-wiki.md) | Manda sobre `docs/` e sobre a série `tarefa-doc-NN`. |
-| [`especificacoes/tarefas/pendentes/`](especificacoes/tarefas/pendentes/) | Enunciado de tarefa ainda **não** executada. Hoje, um: a Tarefa 16. |
+| [`especificacoes/tarefas/pendentes/`](especificacoes/tarefas/pendentes/) | Enunciado de tarefa ainda **não** executada. Hoje, nenhum: a fila está vazia. |
 | [`especificacoes/tarefas/concluidas/`](especificacoes/tarefas/concluidas/) | Enunciados já executados, guardados como histórico. Não são fonte de trabalho novo. |
 | `docs/` | A wiki publicada pelo MkDocs. **Enunciado de tarefa nunca entra aqui** — o Vale lintaria e o MkDocs publicaria. |
 
@@ -45,40 +45,46 @@ arquivos que as ferramentas exigem lá: `README.md`, `CLAUDE.md`, `AGENTS.md` e
 
 ### Fila de trabalho — "faça a próxima tarefa" quer dizer isto
 
-Atualizada em 2026-09-17, depois da sessão de alinhamento dos relatórios. O
-dono do repositório abre a sessão só com esse prompt; esta seção é a resposta.
+Atualizada em 2026-09-17, no fechamento da Tarefa 16. O dono do repositório
+abre a sessão só com esse prompt; esta seção é a resposta.
 
-**A próxima é a Tarefa 16**, e o enunciado está em
-[tarefa-16-ranking-de-consumo.md](especificacoes/tarefas/pendentes/tarefa-16-ranking-de-consumo.md):
-o relatório Ranking de Consumo, o seletor de período (dia, mês, ano ou
-intervalo, nos `searchParams`) e a exportação em .xlsx — as duas peças
-compartilhadas nascem ali. Ele saiu de uma sessão de alinhamento em
-2026-09-17 (varredura → estratégia → decisões em lote), e a §0 dele registra
-as treze decisões com o porquê; **não as reabra sem motivo novo**. Execute pela
-`executar-tarefa-especificada`, com a varredura de conflitos antes da primeira
-edição. Duas dependências de leitura antes de escrever: o guia de
-`searchParams` e de *shallow routing* em `node_modules/next/dist/docs/`, e a
-documentação da versão instalada do Recharts (dependência nova aprovada na
-§0).
-
-**A Tarefa 17 (Índice de Manutenção) ainda não tem enunciado** — ele será
-escrito depois que a 16 fechar, porque consome o seletor e a exportação que
-ela cria e precisa de schema novo (histórico de status do equipamento; hoje
-`Equipamento` não guarda quando entrou ou saiu de `MANUTENCAO`). As decisões
-já tomadas para ela estão na §0 da Tarefa 16: tabela de histórico gravada por
-`alterarStatusEquipamento` com o `administrador_id`, histórico vazio antes da
-migration, e o índice em `Emprestimo.data_retirada` de carona na mesma
-migration. As demais ideias de "Próximos passos possíveis", no fim do estado
-atual, **não estão na spec** e precisam de um enunciado antes de virar código.
+**A fila está vazia: a Tarefa 16 fechou nesta sessão** (ver "Tarefa 16" no
+estado atual), e **a Tarefa 17 (Índice de Manutenção) ainda não tem
+enunciado**. Ele precisa ser escrito antes de qualquer código — pela
+`entrevistar-antes-de-planejar`, no formato dos anteriores, em
+`especificacoes/tarefas/pendentes/` —, porque a 17 exige schema novo
+(histórico de status do equipamento; hoje `Equipamento` não guarda quando
+entrou ou saiu de `MANUTENCAO`). As decisões já tomadas para ela estão na §0
+do [enunciado da Tarefa 16](especificacoes/tarefas/concluidas/tarefa-16-ranking-de-consumo.md):
+tabela de histórico gravada por `alterarStatusEquipamento` com o
+`administrador_id`, histórico vazio antes da migration, e o índice em
+`Emprestimo.data_retirada` de carona na mesma migration. As duas peças que
+ela consome já existem e têm dono: o período em
+[periodo.ts](src/lib/periodo.ts) (puro; a página passa o `Periodo` já
+interpretado) e a exportação em [exportar-xlsx.ts](src/lib/exportar-xlsx.ts)
+(o `BotaoBaixarXlsx` recebe as abas prontas). Os dois componentes de gráfico
+em `src/components/admin/graficos/` também são para ela. As demais ideias de
+"Próximos passos possíveis", no fim do estado atual, **não estão na spec** e
+precisam de um enunciado antes de virar código.
 
 O que **não** precisa ser refeito: o Pages está no ar; a tag `v1.0` está no
-remoto; a **`v1.2` está aberta** — o workflow publica `v1.2 (em andamento)`, o
-`set-default` continua na `v1.1`, e as duas homes dizem "em andamento". Quando
-a `v1.2` fechar, a tabela da seção "Como a wiki é publicada" do
+remoto; a **`v1.2` continua aberta** (a §0 da Tarefa 16 deixou para a 17
+decidir se fecha) — o workflow publica `v1.2 (em andamento)`, o `set-default`
+continua na `v1.1`, e as duas homes dizem "em andamento". Quando a `v1.2`
+fechar, a tabela da seção "Como a wiki é publicada" do
 [CONTRIBUTING.md](CONTRIBUTING.md) diz os quatro lugares a mexer. **A tag
 `v1.1` continua sendo do dono criar e publicar** (não existe nem no local nem
 no remoto — conferido em 2026-09-16), e a `v1.2` será dele quando fechar. O
 `push` continua sendo do dono, a menos que ele autorize na mensagem.
+
+**Esta máquina tem um `dev-demo.db` na raiz** (ignorado pelo Git), criado na
+Tarefa 16 pela receita "Capturar sem mexer no seu `dev.db`" do CONTRIBUTING:
+é o banco de captura, com o cenário do `db:demo` e o histórico de 90 dias. O
+`next dev` desta sessão subiu na porta 3100 apontando para ele e **foi
+encerrado no fim**; o `dev.db` do dono não foi tocado (md5 conferido no
+começo e no fim). Para testar a Tarefa 16 com dado de verdade, `npm run dev`
+como sempre; para ver o relatório cheio, `DATABASE_URL="file:./dev-demo.db"
+npx next dev -p 3100`.
 
 **O `dev.db` desta máquina recebeu duas migrations na Tarefa 14**, e não uma:
 ele estava com a `20260822160000_perfil_estudante` (Tarefa 8.1) **por aplicar**
@@ -1268,11 +1274,13 @@ esgotado montado e desmontado (14).
   trabalhar no balcão — veio responder à coordenação. O comentário do
   [CascaAdmin](src/components/admin/CascaAdmin.tsx), que dizia "Pessoas fica por
   último", foi reescrito junto.
-- **A aba viva não entra na URL.** Mesma escolha dos filtros da Tarefa 7, pelo
-  mesmo motivo: o relatório inteiro já chega no render e trocar de aba não
-  consulta o banco. O preço é conhecido e está escrito na §6 da página da wiki —
-  recarregar volta para a primeira aba, e não há link que abra numa aba
-  específica.
+- ~~**A aba viva não entra na URL.**~~ **Revertida na Tarefa 16**, que pôs o
+  período nos `searchParams`: trocar o período passou a ser uma navegação, e
+  sem a aba na URL cada troca voltaria para a primeira aba. Hoje a aba vai
+  para a URL por `history.replaceState` (sem ir ao servidor — medido: zero
+  requisições RSC na troca de aba) e F5 mantém aba e período. O que **não**
+  mudou: os quatro painéis continuam no DOM sob `hidden`, e trocar de aba
+  continua sem consultar o banco.
 - **Os três painéis ficam no DOM, escondidos pelo atributo `hidden`, e
   NENHUMA classe de `display` pode tocar aquele elemento.** No Tailwind, um
   `flex` ali venceria o atributo e os três painéis apareceriam empilhados. É a
@@ -1586,6 +1594,161 @@ larguras do painel, com o contraste calculado pelo pixel do `<canvas>`.
   dentro do hostname, como o `bpmn` dentro de `bpmn.io` na D05. Na wiki o
   texto do link é o handle (`viccenzo-boff`), com o rótulo "GitHub:" antes; no
   README e no tablet, que o Vale não lê, o hostname fica por extenso.
+
+**Tarefa 16 — Ranking de Consumo, período e exportação (concluída):** os
+nove blocos de
+[tarefa-16-ranking-de-consumo.md](especificacoes/tarefas/concluidas/tarefa-16-ranking-de-consumo.md)
+— o seletor de período (Dia · Mês · Ano · Período) acima das abas, com
+`?aba=…&de=…&ate=…` na URL; o relatório **Ranking de Consumo** (quatro
+cartões, três rankings com barra em linha, o gráfico de retiradas por
+categoria); a aba Ocupação obedecendo ao período, com o gráfico "Retiradas por
+dia" (grão automático: dia, semana ou mês); os dois componentes de gráfico em
+Recharts; a exportação em `.xlsx` gerada no navegador (Consumo com quatro
+abas, Ocupação com duas); o `db:demo` com 38 concluídos nos últimos 90 dias;
+e a wiki nos dois idiomas com vinte capturas. Dependências novas aprovadas:
+`recharts` 3.10.1 e `react-is` 19.2.8, as duas fixadas; `npm audit` com os
+mesmos 8 avisos antes e depois. `tsc`, `lint` e `build` em 0, com as seis
+rotas do painel dinâmicas (`ƒ`) e a `/` estática; `mkdocs build --strict`,
+`vale docs/` (33 arquivos, 0 erro), `npm run docs:links` (36 páginas, 3017
+referências) e `npm run docs:diagramas -- --verificar` em 0. Sem migration.
+
+Verificação em seis degraus, tudo contra o `dev-demo.db` e com o `dev.db` do
+dono **conferido por md5** no fim (idêntico): premissas por script — a
+fronteira do período pelo Prisma nas duas pontas em cópia do banco (6
+asserções), o `XLSX.write` de quatro abas indo e voltando (11), a paleta de
+seis tons por cálculo (contraste e ΔE sob os três daltonismos), o `react-is`
+e o `<input type="date">` do Chrome; a aritmética do relatório contra um
+cálculo independente pelo driver (57 asserções, mais 5 com um `CONCLUIDO`
+sem baixa plantado e desfeito, e a idempotência do `db:demo` por comparação
+estrutural); HTTP real com o login pela via sem JavaScript (26 — os quatro
+períodos tortos com o aviso, `aba=constructor` na primeira, e nenhum script
+de Recharts/SheetJS no pacote inicial de `/admin` e `/admin/inventario`);
+navegador real por CDP (70 — cada unidade do seletor, a folga de digitação, o
+Aplicar do intervalo, F5, o seletor de visualização sobrevivendo à recarga, o
+tooltip por teclado, os dois downloads lidos de volta pelo `XLSX.read`, o
+estado vazio, o aviso, as cinco larguras, o contraste pelo pixel do canvas,
+`prefers-reduced-motion`, e as contagens de requisição RSC — zero na troca de
+aba, uma na de período); a leitura visual das vinte capturas, que achou três
+defeitos que nenhuma asserção viu; e o `build` de produção medido: Recharts
+num pedaço de 368 KB e SheetJS num de 375 KB, nenhum entre os 430 KB comuns
+nem referenciado pelas outras telas.
+
+**Decisões da Tarefa 16** (não refazer sem motivo):
+
+- **O aposentado entra no ranking por equipamento se tiver retirada no
+  período, contra a letra do enunciado ("Inativo não entra").** Um relatório
+  do ano inteiro cobre meses em que ele ainda circulava; escondê-lo faria a
+  soma das linhas não fechar com o cartão nem com a tabela por categoria, sem
+  erro em lugar nenhum. Sem retirada, ele fica de fora — o "nunca sai da
+  prateleira" vale só para quem está em circulação. Levantado como conflito
+  antes da primeira edição; decisão do dono. O `db:demo` tem uma retirada do
+  `NOTE-10` de propósito, para a linha "Inativo" aparecer na captura.
+- **A aba Satisfação ganhou uma linha de texto ("Esta aba não usa o período
+  acima: os dois recortes são fixos."), embora a §0 a declarasse intocada.**
+  O seletor fica acima de todas as abas, e quem escolheu "agosto" leria os
+  dois recortes como de agosto. Nenhum número, botão ou consulta mudou.
+  Decisão do dono.
+- **`react-is` entrou como dependência direta, fixada em 19.2.8, e isso não
+  estava no enunciado.** O Recharts declara `react-is` como peer, e o `npm`
+  satisfez a faixa com a `16.13.1` que já estava na árvore do ESLint. Com
+  React 19 isso é um desencontro silencioso: o `isFragment` da 16 compara
+  `$$typeof` com `react.element`, e o React 19 marca elementos como
+  `react.transitional.element` — provado por script, um `<Fragment>` de
+  verdade voltava `false`. O Recharts o usa para achatar filhos do gráfico. O
+  próprio README do Recharts diz "react-is needs to match the version of your
+  installed react". `npm ls react-is` mostra a 19 no topo e a 16 só sob o
+  `prop-types` do ESLint.
+- **O `change` do `<input type="date">` dispara a cada tecla no Chrome, e o
+  seletor aplica com folga de 500 ms.** Medido em página descartável por
+  CDP, Chrome pt-BR: digitar "03" no dia dispara `input`+`change` com valor
+  vazio (inválido) e depois com `2026-09-03`; digitar "10" no campo de mês
+  navegaria para janeiro e depois outubro. O campo aplica só valor válido
+  dentro de `min`/`max` (`min` em 2020-01-01 para "0002", o ano a meio
+  caminho de 2026, ficar inválido) e depois de 500 ms sem tecla; o calendário
+  aplica num clique. Não é debounce de rede — é de dedo.
+- **A unidade em edição é estado local; a unidade aplicada é derivada da
+  URL.** O enunciado manda derivar; derivar sozinho não deixaria clicar em
+  "Período" e editar dois campos sem navegar. O seletor é remontado por `key`
+  a cada período aplicado, então o estado local nasce do período novo. O
+  estado neutro em um gesto já existe: o item "Relatórios" do menu leva a
+  `/admin/relatorios` sem parâmetros.
+- **Ano no `<select>`: do ano da primeira retirada ao corrente, contínuo,
+  por um `aggregate` de mínimo.** Não é `strftime` em SQL cru: o texto gravado
+  é UTC, e uma retirada às 23h de 31 de dezembro cairia no ano seguinte.
+- **O `$queryRaw` re-serializa a coluna `DateTime` com `Z`**, e o texto
+  gravado no arquivo continua sendo `+00:00` (lido pelo driver, sem o Prisma
+  no meio). A regra da Tarefa 13 continua valendo; quem quiser ver o formato
+  gravado precisa ler pelo `better-sqlite3`, senão vê a re-serialização.
+- **`abaDaUrl` mora em `tipos.ts`, e não em `AbasDeRelatorios.tsx`.** Export
+  de módulo `"use client"` chamado de um Server Component não é função, é
+  referência de cliente — a página chama isso no servidor.
+- **O nome do arquivo exportado é montado no botão, dentro do mesmo
+  `import()` do SheetJS.** A primeira versão o montava no `RelatorioDeConsumo`
+  (servidor), importando `exportar-xlsx.ts` — que importa o SheetJS
+  estaticamente: 1 MB no servidor por causa de uma função de string.
+- **As cores dos gráficos são hex, com o token ao lado.** O Recharts escreve
+  a cor no atributo `fill` do SVG, e `var()` não resolve em atributo de
+  apresentação. Os seis tons estão em
+  [cores-de-grafico.ts](src/lib/cores-de-grafico.ts) com a tabela medida:
+  todos ≥ 3,8:1 sobre branco, cada um com uma cor de rótulo a ≥ 4,5:1
+  (branco em cinco, `tinta` sobre o âmbar), e separação mínima de 10,6 (ΔE
+  OKLab × 100) entre vizinhos sob protanopia, deuteranopia e tritanopia — o
+  par verde/vinho sob deuteranopia. **Refaça o cálculo se trocar um tom ou a
+  ordem**: a separação é entre vizinhos. Texto de eixo e legenda em
+  `tinta-suave` por `formatter`, porque o Recharts pinta cada item da legenda
+  com a cor da série — e a legenda é ordenada pela ordem das fatias
+  (`itemSorter`), não alfabética, que é o padrão.
+- **O rótulo direto da pizza é posicionado à mão, a 60% do raio.** O `x`/`y`
+  que o Recharts entrega ao `label` ficam **fora** da fatia (é a posição do
+  rótulo externo padrão): branco ali some sobre o cartão. Foi achado na
+  leitura visual — a asserção de contraste "rótulo × fatia" passou com o
+  rótulo invisível, porque media contra a fatia e não contra o que estava
+  atrás do texto.
+- **O Recharts não desenha retângulo para barra de valor zero.** Contar
+  `.recharts-bar-rectangle` dá os dias **com** retirada, não os dias; quem
+  precisar do número de baldes conta as marcas do eixo ou a tabela gêmea.
+  Custou três falsos negativos no roteiro.
+- **O foco de teclado do `accessibilityLayer` fica no `<svg>`
+  (`.recharts-surface`, `tabindex=0`), não no `div.recharts-wrapper`.** Com o
+  foco no lugar certo, `ArrowRight` abre o tooltip ("Notebook 7 retiradas
+  47% do total") — medido.
+- **O gráfico em painel `hidden` nasce com largura 100 e se ajusta ao
+  aparecer.** O `responsive` do Recharts 3 usa `ResizeObserver` no invólucro;
+  medido: 100 px enquanto oculto, 982 px depois do clique na aba, sem erro de
+  console. Não precisa montar sob condição.
+- **A preferência de gráfico é lida por `useSyncExternalStore` com retrato de
+  servidor no padrão**, e o evento `storage` é disparado à mão em `escolher`
+  (ele não dispara na própria aba). Zero erros de hidratação com a preferência
+  divergindo do servidor — medido. Um mapa em memória guarda a escolha da
+  visita quando o `localStorage` recusa a escrita.
+- **`min-w-0` no `<main>` da `CascaAdmin` — defeito antigo, commit próprio.**
+  Em 1024 px a página rolava na horizontal (1131 px no relatório, **1266 no
+  inventário**, que a tarefa não tocou): item flex tem `min-width: auto`, e o
+  `main` não encolhia abaixo do `min-w` das tabelas — o `overflow-x-auto` de
+  dentro nunca chegava a rolar. As medições anteriores de "sem rolagem" eram
+  de páginas sem tabela. Com a classe, 1024 nos dois e os contêineres rolando
+  sozinhos.
+- **A tabela por categoria fica ao lado do gráfico numa grade 2fr/3fr a
+  partir de `xl`.** Ao meio, os 1024 px do conteúdo deixavam a última coluna
+  rolando escondida (visto na captura). `min-w-0` nos filhos da grade.
+- **O campo de mês tem `w-60`; o de dia, `w-44`.** "setembro de 2026" mais o
+  ícone do calendário não cabem em 11 rem — cortado na primeira captura.
+- **Cinco larguras medidas com a linha do seletor:** 1440, 1366, 1280, 1024 e
+  900 px sem rolagem horizontal e com as quatro abas em uma linha; em 1024 a
+  barra tem 656 px (o mesmo número da Tarefa 14) e as abas começam em 320 px.
+  A linha do seletor tem 92 px (56 do controle mais a frase "Mostrando …").
+  Refaça se entrar uma quinta aba ou mais um controle na linha.
+- **As capturas foram renumeradas pela ordem de aparição na página**, como a
+  D06 fixou: três sobreviveram por `git mv` (esgotado, formulário, satisfação
+  vazia), o resto foi refeito ou é novo. Vinte imagens.
+- **A planilha da ocupação nomeia a segunda aba pelo grão** ("Retiradas por
+  semana" quando o período tem mais de 31 dias), e não pelo literal
+  "Retiradas por dia" do enunciado — o nome é o título do gráfico, e mentir
+  no nome da aba é pior que divergir do enunciado. No período padrão (um mês)
+  sai "Retiradas por dia".
+- **O CONTRIBUTING agora registra que a faixa de ids do `db:demo` é
+  9001–9048 e que a sequência do SQLite avança junto.** Um empréstimo criado
+  pela tela num banco de captura nasce em 9049.
 
 **Tarefa D01 — Congelar a v1.0 e criar o estado de demonstração (concluída):**
 a primeira da **série de documentação** (`tarefa-doc-NN`, regida pela
@@ -3072,15 +3235,16 @@ criou a identidade, a 11 deu a cada pessoa uma senha própria, a 12 passou a
 registrar **quando** a baixa aconteceu — e o **quem** continua não existindo,
 porque `Emprestimo` não tem coluna de administrador).
 
-O relatório de ocupação **passou a existir na Tarefa 13**, mas ele é uma
-fotografia do agora: não compara com o mês passado, não exporta e **não lê o
-tempo de prateleira**. Os dados para as três coisas já estão no banco desde a
-Tarefa 12 — `data_devolucao` e `data_baixa` — e ninguém ainda os lê. As duas
-abas declaradas e vazias (**Ranking de Consumo** e **Índice de Manutenção**) são
-onde isso caberia. A aba **Satisfação** (Tarefa 14) é a única que exporta, e o
-que ela exporta é a lista crua em CSV; o Excel em português a abre numa coluna
-só ao clicar duas vezes, e a troca de separador para `;` é uma linha, se um
-dia incomodar. Nada disso está na spec — confirmar antes de construir.
+Os relatórios cresceram nas Tarefas 13, 14 e 16: ocupação, satisfação e o
+Ranking de Consumo, com período e exportação em `.xlsx`. O que continua fora:
+o **Índice de Manutenção** (Tarefa 17, sem enunciado; precisa de histórico de
+status), a comparação com o período anterior (delta, seta de tendência), picos
+por hora do dia ou por dia da semana, e filtro por categoria, pessoa ou perfil
+dentro do relatório — todos listados como fora de escopo na §9 da Tarefa 16. A
+aba **Satisfação** continua exportando a lista crua em CSV; o Excel em
+português a abre numa coluna só ao clicar duas vezes, e a troca de separador
+para `;` é uma linha, se um dia incomodar. Nada disso está na spec — confirmar
+antes de construir.
 
 **Correções fora de tarefa (2026-09-14):** o detalhe da recusa ao excluir
 categoria em uso (`AJUDA_DA_CATEGORIA_EM_USO`, em
@@ -3117,6 +3281,14 @@ aberto.
   subir o Next é decisão do dono, com o `build` e o degrau de navegador
   refeitos depois. **Não rode `npm audit fix --force`**: ele rebaixa o Prisma
   para 6.x e quebra este setup.
+- **`recharts` 3.10.1 e `react-is` 19.2.8 são as dependências da Tarefa 16**,
+  as duas com versão exata (sem `^`), por decisão da §0. O Recharts só é
+  importado pelos dois componentes de `src/components/admin/graficos/`, que
+  entram por `next/dynamic` com `ssr: false`; em produção ele é um pedaço de
+  368 KB que só `/admin/relatorios` pede, e o SheetJS um de 375 KB que só
+  desce no clique de "Baixar planilha". O `react-is` está no topo porque o
+  `npm` satisfazia o peer do Recharts com a 16 do ESLint — ver as decisões da
+  Tarefa 16. `npm audit` continua com os mesmos 8 avisos.
 - **`qrcode` 1.5.4 (mais `@types/qrcode`) é a única dependência da Tarefa 14**,
   aprovada no enunciado. JavaScript puro, sem rede — conferido: nenhum módulo
   de `http`/`https`/`net`/`dns` no `lib/` dela, e o `npm audit` tem os mesmos
