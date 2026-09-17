@@ -34,7 +34,7 @@ descreve o sistema, não o define.
 | --- | --- |
 | [`especificacoes/spec.md`](especificacoes/spec.md) | A base arquitetural. Manda sobre o sistema inteiro. |
 | [`especificacoes/spec-wiki.md`](especificacoes/spec-wiki.md) | Manda sobre `docs/` e sobre a série `tarefa-doc-NN`. |
-| [`especificacoes/tarefas/pendentes/`](especificacoes/tarefas/pendentes/) | Enunciado de tarefa ainda **não** executada. Hoje, nenhum: a fila está vazia. |
+| [`especificacoes/tarefas/pendentes/`](especificacoes/tarefas/pendentes/) | Enunciado de tarefa ainda **não** executada. Hoje, um: a Tarefa 17. |
 | [`especificacoes/tarefas/concluidas/`](especificacoes/tarefas/concluidas/) | Enunciados já executados, guardados como histórico. Não são fonte de trabalho novo. |
 | `docs/` | A wiki publicada pelo MkDocs. **Enunciado de tarefa nunca entra aqui** — o Vale lintaria e o MkDocs publicaria. |
 
@@ -45,31 +45,39 @@ arquivos que as ferramentas exigem lá: `README.md`, `CLAUDE.md`, `AGENTS.md` e
 
 ### Fila de trabalho — "faça a próxima tarefa" quer dizer isto
 
-Atualizada em 2026-09-17, no fechamento da Tarefa 16. O dono do repositório
-abre a sessão só com esse prompt; esta seção é a resposta.
+Atualizada em 2026-09-17, na sessão de alinhamento da Tarefa 17. O dono do
+repositório abre a sessão só com esse prompt; esta seção é a resposta.
 
-**A fila está vazia: a Tarefa 16 fechou nesta sessão** (ver "Tarefa 16" no
-estado atual), e **a Tarefa 17 (Índice de Manutenção) ainda não tem
-enunciado**. Ele precisa ser escrito antes de qualquer código — pela
-`entrevistar-antes-de-planejar`, no formato dos anteriores, em
-`especificacoes/tarefas/pendentes/` —, porque a 17 exige schema novo
-(histórico de status do equipamento; hoje `Equipamento` não guarda quando
-entrou ou saiu de `MANUTENCAO`). As decisões já tomadas para ela estão na §0
-do [enunciado da Tarefa 16](especificacoes/tarefas/concluidas/tarefa-16-ranking-de-consumo.md):
-tabela de histórico gravada por `alterarStatusEquipamento` com o
-`administrador_id`, histórico vazio antes da migration, e o índice em
-`Emprestimo.data_retirada` de carona na mesma migration. As duas peças que
-ela consome já existem e têm dono: o período em
+**A próxima tarefa é a 17 — Índice de Manutenção e histórico de situação —,
+e o enunciado está pronto em
+[tarefa-17-indice-de-manutencao.md](especificacoes/tarefas/pendentes/tarefa-17-indice-de-manutencao.md).**
+Execute-o pela `executar-tarefa-especificada`: leia o enunciado inteiro, a
+§0 dele (dezoito decisões já tomadas e aprovadas, com o porquê — **não as
+reabra sem motivo novo**) e depois este arquivo. É a primeira tarefa desde a
+14 com **migration** (tabela `MudancaDeStatus` e dois índices; sem
+transformação de dado), e a migration vai contra cópia do `dev.db` e contra o
+`dev-demo.db` desta máquina primeiro — o `dev.db` do dono só no fim, quando
+ele disser. Ela **fecha a `v1.2`** (§6 do enunciado, pela tabela do
+CONTRIBUTING). Três coisas que a varredura do alinhamento achou e que o
+enunciado manda corrigir de passagem, em commit próprio: a §3 da `spec.md`
+ainda descreve o `Equipamento` com `tipo` e três status (defeito desde a
+Tarefa 6); a migration `20260917090000_conta_secretario` existe no
+repositório (commit `ec6f343`, renomeia a conta `secretaria` → `secretario`)
+e este arquivo não a registrava — a fila tem **oito** migrations, não sete;
+e `alterarStatusEquipamento` usa `temSessaoAdmin()` (sem `id`) e faz o
+`updateMany` fora de transação, o que a §2 do enunciado manda mudar. As duas
+peças que a 17 consome já existem e têm dono: o período em
 [periodo.ts](src/lib/periodo.ts) (puro; a página passa o `Periodo` já
 interpretado) e a exportação em [exportar-xlsx.ts](src/lib/exportar-xlsx.ts)
-(o `BotaoBaixarXlsx` recebe as abas prontas). Os dois componentes de gráfico
-em `src/components/admin/graficos/` também são para ela. As demais ideias de
-"Próximos passos possíveis", no fim do estado atual, **não estão na spec** e
-precisam de um enunciado antes de virar código.
+(o `BotaoBaixarXlsx` recebe as abas prontas), mais o `GraficoDeSerie` em
+`src/components/admin/graficos/`. As demais ideias de "Próximos passos
+possíveis", no fim do estado atual, **não estão na spec** e precisam de um
+enunciado antes de virar código — inclusive "quem deu baixa", que a §0 da 17
+deixou fora de escopo de propósito (seria coluna sem tela que a leia).
 
 O que **não** precisa ser refeito: o Pages está no ar; a tag `v1.0` está no
-remoto; a **`v1.2` continua aberta** (a §0 da Tarefa 16 deixou para a 17
-decidir se fecha) — o workflow publica `v1.2 (em andamento)`, o `set-default`
+remoto; a **`v1.2` continua aberta até a 17 fechar** — o workflow publica
+`v1.2 (em andamento)`, o `set-default`
 continua na `v1.1`, e as duas homes dizem "em andamento". Quando a `v1.2`
 fechar, a tabela da seção "Como a wiki é publicada" do
 [CONTRIBUTING.md](CONTRIBUTING.md) diz os quatro lugares a mexer. **A tag
