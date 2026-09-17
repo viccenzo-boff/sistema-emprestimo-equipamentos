@@ -7,19 +7,24 @@ import { ABA_DE_RELATORIO, type AbaDeRelatorio } from "@/lib/tipos";
 /**
  * A barra de abas do `/admin/relatorios` (Tarefa 13, item 1).
  *
- * É a única parte desta tela que precisa de estado, e por isso é a única ilha
- * de cliente aqui: o conteúdo de cada aba chega pronto do servidor, como
- * `children` tipado. Fosse a página inteira um componente de cliente, a
- * consulta ao banco teria de virar chamada de ação — e o painel lê o banco no
- * render, nunca por ação (ver o cabeçalho de
- * [consultas-admin.ts](src/lib/consultas-admin.ts)).
+ * O conteúdo de cada aba chega pronto do servidor, como `children` tipado.
+ * Fosse a página inteira um componente de cliente, a consulta ao banco teria
+ * de virar chamada de ação — e o painel lê o banco no render, nunca por ação
+ * (ver o cabeçalho de [consultas-admin.ts](src/lib/consultas-admin.ts)).
  *
- * **A aba viva não entra na URL**, e o preço é conhecido: recarregar a página
- * volta para a primeira. É a mesma escolha dos filtros do inventário na Tarefa
- * 7, e pelo mesmo motivo — o relatório inteiro já chega no render, e levar a
- * aba para `searchParams` custaria um render do Server Component a cada clique
- * para trocar de painel entre dados que já estão na mão. Ninguém compartilha
- * link de aba de relatório; quem precisa do número manda o número.
+ * **A aba viva entra na URL (`?aba=consumo`) desde a Tarefa 16**, revertendo
+ * a decisão da Tarefa 13. O motivo é o período: ele mora nos `searchParams`
+ * e trocá-lo é uma navegação — sem a aba na URL, cada troca de período
+ * voltaria para a primeira aba. Agora há motivo real, e sai link
+ * compartilhável de graça (F5 mantém aba e período).
+ *
+ * **Trocar de aba continua não indo ao servidor.** A URL muda por
+ * `window.history.replaceState`, que o App Router integra ao roteador (o
+ * `useSearchParams` de quem estiver ouvindo é atualizado) **sem buscar RSC**
+ * — medido: zero requisições na troca de aba, uma na troca de período. Os
+ * quatro painéis continuam no DOM, escondidos por `hidden`. A aba inicial vem
+ * da URL, lida no servidor; `aba` inválida cai na primeira. Este componente
+ * deixou de ser o dono do estado: ele o inicializa e o espelha.
  *
  * O padrão de teclado é o de abas de verdade, e não o de uma fileira de botões:
  * `Tab` entra e sai da barra inteira (um só ponto de parada, pelo `tabIndex`
@@ -38,19 +43,37 @@ const ABAS: { id: AbaDeRelatorio; rotulo: string }[] = [
   { id: ABA_DE_RELATORIO.ocupacao, rotulo: "Ocupação e picos de uso" },
   // A Tarefa 14 acrescentou esta, em segundo — ver `ABA_DE_RELATORIO`.
   { id: ABA_DE_RELATORIO.satisfacao, rotulo: "Satisfação" },
+  // A Tarefa 16 construiu esta; a de baixo continua declarada e vazia.
   { id: ABA_DE_RELATORIO.consumo, rotulo: "Ranking de Consumo" },
   { id: ABA_DE_RELATORIO.manutencao, rotulo: "Índice de Manutenção" },
 ];
 
 export function AbasDeRelatorios({
+  abaInicial,
   ocupacao,
   satisfacao,
+  consumo,
 }: {
+  abaInicial: AbaDeRelatorio;
   ocupacao: ReactNode;
   satisfacao: ReactNode;
+  consumo: ReactNode;
 }) {
-  const [ativa, setAtiva] = useState<AbaDeRelatorio>(ABA_DE_RELATORIO.ocupacao);
+  const [ativa, setAtiva] = useState<AbaDeRelatorio>(abaInicial);
   const barra = useRef<HTMLDivElement>(null);
+
+  /**
+   * `replaceState`, e não `pushState`: trocar de aba não é um passo que o
+   * Voltar do navegador deva desfazer — o período é (ele usa `router.push`).
+   * Os outros parâmetros (`de`/`ate`) ficam como estão.
+   */
+  function ativar(aba: AbaDeRelatorio) {
+    setAtiva(aba);
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("aba", aba);
+    window.history.replaceState(null, "", url.toString());
+  }
 
   function aoTeclar(evento: KeyboardEvent<HTMLDivElement>) {
     const atual = ABAS.findIndex((aba) => aba.id === ativa);
@@ -69,7 +92,7 @@ export function AbasDeRelatorios({
     if (destino < 0) return;
 
     evento.preventDefault();
-    setAtiva(ABAS[destino].id);
+    ativar(ABAS[destino].id);
 
     /*
       O foco acompanha a seta — é o que a seta significa em uma barra de abas.
@@ -105,7 +128,7 @@ export function AbasDeRelatorios({
                 transforma a barra em um controle, em vez de quatro controles.
               */
               tabIndex={viva ? 0 : -1}
-              onClick={() => setAtiva(id)}
+              onClick={() => ativar(id)}
               /*
                 Entre `lg` e `xl` a aba encolhe (corpo 14 px, recuo 10 px), e
                 só aí: é a única faixa em que a coluna lateral já ocupa a tela
@@ -153,6 +176,8 @@ export function AbasDeRelatorios({
             ocupacao
           ) : id === ABA_DE_RELATORIO.satisfacao ? (
             satisfacao
+          ) : id === ABA_DE_RELATORIO.consumo ? (
+            consumo
           ) : (
             <EmDesenvolvimento />
           )}
@@ -171,7 +196,8 @@ function idDoPainel(id: AbaDeRelatorio): string {
 }
 
 /**
- * O lugar reservado dos dois relatórios que ainda não existem.
+ * O lugar reservado do relatório que ainda não existe (Índice de Manutenção,
+ * Tarefa 17).
  *
  * A primeira linha é a do enunciado, palavra por palavra. A segunda é o que
  * transforma um aviso em uma saída: sozinha, "Relatório em desenvolvimento"
@@ -189,8 +215,9 @@ function EmDesenvolvimento() {
       </p>
       <p className="mt-2 text-base text-tinta-tenue">
         Esta aba ainda não tem dados. Os relatórios disponíveis são{" "}
-        <strong className="font-semibold">Ocupação e picos de uso</strong> e{" "}
-        <strong className="font-semibold">Satisfação</strong>.
+        <strong className="font-semibold">Ocupação e picos de uso</strong>,{" "}
+        <strong className="font-semibold">Satisfação</strong> e{" "}
+        <strong className="font-semibold">Ranking de Consumo</strong>.
       </p>
     </div>
   );

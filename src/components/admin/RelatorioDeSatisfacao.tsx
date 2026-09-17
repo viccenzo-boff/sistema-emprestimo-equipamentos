@@ -37,6 +37,16 @@ export function RelatorioDeSatisfacao({ ultimos30Dias, desdeOInicio, linhas, for
             Um toque num rosto no fim da retirada, de 1 (Muito ruim) a 4 (Muito
             bom). Anônimo: o sistema guarda a nota e o dia, e nada mais.
           </p>
+          {/*
+            O seletor de período fica acima de todas as abas (Tarefa 16), e
+            esta é a única que não o obedece — por decisão da Tarefa 14, o dado
+            é um inteiro por dia, e um filtro de um dia com uma resposta
+            deixaria a nota da única pessoa perguntada a um clique. Sem a
+            frase, quem escolheu "agosto" leria os dois recortes como de agosto.
+          */}
+          <p className="mt-1 text-base text-tinta-tenue">
+            Esta aba não usa o período acima: os dois recortes são fixos.
+          </p>
         </div>
 
         {semNenhumaLinha ? (

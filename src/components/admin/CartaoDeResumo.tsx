@@ -21,12 +21,15 @@ import type { ReactNode } from "react";
  * ele é um selo colorido, e no relatório é um rótulo de texto com uma linha de
  * detalhe embaixo. Quem monta o rótulo é a tela; o cartão só empresta a
  * moldura.
+ *
+ * `valor` aceita texto desde a Tarefa 16: as medianas do Ranking de Consumo
+ * chegam formatadas ("2 h 15 min") e, sem amostra, são "—" — que não é zero.
  */
 export function CartaoDeResumo({
   valor,
   children,
 }: {
-  valor: number;
+  valor: number | string;
   children: ReactNode;
 }) {
   return (
