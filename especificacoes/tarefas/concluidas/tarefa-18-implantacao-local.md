@@ -39,7 +39,11 @@ de administrador. **Não reabra sem motivo novo**; o porquê está ao lado.
 
 **Dependência nova: nenhuma.** NSSM e DB Browser são ferramentas da máquina,
 não do projeto — o NSSM é baixado pelo próprio `instalar.ps1` para
-`ferramentas\`.
+`ferramentas\`. **Uma dependência mudou de faixa** — achado da verificação,
+não do alinhamento: `better-sqlite3` de `^13.0.3` para `^12.6.0`, porque o
+`npm ci` num clone limpo morria compilando a cópia 13 que nada usava (o
+adapter carrega a própria 12.11.1). Registrado nas decisões da Tarefa 18 no
+AGENTS.md, em commit próprio de defeito antigo.
 
 ## 1. Seed e scripts do `package.json`
 

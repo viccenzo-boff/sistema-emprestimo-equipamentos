@@ -45,21 +45,34 @@ arquivos que as ferramentas exigem lá: `README.md`, `CLAUDE.md`, `AGENTS.md` e
 
 ### Fila de trabalho — "faça a próxima tarefa" quer dizer isto
 
-Atualizada em 2026-09-17, no fim da Tarefa 17. O dono do repositório abre a
+Atualizada em 2026-09-18, no fim da Tarefa 18. O dono do repositório abre a
 sessão só com esse prompt; esta seção é a resposta.
 
-**Não há próxima tarefa enunciada.** A Tarefa 17 — Índice de Manutenção e
-histórico de situação — foi executada nesta data, e é a última antes da
-implantação; o enunciado dela está em `concluidas/`. Os quatro relatórios declarados na
-Tarefa 13 existem, e `especificacoes/tarefas/pendentes/` está vazia. O que
-sobra são ideias, não tarefas: as de "Próximos passos possíveis", no fim do
-estado atual, **não estão na spec** e precisam de uma sessão de alinhamento e
-de um enunciado antes de virar código — o dono conduz isso como fez para a 16
-e a 17 (varredura, estratégia, decisões em lote, enunciado no formato da
-tarefa mais recente em `concluidas/`, execução em outra sessão). A primeira
-versão **depois da implantação** entra no `mike` ao lado da `v1.0`: a tabela
-da seção "Como a wiki é publicada" do [CONTRIBUTING.md](CONTRIBUTING.md) diz
-os quatro lugares a mexer, e o número é decisão de entrega, não de tarefa.
+**Não há próxima tarefa enunciada.** A Tarefa 18 — Implantação local no
+Windows 11 — foi executada nesta data, na mesma sessão em que foi alinhada
+(o dono pediu execução imediata, contra o ciclo habitual de "enunciado
+numa sessão, execução na outra"); o enunciado está em `concluidas/`. Ela
+entrega os scripts de `scripts/implantacao/`, o `db:seed:producao`, o
+`db:deploy` e o guia [Instalar no Windows 11](docs/instalacao/windows-11.md).
+**O que ficou com o dono:** (1) rodar o `instalar.cmd` de verdade, com
+administrador, na máquina dele e com o tablet ao lado — é a única
+verificação que a sessão não pôde fazer (serviço, ACL, firewall, tarefa
+agendada exigem elevação, e a sessão não tinha); o resultado entra no bloco
+da Tarefa 18 abaixo; (2) o `push` — **sem ele o `git clone` do guia não traz
+os scripts**; para o teste local de hoje, o clone pode vir da pasta
+`C:\Projetos\sistema-emprestimo-equipamentos` em vez do GitHub; (3) mover a
+tag `v1.0` do remoto (aponta para `5515ba1`, de agosto) para o commit da
+entrega — o `atualizar.cmd` lista tags, e um `atualizar v1.0` hoje seria uma
+volta no tempo. Os quatro relatórios declarados na Tarefa 13 existem, e
+`especificacoes/tarefas/pendentes/` está vazia. O que sobra são ideias, não
+tarefas: as de "Próximos passos possíveis", no fim do estado atual, **não
+estão na spec** e precisam de uma sessão de alinhamento e de um enunciado
+antes de virar código — o dono conduz isso como fez para a 16 e a 17
+(varredura, estratégia, decisões em lote, enunciado no formato da tarefa
+mais recente em `concluidas/`, execução em outra sessão). A primeira versão
+**depois da implantação** entra no `mike` ao lado da `v1.0`: a tabela da
+seção "Como a wiki é publicada" do [CONTRIBUTING.md](CONTRIBUTING.md) diz os
+quatro lugares a mexer, e o número é decisão de entrega, não de tarefa.
 
 **Uma versão só: tudo é `v1.0` (decisão do dono, 2026-09-18).** Entre
 2026-09-14 e 2026-09-18 a numeração foi por tarefa — a `v1.1` "fechou" com a
@@ -118,9 +131,11 @@ para este arquivo.
 
 ```bash
 npm run dev          # servidor de desenvolvimento
-npm run db:migrate   # cria/aplica migration após mudar o schema
+npm run db:migrate   # cria/aplica migration após mudar o schema (desenvolvimento)
+npm run db:deploy    # só aplica migrations pendentes — o que a implantação usa
 npm run db:generate  # regenera o Prisma Client (necessário após mudar o schema)
 npm run db:seed      # popula pessoas, inventário e administradores
+npm run db:seed:producao  # só as contas do painel — o seed da implantação
 npm run db:sanear    # prévia da normalização dos cadastros; grava com -- --aplicar
 npm run db:demo      # estado fictício para as capturas da wiki (recusa banco real)
 npm run db:studio    # inspecionar o banco
@@ -1903,6 +1918,123 @@ saídas de manutenção às 00:40 e a barra do índice virando um ponto).
   com "unexpected EOF"). A regra do CLAUDE.md global vale para reescrever
   roteiro, não só para o primeiro; o script vai pela ferramenta de arquivo.
 
+**Tarefa 18 — Implantação local no Windows 11 (concluída, menos o
+`instalar.cmd` com administrador, que é do dono):** a primeira tarefa de
+operação, e não de produto —
+[tarefa-18-implantacao-local.md](especificacoes/tarefas/concluidas/tarefa-18-implantacao-local.md).
+Entrega `scripts/implantacao/` (`instalar`, `atualizar`, `desinstalar` como
+`.cmd` que se eleva e chama um `.ps1`; `backup.mjs`; quatro `consultas/*.sql`
+com `LEIA-ME`), a bandeira `--somente-administradores` do seed
+(`db:seed:producao`), o `db:deploy`, o guia
+[Instalar no Windows 11](docs/instalacao/windows-11.md) (nova seção
+"Instalação" do `nav`, só em português com fallback no `/en/`), o
+`content.code.copy` do Material, e a correção do `better-sqlite3`. Nenhuma
+tela mudou. Nasceu de um plano em 23 itens apresentado ao dono e aprovado em
+bloco, com uma exigência dele a mais — **a base de produção nasce vazia, só
+as quatro contas** — e com o pedido de que o guia fosse para leigo e ficasse
+versionado. `tsc`, `lint`, `mkdocs build --strict`, `vale docs/` (34
+arquivos, 0 erro) e `npm run docs:links` (38 páginas, 3253 referências) em 0.
+
+Verificação, tudo em clone limpo numa pasta de verificação
+(`EMPRESTIMOS_RAIZ`, porta 3101), com o `dev.db` do dono conferido por md5
+(idêntico): os três `.ps1` no parser do PowerShell 5.1; o
+`instalar.ps1 -SomenteAplicacao` de ponta a ponta (`npm ci`, migrations, seed
+com 4 administradores e zero nas outras sete tabelas, `build`, download do
+NSSM); o `next start` do clone respondendo 200 no `/` e no `/admin` por
+`localhost` e pelo IP da rede, sem o indicador de desenvolvimento; o
+`backup.mjs` com o servidor no ar (`integrity_check` ok, retenção, a recusa
+de pasta errada); as quatro consultas contra o `dev-demo.db`, com a
+conversão de fuso provada (15:09 UTC → 12:09). **O que não foi visto
+acontecer:** serviço, ACL, firewall, tarefa agendada e atalhos — exigem
+elevação, e a sessão não a tinha. O dono roda o `instalar.cmd` e o
+resultado entra aqui.
+
+**Decisões da Tarefa 18** (não refazer sem motivo; a tabela da §0 do
+enunciado tem o porquê de cada uma):
+
+- **A base de produção nasce vazia: `db:seed:producao` cria só as quatro
+  contas.** Exigência do dono. O seed comum insere 20 equipamentos e 4
+  pessoas de exemplo sem condição — em produção viraria inventário de
+  mentira. Categorias entram pelo painel, na ordem em que a coordenação as
+  criar (o guia manda Notebook, Tablet, Extensão, nessa ordem). Bandeira por
+  `process.argv`, não por variável de ambiente: `VAR=1 npm run` não existe no
+  cmd, e o `tsx` repassa o argumento igual nos dois sistemas.
+- **`better-sqlite3` desceu de `^13.0.3` para `^12.6.0`, a faixa do adapter
+  — defeito antigo, desde o primeiro commit, commit próprio.** A cópia de
+  cima nunca foi usada pelo app (só o `@prisma/adapter-better-sqlite3` toca o
+  banco, com a própria 12.11.1 aninhada), e era ela que derrubava o `npm ci`
+  num clone limpo: o 13 traz o binário dentro do tarball e declara
+  `gypfile: false`, mas o arborist do npm lê o `gypfile` **do lockfile**
+  (que não carrega o campo), vê o `binding.gyp` e manda `node-gyp rebuild` —
+  que morre sem Visual Studio. Medido com o npm 11.18 e com o 11.6.1 do Node
+  24. Esta máquina só não sentia porque o `node_modules` já existia. Uma
+  cópia só agora, a 12.11.1, que baixa o binário do release no GitHub. **Se
+  um dia subir para o 13, rode `npm ci` num clone limpo antes de commitar.**
+- **Serviço do Windows via NSSM, como `LocalService`.** Sobe no boot antes
+  de qualquer login; PM2 no Windows só sobe no logon; Docker Desktop sobe com
+  a sessão. `LocalService` e não SYSTEM: uma brecha no servidor vale o que a
+  conta pode fazer. A conta vai por `sc.exe config obj=` (o `sc` do
+  PowerShell é apelido de `Set-Content`; o espaço depois de `obj=` é
+  obrigatório).
+- **A saída do NSSM não é lida; o registro do Windows é.** Ele escreve em
+  UTF-16 quando redirecionado (e `nssm help` **trava** com a saída
+  redirecionada — custou um processo pendurado nesta sessão). O instalador
+  confere o código de saída e lê `AppParameters` em
+  `HKLM\SYSTEM\CurrentControlSet\Services\Emprestimos\Parameters`.
+- **`AppParameters` sem aspas, e a raiz não pode ter espaço.** O caminho do
+  `next` vai cru (`C:\emprestimos\app\node_modules\next\dist\bin\next start
+  -p 3000`); aspas dentro do parâmetro atravessariam duas camadas (PowerShell
+  → NSSM → CreateProcess) e o Node receberia a linha inteira como um arquivo.
+  O instalador recusa raiz com espaço.
+- **Nada de `2>$null` em executável nativo sob `$ErrorActionPreference =
+  "Stop"`**: lança. Os nativos rodam por `Rodar()`/`Nssm()`, que baixam para
+  `Continue` e conferem `$LASTEXITCODE`.
+- **Os `.ps1` são UTF-8 com BOM e CRLF; os `.cmd`, ASCII.** O 5.1 lê acento
+  sem BOM como ANSI; o cmd mostra lixo em qualquer acento. Os atalhos `.cmd`
+  gerados na área de trabalho são escritos sem acento pelo mesmo motivo.
+- **Firewall em todos os perfis.** O serviço roda sem sessão, então o pop-up
+  "permitir acesso" nunca aparece; e rede nova nasce "Pública" no Windows 11
+  — com `private,domain` o tablet não conectaria na primeira rede. Quem
+  limita quem alcança o sistema é a rede (roteador próprio da coordenação),
+  não o perfil.
+- **`dados\` fecha para conta comum; `LocalService` escreve na raiz
+  inteira.** O `next start` grava cache em `.next\` e o NSSM grava os logs;
+  restringir por pasta era a chance de o serviço não subir por permissão.
+  SIDs (`*S-1-5-19`, `*S-1-5-18`, `*S-1-5-32-544`) em vez de nomes: "Users"
+  chama-se "Usuários" no Windows em português.
+- **A cópia de consulta, e não "abrir o banco vivo somente leitura".** SQLite
+  não tem contas; e mesmo uma leitura segura lock compartilhado que bloqueia
+  o `commit` do serviço — `journal_mode` `delete` (medido no adapter, sem
+  pragma nenhum no projeto) e `timeout` de 5 s no `better-sqlite3` (lido no
+  `lib/database.js`). O `backup.mjs` usa `db.backup()` (online backup) e
+  grava em `.tmp` + `rename`: se a cópia estiver aberta no DB Browser, recusa
+  com frase em vez de sobrescrever arquivo em uso. Ele se recusa a rodar de
+  um clone que não se chame `app\`, para não criar `backups\` ao lado de
+  `C:\Projetos\`.
+- **Atualização por tag, com o serviço parado, `git checkout --force`.** Um
+  `push` na `main` não muda o que está instalado. O serviço para porque o
+  `next build` reescreve `.next\` embaixo do servidor e a migration não pode
+  disputar lock. `--force` porque o `prisma generate` do `npm ci` reescreve
+  `src/generated`, que **é versionado** — sem ele o checkout recusaria.
+- **O DATABASE_URL de produção é absoluto** (`file:C:/emprestimos/dados/
+  emprestimos.db`), provado contra o `migrate deploy` e o adapter antes de
+  virar decisão. O `.env` só é escrito se não existir — reinstalar preserva.
+- **Guia na wiki, só em português, com o bloco "Para quem mantém o sistema"
+  recolhido no fim como dono dos detalhes**; o CONTRIBUTING aponta para lá e
+  guarda só o que é do dev. `pymdownx.tabbed` não foi ligado por causa de
+  Android/iPad (virou lista) — o precedente da D11; `content.code.copy` foi,
+  porque o guia é feito de linhas para colar.
+- **As consultas comparam data por `julianday` dos dois lados.** O texto
+  gravado tem `T` e `+00:00`; comparar texto com `datetime('now', …)` erraria
+  a linha da fronteira (regra da Tarefa 13). Todas convertem com
+  `'localtime'`.
+- **A porta 3000 desta máquina estava com o `next dev` do dono** (pid
+  24728, `start-server.js`). O instalador **recusa** porta ocupada dizendo
+  qual programa é, em vez de escolher outra: o serviço tem que ficar na 3000
+  que o tablet e os atalhos conhecem.
+- **Um `nssm help` com a saída redirecionada ficou pendurado** e foi morto
+  com `Stop-Process`. Não redirecione a saída do NSSM; leia o registro.
+
 **Tarefa D01 — Congelar a v1.0 e criar o estado de demonstração (concluída):**
 a primeira da **série de documentação** (`tarefa-doc-NN`, regida pela
 [spec-wiki.md](especificacoes/spec-wiki.md)), e a única dela que mexe fora de `docs/`. Entrega
@@ -3422,6 +3554,15 @@ aberto.
   `Mudar@123` — **trocar antes de usar no balcão**, e a partir da Tarefa 11
   isso se faz pelo próprio painel ("Alterar senha", no rodapé da barra lateral).
   O `.env` agora só tem `DATABASE_URL`.
+- **`better-sqlite3` na faixa `^12.6.0`, a mesma do adapter — uma cópia só
+  (12.11.1), e o binário vem pré-compilado do release no GitHub** (Tarefa
+  18). O `^13` que estava no `package.json` desde o primeiro commit era cópia
+  duplicada que nada usava e derrubava o `npm ci` em qualquer PC sem Visual
+  Studio (ver as decisões da Tarefa 18). Só o
+  [backup.mjs](scripts/implantacao/backup.mjs) importa o pacote direto; o app
+  passa pelo `@prisma/adapter-better-sqlite3`. **Um clone limpo precisa de
+  acesso ao github.com no `npm ci`** — é de lá que o binário vem; sem ele o
+  `prebuild-install` cai no `node-gyp` e falha.
 - **`bcryptjs` (não `bcrypt`) e sem `@types/bcryptjs`.** O `bcryptjs` é
   JavaScript puro, sem compilação nativa — o que importa numa máquina Windows
   do secretário sem toolchain de C++. E o pacote `@types/bcryptjs` que o
