@@ -26,11 +26,12 @@ o que vai aparecer na tela. Se algo sair diferente, a seção
     terminal, feche-o antes (Ctrl+C na janela dele) — senão o instalador para
     no primeiro passo e diz qual programa está ocupando a porta.
 
-## Passo 1 — Instalar o Node.js e o Git
+## Passo 1 — Instalar o Git
 
-São os dois programas de que o sistema depende. O Windows 11 tem um
-instalador de linha de comando, o `winget`, que baixa e instala os dois com
-uma linha cada.
+O Git é o programa que baixa o sistema (e, depois, as atualizações). O
+Windows 11 tem um instalador de linha de comando, o `winget`, que o instala
+com uma linha. O outro programa de que o sistema depende, o **Node.js**, o
+instalador do Passo 3 instala sozinho se faltar — não precisa fazer nada.
 
 1. Clique com o **botão direito** no botão **Iniciar** e escolha
    **Terminal (Admin)**. Aparece uma pergunta do Windows pedindo permissão:
@@ -39,21 +40,15 @@ uma linha cada.
    **Enter**:
 
     ```powershell
-    winget install --id OpenJS.NodeJS.LTS -e --accept-package-agreements --accept-source-agreements
+    winget install --id Git.Git -e --accept-package-agreements --accept-source-agreements
     ```
 
     O que aparece: uma barra de progresso e, no fim, **Instalado com êxito**.
     Se aparecer *"Nenhuma atualização disponível"* ou *"já está instalado"*,
     está tudo certo — o programa já existia.
 
-3. Faça o mesmo com a segunda linha:
-
-    ```powershell
-    winget install --id Git.Git -e --accept-package-agreements --accept-source-agreements
-    ```
-
-4. **Feche a janela do Terminal.** Não pule isto: a janela aberta ainda não
-   sabe que os programas foram instalados, e o próximo passo abre uma nova.
+3. **Feche a janela do Terminal.** Não pule isto: a janela aberta ainda não
+   sabe que o Git foi instalado, e o próximo passo abre uma nova.
 
 ## Passo 2 — Baixar o sistema
 
@@ -85,16 +80,16 @@ O que a janela faz, na ordem em que imprime:
 
 | Etapa | O que acontece |
 | --- | --- |
-| 1. Conferindo o que a máquina precisa ter | Acha o Node e o Git e confere se a porta 3000 está livre |
-| 2. Criando as pastas | `C:\emprestimos\dados`, `backups`, `consulta`, `logs`, `ferramentas` |
+| 1. Conferindo o que a máquina precisa ter | Acha o Git e o Node — **instala o Node se faltar**, ou o atualiza se for antigo — e confere se a porta 3000 está livre |
+| 2. Pastas e permissões | `C:\emprestimos\dados`, `backups`, `consulta`, `logs`, `ferramentas`; a pasta `dados` fica fechada para as contas comuns do computador |
 | 3. Apontando para o banco | Cria o arquivo que diz onde o banco de dados mora |
 | 4–6. Dependências, banco, compilação | Baixa as bibliotecas, cria as tabelas, cria as contas do painel e prepara o sistema para produção |
 | 7. NSSM | Baixa o programa que transforma o sistema em serviço do Windows |
 | 8. Serviço | Registra o serviço **Sistema de Emprestimos (Unoesc)** — é ele que liga com o Windows |
-| 9. Permissões | A pasta `dados` fica fechada para as contas comuns do computador |
-| 10–12. Firewall, energia, backup | Libera a porta 3000, impede o computador de suspender, agenda o backup diário das 19:00 |
-| 13. Atalhos | Três atalhos na área de trabalho, para todo mundo que usa o computador |
-| 14. Ligando | Sobe o sistema, espera ele responder e faz o primeiro backup |
+| 9–11. Firewall, energia, backup | Libera a porta 3000, impede o computador de suspender, agenda o backup diário das 19:00 |
+| 12. Atalho | **Painel de Emprestimos** na área de trabalho, para todo mundo que usa o computador |
+| 13. Ligando | Sobe o sistema, espera ele responder e confere que ele consegue ler o banco |
+| 14. Primeiro backup | A primeira cópia em `backups` e em `consulta` |
 
 No fim aparece um quadro verde **INSTALADO** com os endereços. **Anote o
 endereço que começa com `http://192.168`** — é o que o tablet vai usar.
@@ -169,19 +164,22 @@ pode estar bloqueado, com a tela apagada, sem ninguém conectado. Se for
 reiniciado (queda de luz, atualização do Windows à noite), o sistema volta
 sozinho.
 
-Os três atalhos da área de trabalho:
+Na área de trabalho fica um atalho só, **Painel de Emprestimos**, que abre o
+painel neste computador (de outro computador da mesma rede, use o endereço
+`http://192.168…:3000/admin`). Os outros dois gestos do dia a dia são
+arquivos da pasta `C:\emprestimos\app\scripts\implantacao` — duplo clique
+neles, e eles pedem permissão de administrador sozinhos:
 
-| Atalho | Para quê |
+| Arquivo | Para quê |
 | --- | --- |
-| **Painel de Emprestimos** | Abre o painel neste computador. De outro computador da mesma rede, use o endereço `http://192.168…:3000/admin` |
-| **Atualizar copia para consulta** | Copia o banco de agora para a pasta de consulta (ver [abaixo](#consultar-o-banco-de-dados)) |
-| **Reiniciar o sistema** | Se o tablet mostrar erro de conexão. Pede permissão de administrador e leva uns 15 segundos |
+| **reiniciar.cmd** | Se o tablet mostrar erro de conexão com o computador ligado. Leva uns 15 segundos |
+| **atualizar-copia-para-consulta.cmd** | Copia o banco de agora para a pasta de consulta (ver [abaixo](#consultar-o-banco-de-dados)) |
 
 ## Consultar o banco de dados
 
 Para um relatório que o painel não tem, a coordenação consulta **uma cópia**
 do banco — nunca o banco de verdade. A cópia é refeita toda noite às 19:00 e
-sempre que alguém clica em **Atualizar copia para consulta**. Nada que se
+sempre que alguém roda o **atualizar-copia-para-consulta.cmd**. Nada que se
 faça nela chega ao sistema: pode consultar, filtrar, exportar e até apagar
 por engano que o tablet não sente.
 
@@ -191,7 +189,9 @@ por engano que o tablet não sente.
     winget install --id DBBrowserForSQLite.DBBrowserForSQLite -e --accept-package-agreements --accept-source-agreements
     ```
 
-2. Na área de trabalho, clique em **Atualizar copia para consulta**.
+2. Em `C:\emprestimos\app\scripts\implantacao`, dê duplo clique em
+   **atualizar-copia-para-consulta.cmd** e clique em **Sim** na pergunta do
+   Windows.
 3. Abra o DB Browser. Em **Arquivo**, escolha **Abrir banco de dados somente
    leitura** (*Open Database Read Only*) e aponte para
    `C:\emprestimos\consulta\emprestimos-consulta.db`.
@@ -252,12 +252,13 @@ apaga a pasta `C:\emprestimos` depois.
 | O que aparece | O que fazer |
 | --- | --- |
 | O instalador para em **A porta 3000 já está sendo usada** | Feche o programa que ele nomeia (em geral um `npm run dev` num terminal) e rode de novo |
-| O instalador para em **Node.js não encontrado** | O Terminal foi aberto antes de instalar o Node. Feche todas as janelas de Terminal e rode o instalador de novo |
+| O instalador para em **Git não encontrado** | O Terminal foi aberto antes de instalar o Git. Feche todas as janelas de Terminal e rode o instalador de novo |
+| O instalador para em **O winget terminou, mas o Node não apareceu** | Feche a janela e rode o instalador de novo — na segunda vez ele encontra o Node que acabou de instalar |
 | O instalador para em **'Baixar as bibliotecas do sistema' terminou com erro** | Quase sempre é internet. Confira a conexão e rode de novo; ele continua de onde parou |
-| O tablet mostra **Não é possível acessar esse site** | Confira, nesta ordem: o computador está ligado? O tablet está no mesmo Wi-Fi? O endereço tem `:3000` no fim? Clique em **Reiniciar o sistema**. Se continuar, reinicie o computador |
+| O tablet mostra **Não é possível acessar esse site** | Confira, nesta ordem: o computador está ligado? O tablet está no mesmo Wi-Fi? O endereço tem `:3000` no fim? Rode o **reiniciar.cmd** (em `C:\emprestimos\app\scripts\implantacao`). Se continuar, reinicie o computador |
 | O tablet abria e parou de abrir depois de uns dias | O endereço do computador mudou — veja "O endereço pode mudar" no Passo 5 |
 | O painel diz **Usuário ou senha inválidos** para todo mundo | Depois de cinco erros, a conta espera 1 minuto. Se a senha foi esquecida, a [Conta do administrador](../referencia/conta-do-administrador.md) diz como recuperar |
-| **Atualizar copia para consulta** diz que não conseguiu gravar | A cópia está aberta no DB Browser. Feche-o e clique de novo |
+| O **atualizar-copia-para-consulta.cmd** diz que não conseguiu gravar | A cópia está aberta no DB Browser. Feche-o e rode de novo |
 | Nada disso | Mande a pasta `C:\emprestimos\logs` para quem mantém o sistema |
 
 ??? note "Para quem mantém o sistema"
@@ -272,7 +273,8 @@ apaga a pasta `C:\emprestimos` depois.
     | Logs | `C:\emprestimos\logs\servico.log` e `servico.err.log` (rotação em 5 MB), mais um transcript por instalação e por atualização |
     | Backup | Tarefa agendada **Sistema de Emprestimos - Backup diario** (19:00, como SYSTEM) rodando `scripts\implantacao\backup.mjs` |
     | Firewall | Regra de entrada **Sistema de Emprestimos (porta 3000)**, TCP, todos os perfis |
-    | Permissões | `LocalService` com modificação em `C:\emprestimos`; `dados\` sem herança, só `LocalService`, `SYSTEM` e Administradores |
+    | Permissões | `LocalService` com modificação em `C:\emprestimos`; `dados\` sem herança, só `LocalService`, `SYSTEM` e Administradores — **as entradas ficam na pasta e os arquivos herdam** (aplicar `(OI)(CI)` num arquivo com `/T` deixa o arquivo sem nenhuma permissão) |
+    | Gestos do dia a dia | `reiniciar.cmd` e `atualizar-copia-para-consulta.cmd`, em `scripts\implantacao`; só o atalho do painel vai à área de trabalho |
 
     **Restaurar um backup:** em **Serviços**, pare **Sistema de Emprestimos
     (Unoesc)**; copie o arquivo de `backups\` por cima de

@@ -54,11 +54,12 @@ Windows 11 — foi executada nesta data, na mesma sessão em que foi alinhada
 numa sessão, execução na outra"); o enunciado está em `concluidas/`. Ela
 entrega os scripts de `scripts/implantacao/`, o `db:seed:producao`, o
 `db:deploy` e o guia [Instalar no Windows 11](docs/instalacao/windows-11.md).
-**O que ficou com o dono:** (1) rodar o `instalar.cmd` de verdade, com
-administrador, na máquina dele e com o tablet ao lado — é a única
-verificação que a sessão não pôde fazer (serviço, ACL, firewall, tarefa
-agendada exigem elevação, e a sessão não tinha); o resultado entra no bloco
-da Tarefa 18 abaixo; (2) o `push` — **sem ele o `git clone` do guia não traz
+**O que ficou com o dono:** (1) **reinstalar** com o `instalar.cmd`
+corrigido: a primeira execução dele (2026-09-18, 16:54) registrou serviço,
+firewall, energia e tarefa, e caiu no último passo porque o `icacls` com
+`/T` deixou o `emprestimos.db` sem permissão nenhuma — a correção move as
+permissões para antes do banco e reseta o arquivo para herdar da pasta; a
+reinstalação é o teste dela; (2) o `push` — **sem ele o `git clone` do guia não traz
 os scripts**; para o teste local de hoje, o clone pode vir da pasta
 `C:\Projetos\sistema-emprestimo-equipamentos` em vez do GitHub; (3) mover a
 tag `v1.0` do remoto (aponta para `5515ba1`, de agosto) para o commit da
@@ -1918,8 +1919,10 @@ saídas de manutenção às 00:40 e a barra do índice virando um ponto).
   com "unexpected EOF"). A regra do CLAUDE.md global vale para reescrever
   roteiro, não só para o primeiro; o script vai pela ferramenta de arquivo.
 
-**Tarefa 18 — Implantação local no Windows 11 (concluída, menos o
-`instalar.cmd` com administrador, que é do dono):** a primeira tarefa de
+**Tarefa 18 — Implantação local no Windows 11 (concluída; o
+`instalar.cmd` com administrador rodou na máquina do dono em 2026-09-18 e
+passou 14 de 15 etapas — a 15ª caiu na permissão do arquivo do banco, ver a
+decisão sobre `icacls` abaixo; a reinstalação com a correção é dele):** a primeira tarefa de
 operação, e não de produto —
 [tarefa-18-implantacao-local.md](especificacoes/tarefas/concluidas/tarefa-18-implantacao-local.md).
 Entrega `scripts/implantacao/` (`instalar`, `atualizar`, `desinstalar` como
@@ -2002,6 +2005,33 @@ enunciado tem o porquê de cada uma):
   restringir por pasta era a chance de o serviço não subir por permissão.
   SIDs (`*S-1-5-19`, `*S-1-5-18`, `*S-1-5-32-544`) em vez de nomes: "Users"
   chama-se "Usuários" no Windows em português.
+- **As entradas de permissão vão SÓ na pasta `dados\`; os arquivos são
+  resetados para herdar (`icacls dados\* /reset /T`).** A primeira instalação
+  de verdade (2026-09-18, na máquina do dono) parou no último passo com
+  `unable to open database file` — no backup **e** no serviço (`/` respondeu
+  200 porque é estático; o `/admin` acusou `SQLITE_CANTOPEN` no
+  `servico.err.log`). Causa, reproduzida em pasta de teste: aplicar
+  `(OI)(CI)M` com `/T` faz as marcas de herança chegarem num **arquivo**, e o
+  Windows as descarta — o `emprestimos.db` ficou com a DACL **vazia**, e nem
+  administrador o abria. Por isso a etapa de permissões passou para **antes**
+  do banco (uma reinstalação precisa consertar o arquivo antes de o
+  `migrate deploy` tentar abri-lo), com `takeown` de reserva para arquivo que
+  ficou sem dono acessível. E o instalador passou a conferir o `/admin` e o
+  `servico.err.log` depois de subir, porque o 200 da home não prova banco.
+- **Só o atalho do painel vai à área de trabalho** (decisão do dono, depois
+  de ver os três): `reiniciar.cmd` e `atualizar-copia-para-consulta.cmd` são
+  arquivos estáticos de `scripts\implantacao`, que acham a raiz por
+  `%~dp0..\..\..`. O instalador apaga os dois `.cmd` que a primeira versão
+  gerava na área de trabalho.
+- **O instalador instala o Node pelo `winget` se faltar, e o atualiza se
+  for mais velho que 24** (pedido do dono). O Git também, mas na prática ele
+  já existe — foi o `git clone` que trouxe o script. Depois do `winget`, a
+  janela ainda não vê o PATH novo: os programas são procurados nos caminhos
+  padrão (`C:\Program Files\nodejs`, `C:\Program Files\Git\cmd`).
+- **Função do PowerShell que roda um nativo devolve a saída dele junto com o
+  código.** A primeira versão de `Executar()` fez o `npm ci` (que passou)
+  virar "terminou com erro (código <571 pacotes>)". A saída do nativo vai
+  para `Out-Host` dentro da função; só `$LASTEXITCODE` volta.
 - **A cópia de consulta, e não "abrir o banco vivo somente leitura".** SQLite
   não tem contas; e mesmo uma leitura segura lock compartilhado que bloqueia
   o `commit` do serviço — `journal_mode` `delete` (medido no adapter, sem

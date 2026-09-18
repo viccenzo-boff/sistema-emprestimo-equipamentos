@@ -3,25 +3,32 @@
   do Windows (Tarefa 18). É chamado pelo instalar.cmd, que pede administrador.
 
   O que ele faz, na ordem em que imprime:
-    1. confere Node ≥ 24, Git e se a porta está livre
-    2. cria C:\emprestimos\{dados,backups,consulta,logs,ferramentas}
+    1. confere Git e Node ≥ 24 — e INSTALA os dois pelo winget se faltarem —
+       e se a porta está livre
+    2. cria C:\emprestimos\{dados,backups,consulta,logs,ferramentas} e ajusta
+       as permissões: LocalService escreve em tudo; dados\ fica fechada para
+       as contas comuns do PC
     3. escreve o .env com o caminho ABSOLUTO do banco (se ainda não existir)
     4. npm ci → migrations → seed só de administradores → build
     5. baixa o NSSM e registra o serviço "Emprestimos" (sobe no boot,
        reinicia se cair, log com rotação, conta LocalService)
-    6. permissões: LocalService escreve em C:\emprestimos; dados\ fica fechada
-       para as contas comuns do PC
-    7. firewall, energia (sem suspender), tarefa agendada do backup, atalhos
-    8. sobe o serviço, espera ele responder e roda o primeiro backup
+    6. firewall, energia (sem suspender), tarefa agendada do backup, o atalho
+       do painel na área de trabalho
+    7. sobe o serviço, espera ele responder e roda o primeiro backup
 
   Rodar de novo é seguro: para o serviço, refaz tudo e preserva o banco e o
   .env. É também o jeito de reparar uma instalação.
+
+  As permissões vêm ANTES do banco de propósito: uma instalação anterior com
+  o arquivo do banco sem permissão (aconteceu — ver o comentário na etapa 2)
+  precisa ser consertada antes de o migrate deploy tentar abri-lo.
 
   Duas variáveis de ambiente existem para a verificação, não para o uso normal:
     EMPRESTIMOS_RAIZ   troca C:\emprestimos por outra pasta
     EMPRESTIMOS_PORTA  troca a porta 3000
   E o parâmetro -SomenteAplicacao roda só os passos que não pedem administrador
-  (2 a 4 e o download do NSSM) — é como o pipeline é conferido sem elevação.
+  (pastas, .env, npm ci, banco, build e o download do NSSM) — é como o pipeline
+  é conferido sem elevação. Com ele, Node e Git precisam já existir.
 
   Escrito para o PowerShell 5.1 que vem com o Windows: sem &&, sem ternário,
   sem ??. Salvo em UTF-8 COM BOM — sem o BOM o 5.1 lê os acentos como ANSI.
@@ -55,6 +62,12 @@ $NOME_TAREFA = "Sistema de Emprestimos - Backup diario"
 $NOME_REGRA = "Sistema de Emprestimos (porta $PORTA)"
 $AREA_DE_TRABALHO = Join-Path $env:PUBLIC "Desktop"
 
+# Onde o winget instala, para achar os programas na mesma execução em que
+# foram instalados (a janela aberta ainda não vê o PATH novo).
+$NODE_PADRAO = "C:\Program Files\nodejs\node.exe"
+$GIT_PADRAO = "C:\Program Files\Git\cmd\git.exe"
+$NODE_MINIMO = 24
+
 # SIDs conhecidos: independem do idioma do Windows ("Usuários" x "Users").
 $SID_LOCAL_SERVICE = "*S-1-5-19"
 $SID_SYSTEM = "*S-1-5-18"
@@ -85,27 +98,74 @@ function Falhar($mensagem) {
   exit 1
 }
 
-# Roda um programa externo e para se ele devolver erro. O $ErrorActionPreference
+# Roda um programa externo e devolve o código de saída. O $ErrorActionPreference
 # vai a Continue só aqui: com Stop, um aviso no stderr do npm derrubaria tudo.
+# A saída do programa vai direto para a tela (Out-Host): sem isso ela viraria
+# parte do valor devolvido pela função, junto com o código — regra do
+# PowerShell, e custou um "npm ci terminou com erro (código <571 pacotes>)".
+function Executar($exe, [string[]]$argumentos) {
+  $anterior = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  & $exe @argumentos | Out-Host
+  $codigo = $LASTEXITCODE
+  $ErrorActionPreference = $anterior
+  return $codigo
+}
+
+# Como Executar, mas para se o programa devolver erro.
 function Rodar($descricao, $exe, [string[]]$argumentos) {
   Write-Host "    > $descricao" -ForegroundColor White
   Info "$exe $($argumentos -join ' ')"
-  $anterior = $ErrorActionPreference
-  $ErrorActionPreference = "Continue"
-  & $exe @argumentos
-  $codigo = $LASTEXITCODE
-  $ErrorActionPreference = $anterior
+  $codigo = Executar $exe $argumentos
   if ($codigo -ne 0) {
     Falhar "'$descricao' terminou com erro (código $codigo). Leia as linhas acima."
   }
 }
 
+# A saída do nssm não é lida (ele escreve em UTF-16 quando redirecionado); o
+# que se confere é o código de saída e, no fim, o registro do Windows.
+function Nssm([string[]]$argumentos) {
+  $anterior = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  & $NSSM @argumentos 2>&1 | Out-Null
+  $codigo = $LASTEXITCODE
+  $ErrorActionPreference = $anterior
+  if ($codigo -ne 0) { Falhar "nssm $($argumentos -join ' ') devolveu o código $codigo." }
+}
+
 function AcharNode {
   $cmd = Get-Command node.exe -ErrorAction SilentlyContinue
   if ($cmd) { return $cmd.Source }
-  $padrao = "C:\Program Files\nodejs\node.exe"
-  if (Test-Path $padrao) { return $padrao }
+  if (Test-Path $NODE_PADRAO) { return $NODE_PADRAO }
   return $null
+}
+
+function AcharGit {
+  $cmd = Get-Command git.exe -ErrorAction SilentlyContinue
+  if ($cmd) { return $cmd.Source }
+  if (Test-Path $GIT_PADRAO) { return $GIT_PADRAO }
+  return $null
+}
+
+function VersaoMaiorDoNode($node) {
+  $versao = (& $node -v).Trim()
+  return [int]($versao -replace "^v(\d+).*$", '$1')
+}
+
+# Instala (ou atualiza) um programa pelo winget, o instalador que vem com o
+# Windows 11. `install` num pacote já instalado tenta a atualização.
+function InstalarPeloWinget($id, $nome) {
+  if ($SomenteAplicacao) {
+    Falhar "$nome não está instalado. Com -SomenteAplicacao o instalador não instala nada; instale $nome antes."
+  }
+  $winget = Get-Command winget.exe -ErrorAction SilentlyContinue
+  if (-not $winget) {
+    Falhar "$nome não está instalado e o winget (instalador do Windows) não foi encontrado. Instale $nome pela loja ou pelo site oficial e rode o instalador de novo."
+  }
+  Rodar "Instalar $nome pelo winget (baixa da internet; pode levar alguns minutos)" $winget.Source @(
+    "install", "--id", $id, "-e", "--silent",
+    "--accept-package-agreements", "--accept-source-agreements"
+  )
 }
 
 # ------------------------------------------------------- 1. pré-requisitos
@@ -114,7 +174,7 @@ Write-Host ""
 Write-Host "Sistema de Emprestimo de Equipamentos - instalacao" -ForegroundColor White
 Write-Host "Pasta: $RAIZ   Porta: $PORTA" -ForegroundColor Gray
 
-Etapa "Conferindo o que a máquina precisa ter"
+Etapa "Conferindo o que a máquina precisa ter (e instalando o que faltar)"
 
 $ehAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $ehAdmin -and -not $SomenteAplicacao) {
@@ -131,31 +191,44 @@ if ($atual -ine $esperado.TrimEnd("\")) {
   Falhar "O sistema precisa estar na pasta $APP, e este arquivo está em $atual. Siga o passo 'Baixar o sistema' do guia: o comando git clone termina com $APP."
 }
 
+# Git: o atualizar.ps1 depende dele. Quem chegou aqui por 'git clone' já o
+# tem; quem baixou a pasta de outro jeito, não.
+$git = AcharGit
+if (-not $git) {
+  InstalarPeloWinget "Git.Git" "Git"
+  $git = AcharGit
+  if (-not $git) { Falhar "O winget terminou, mas o Git não apareceu em $GIT_PADRAO. Feche esta janela e rode o instalador de novo." }
+}
+Ok "Git em $git"
+
+# Node: instala se faltar, atualiza se for mais velho que o mínimo. O
+# better-sqlite3 baixa o binário pré-compilado por versão de Node; fora da
+# faixa ele cai na compilação em C++, que esta máquina não tem.
 $node = AcharNode
 if (-not $node) {
-  Falhar "Node.js não encontrado. Instale-o (passo 1 do guia) e abra uma janela nova antes de rodar este instalador de novo."
+  InstalarPeloWinget "OpenJS.NodeJS.LTS" "Node.js"
+  $node = AcharNode
+  if (-not $node) { Falhar "O winget terminou, mas o Node não apareceu em $NODE_PADRAO. Feche esta janela e rode o instalador de novo." }
+}
+if ((VersaoMaiorDoNode $node) -lt $NODE_MINIMO) {
+  Info "O Node instalado é o $(& $node -v); o sistema precisa do $NODE_MINIMO ou mais novo. Atualizando."
+  InstalarPeloWinget "OpenJS.NodeJS.LTS" "Node.js"
+  $node = AcharNode
+  if ((VersaoMaiorDoNode $node) -lt $NODE_MINIMO) {
+    Falhar "Mesmo depois da atualização o Node continua no $(& $node -v). Desinstale o Node antigo em 'Aplicativos instalados' e rode o instalador de novo."
+  }
 }
 $versaoNode = (& $node -v).Trim()
-$majorNode = [int]($versaoNode -replace "^v(\d+).*$", '$1')
-if ($majorNode -lt 24) {
-  Falhar "O Node instalado é o $versaoNode; o sistema precisa do 24 ou mais novo. Instale a versão LTS atual (passo 1 do guia)."
-}
 $pastaNode = Split-Path $node
 $npm = Join-Path $pastaNode "npm.cmd"
 if (-not (Test-Path $npm)) { Falhar "Achei o Node em $node mas não o npm ao lado dele." }
 Ok "Node $versaoNode em $node"
 
-$git = Get-Command git.exe -ErrorAction SilentlyContinue
-if (-not $git) {
-  Falhar "Git não encontrado. Instale-o (passo 1 do guia) e abra uma janela nova."
-}
-Ok "Git em $($git.Source)"
-
 # A porta: se for o nosso próprio serviço de uma instalação anterior, ele é
 # parado (o npm ci precisa dos arquivos livres). Qualquer outro programa faz o
 # instalador parar e dizer qual é — o caso típico é um 'npm run dev' aberto.
 $servicoExistente = Get-Service -Name $SERVICO -ErrorAction SilentlyContinue
-if ($servicoExistente -and $servicoExistente.Status -ne "Stopped") {
+if ($servicoExistente -and $servicoExistente.Status -ne "Stopped" -and -not $SomenteAplicacao) {
   Info "O serviço $SERVICO já existe e está rodando: parando para reinstalar."
   Stop-Service -Name $SERVICO -Force
   Start-Sleep -Seconds 3
@@ -171,9 +244,9 @@ if ($ocupada) {
 }
 Ok "Porta $PORTA livre"
 
-# --------------------------------------------------------------- 2. pastas
+# ---------------------------------------------------- 2. pastas e permissões
 
-Etapa "Criando as pastas em $RAIZ"
+Etapa "Criando as pastas em $RAIZ e ajustando as permissões"
 
 foreach ($pasta in @($RAIZ, $DADOS, (Join-Path $RAIZ "backups"), (Join-Path $RAIZ "consulta"), $LOGS, $FERRAMENTAS)) {
   New-Item -ItemType Directory -Force -Path $pasta | Out-Null
@@ -183,6 +256,45 @@ Ok "app, dados, backups, consulta, logs, ferramentas"
 $script:LOG = Join-Path $LOGS ("instalacao-" + (Get-Date -Format "yyyy-MM-dd-HHmmss") + ".log")
 Start-Transcript -Path $script:LOG | Out-Null
 Info "Esta janela está sendo gravada em $($script:LOG)"
+
+if (-not $SomenteAplicacao) {
+  # LocalService precisa escrever em toda a instalação: o banco em dados\, os
+  # logs, e o cache que o Next mantém em app\.next. A entrada é herdável
+  # ((OI)(CI)) e o Windows a propaga para o que já existe e para o que for
+  # criado depois.
+  Rodar "Dar escrita ao LocalService em $RAIZ" "icacls" @($RAIZ, "/grant", "${SID_LOCAL_SERVICE}:(OI)(CI)M", "/Q")
+
+  # dados\ deixa de herdar: só o serviço, o SYSTEM (o backup agendado) e os
+  # administradores enxergam o banco vivo. Quem consulta usa consulta\.
+  #
+  # As entradas vão SÓ NA PASTA, e os arquivos de dentro são resetados para
+  # herdar dela. Não é frescura: a primeira versão aplicava as três entradas
+  # com /T, e as marcas (OI)(CI) chegando num ARQUIVO são descartadas pelo
+  # Windows — o emprestimos.db ficou com a lista de permissões VAZIA, e nem
+  # o administrador nem o serviço conseguiam abri-lo ("unable to open
+  # database file"). Medido em 2026-09-18, na primeira instalação de verdade.
+  Rodar "Fechar $DADOS para as contas comuns" "icacls" @($DADOS, "/inheritance:r", "/grant:r", "${SID_LOCAL_SERVICE}:(OI)(CI)M", "${SID_SYSTEM}:(OI)(CI)F", "${SID_ADMINISTRADORES}:(OI)(CI)F", "/Q")
+
+  $filhos = Get-ChildItem -Path $DADOS -Force -ErrorAction SilentlyContinue | Select-Object -First 1
+  if ($filhos) {
+    $codigo = Executar "icacls" @((Join-Path $DADOS "*"), "/reset", "/T", "/Q")
+    if ($codigo -ne 0) {
+      # Um arquivo que ficou sem lista de permissões só é alterável pelo dono.
+      # O administrador toma posse e tenta de novo.
+      Info "Um arquivo em $DADOS estava sem permissões; tomando posse para consertar."
+      Executar "takeown" @("/F", (Join-Path $DADOS "*"), "/A") | Out-Null
+      Rodar "Fazer os arquivos de $DADOS herdarem as permissões da pasta" "icacls" @((Join-Path $DADOS "*"), "/reset", "/T", "/Q")
+    }
+  }
+  Ok "LocalService escreve em $RAIZ; $DADOS fechada para contas comuns"
+
+  # Atalhos que versões anteriores deixavam na área de trabalho e hoje moram
+  # em scripts\implantacao (decisão do dono: só o painel fica à vista).
+  foreach ($antigo in @("Atualizar copia para consulta.cmd", "Reiniciar o sistema.cmd")) {
+    $caminhoAntigo = Join-Path $AREA_DE_TRABALHO $antigo
+    if (Test-Path $caminhoAntigo) { Remove-Item -Force $caminhoAntigo; Info "Atalho antigo removido: $antigo" }
+  }
+}
 
 # ----------------------------------------------------------------- 3. .env
 
@@ -248,7 +360,7 @@ if (Test-Path $NSSM) {
 
 if ($SomenteAplicacao) {
   Write-Host ""
-  Write-Host "-SomenteAplicacao: parando antes do serviço, permissões, firewall, energia, tarefa e atalhos." -ForegroundColor Yellow
+  Write-Host "-SomenteAplicacao: parando antes do serviço, firewall, energia, tarefa e atalho." -ForegroundColor Yellow
   Stop-Transcript | Out-Null
   exit 0
 }
@@ -257,26 +369,15 @@ if ($SomenteAplicacao) {
 
 Etapa "Registrando o serviço do Windows '$NOME_EXIBIDO'"
 
-$binNext = Join-Path $APP "node_modules\next\dist\bin\next"
-$erroServico = Join-Path $LOGS "servico.err.log"
-$saidaServico = Join-Path $LOGS "servico.log"
-
-# A saída do nssm não é lida (ele escreve em UTF-16 quando redirecionado); o
-# que se confere é o código de saída e, no fim, o registro do Windows.
-function Nssm([string[]]$argumentos) {
-  $anterior = $ErrorActionPreference
-  $ErrorActionPreference = "Continue"
-  & $NSSM @argumentos 2>&1 | Out-Null
-  $codigo = $LASTEXITCODE
-  $ErrorActionPreference = $anterior
-  if ($codigo -ne 0) { Falhar "nssm $($argumentos -join ' ') devolveu o código $codigo." }
-}
-
 if (Get-Service -Name $SERVICO -ErrorAction SilentlyContinue) {
   Stop-Service -Name $SERVICO -Force -ErrorAction SilentlyContinue
   Nssm @("remove", $SERVICO, "confirm")
   Info "Registro anterior removido; registrando de novo."
 }
+
+$binNext = Join-Path $APP "node_modules\next\dist\bin\next"
+$erroServico = Join-Path $LOGS "servico.err.log"
+$saidaServico = Join-Path $LOGS "servico.log"
 
 Nssm @("install", $SERVICO, $node)
 Nssm @("set", $SERVICO, "AppParameters", "$binNext start -p $PORTA")
@@ -305,20 +406,7 @@ if ($parametrosGravados -ne "$binNext start -p $PORTA") {
 }
 Ok "Serviço '$SERVICO' registrado: $node $parametrosGravados"
 
-# ----------------------------------------------------------- 7. permissões
-
-Etapa "Ajustando as permissões das pastas"
-
-# LocalService precisa escrever em toda a instalação: o banco em dados\, os
-# logs, e o cache que o Next mantém em app\.next.
-Rodar "Dar escrita ao LocalService em $RAIZ" "icacls" @($RAIZ, "/grant", "${SID_LOCAL_SERVICE}:(OI)(CI)M", "/Q")
-
-# dados\ deixa de herdar: só o serviço, o SYSTEM (o backup agendado) e os
-# administradores enxergam o banco vivo. Quem consulta usa consulta\.
-Rodar "Fechar $DADOS para as contas comuns" "icacls" @($DADOS, "/inheritance:r", "/grant:r", "${SID_LOCAL_SERVICE}:(OI)(CI)M", "${SID_SYSTEM}:(OI)(CI)F", "${SID_ADMINISTRADORES}:(OI)(CI)F", "/T", "/Q")
-Ok "LocalService escreve em $RAIZ; $DADOS fechada para contas comuns"
-
-# --------------------------------------------- 8. firewall, energia, backup
+# --------------------------------------------- 7. firewall, energia, backup
 
 Etapa "Liberando a porta $PORTA no firewall do Windows"
 
@@ -333,15 +421,12 @@ Ok "Regra '$NOME_REGRA' criada"
 
 Etapa "Impedindo o computador de suspender (a tela pode desligar; o sistema, não)"
 
-$anterior = $ErrorActionPreference
-$ErrorActionPreference = "Continue"
-& powercfg /change standby-timeout-ac 0 | Out-Null
-& powercfg /change hibernate-timeout-ac 0 | Out-Null
+Executar "powercfg" @("/change", "standby-timeout-ac", "0") | Out-Null
+Executar "powercfg" @("/change", "hibernate-timeout-ac", "0") | Out-Null
 # Notebook: fechar a tampa não desliga. Num desktop o ajuste não existe e o
-# comando reclama — por isso a saída vai para o nada.
-& powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS LIDACTION 0 2>$null | Out-Null
-& powercfg /setactive SCHEME_CURRENT 2>$null | Out-Null
-$ErrorActionPreference = $anterior
+# comando reclama — o código de saída é ignorado de propósito.
+Executar "powercfg" @("/setacvalueindex", "SCHEME_CURRENT", "SUB_BUTTONS", "LIDACTION", "0") | Out-Null
+Executar "powercfg" @("/setactive", "SCHEME_CURRENT") | Out-Null
 Ok "Suspensão e hibernação desligadas na tomada"
 
 Etapa "Agendando o backup diário (19:00, todo dia, mesmo sem ninguém logado)"
@@ -354,44 +439,20 @@ $ajustes = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit 
 Register-ScheduledTask -TaskName $NOME_TAREFA -Action $acao -Trigger $gatilho -Principal $conta -Settings $ajustes -Force | Out-Null
 Ok "Tarefa '$NOME_TAREFA' registrada (se o PC estiver desligado às 19:00, roda quando ligar)"
 
-# --------------------------------------------------------------- 9. atalhos
+# ---------------------------------------------------------------- 8. atalho
 
-Etapa "Criando os atalhos na área de trabalho (de todos os usuários do PC)"
+Etapa "Criando o atalho do painel na área de trabalho (de todos os usuários do PC)"
 
+# Só o painel fica à vista — decisão do dono. Reiniciar o sistema e atualizar a
+# cópia de consulta são os .cmd de scripts\implantacao, e o guia diz onde estão.
 $painel = Join-Path $AREA_DE_TRABALHO "Painel de Emprestimos.url"
 Set-Content -Path $painel -Encoding ASCII -Value @(
   "[InternetShortcut]",
   "URL=http://localhost:$PORTA/admin"
 )
+Ok "Painel de Emprestimos"
 
-# Os dois .cmd pedem administrador sozinhos (o backup lê dados\, que ficou
-# fechada; o reinício mexe em serviço). Texto sem acento: o cmd usa outra
-# codificação e mostraria lixo.
-$copia = Join-Path $AREA_DE_TRABALHO "Atualizar copia para consulta.cmd"
-Set-Content -Path $copia -Encoding ASCII -Value @(
-  "@echo off",
-  "net session >nul 2>&1 || (powershell -NoProfile -Command `"Start-Process -FilePath '%~f0' -Verb RunAs`" & exit /b)",
-  "echo Copiando o banco para a pasta de consulta...",
-  "`"$node`" `"$scriptBackup`"",
-  "echo.",
-  "echo Pronto. Abra $RAIZ\consulta\emprestimos-consulta.db no DB Browser for SQLite (Abrir somente leitura).",
-  "pause"
-)
-
-$reiniciar = Join-Path $AREA_DE_TRABALHO "Reiniciar o sistema.cmd"
-Set-Content -Path $reiniciar -Encoding ASCII -Value @(
-  "@echo off",
-  "net session >nul 2>&1 || (powershell -NoProfile -Command `"Start-Process -FilePath '%~f0' -Verb RunAs`" & exit /b)",
-  "echo Reiniciando o Sistema de Emprestimos...",
-  "`"$NSSM`" restart $SERVICO",
-  "echo.",
-  "echo Aguarde uns 15 segundos e abra o painel de novo.",
-  "echo Se continuar sem responder, reinicie o computador. Se ainda assim nao voltar, mande a pasta $LOGS para quem mantem o sistema.",
-  "pause"
-)
-Ok "Painel de Emprestimos · Atualizar copia para consulta · Reiniciar o sistema"
-
-# --------------------------------------------------------- 10. subir e testar
+# --------------------------------------------------------- 9. subir e testar
 
 Etapa "Ligando o serviço e esperando ele responder"
 
@@ -415,6 +476,21 @@ if (-not $respondeu) {
   Falhar "O sistema não subiu. O estado do serviço é '$((Get-Service $SERVICO).Status)'."
 }
 Ok "http://localhost:$PORTA/ respondeu 200"
+
+# A página inicial é estática e responderia mesmo com o banco inacessível; o
+# painel de login lê a tabela de administradores, então é ele que prova que o
+# serviço consegue abrir o banco.
+$respostaAdmin = Invoke-WebRequest -Uri "http://localhost:$PORTA/admin" -UseBasicParsing -TimeoutSec 15
+if ($respostaAdmin.StatusCode -ne 200) {
+  Falhar "O painel respondeu $($respostaAdmin.StatusCode) em vez de 200."
+}
+if (Test-Path $erroServico) {
+  $errosRecentes = Get-Content $erroServico -Tail 20 | Where-Object { $_ -match "SQLITE_CANTOPEN|unable to open database" }
+  if ($errosRecentes) {
+    Falhar "O serviço subiu mas não consegue abrir o banco ($BANCO): $($errosRecentes -join ' | '). Rode o instalador de novo; ele conserta as permissões da pasta dados."
+  }
+}
+Ok "http://localhost:$PORTA/admin respondeu 200 e o serviço leu o banco"
 
 Etapa "Fazendo o primeiro backup e a primeira cópia de consulta"
 Rodar "backup.mjs" $node @($scriptBackup)
@@ -443,6 +519,7 @@ Write-Host " Banco de dados:     $BANCO"
 Write-Host " Backups (30 dias):  $RAIZ\backups\"
 Write-Host " Cópia de consulta:  $RAIZ\consulta\emprestimos-consulta.db"
 Write-Host " Logs:               $LOGS\"
+Write-Host " Reiniciar / copiar para consulta / atualizar: os .cmd em $APP\scripts\implantacao\"
 Write-Host ""
 Write-Host " Se o tablet não abrir a página: confira se ele está no MESMO Wi-Fi que este"
 Write-Host " computador, e tente o endereço com o IP acima. O guia tem o restante."
