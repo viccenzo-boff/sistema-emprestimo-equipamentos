@@ -71,16 +71,17 @@ página do painel, e o contrário também vale.
 
 ## A versão que esta wiki descreve
 
-!!! info "Esta wiki descreve a versão v1.2 do sistema, em andamento"
+!!! info "Esta wiki descreve a versão v1.2 do sistema"
 
-    A `v1.2` é a versão que está sendo construída: as páginas acompanham a
-    `main` do repositório. Ela acrescenta a avaliação anônima no fim da
-    retirada — os quatro rostos e o QR code do formulário de sugestões no
-    tablet, e a aba **Satisfação** nos relatórios do painel. A `v1.1` e a
-    `v1.0` continuam no seletor de versão, no alto da página, congeladas — se a
-    tela de retirada confirmada na sua frente não tiver os rostos, ou os
-    relatórios não tiverem a aba de satisfação, confira ali qual versão você
-    está usando.
+    A `v1.2` acrescenta a avaliação anônima no fim da retirada — os quatro
+    rostos e o QR code do formulário de sugestões no tablet —, e no painel os
+    três relatórios que faltavam: a aba **Satisfação**, o **Ranking de
+    Consumo** e o **Índice de Manutenção**, com o seletor de período, a
+    exportação em `.xlsx` e o histórico de quem mudou a situação de cada
+    aparelho. A `v1.1` e a `v1.0` continuam no seletor de versão, no alto da
+    página, congeladas — se a tela de retirada confirmada na sua frente não
+    tiver os rostos, ou os relatórios não tiverem as quatro abas, confira ali
+    qual versão você está usando.
 
 ## Onde pedir ajuda
 

@@ -84,15 +84,17 @@ an admin panel page, and the other way round as well.
 
 ## The version this wiki describes
 
-!!! info "This wiki describes version v1.2 of the system, in progress"
+!!! info "This wiki describes version v1.2 of the system"
 
-    `v1.2` is the version being built: the pages follow the repository's
-    `main` branch. It adds the anonymous rating at the end of a pickup — the
-    four faces and the suggestion-form QR code on the tablet, and the
-    **Satisfação** (Satisfaction) tab in the panel's reports. `v1.1` and
+    `v1.2` adds the anonymous rating at the end of a pickup — the four faces
+    and the suggestion-form QR code on the tablet — and, in the panel, the
+    three reports that were missing: the **Satisfação** (Satisfaction) tab,
+    the **Ranking de Consumo** (Usage ranking) and the **Índice de
+    Manutenção** (Maintenance rate), with the period selector, the `.xlsx`
+    export and the history of who changed each device's status. `v1.1` and
     `v1.0` stay frozen in the version selector at the top of the page — if the
-    pickup confirmed screen in front of you has no faces, or the reports have
-    no satisfaction tab, check there which version you are using.
+    pickup confirmed screen in front of you has no faces, or the reports do
+    not have the four tabs, check there which version you are using.
 
 ## Where to ask for help
 

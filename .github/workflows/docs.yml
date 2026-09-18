@@ -168,18 +168,19 @@ jobs:
       #
       # A v1.0 e o estado congelado que esta wiki descrevia ate 2026-09-14
       # (spec-wiki §2.1); a v1.1 fechou com a Tarefa 13 (a aba Relatorios) e
-      # tambem esta congelada. Desde 2026-09-16 a main publica a v1.2, aberta
-      # pela Tarefa 14 (a avaliacao anonima): cada push atualiza so o
-      # diretorio v1.2/, e o mike mantem as tres lado a lado no seletor do
-      # cabecalho. Quando a v1.2 for tagueada, troque o titulo para "v1.2" (sem
-      # o parentese), mude o set-default abaixo e a caixa de versao das duas
-      # homes -- a tabela do CONTRIBUTING diz o que cada um vira.
+      # tambem esta congelada. A v1.2 abriu com a Tarefa 14 (a avaliacao
+      # anonima) e fechou com a Tarefa 17 (o Indice de Manutencao), em
+      # 2026-09-17: cada push atualiza so o diretorio v1.2/, e o mike mantem
+      # as tres lado a lado no seletor do cabecalho. Quando a proxima tarefa
+      # que mudar o produto abrir a v1.3, este passo passa a publica-la com
+      # "(em andamento)" no titulo -- a tabela do CONTRIBUTING diz o que cada
+      # lugar vira.
       - name: Publicar a versao v1.2
-        run: mike deploy --push --update-aliases v1.2 --title "v1.2 (em andamento)"
+        run: mike deploy --push --update-aliases v1.2 --title "v1.2"
 
-      # A raiz do site redireciona para a versao padrao. Ela continua na v1.1
-      # por decisao explicita: a v1.2 so vira padrao quando for entregue --
-      # alguem troca esta linha de proposito, em vez de a raiz mudar sozinha
-      # debaixo de quem guardou o link.
-      - name: Apontar o padrao para a v1.1
-        run: mike set-default --push v1.1
+      # A raiz do site redireciona para a versao padrao. Ela muda por decisao
+      # explicita: alguem troca esta linha de proposito, em vez de a raiz
+      # mudar sozinha debaixo de quem guardou o link. Passou para a v1.2
+      # quando ela fechou (2026-09-17).
+      - name: Apontar o padrao para a v1.2
+        run: mike set-default --push v1.2
