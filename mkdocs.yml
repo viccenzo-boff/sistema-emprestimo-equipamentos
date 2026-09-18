@@ -174,9 +174,9 @@ extra_javascript:
   - https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js
 
 extra:
-  # O seletor de versao do mike. A v1.0 e o estado congelado na gh-pages
-  # (spec-wiki §2.1); desde 2026-09-14 a main publica a v1.1, em andamento, e
-  # as duas convivem lado a lado. Qual versao a main publica esta no workflow.
+  # O seletor de versao do mike. Hoje ha uma versao so, a v1.0 (spec-wiki
+  # §2.1); quando houver outra, as duas convivem lado a lado. Qual versao a
+  # main publica esta no workflow.
   version:
     provider: mike
 

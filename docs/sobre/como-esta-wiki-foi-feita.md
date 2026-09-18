@@ -240,12 +240,17 @@ A decisão vale como princípio: **a wiki não conserta o sistema por escrito.**
 Quando ela encontra um defeito, o registro é honesto e o conserto vira trabalho
 declarado.
 
-**O que aconteceu depois.** O conserto veio em setembro de 2026, já na `v1.1`:
-a frase passou a dizer o que de fato acontece, a captura foi refeita contra o
-sistema rodando, e a página desta versão descreve a mensagem nova — enquanto a
-página da `v1.0`, congelada no seletor de versão, continua citando a antiga. É
-a [decisão 4](#4-documentar-uma-versao-congelada) funcionando como prometido:
-cada versão da wiki fica correta sobre a sua versão do produto.
+**O que aconteceu depois.** O conserto veio em setembro de 2026, antes da
+entrega: a frase passou a dizer o que de fato acontece, a captura foi refeita
+contra o sistema rodando, e a página de [gestão de
+inventário](../painel/inventario.md) descreve a mensagem nova. Por duas
+semanas a wiki publicou a correção como uma versão ao lado (`v1.1`, depois
+`v1.2`), com a página antiga congelada citando a mensagem antiga — a
+[decisão 4](#4-documentar-uma-versao-congelada) funcionando como prometido.
+Só que versão é entrega, e nada tinha sido entregue: em 18 de setembro, com a
+implantação marcada, a numeração foi recolhida e tudo virou `v1.0`. A decisão
+4 continua de pé para a primeira versão **depois** da implantação — é aí que
+congelar passa a proteger alguém.
 
 ## O teste que vale mais que os três portões
 

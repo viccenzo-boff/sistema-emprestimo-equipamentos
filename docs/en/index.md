@@ -84,17 +84,18 @@ an admin panel page, and the other way round as well.
 
 ## The version this wiki describes
 
-!!! info "This wiki describes version v1.2 of the system"
+!!! info "This wiki describes version v1.0 of the system"
 
-    `v1.2` adds the anonymous rating at the end of a pickup — the four faces
-    and the suggestion-form QR code on the tablet — and, in the panel, the
-    three reports that were missing: the **Satisfação** (Satisfaction) tab,
-    the **Ranking de Consumo** (Usage ranking) and the **Índice de
-    Manutenção** (Maintenance rate), with the period selector, the `.xlsx`
-    export and the history of who changed each device's status. `v1.1` and
-    `v1.0` stay frozen in the version selector at the top of the page — if the
-    pickup confirmed screen in front of you has no faces, or the reports do
-    not have the four tabs, check there which version you are using.
+    `v1.0` is the first version delivered to the academic coordination, and
+    the only one: the tablet with pickup, return and the anonymous rating at
+    the end of a pickup (the four faces and the suggestion-form QR code), and
+    the panel with the return queue, the inventory, the people and the four
+    reports — **Ocupação e picos de uso** (Occupancy and usage peaks),
+    **Satisfação** (Satisfaction), **Ranking de Consumo** (Usage ranking) and
+    **Índice de Manutenção** (Maintenance rate), with the period selector, the
+    `.xlsx` export and the history of who changed each device's status. When
+    a new version comes, it enters the version selector at the top of the
+    page next to this one — which stays correct about `v1.0`.
 
 ## Where to ask for help
 

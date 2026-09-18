@@ -39,21 +39,27 @@ sem motivo novo**. Estão aqui para que a próxima sessão não refaça o debate
 
 ### 2.1 O que a `v1.0` inclui
 
-A `v1.0` é o estado da `main` no momento em que a tag for criada: Tarefas 1 a 12
-mais a 8.1. **A Tarefa 13 (Relatórios e Ocupação) fica de fora** — ela é só
-enunciado, ainda não implementada.
+A `v1.0` é o estado da `main` no momento da **entrega à coordenação**: as
+Tarefas 1 a 17, mais a 8.1 — o tablet inteiro, o painel com as suas seis telas
+e os quatro relatórios. É a primeira versão implantada, e por isso a primeira
+tag de entrega; a tag `v1.0` aponta para o commit da entrega.
 
-Quando a Tarefa 13 entrar, ela vira `v1.1` e ganha uma sexta página de processo.
-O `mike` publica as duas versões lado a lado; a wiki da `v1.0` não precisa ser
-corrigida.
+Quando houver uma versão nova depois da implantação, ela entra no `mike` ao
+lado desta, com o número que a entrega merecer (`v1.1` para uma correção,
+`v2.0` para uma mudança de produto): a wiki da `v1.0` não precisa ser
+corrigida, porque continua correta sobre a `v1.0`.
 
-> **Desde 2026-09-14 o workflow publica a `main` como `v1.1 (em andamento)`**, e
-> a `v1.0` ficou congelada na `gh-pages` no último build dela. A troca veio
-> antes da Tarefa 13 porque a primeira correção de produto depois da tag (a
-> mensagem de recusa ao excluir categoria em uso, defeito registrado pela D08)
-> mudou uma página da wiki — e publicá-la como `v1.0` faria a wiki congelada
-> descrever um comportamento que a `v1.0` do produto não tem. A raiz do site
-> continua apontando para a `v1.0` até a `v1.1` ser tagueada.
+> **A numeração foi por tarefa entre 2026-09-14 e 2026-09-18, e foi
+> recolhida.** Neste intervalo esta seção dizia que a `v1.0` parava na Tarefa
+> 12, e o workflow publicou `v1.1` (Tarefa 13) e `v1.2` (Tarefas 14 a 17) ao
+> lado dela, cada uma congelada no estado que a wiki descrevia até a tarefa —
+> porque a primeira correção de produto depois da tag de agosto mudou uma
+> página, e publicá-la como `v1.0` faria a wiki descrever um comportamento que
+> aquele commit não tinha. O critério estava certo e o número, não: versão é
+> entrega, e nada tinha sido entregue. Em 2026-09-18, com a implantação
+> marcada para a semana seguinte e a Tarefa 17 como última, o dono do
+> repositório decidiu que tudo é `v1.0` — a tag de agosto é movida para o
+> commit da entrega, e as pastas `v1.1/` e `v1.2/` saem da `gh-pages`.
 
 ## 3. Escopo
 
@@ -93,7 +99,7 @@ Relatórios é, por isso, a única com sete seções em vez de oito — renumera
 - Traduzir a interface do sistema
 - ~~Documentar a Tarefa 13 (Relatórios) — fica para a `v1.1`~~ **Feito na
   própria Tarefa 13**, que entregou a página nos dois idiomas junto com a tela.
-  Foi o que fechou a `v1.1`.
+  (Chamou-se `v1.1` até 2026-09-18 — ver a nota da §2.1.)
 - Documentação de API ou de contribuição de código (o [README.md](../README.md) e o
   [AGENTS.md](../AGENTS.md) já cobrem quem vai mexer no código)
 - Vídeo, GIF animado ou tour interativo

@@ -166,21 +166,31 @@ jobs:
       # (conferido em `mike deploy --help`). Quem faz o build estrito e o job
       # `qualidade`, do qual este depende -- por isso o passo nao se repete aqui.
       #
-      # A v1.0 e o estado congelado que esta wiki descrevia ate 2026-09-14
-      # (spec-wiki §2.1); a v1.1 fechou com a Tarefa 13 (a aba Relatorios) e
-      # tambem esta congelada. A v1.2 abriu com a Tarefa 14 (a avaliacao
-      # anonima) e fechou com a Tarefa 17 (o Indice de Manutencao), em
-      # 2026-09-17: cada push atualiza so o diretorio v1.2/, e o mike mantem
-      # as tres lado a lado no seletor do cabecalho. Quando a proxima tarefa
-      # que mudar o produto abrir a v1.3, este passo passa a publica-la com
-      # "(em andamento)" no titulo -- a tabela do CONTRIBUTING diz o que cada
-      # lugar vira.
-      - name: Publicar a versao v1.2
-        run: mike deploy --push --update-aliases v1.2 --title "v1.2"
+      # Uma versao so: a v1.0 e o que vai para a coordenacao, com as Tarefas 1
+      # a 17. Entre 2026-09-14 e 2026-09-18 a wiki chegou a publicar v1.1 e
+      # v1.2 ao lado da v1.0 (spec-wiki §2.1), numerando por tarefa; como
+      # nenhuma delas tinha sido implantada, o dono recolheu tudo para a v1.0
+      # em 2026-09-18. Cada push atualiza o diretorio v1.0/. Quando houver uma
+      # versao nova DEPOIS da implantacao, este passo passa a publica-la com
+      # "(em andamento)" no titulo e a v1.0 fica congelada ao lado -- a tabela
+      # do CONTRIBUTING diz o que cada lugar vira.
+      - name: Publicar a versao v1.0
+        run: mike deploy --push --update-aliases v1.0 --title "v1.0"
 
       # A raiz do site redireciona para a versao padrao. Ela muda por decisao
       # explicita: alguem troca esta linha de proposito, em vez de a raiz
-      # mudar sozinha debaixo de quem guardou o link. Passou para a v1.2
-      # quando ela fechou (2026-09-17).
-      - name: Apontar o padrao para a v1.2
-        run: mike set-default --push v1.2
+      # mudar sozinha debaixo de quem guardou o link.
+      - name: Apontar o padrao para a v1.0
+        run: mike set-default --push v1.0
+
+      # Limpeza de uma vez so: as pastas v1.1/ e v1.2/ que a gh-pages ganhou
+      # entre 2026-09-14 e 2026-09-18 saem do ar e do seletor. O passo nao
+      # faz nada quando elas ja nao existem, e pode ser removido depois de
+      # rodar uma vez -- `mike list` le a gh-pages que o checkout trouxe.
+      - name: Retirar as versoes v1.1 e v1.2 (uma vez so)
+        run: |
+          for versao in v1.1 v1.2; do
+            if mike list | grep -qE "(^|[\"( ])${versao}([^0-9]|$)"; then
+              mike delete --push "${versao}"
+            fi
+          done

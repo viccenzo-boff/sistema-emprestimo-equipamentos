@@ -578,50 +578,51 @@ código** — ela só tem o site construído, uma pasta por versão:
 gh-pages/
 ├── index.html      ← redireciona para a versão padrão
 ├── versions.json   ← o que alimenta o seletor de versão do cabeçalho
-├── v1.0/           ← o site inteiro, PT na raiz e EN em v1.0/en/ (congelado)
-├── v1.1/           ← a aba Relatórios e a mensagem corrigida (congelado)
-└── v1.2/           ← fechou com a Tarefa 17; ainda é a que a main republica a cada push
+└── v1.0/           ← o site inteiro, PT na raiz e EN em v1.0/en/; a main o republica a cada push
 ```
 
-**Desde 2026-09-16 a `main` publica a `v1.2`, e a `v1.1` ficou congelada na
-`gh-pages` ao lado da `v1.0`.** Cada versão é o estado que a wiki descrevia até
-a tag dela ([spec-wiki.md](especificacoes/spec-wiki.md) §2.1): a `v1.1` fechou
-com a Tarefa 13 (a aba **Relatórios** e a mensagem de recusa ao excluir
-categoria em uso); a `v1.2` abriu com a Tarefa 14 (a avaliação anônima e a
-aba **Satisfação**) e **fechou com a Tarefa 17**, em 2026-09-17 — o período e
-o Ranking de Consumo (Tarefa 16) e o Índice de Manutenção com o histórico de
-situação (Tarefa 17) são descritos só nela. O `mike deploy` do workflow aponta
-para a versão nova **no começo** do ciclo, e não no fim: sem isso, o primeiro
-`push` com uma página nova reescreveria a versão publicada com um
-comportamento que aquela versão do produto não tem.
+**Uma versão só: a `v1.0` é o que vai para a coordenação**, com as Tarefas 1
+a 17. Cada versão é o estado que a wiki descrevia até a tag dela
+([spec-wiki.md](especificacoes/spec-wiki.md) §2.1), e a primeira tag de
+entrega é esta — nada foi implantado antes dela.
 
-O padrão da raiz muda **por decisão explícita**, e não por um alias móvel:
+> Entre 2026-09-14 e 2026-09-18 a `gh-pages` chegou a ter três pastas: a
+> `v1.0` congelada no estado de agosto, a `v1.1` (Tarefa 13) e a `v1.2`
+> (Tarefas 14 a 17), numeradas por tarefa e não por entrega. Como nenhuma das
+> três tinha sido implantada, o dono do repositório recolheu tudo para a
+> `v1.0` em 2026-09-18: o `mike deploy` voltou a publicar `v1.0`, o
+> `set-default` também, e um passo do workflow tira `v1.1/` e `v1.2/` do ar
+> na primeira execução (e não faz nada depois — pode ser removido). A tag
+> `v1.0` do remoto, que apontava para o commit de 2026-08-24, precisa ser
+> **movida** para o commit da entrega, e isso é gesto do dono.
+
+O `mike deploy` do workflow aponta para a versão nova **no começo** do ciclo,
+e não no fim: sem isso, o primeiro `push` com uma página nova reescreveria a
+versão publicada com um comportamento que aquela versão do produto não tem. O
+padrão da raiz muda **por decisão explícita**, e não por um alias móvel:
 alguém edita a linha do `set-default`, em vez de a raiz do site mudar sozinha
-debaixo de quem tinha o link. Ele passou para a `v1.2` quando ela fechou.
+debaixo de quem tinha o link.
 
-**A `v1.2` está fechada**, e os quatro lugares abaixo estão na coluna da
-direita. A tabela fica para o dia em que a próxima tarefa que mudar o produto
-abrir a `v1.3`: cada linha volta para a forma da coluna do meio, com o número
-novo (é o que a Tarefa 14 fez em 2026-09-16), e vai para a direita de novo
-quando a `v1.3` fechar. Nenhum portão acusa se um ficar para trás.
+**Quando houver uma versão nova depois da implantação** (a `v1.1`, ou a
+`v2.0` — a numeração é decisão de entrega, não de tarefa), os quatro lugares
+abaixo mudam juntos, e nenhum portão acusa se um ficar para trás:
 
-| Onde                                    | Com a versão em andamento                  | Com a versão fechada (hoje, `v1.2`)         |
-| --------------------------------------- | ------------------------------------------ | ------------------------------------------- |
-| `.github/workflows/docs.yml`, `deploy`  | `--title "v1.3 (em andamento)"`            | `--title "v1.2"`                            |
-| `.github/workflows/docs.yml`, `default` | `mike set-default --push v1.2`             | passa para a versão que fechou              |
-| `docs/index.md` e `docs/en/index.md`    | a caixa diz "em andamento" e o que ela traz | diz só "descreve a versão v1.2", com o que ela acrescentou |
+| Onde                                    | Com a versão nova em andamento              | Quando ela fechar                            |
+| --------------------------------------- | ------------------------------------------- | -------------------------------------------- |
+| `.github/workflows/docs.yml`, `deploy`  | `--title "v1.1 (em andamento)"`, e a `v1.0` fica congelada | `--title "v1.1"`                  |
+| `.github/workflows/docs.yml`, `default` | continua `mike set-default --push v1.0`     | passa para a versão que fechou               |
+| `docs/index.md` e `docs/en/index.md`    | a caixa diz "em andamento" e o que ela traz | diz só "descreve a versão v1.1", com o que ela acrescentou |
 
-**As tags `v1.1` e `v1.2` são do dono do repositório**, como a `v1.0` foi —
-nenhuma das duas existe no remoto, e o `pre-push` de [.githooks/](.githooks/)
-lembra disso no push delas. Quem publica a wiki é a Action, no `push` da
-`main`: a tag é o marco, não o gatilho.
+**A tag `v1.0` é do dono do repositório** — o `pre-push` de
+[.githooks/](.githooks/) lembra, no push dela, do que não acontece sozinho.
+Quem publica a wiki é a Action, no `push` da `main`: a tag é o marco, não o
+gatilho.
 
 ### Ligar o GitHub Pages (uma vez só)
 
 **Já foi feito, em 2026-08-27.** A receita fica aqui como histórico e para o dia
 em que o site precisar ser reconstruído em outro repositório. Conferido de novo
-em 2026-09-14, por requisição: a raiz responde 200, e `/v1.0/` e `/v1.1/`
-também. Afirmação sobre o estado do mundo externo envelhece — este parágrafo
+em 2026-09-14, por requisição: a raiz responde 200, e `/v1.0/` também. Afirmação sobre o estado do mundo externo envelhece — este parágrafo
 dizia "ainda não foi feito" até a Tarefa 13, quando a conferência contradisse o
 texto. Reconfira antes de citá-la, em vez de repetir o que está escrito.
 
@@ -645,7 +646,7 @@ pode ser apontado para uma branch que não existe.
 3. Confira a URL: <https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/>.
    Ela redireciona para a versão padrão do `mike` e mostra o seletor de versão
    ao lado do nome do site. Qual é a padrão está no `set-default` do workflow —
-   hoje a `v1.1`.
+   hoje a `v1.0`, a única.
 
 ### Despublicar, ou voltar atrás
 

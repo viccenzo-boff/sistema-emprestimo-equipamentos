@@ -138,7 +138,7 @@ erDiagram
 O `Administrador` **não** aparece em nenhum empréstimo: registrar quem deu a
 baixa em cada item é uma coluna que ainda não existe — está na lista de [o que
 ficou de fora](como-esta-wiki-foi-feita.md#o-que-ficou-de-fora). Onde ele
-aparece, desde a `v1.2`, é na `MudancaDeStatus`: uma linha por mudança de
+aparece é na `MudancaDeStatus`: uma linha por mudança de
 situação feita no painel (manutenção, aposentadoria, reativação), com de onde,
 para onde, quando, e **quem** — o vínculo com a conta e, ao lado, o nome que
 ela tinha na hora. O vínculo é opcional de propósito: recuperar uma senha
@@ -146,8 +146,8 @@ esquecida é apagar a conta e semear de novo, e nem o banco pode recusar isso
 por causa do histórico, nem o histórico pode ir embora junto. O nome fica. É
 essa tabela que o relatório Índice de Manutenção lê.
 
-A `Avaliacao` e a `Configuracao` também ficam soltas, e por motivos opostos
-(`v1.2`). A `Avaliacao` **não pode** apontar para pessoa nem para empréstimo:
+A `Avaliacao` e a `Configuracao` também ficam soltas, e por motivos opostos.
+A `Avaliacao` **não pode** apontar para pessoa nem para empréstimo:
 é a nota anônima do fim da retirada, e a linha guarda só a nota e o dia — até
 o `id` é sorteado, e não sequencial, para a ordem de gravação não denunciar
 quem respondeu depois de quem. O carimbo de quando a pessoa foi perguntada

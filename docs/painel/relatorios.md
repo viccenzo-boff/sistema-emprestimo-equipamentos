@@ -4,10 +4,10 @@
 
 Este processo transforma o que o sistema já registrou em um argumento: quantas
 retiradas passaram pelo balcão no período escolhido, quantos aparelhos estão
-fora da prateleira agora, o quanto cada categoria chegou perto de acabar — e,
-desde a `v1.2`, como as pessoas avaliam a retirada, **o que sai, quem leva e
-por quanto tempo**, no Ranking de Consumo, e **quanto do estoque fica parado no
-conserto**, no Índice de Manutenção.
+fora da prateleira agora, o quanto cada categoria chegou perto de acabar, como
+as pessoas avaliam a retirada, **o que sai, quem leva e por quanto tempo**, no
+Ranking de Consumo, e **quanto do estoque fica parado no conserto**, no Índice
+de Manutenção.
 
 Quando termina, o secretário tem um número para levar à coordenação — ou uma
 planilha, porque as três abas com período exportam o que está na tela em `.xlsx` —

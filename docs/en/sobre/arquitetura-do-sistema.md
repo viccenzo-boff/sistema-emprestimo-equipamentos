@@ -140,7 +140,7 @@ erDiagram
 `Administrador` appears in **no** loan: recording who performed each check-in
 is a column that does not exist yet, and it sits on the list of
 [what was left out](como-esta-wiki-foi-feita.md#what-was-left-out). Where it
-does appear, since `v1.2`, is in `MudancaDeStatus`: one row per status change
+does appear is in `MudancaDeStatus`: one row per status change
 made in the panel (maintenance, retirement, reactivation), with from where, to
 where, when, and **who** — the link to the account and, next to it, the name it
 had at the time. The link is optional on purpose: recovering a forgotten
@@ -148,8 +148,8 @@ password means deleting the account and seeding again, and neither may the
 database refuse that because of the history, nor may the history go away with
 it. The name stays. That table is what the maintenance rate report reads.
 
-`Avaliacao` and `Configuracao` stand apart as well, for opposite reasons
-(`v1.2`). `Avaliacao` **cannot** point at a person or at a loan: it is the
+`Avaliacao` and `Configuracao` stand apart as well, for opposite reasons.
+`Avaliacao` **cannot** point at a person or at a loan: it is the
 anonymous rating at the end of a pickup, and the row keeps only the rating and
 the day — even the `id` is drawn at random, not sequential, so the write order
 does not reveal who answered after whom. The stamp of when a person was last

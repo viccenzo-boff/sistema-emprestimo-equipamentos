@@ -238,12 +238,16 @@ The decision holds as a principle: **the wiki does not fix the system in
 writing.** When it finds a defect, the record is honest and the fix becomes
 declared work.
 
-**What happened next.** The fix came in September 2026, in `v1.1`: the sentence
-now says what actually happens, the screenshot was retaken against the running
-system, and this version's page describes the new message — while the `v1.0`
-page, frozen in the version selector, keeps quoting the old one. That is
-[decision 4](#4-document-a-frozen-version) working as promised: each version of
-the wiki stays correct about its version of the product.
+**What happened next.** The fix came in September 2026, before delivery: the
+sentence now says what actually happens, the screenshot was retaken against
+the running system, and the [inventory management](../painel/inventario.md)
+page describes the new message. For two weeks the wiki published the fix as a
+version alongside (`v1.1`, then `v1.2`), with the old page frozen and quoting
+the old message — [decision 4](#4-document-a-frozen-version) working as
+promised. Except that a version is a delivery, and nothing had been delivered:
+on September 18, with the deployment scheduled, the numbering was folded back
+and everything became `v1.0`. Decision 4 still stands for the first version
+**after** the deployment — that is when freezing starts protecting somebody.
 
 ## The test worth more than the three gates
 

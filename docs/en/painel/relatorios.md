@@ -11,10 +11,10 @@
 
 This process turns what the system already recorded into an argument: how many
 pickups went through the counter in the chosen period, how many devices are off
-the shelf right now, how close each category came to running out — and, since
-`v1.2`, how people rate the pickup, **what goes out, who takes it and for how
-long**, in the usage ranking, and **how much of the stock sits in repair**, in
-the maintenance rate.
+the shelf right now, how close each category came to running out, how people
+rate the pickup, **what goes out, who takes it and for how long**, in the usage
+ranking, and **how much of the stock sits in repair**, in the maintenance
+rate.
 
 When it ends, the front desk has a number to take to the academic coordination
 — or a spreadsheet, because the three tabs with a period export what is on

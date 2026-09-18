@@ -20,9 +20,9 @@ passo com capturas de tela e uma seção que explica **por que** o sistema se co
 jeito (os cinco primeiros trazem também um diagrama BPMN; relatório é leitura, e não transação). Tem ainda glossário, as duas máquinas de estado, as regras de negócio consolidadas e dois
 guias de início rápido, em português e inglês.
 
-A wiki publica uma pasta por versão: a raiz abre na **`v1.1`**, a última entregue, e a
-**`v1.2`** (em andamento) acompanha a `main` — o seletor no cabeçalho troca entre elas e a
-`v1.0`. A fonte fica em
+A wiki descreve a **`v1.0`**, a versão entregue à coordenação — hoje a única; o `mike`
+publica uma pasta por versão, e quando houver outra o seletor no cabeçalho troca entre
+elas. A fonte fica em
 [`docs/`](docs/), é construída com MkDocs Material e publicada por
 [uma Action](.github/workflows/docs.yml) a cada `push` na `main`, depois de três portões de
 qualidade. Quem for escrever uma página nova começa pelo
