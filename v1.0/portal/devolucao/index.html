@@ -411,14 +411,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../inicio-rapido/secretaria/" class="md-nav__link">
+      <a href="../../inicio-rapido/secretario/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Secretaria
+    Secretário
   
 
     
@@ -712,6 +712,8 @@
       
         
       
+        
+      
     
     
     
@@ -828,6 +830,34 @@
     
   
     5. Gestão de pessoas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/relatorios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Relatórios
   
 
     
@@ -1412,11 +1442,11 @@
 
 <h1 id="2-devolucao-de-equipamento">2. Devolução de equipamento</h1>
 <h2 id="1-objetivo-do-processo">1. Objetivo do processo</h2>
-<p>Este processo devolve à secretaria um equipamento que estava emprestado. Quem
+<p>Este processo devolve ao secretário um equipamento que estava emprestado. Quem
 está com o aparelho o deixa na bancada e <strong>declara</strong> a entrega no tablet, pela
 mesma matrícula com que retirou.</p>
 <p>Quando termina, o item sai da lista de quem o levou e entra na fila de conferência
-da secretaria. O aparelho ainda <strong>não</strong> volta para a prateleira: quem fecha o
+do secretário. O aparelho ainda <strong>não</strong> volta para a prateleira: quem fecha o
 ciclo é a <a href="../../painel/baixa-fisica/">baixa física</a>, no painel.</p>
 <h2 id="2-pre-condicoes">2. Pré-condições</h2>
 <ul>
@@ -1473,7 +1503,7 @@ nome:</p>
 <tr>
 <td>Estudante ou professor</td>
 <td>Deixa o aparelho na bancada e declara a devolução no tablet, item a item ou tudo de uma vez.</td>
-<td>Não dá baixa. Declarar não é o mesmo que a secretaria conferir.</td>
+<td>Não dá baixa. Declarar não é o mesmo que o secretário conferir.</td>
 </tr>
 <tr>
 <td>Portal (o tablet)</td>
@@ -1481,18 +1511,18 @@ nome:</p>
 <td><strong>Não devolve o aparelho ao inventário.</strong> O equipamento continua emprestado até a conferência física.</td>
 </tr>
 <tr>
-<td>Secretaria</td>
+<td>Secretário</td>
 <td>Recolhe o que está na bancada e confirma o recebimento no painel — é o <a href="../../painel/baixa-fisica/">processo 3</a>.</td>
 <td>Não participa da devolução no tablet. Não precisa estar presente para você declarar.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="5-diagrama-bpmn">5. Diagrama BPMN</h2>
-<p><a href="../../assets/diagramas/02-devolucao.svg"><img alt="Diagrama BPMN da devolução: a pessoa digita a matrícula, o portal lista os empréstimos abertos, ela escolhe um item ou a lista inteira, confirma no aviso, e o portal marca o empréstimo como aguardando baixa enquanto o equipamento segue emprestado e espera a secretaria." src="../../assets/diagramas/02-devolucao.svg" /></a></p>
+<p><a href="../../assets/diagramas/02-devolucao.svg"><img alt="Diagrama BPMN da devolução: a pessoa digita a matrícula, o portal lista os empréstimos abertos, ela escolhe um item ou a lista inteira, confirma no aviso, e o portal marca o empréstimo como aguardando baixa enquanto o equipamento segue emprestado e espera o secretário." src="../../assets/diagramas/02-devolucao.svg" /></a></p>
 <p>Clique no diagrama para abri-lo em tamanho cheio — na largura da página ele
 entra a pouco mais de um terço do tamanho, e os rótulos não se leem.</p>
 <p>Repare em como o diagrama <strong>termina</strong>: o último evento não é "equipamento
-disponível", é "o equipamento segue emprestado e espera a secretaria". A seta que
+disponível", é "o equipamento segue emprestado e espera o secretário". A seta que
 sai dele é a mensagem que o <a href="../../painel/baixa-fisica/">processo 3</a> consome.</p>
 <p><a href="../../processos-fonte/02-devolucao.bpmn">Baixar o arquivo <code>.bpmn</code></a> — a fonte do
 diagrama, que abre no <a href="https://bpmn.io">bpmn.io</a> sem instalar nada.</p>
@@ -1520,7 +1550,7 @@ são matrículas diferentes.</p>
 com você. A etiqueta é a mesma que está colada no equipamento, caractere por
 caractere — é por ela que você confere qual é qual.</p>
 <p>Só aparecem aqui os aparelhos que ainda estão no seu nome. O que você já
-devolveu some da lista, mesmo que a secretaria ainda não o tenha recolhido.</p>
+devolveu some da lista, mesmo que o secretário ainda não o tenha recolhido.</p>
 </li>
 <li>
 <p>Deixe na bancada o aparelho que você veio devolver.</p>
@@ -1550,7 +1580,7 @@ tela seguinte é que este passo já aconteceu.</p>
 </blockquote>
 <p>E, logo abaixo:</p>
 <blockquote>
-<p>A secretaria confere e dá baixa depois. Até lá o item continua registrado
+<p>O secretário confere e dá baixa depois. Até lá o item continua registrado
 no seu nome.</p>
 </blockquote>
 <p>No <strong>Devolver tudo</strong> o modal se chama <strong>Devolver todos os equipamentos</strong>,
@@ -1603,21 +1633,21 @@ ser a da <a href="../retirada/">retirada</a>.</p>
 <p class="admonition-title">Devolvi no tablet. Por que o equipamento não fica disponível?</p>
 <p>Porque devolver no tablet é uma <strong>declaração</strong>, e não uma conferência.</p>
 <p>Quando você confirma, o empréstimo passa a <em>aguardando baixa</em> — o aparelho
-está fisicamente na bancada, mas ninguém da secretaria o recolheu ainda. Se
+está fisicamente na bancada, mas o secretário não o recolheu ainda. Se
 ele voltasse para <em>disponível</em> nesse momento, o tablet ofereceria a outra
 pessoa um equipamento que continua em cima da bancada, e ela iria procurá-lo
 na prateleira sem encontrar.</p>
 <p>Por isso a contagem da grade de categorias não muda com a sua devolução. É
 fácil conferir na captura do passo 8: o aviso verde diz que o <code>NOTE-01</code> foi
 devolvido, e "Notebooks" continua em "4 de 9 disponíveis".</p>
-<p>O aparelho volta a ser oferecido quando a secretaria confirmar o recebimento
+<p>O aparelho volta a ser oferecido quando o secretário confirmar o recebimento
 — é a <a href="../../painel/baixa-fisica/">baixa física</a>, o processo seguinte.</p>
 </div>
 <div class="admonition question">
 <p class="admonition-title">Por que o aviso insiste em 'Deixe o equipamento na bancada'?</p>
 <p>Porque essa é a única parte do processo que o sistema não consegue verificar.</p>
 <p>O tablet registra o que você declara. Se você confirmar e sair com o aparelho
-na mochila, o registro diz que ele foi devolvido e a secretaria o procura na
+na mochila, o registro diz que ele foi devolvido e o secretário o procura na
 bancada, onde ele não está. Não há erro na tela para avisar
 disso — a divergência só aparece na conferência física, e aí ela aparece como
 equipamento sumido, no seu nome.</p>
@@ -1634,8 +1664,8 @@ aparelho ficou parado na bancada, já entregue por você e ainda invisível para
 quem quer retirar. Ele existe para medir esse gargalo, e por isso os dois
 horários não podem ser o mesmo campo.</p>
 <p>Para você isso tem uma consequência prática: o que conta como a hora da sua
-devolução é o momento em que você confirmou, e não o momento em que a
-secretaria chegou na bancada.</p>
+devolução é o momento em que você confirmou, e não o momento em que o
+secretário chegou na bancada.</p>
 </div>
 <div class="admonition question">
 <p class="admonition-title">Meu cadastro está inativo. Consigo devolver?</p>
@@ -1648,7 +1678,7 @@ Travar os dois lados transformaria a inativação na garantia de que aquele
 equipamento nunca volta para o armário.</p>
 <p>Na tela, o título passa a ser <strong>Devolver equipamento</strong>, a lista continua
 inteira e a grade de categorias dá lugar à explicação. Para voltar a retirar,
-procure a secretaria.</p>
+procure o secretário.</p>
 </div>
 <div class="admonition question">
 <p class="admonition-title">Levei três itens de uma vez. Por que posso devolver só um?</p>
@@ -1656,7 +1686,7 @@ procure a secretaria.</p>
 uma confirmação só.</p>
 <p>É o que permite devolver o notebook na terça e ficar com a extensão até
 sexta. Se os três fossem um registro único, devolver um obrigaria a devolver
-todos, e a secretaria não teria como saber qual aparelho já voltou.</p>
+todos, e o secretário não teria como saber qual aparelho já voltou.</p>
 <p>O <strong>Devolver tudo</strong> é um atalho por cima disso, não uma exceção: ele declara
 os empréstimos um por um, na mesma transação. Ou todos entram na fila, ou
 nenhum entra — sair achando que entregou tudo quando metade não foi
@@ -1665,19 +1695,19 @@ registrada seria pior que não ter devolvido nada.</p>
 <div class="admonition question">
 <p class="admonition-title">Cliquei em Devolver no item errado. Como desfaço?</p>
 <p>Não há como desfazer pelo tablet. Depois da confirmação, o item sai da sua
-lista e entra na fila da secretaria.</p>
+lista e entra na fila do secretário.</p>
 <p>O que resolve é fazer valer o que você declarou: <strong>leve o aparelho até a
 bancada</strong>. Se você ainda precisa dele, deixe-o lá assim mesmo e retire de
-novo depois que a secretaria confirmar o recebimento — só então ele volta a
+novo depois que o secretário confirmar o recebimento — só então ele volta a
 ser oferecido no portal.</p>
 <p>Se o aparelho já estava na bancada e o problema foi ter devolvido o item
-errado da sua lista, avise a secretaria antes da conferência: quem consegue
-corrigir o registro é ela, pelo painel.</p>
+errado da sua lista, avise o secretário antes da conferência: quem consegue
+corrigir o registro é ele, pelo painel.</p>
 </div>
 <div class="admonition info">
 <p class="admonition-title">Onde este processo termina</p>
 <p>Aqui, não. A devolução que você acabou de declarar fica esperando a
-conferência da secretaria — e é ela que devolve o aparelho ao inventário,
+conferência do secretário — e é ela que devolve o aparelho ao inventário,
 fecha o empréstimo e faz a contagem de disponíveis subir.</p>
 <p>Esse é o <strong><a href="../../painel/baixa-fisica/">Processo 3 — Baixa física</a></strong>, na
 trilha do painel.</p>
@@ -1700,11 +1730,11 @@ trilha do painel.</p>
 <tr>
 <td>"Matrícula 9999999 não encontrada."</td>
 <td>Dígito trocado, zero da frente esquecido, ou cadastro que nunca foi importado.</td>
-<td>Confira os números e digite de novo. Se estiverem certos, procure a secretaria.</td>
+<td>Confira os números e digite de novo. Se estiverem certos, procure o secretário.</td>
 </tr>
 <tr>
 <td>"Esse item já não consta como emprestado para você."</td>
-<td>O mesmo aparelho foi declarado duas vezes, ou a secretaria já deu baixa nele.</td>
+<td>O mesmo aparelho foi declarado duas vezes, ou o secretário já deu baixa nele.</td>
 <td>A lista é relida sozinha. Confira o que sobrou nela: se o item sumiu, a devolução dele já está registrada.</td>
 </tr>
 <tr>
@@ -1714,8 +1744,8 @@ trilha do painel.</p>
 </tr>
 <tr>
 <td>"Não foi possível falar com o sistema agora."</td>
-<td>O tablet não conseguiu falar com o computador da secretaria.</td>
-<td>Toque em <strong>Confirmar devolução</strong> de novo em alguns segundos. Se continuar, avise a secretaria — e deixe o aparelho na bancada.</td>
+<td>O tablet não conseguiu falar com o computador do secretário.</td>
+<td>Toque em <strong>Confirmar devolução</strong> de novo em alguns segundos. Se continuar, avise o secretário — e deixe o aparelho na bancada.</td>
 </tr>
 </tbody>
 </table>

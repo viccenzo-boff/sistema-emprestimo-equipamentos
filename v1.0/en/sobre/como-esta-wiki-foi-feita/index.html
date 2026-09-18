@@ -411,7 +411,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../inicio-rapido/secretaria/" class="md-nav__link">
+      <a href="../../inicio-rapido/secretario/" class="md-nav__link">
         
   
   
@@ -575,6 +575,8 @@
       
         
       
+        
+      
     
     
     
@@ -691,6 +693,34 @@
     
   
     5. People management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/relatorios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Reports
   
 
     
@@ -1195,6 +1225,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#who-made-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Who made it
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1507,6 +1548,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#who-made-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Who made it
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1732,22 +1784,32 @@ full strength, and the real error was fixed in the text.</p>
   exit code.</li>
 </ul>
 <h3 id="8-document-a-defect-instead-of-fixing-it">8. Document a defect instead of fixing it</h3>
-<p><strong>The decision.</strong> One admin panel message gives advice that does not work. When
-deleting a category that still has equipment, the screen suggests deactivating
-the equipment first — and deactivating does <strong>not</strong> unlock the deletion. The
-<a href="../../painel/inventario/">inventory management</a> page quotes the message with its
-exact wording and, right below, contradicts the advice.</p>
+<p><strong>The decision.</strong> One admin panel message gave advice that does not work. When
+deleting a category that still has equipment, the <code>v1.0</code> screen suggested
+deactivating the equipment first — and deactivating does <strong>not</strong> unlock the
+deletion. The <code>v1.0</code> <a href="../../painel/inventario/">inventory management</a> page quotes
+the message with its exact wording and, right below, contradicts the advice.</p>
 <p><strong>The discarded alternative.</strong> Fixing the sentence in the product, which is one
 line of code.</p>
 <p><strong>The reason.</strong> The wiki describes version <code>v1.0</code>, and the writing rule of this
 wiki is to quote the screen <strong>even when the screen is wrong</strong>, because the
 sentence is how a reader finds the page, and correcting it in the text would
 send that reader looking for a message that does not exist. Fixing the product
-is a product task, with its own verification cycle. It remains open and is
-recorded as such.</p>
+is a product task, with its own verification cycle. It was recorded as an open
+defect.</p>
 <p>The decision holds as a principle: <strong>the wiki does not fix the system in
 writing.</strong> When it finds a defect, the record is honest and the fix becomes
 declared work.</p>
+<p><strong>What happened next.</strong> The fix came in September 2026, before delivery: the
+sentence now says what actually happens, the screenshot was retaken against
+the running system, and the <a href="../../painel/inventario/">inventory management</a>
+page describes the new message. For two weeks the wiki published the fix as a
+version alongside (<code>v1.1</code>, then <code>v1.2</code>), with the old page frozen and quoting
+the old message — <a href="#4-document-a-frozen-version">decision 4</a> working as
+promised. Except that a version is a delivery, and nothing had been delivered:
+on September 18, with the deployment scheduled, the numbering was folded back
+and everything became <code>v1.0</code>. Decision 4 still stands for the first version
+<strong>after</strong> the deployment — that is when freezing starts protecting somebody.</p>
 <h2 id="the-test-worth-more-than-the-three-gates">The test worth more than the three gates</h2>
 <p>No gate catches a page that is entirely correct and still useless. So the wiki's
 final criterion is not a tool: it is handing the wiki to someone who has never
@@ -1779,9 +1841,6 @@ that, and that part of the criterion has not been carried out.</p>
 <h2 id="what-was-left-out">What was left out</h2>
 <p>Honesty about scope is worth more than a list of achievements.</p>
 <ul>
-<li><strong>There is no sixth process page.</strong> The reporting and occupancy feature is
-  specified and was <strong>not</strong> built. The wiki describes what exists, and it does
-  not exist. When it lands, it becomes a new version, published beside this one.</li>
 <li><strong>The system interface is still Portuguese only.</strong> The wiki is bilingual, the
   product is not. Translating the interface is a week of work that did not fit,
   and the answer was an
@@ -1801,9 +1860,11 @@ that, and that part of the criterion has not been carried out.</p>
 <li><strong>Who performed the check-in is not recorded.</strong> The system knows <strong>when</strong> each
   check happened and now has individual accounts, but the loan does not store
   which account confirmed the receipt.</li>
-<li><strong>The wrong inventory message is still wrong</strong>, for the reason in decision 8.</li>
 </ul>
 <h2 id="after-what-exists-today">After, what exists today</h2>
+<!-- Pages and words come from `npm run docs:palavras` (rendered text of the
+     built site, per language). Do not count the markdown: it gives ~27% more. -->
+
 <table>
 <thead>
 <tr>
@@ -1814,15 +1875,15 @@ that, and that part of the criterion has not been carried out.</p>
 <tbody>
 <tr>
 <td>Pages</td>
-<td>16 in Portuguese, 15 in English</td>
+<td>17 in Portuguese, 16 in English</td>
 </tr>
 <tr>
 <td>Words</td>
-<td>About 26,600 in Portuguese, 30,100 in English</td>
+<td>About 31,100 in Portuguese, 35,400 in English</td>
 </tr>
 <tr>
 <td>Documented processes</td>
-<td>5, with eight sections each</td>
+<td>6: five with the eight sections and the diagram, and the reports one with seven, without a diagram</td>
 </tr>
 <tr>
 <td>BPMN diagrams</td>
@@ -1830,7 +1891,7 @@ that, and that part of the criterion has not been carried out.</p>
 </tr>
 <tr>
 <td>Screenshots</td>
-<td>49, none holding real personal data</td>
+<td>58, none holding real personal data</td>
 </tr>
 <tr>
 <td>Gates in CI</td>
@@ -1841,6 +1902,18 @@ that, and that part of the criterion has not been carried out.</p>
 <p>The number that matters is not in the table: <strong>anyone arriving with an
 operational question now has somewhere to look</strong>, and the answer explains the
 decision instead of describing the button.</p>
+<h2 id="who-made-it">Who made it</h2>
+<p>The system and this wiki were made by <strong>Viccenzo Boff</strong>, alone, for the
+program coordination. The credit shown in the footer of the tablet's enrollment
+screen and at the bottom of the panel's sidebar exists with the coordination's
+authorization. It was the compensation for the work.</p>
+<ul>
+<li>GitHub: <a href="https://github.com/viccenzo-boff">viccenzo-boff</a></li>
+<li>Email: <a href="mailto:viccenzoboff@gmail.com">viccenzoboff@gmail.com</a></li>
+</ul>
+<p>For a problem with the system in use, the path is still the front desk and the
+<a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/issues">project repository</a>;
+the contact above is for anyone who wants to talk about the work.</p>
 
 
 

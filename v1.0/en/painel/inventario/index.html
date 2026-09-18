@@ -411,7 +411,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../inicio-rapido/secretaria/" class="md-nav__link">
+      <a href="../../inicio-rapido/secretario/" class="md-nav__link">
         
   
   
@@ -570,6 +570,8 @@
   
     
     
+      
+        
       
         
       
@@ -889,6 +891,34 @@
     
   
     5. People management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../relatorios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Reports
   
 
     
@@ -1624,8 +1654,8 @@ a little over half its size, and the labels get cramped.</p>
 screen works: a single list, with the registration form on top and the actions
 on each device's row.</p>
 <p><strong>Category management is not in the diagram, on purpose.</strong> It is another screen
-(<strong>Categorias</strong> (Categories), in the menu) and it is not one of the five
-processes of the system — what the diagram shows is registration <strong>choosing</strong> a
+(<strong>Categorias</strong> (Categories), in the menu) and it is not one of the documented
+processes — what the diagram shows is registration <strong>choosing</strong> a
 category that already exists. Procedure 5 in the step by step covers creating and
 deleting them.</p>
 <p><strong>The diagram labels are in Portuguese</strong>, because it is the same file the
@@ -1641,7 +1671,7 @@ Portuguese pages use.</p>
 </thead>
 <tbody>
 <tr>
-<td>Secretaria</td>
+<td>Secretário</td>
 <td>Front desk (the lane)</td>
 </tr>
 <tr>
@@ -1833,7 +1863,10 @@ asset tag on its own.</p>
 <p><a href="../../../assets/images/inventario/05-item-em-manutencao.png"><img alt="The same row after the change: the amber Maintenance badge instead of the green one, and now only the Available and Deactivate buttons." src="../../../assets/images/inventario/05-item-em-manutencao.png" /></a></p>
 <p>It says what happened to the device — "NOTE-05 foi para manutenção e saiu da
 lista do tablet." (NOTE-05 went for repair and left the tablet list.) The
-row badge turns amber and the <strong>Editar</strong> (Edit) button disappears.</p>
+row badge turns amber and the <strong>Editar</strong> (Edit) button disappears. The
+click is recorded, with your name and the time, in the
+<a href="../relatorios/#who-did-it-is-recorded">Índice de Manutenção</a> (Maintenance rate)
+report — that is where "since when" and "who" come from.</p>
 </li>
 <li>
 <p>Set the device aside for repair.</p>
@@ -1958,7 +1991,7 @@ enters the portal grid with its first piece of equipment.</p>
 <li><strong>If YES</strong> → instead of the button, the row shows the count, such as "11
   equipamentos vinculados" (11 linked devices). There is no way to delete it
   — see the
-  <a href="#the-message-says-to-deactivate-the-devices-does-that-allow-deletion">rule about a category in use</a>.</li>
+  <a href="#why-can-a-category-with-equipment-not-be-deleted">rule about a category in use</a>.</li>
 </ul>
 </li>
 <li>
@@ -2099,29 +2132,34 @@ would.</p>
 <p>That is why this is the only real deletion in the panel — and it is only
 offered when the category has no linked equipment.</p>
 </div>
-<p><a id="the-message-says-to-deactivate-the-devices-does-that-allow-deletion"></a></p>
+<p><a id="why-can-a-category-with-equipment-not-be-deleted"></a></p>
 <div class="admonition question">
-<p class="admonition-title">The message says to deactivate the devices. Does that allow the deletion?</p>
-<p><strong>No.</strong> Deactivating takes the device out of circulation, but it stays
-linked to the category — and it is the link that blocks the deletion, not
-the status.</p>
-<p>This was measured: with the only device of a category marked as <strong>Inativo</strong>
+<p class="admonition-title">Why can a category with equipment not be deleted?</p>
+<p>Because <strong>equipment is never deleted</strong> (see the
+<a href="#why-is-there-no-delete-equipment-button">first question in this section</a>),
+and as long as a device exists, it is linked to a category — and it is the
+link that blocks the deletion, not the status of the device. There is no
+screen that moves a device from one category to another, so a category only
+becomes empty again if it was never used.</p>
+<p>Deactivating the devices <strong>does not allow the deletion</strong>, and this was
+measured: with the only device of a category marked as <strong>Inativo</strong>
 (Inactive), the deletion is still refused with the same message, and the
-database refuses it just the same.</p>
-<p>In practice, <strong>a category with equipment is not deleted from the admin
-panel</strong>. There is no screen that moves a device from one category to
-another, and equipment is never deleted — so a category only becomes empty
-again if it was never used.</p>
-<p>What does work, when the category was created by mistake:</p>
+database refuses it just the same. What deactivating does is something else,
+and it is what the message on the screen suggests: with no unit in
+circulation, <strong>the category disappears from the tablet grid on its own</strong>,
+because an inactive item does not count.</p>
+<p>So, when the category was created by mistake:</p>
 <ol>
 <li><strong>If it is still empty</strong>, delete it now. That is the only moment you can.</li>
 <li><strong>If it already has a device</strong>, leave it where it is. One extra category
-   on the tablet is less trouble than a hole in the history — and it
-   disappears from the grid on its own if you retire its devices, because an
-   inactive item does not count.</li>
+   in the panel is less trouble than a hole in the history — and once its
+   devices are retired, it disappears from the tablet.</li>
 </ol>
 <p>The sentence the screen writes in the refusal is recorded in the
-<a href="#8-common-errors-and-what-to-do">error table</a>, with this caveat beside it.</p>
+<a href="#8-common-errors-and-what-to-do">error table</a>. Until September 2026 it told
+you to "deactivate the devices before deleting it", as if that allowed the
+deletion; the sentence was corrected when this page measured that it does
+not.</p>
 </div>
 <div class="admonition question">
 <p class="admonition-title">I registered the wrong asset tag. How do I undo it?</p>
@@ -2174,7 +2212,7 @@ the refusal says so. Lowercase is fine: the system stores it in uppercase.</p>
 <p>When an action is refused, the message appears <strong>inside the row</strong>, just below
 the buttons, and the list is re-read straight away. That is the sign that
 nothing changed: the status of the device is still the one it was.</p>
-<p><a href="../../../assets/images/inventario/12-recusa-ao-apagar-categoria.png"><img alt="The Microfone category row after a refused deletion: a red alert saying Microfone still has equipment, with the detail telling you to deactivate the devices first, and the count already corrected to 1 linked device." src="../../../assets/images/inventario/12-recusa-ao-apagar-categoria.png" /></a></p>
+<p><a href="../../../assets/images/inventario/12-recusa-ao-apagar-categoria.png"><img alt="The Microfone category row after a refused deletion: a red alert saying Microfone still has equipment, with the detail explaining that a category with equipment cannot be deleted and that deactivating its devices removes it from the tablet, and the count already corrected to 1 linked device." src="../../../assets/images/inventario/12-recusa-ao-apagar-categoria.png" /></a></p>
 <p>On the Categories screen there is one more detail: when the deletion is refused,
 <strong>the dialog stays open</strong>, still saying the category is empty — it comes from
 the previous render. Close it with <strong>Cancelar</strong> (Cancel); the reason is on the
@@ -2256,7 +2294,7 @@ row, behind it.</p>
 <tr>
 <td>"Notebook ainda tem equipamentos." (Notebook still has equipment.)</td>
 <td>The category has linked devices. What refuses is the database, not the screen.</td>
-<td>There is no way to empty it from the panel. The detail of the message tells you to deactivate the devices, and <strong>that does not work</strong> — see the <a href="#the-message-says-to-deactivate-the-devices-does-that-allow-deletion">rule above</a>.</td>
+<td>There is no way to empty it from the panel. If the category is no longer needed, deactivate its devices: it disappears from the tablet, and the row stays here — see the <a href="#why-can-a-category-with-equipment-not-be-deleted">rule above</a>.</td>
 </tr>
 <tr>
 <td>"Essa categoria já não existe." (That category no longer exists.)</td>

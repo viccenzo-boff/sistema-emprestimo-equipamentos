@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.0/referencia/glossario/">
       
       
-        <link rel="prev" href="../../painel/pessoas/">
+        <link rel="prev" href="../../painel/relatorios/">
       
       
         <link rel="next" href="../estados-e-transicoes/">
@@ -411,14 +411,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../inicio-rapido/secretaria/" class="md-nav__link">
+      <a href="../../inicio-rapido/secretario/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Secretaria
+    Secretário
   
 
     
@@ -575,6 +575,8 @@
       
         
       
+        
+      
     
     
     
@@ -691,6 +693,34 @@
     
   
     5. Gestão de pessoas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/relatorios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Relatórios
   
 
     
@@ -864,6 +894,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#avaliacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Avaliação
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#baixa-fisica" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -945,6 +986,17 @@
     <span class="md-ellipsis">
       
         Empréstimos ativos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estadia-em-manutencao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estadia em manutenção
       
     </span>
   </a>
@@ -1485,6 +1537,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#avaliacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Avaliação
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#baixa-fisica" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1566,6 +1629,17 @@
     <span class="md-ellipsis">
       
         Empréstimos ativos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estadia-em-manutencao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estadia em manutenção
       
     </span>
   </a>
@@ -1746,7 +1820,7 @@ correspondente técnico — um campo ou um status do banco de dados —, ele vem
 entre parênteses, para quem precisar ligar a palavra da tela ao dado gravado.</p>
 <p>Termo que só aparece em uma página mora no glossário daquela página.</p>
 <h2 id="administrador">Administrador</h2>
-<p>Quem opera o <a href="#painel">painel</a> da secretaria. Cada pessoa tem a sua conta, com
+<p>Quem opera o <a href="#painel">painel</a> do secretário. Cada pessoa tem a sua conta, com
 login e senha próprios — não existe senha compartilhada.</p>
 <p>O campo de login chama-se <strong>Usuário</strong> na tela de entrada
 (<code>Administrador.usuario</code>). É o único sentido em que a palavra <strong>Usuário</strong>
@@ -1764,8 +1838,22 @@ aponta para ele: excluir o aparelho levaria junto o registro de quem o usou no
 semestre passado. Por isso o ícone da ação é um círculo cortado, e não uma
 lixeira — lixeira promete que o registro some, e ele não some.</p>
 <p><a href="#manutencao">Manutenção</a> é o contrário: temporária, e para conserto.</p>
+<h2 id="avaliacao">Avaliação</h2>
+<p>O toque num dos quatro rostos que podem aparecer no fim de uma
+<a href="#retirada">retirada</a>, sob a pergunta "Como foi a retirada?": 1 (Muito ruim),
+2 (Ruim), 3 (Bom) ou 4 (Muito bom). Uma linha na tabela <code>Avaliacao</code>, com a
+nota e o dia — e nada mais.</p>
+<p>É <strong>anônima por construção</strong>: não há matrícula, perfil nem hora na linha, e o
+<a href="#painel">painel</a> mostra médias, contagens e taxa de resposta, nunca um voto.
+E é <strong>opcional</strong>: a linha nasce quando os rostos aparecem, com a nota vazia;
+quem não toca deixa a linha assim, e é isso que dá a taxa de resposta.</p>
+<p>Cada pessoa é perguntada no máximo uma vez a cada 30 dias, contados de quando
+os rostos apareceram. A regra inteira está em
+<a href="../regras-de-negocio/#a-avaliacao-e-anonima-e-cada-pessoa-e-perguntada-uma-vez-a-cada-30-dias">Regras de negócio</a>,
+e o relatório que a lê é a aba <strong>Satisfação</strong> de
+<a href="../../painel/relatorios/">Relatórios</a>.</p>
 <h2 id="baixa-fisica">Baixa física</h2>
-<p>A conferência da secretaria: o equipamento foi recolhido da bancada e o
+<p>A conferência do secretário: o equipamento foi recolhido da bancada e o
 <a href="#emprestimo">empréstimo</a> está encerrado de verdade (<code>Emprestimo.status</code>
 passa de <code>AGUARDANDO_BAIXA</code> para <code>CONCLUIDO</code>, e a hora fica em
 <code>Emprestimo.data_baixa</code>).</p>
@@ -1800,7 +1888,7 @@ mesmo armário. Categoria só pode ser excluída quando está vazia.</p>
 equipamento e o deixou na bancada (<code>Emprestimo.status</code> passa de <code>ATIVO</code> para
 <code>AGUARDANDO_BAIXA</code>, e a hora fica em <code>Emprestimo.data_devolucao</code>).</p>
 <p>Devolver <strong>não</strong> libera o equipamento para outra pessoa. Quem faz isso é a
-<a href="#baixa-fisica">baixa física</a>, na secretaria. A diferença entre os dois
+<a href="#baixa-fisica">baixa física</a>, pelo secretário. A diferença entre os dois
 momentos é o <a href="#tempo-de-prateleira">tempo de prateleira</a>.</p>
 <h2 id="emprestado">Emprestado</h2>
 <p>A <a href="#situacao">situação</a> de um equipamento que está fora da prateleira porque
@@ -1820,7 +1908,7 @@ emprestado mostra o nome de quem está com ele no lugar do botão.</p>
 na mesma ida ao balcão tem dois empréstimos, que podem ser devolvidos em
 momentos diferentes.</p>
 <p>Um empréstimo passa por três situações: <code>ATIVO</code> (está com a pessoa),
-<code>AGUARDANDO_BAIXA</code> (foi declarado devolvido, aguarda a secretaria) e
+<code>AGUARDANDO_BAIXA</code> (foi declarado devolvido, aguarda o secretário) e
 <code>CONCLUIDO</code> (encerrado).</p>
 <h2 id="emprestimos-ativos">Empréstimos ativos</h2>
 <p>A aba do <a href="#painel">painel</a> que lista tudo o que está com alguém agora — os
@@ -1829,6 +1917,16 @@ empréstimos em <code>ATIVO</code>, com o nome de quem está com o aparelho e de
 <a href="#portal">portal</a>; quem encerra é a <a href="#baixa-fisica">baixa física</a>, na
 <a href="#fila-de-devolucoes">fila de devoluções</a>. Esta aba responde "onde está o
 <code>NOTE-04</code>?", e nada mais.</p>
+<h2 id="estadia-em-manutencao">Estadia em manutenção</h2>
+<p>O tempo entre um aparelho ir para <a href="#manutencao">manutenção</a> e voltar dela — o
+clique em <strong>Manutenção</strong> e o clique seguinte em <strong>Disponível</strong> (ou <strong>Inativar</strong>)
+na mesma linha do <a href="#inventario">inventário</a>. Sem o segundo clique, a estadia
+está <strong>aberta</strong>.</p>
+<p>É a unidade do relatório <strong>Índice de Manutenção</strong>: a <strong>entrada</strong> conta no
+período em que aconteceu, e o tempo parado conta pela parte da estadia que cai
+dentro do período. Um aparelho que já estava em manutenção quando o histórico
+passou a existir (setembro de 2026) não tem estadia — a tela mostra "desde —",
+e os dias dele não contam. Ver <a href="../../painel/relatorios/#as-duas-regras-de-periodo">Relatórios, §6</a>.</p>
 <h2 id="etiqueta">Etiqueta</h2>
 <p>O código colado no aparelho, como <code>NOTE-01</code> ou <code>EXT-05</code> (<code>Equipamento.id</code>). É o
 que identifica o item físico — dois notebooks do mesmo modelo têm etiquetas
@@ -1855,8 +1953,8 @@ forma diferente de propósito:</p>
   juntos para a <a href="#bancada">bancada</a>, e devolver metade faria a pessoa sair
   achando que entregou tudo.</li>
 <li><strong>"Confirmar Todas as Devoluções"</strong>, no <a href="#painel">painel</a>: item a item, e uma
-  linha que falha não derruba as outras. O gesto físico já aconteceu — a
-  secretaria recolheu a pilha —, e uma linha que saiu da fila em outra aba não
+  linha que falha não derruba as outras. O gesto físico já aconteceu — o
+  secretário recolheu a pilha —, e uma linha que saiu da fila em outra aba não
   pode desfazer a conferência das demais. O resumo diz o que fechou e o que não
   fechou.</li>
 </ul>
@@ -1878,7 +1976,7 @@ consegue digitar. É guardada como texto — os zeros à esquerda contam, e
 <p>A matrícula pode ser corrigida no <a href="#painel">painel</a>, e a correção leva o
 histórico de empréstimos junto.</p>
 <h2 id="painel">Painel</h2>
-<p>A tela da secretaria, no computador, em <code>/admin</code>. Exige login de
+<p>A tela do secretário, no computador, em <code>/admin</code>. Exige login de
 <a href="#administrador">administrador</a>.</p>
 <p>Reúne a <a href="#fila-de-devolucoes">fila de devoluções</a>, os empréstimos ativos, o
 inventário, as categorias e os cadastros de pessoas.</p>
@@ -1941,7 +2039,7 @@ empréstimo aberto, e bloqueia só a <a href="#retirada">retirada</a>.</p>
 <a href="../estados-e-transicoes/">Estados e transições</a>.</p>
 <h2 id="tempo-de-prateleira">Tempo de prateleira</h2>
 <p>O intervalo entre a <a href="#devolucao">devolução</a> declarada no tablet e a
-<a href="#baixa-fisica">baixa física</a> feita na secretaria — o tempo em que o aparelho
+<a href="#baixa-fisica">baixa física</a> feita pelo secretário — o tempo em que o aparelho
 ficou parado na bancada, invisível para o portal e para o inventário.</p>
 <p>É a medida do gargalo operacional do sistema: enquanto ele existe, há
 equipamento fisicamente livre que ninguém consegue pegar.</p>
@@ -1980,7 +2078,7 @@ equipamento fisicamente livre que ninguém consegue pegar.</p>
       <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
         
           
-          <a href="../../painel/pessoas/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: 5. Gestão de pessoas">
+          <a href="../../painel/relatorios/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: 6. Relatórios">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1990,7 +2088,7 @@ equipamento fisicamente livre que ninguém consegue pegar.</p>
                 Anterior
               </span>
               <div class="md-ellipsis">
-                5. Gestão de pessoas
+                6. Relatórios
               </div>
             </div>
           </a>

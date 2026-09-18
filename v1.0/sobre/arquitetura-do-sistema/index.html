@@ -411,14 +411,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../inicio-rapido/secretaria/" class="md-nav__link">
+      <a href="../../inicio-rapido/secretario/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Secretaria
+    Secretário
   
 
     
@@ -575,6 +575,8 @@
       
         
       
+        
+      
     
     
     
@@ -691,6 +693,34 @@
     
   
     5. Gestão de pessoas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/relatorios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Relatórios
   
 
     
@@ -1446,7 +1476,7 @@ que traz a receita de instalação, os scripts e o acesso ao painel, e o
 que guarda o registro de decisões de cada tarefa — a alternativa descartada e o
 motivo, tarefa por tarefa.</p>
 <h2 id="onde-o-sistema-roda">Onde o sistema roda</h2>
-<p>Não há nuvem. O sistema roda <strong>no computador da secretaria</strong>, em rede local, e o
+<p>Não há nuvem. O sistema roda <strong>no computador do secretário</strong>, em rede local, e o
 tablet da bancada o alcança pelo endereço dessa máquina. É uma decisão do
 <a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/blob/main/especificacoes/spec.md">escopo do produto</a>,
 e ela explica quase todo o resto desta página.</p>
@@ -1481,8 +1511,8 @@ e ela explica quase todo o resto desta página.</p>
 <tr>
 <td>Painel</td>
 <td><code>/admin</code></td>
-<td>Computador da secretaria</td>
-<td>Secretaria</td>
+<td>Computador do secretário</td>
+<td>Secretário</td>
 <td><a href="../../painel/baixa-fisica/">Baixa física</a>, <a href="../../painel/inventario/">inventário</a> e <a href="../../painel/pessoas/">pessoas</a></td>
 </tr>
 </tbody>
@@ -1490,8 +1520,8 @@ e ela explica quase todo o resto desta página.</p>
 <p>O portal <strong>não tem login</strong>: a matrícula é a identificação, e ela vale para um
 atendimento só. O painel tem <a href="../../referencia/conta-do-administrador/">conta e senha</a>.</p>
 <p>A separação é de audiência, não de servidor: as duas frentes compartilham o
-banco, e é isso que faz a devolução declarada no tablet aparecer na fila da
-secretaria no mesmo instante.</p>
+banco, e é isso que faz a devolução declarada no tablet aparecer na fila do
+secretário no mesmo instante.</p>
 <h2 id="a-stack">A stack</h2>
 <table>
 <thead>
@@ -1525,34 +1555,41 @@ secretaria no mesmo instante.</p>
 <tr>
 <td>Senha</td>
 <td><code>bcryptjs</code></td>
-<td>JavaScript puro, sem compilador de C++ na máquina da secretaria</td>
+<td>JavaScript puro, sem compilador de C++ na máquina do secretário</td>
 </tr>
 <tr>
 <td>Planilha</td>
 <td>SheetJS</td>
-<td>Lê o <code>.xlsx</code> da coordenação sem conversão manual</td>
+<td>Lê o <code>.xlsx</code> da coordenação sem conversão manual, e escreve o <code>.xlsx</code> dos relatórios</td>
+</tr>
+<tr>
+<td>Gráficos</td>
+<td>Recharts 3, versão fixada</td>
+<td>Barras o projeto já fazia em CSS; linha e pizza com eixo, legenda e tooltip à mão seriam centenas de linhas para manter. Entra só na tela de relatórios, carregado no clique da aba</td>
 </tr>
 </tbody>
 </table>
 <h3 id="por-que-sqlite-em-arquivo-unico">Por que SQLite em arquivo único</h3>
-<p>O banco inteiro é <strong>um arquivo</strong> na máquina da secretaria. Não há servidor de
+<p>O banco inteiro é <strong>um arquivo</strong> na máquina do secretário. Não há servidor de
 banco para instalar, configurar, atualizar nem reiniciar.</p>
 <p>A alternativa considerada era um banco de servidor — PostgreSQL ou MySQL. Ela
 foi descartada porque acrescenta uma peça que alguém precisa manter viva em um
-computador de secretaria, sem equipe de infraestrutura por perto: se o serviço
+computador do secretário, sem equipe de infraestrutura por perto: se o serviço
 não sobe depois de um reinício do Windows, a bancada para e ninguém no prédio
 sabe por quê. Com arquivo único, <strong>fazer cópia de segurança é copiar o arquivo</strong>,
 e restaurar é colocá-lo de volta.</p>
-<p>O preço é conhecido e cabe no problema: uma escrita por vez, e a máquina da
-secretaria é o limite de tudo. Para uma bancada com dezenas de aparelhos e um
+<p>O preço é conhecido e cabe no problema: uma escrita por vez, e a máquina do
+secretário é o limite de tudo. Para uma bancada com dezenas de aparelhos e um
 punhado de pessoas por hora, é folga.</p>
 <h2 id="o-modelo-de-dados">O modelo de dados</h2>
-<p>Cinco tabelas. As setas apontam de quem guarda a referência para quem é
+<p>Oito tabelas. As setas apontam de quem guarda a referência para quem é
 referenciado.</p>
 <pre class="mermaid"><code>erDiagram
     Pessoa ||--o{ Emprestimo : "retira"
     Equipamento ||--o{ Emprestimo : "e retirado em"
     Categoria ||--o{ Equipamento : "agrupa"
+    Equipamento ||--o{ MudancaDeStatus : "muda de situacao em"
+    Administrador |o--o{ MudancaDeStatus : "fez"
     Administrador {
         int id
         string nome
@@ -1565,6 +1602,7 @@ referenciado.</p>
         string perfil
         string cursos
         string status
+        datetime avaliacao_pedida_em
     }
     Categoria {
         int id
@@ -1583,11 +1621,44 @@ referenciado.</p>
         datetime data_devolucao
         datetime data_baixa
         string status
+    }
+    Avaliacao {
+        int id
+        int nota
+        string dia
+    }
+    Configuracao {
+        string chave
+        string valor
+    }
+    MudancaDeStatus {
+        int id
+        string equip_id
+        string de
+        string para
+        datetime em
+        int administrador_id
+        string administrador_nome
     }</code></pre>
-<p>O <code>Administrador</code> fica solto de propósito: ele é a conta de quem opera o painel,
-e <strong>não</strong> aparece em nenhum empréstimo. Registrar quem deu a baixa em cada item é
-uma coluna que ainda não existe — está na lista de <a href="../como-esta-wiki-foi-feita/#o-que-ficou-de-fora">o que ficou de
-fora</a>.</p>
+<p>O <code>Administrador</code> <strong>não</strong> aparece em nenhum empréstimo: registrar quem deu a
+baixa em cada item é uma coluna que ainda não existe — está na lista de <a href="../como-esta-wiki-foi-feita/#o-que-ficou-de-fora">o que
+ficou de fora</a>. Onde ele
+aparece é na <code>MudancaDeStatus</code>: uma linha por mudança de
+situação feita no painel (manutenção, aposentadoria, reativação), com de onde,
+para onde, quando, e <strong>quem</strong> — o vínculo com a conta e, ao lado, o nome que
+ela tinha na hora. O vínculo é opcional de propósito: recuperar uma senha
+esquecida é apagar a conta e semear de novo, e nem o banco pode recusar isso
+por causa do histórico, nem o histórico pode ir embora junto. O nome fica. É
+essa tabela que o relatório Índice de Manutenção lê.</p>
+<p>A <code>Avaliacao</code> e a <code>Configuracao</code> também ficam soltas, e por motivos opostos.
+A <code>Avaliacao</code> <strong>não pode</strong> apontar para pessoa nem para empréstimo:
+é a nota anônima do fim da retirada, e a linha guarda só a nota e o dia — até
+o <code>id</code> é sorteado, e não sequencial, para a ordem de gravação não denunciar
+quem respondeu depois de quem. O carimbo de quando a pessoa foi perguntada
+pela última vez fica do outro lado, em <code>Pessoa.avaliacao_pedida_em</code>, sem
+ligação com a linha. A <code>Configuracao</code> é chave-valor para o que precisa mudar
+sem deploy; hoje só tem a URL do formulário de sugestões que o QR code do
+tablet abre.</p>
 <p>Quatro pontos do modelo que a wiki explica por inteiro nas
 <a href="../../referencia/regras-de-negocio/">regras de negócio</a>:</p>
 <ul>
@@ -1599,7 +1670,7 @@ fora</a>.</p>
   na mesma confirmação. É o que permite devolver um e ficar com os outros.</li>
 <li><strong>O <code>Emprestimo</code> tem três marcadores de tempo, com donos distintos</strong>: a
   retirada no tablet, a <strong>declaração</strong> da devolução no tablet, e a
-  <strong>conferência física</strong> na secretaria. A diferença entre os dois últimos é o
+  <strong>conferência física</strong> pelo secretário. A diferença entre os dois últimos é o
   <a href="../../referencia/glossario/#tempo-de-prateleira">tempo de prateleira</a>.</li>
 </ul>
 <h3 id="nada-e-apagado">Nada é apagado</h3>

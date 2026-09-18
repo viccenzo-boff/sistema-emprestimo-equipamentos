@@ -411,7 +411,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../inicio-rapido/secretaria/" class="md-nav__link">
+      <a href="../../inicio-rapido/secretario/" class="md-nav__link">
         
   
   
@@ -575,6 +575,8 @@
       
         
       
+        
+      
     
     
     
@@ -691,6 +693,34 @@
     
   
     5. People management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/relatorios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Reports
   
 
     
@@ -953,6 +983,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#every-status-change-made-in-the-panel-is-recorded-with-who-and-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Every status change made in the panel is recorded, with who and when
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#deactivating-a-person-and-deactivating-a-device-are-not-the-same-rule" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1001,6 +1042,28 @@
     <span class="md-ellipsis">
       
         The portal has no login, and closes itself
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-rating-is-anonymous-and-each-person-is-asked-once-every-30-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The rating is anonymous, and each person is asked once every 30 days
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-ranking-by-person-is-deliberate-and-the-rating-stays-anonymous" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The ranking by person is deliberate, and the rating stays anonymous
       
     </span>
   </a>
@@ -1386,6 +1449,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#every-status-change-made-in-the-panel-is-recorded-with-who-and-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Every status change made in the panel is recorded, with who and when
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#deactivating-a-person-and-deactivating-a-device-are-not-the-same-rule" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1434,6 +1508,28 @@
     <span class="md-ellipsis">
       
         The portal has no login, and closes itself
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-rating-is-anonymous-and-each-person-is-asked-once-every-30-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The rating is anonymous, and each person is asked once every 30 days
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-ranking-by-person-is-deliberate-and-the-rating-stays-anonymous" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The ranking by person is deliberate, and the rating stays anonymous
       
     </span>
   </a>
@@ -1572,16 +1668,53 @@ history, and that is why deactivation is the only way out for both.</p>
 not go through it would leave equipment pointing at a category that no longer
 exists — and it would vanish from the whole portal, because the grid is
 organized by category.</p>
-<div class="admonition warning">
-<p class="admonition-title">The refusal message gives advice that does not work</p>
-<p>It tells you to deactivate the equipment in the category before deleting it,
-and <strong>that does not allow the deletion</strong>: an inactive item is still linked
-and the database refuses just the same. Since there is no screen that moves
-equipment between categories, and equipment is never deleted, <strong>a category
-with equipment cannot be deleted from the admin panel</strong>.</p>
-<p>The real behavior and the way out are in
-<a href="../../painel/inventario/#the-message-says-to-deactivate-the-devices-does-that-allow-deletion">Inventory management, §7</a>.
-The sentence on screen is a known defect and still open.</p>
+<div class="admonition note">
+<p class="admonition-title">Deactivating the equipment does not allow the deletion</p>
+<p>An inactive item is still linked and the database refuses just the same.
+Since there is no screen that moves equipment between categories, and
+equipment is never deleted, <strong>a category with equipment cannot be deleted
+from the admin panel</strong> — what deactivating does is remove it from the
+tablet, because an inactive item does not count in the grid.</p>
+<p>The behavior and the way out are in
+<a href="../../painel/inventario/#why-can-a-category-with-equipment-not-be-deleted">Inventory management, §7</a>.
+Until September 2026 the refusal message told you to deactivate "before
+deleting it", as if that allowed the deletion; the sentence was corrected.</p>
+</div>
+<hr />
+<h2 id="every-status-change-made-in-the-panel-is-recorded-with-who-and-when">Every status change made in the panel is recorded, with who and when</h2>
+<p><strong>What the system does.</strong> Each click on <strong>Manutenção</strong> (Maintenance),
+<strong>Disponível</strong> (Available), <strong>Inativar</strong> (Deactivate) or <strong>Reativar</strong>
+(Reactivate) on the Inventory tab writes a row to the status history: the
+device, where it came from, where it went, the time, and the <strong>name of whoever
+was signed in</strong>. The <strong>Índice de Manutenção</strong> (Maintenance rate) report reads
+that history — the <a href="../glossario/#maintenance-stay">maintenance stays</a>, the rate
+and the <strong>Histórico</strong> (History) table, which answers "who retired <code>NOTE-10</code>,
+and when".</p>
+<p><strong>Why it does it that way.</strong> Because, until September 2026, the system kept
+only each device's <strong>current</strong> status: nobody knew since when <code>NOTE-09</code> had
+been in repair, or how many times it had been there. And because each person
+has their own account since the
+<a href="../conta-do-administrador/">administrator account</a> precisely so that "who did
+this" has an answer.</p>
+<p><strong>What would break.</strong> An editable history would stop answering "who"; a history
+that stored only the account key would lose the name when the account was
+deleted to recover its password. That is why the name is stored <strong>next to</strong> the
+link, as a snapshot of the moment: if the account goes away, the link is
+undone and the name stays. And that is why a wrong click is not deleted — it is
+undone with the click back, and both rows stay.</p>
+<div class="admonition note">
+<p class="admonition-title">What is left out, on purpose</p>
+<ul>
+<li><strong>The pickup and the physical check-in.</strong> They already have their
+  records — the <a href="../glossario/#loan">loan</a>, with its three times. Recording
+  the same event in two places is how two records start to disagree.</li>
+<li><strong>Whatever happened before this version.</strong> The history starts empty at
+  installation; a device that was already in maintenance on that day
+  shows up in the report with "desde —" (since —), and its days do not
+  count. Making up an entry date would be making up days inside a metric.</li>
+<li><strong>What the installation and demo scripts write.</strong> They are not the
+  panel, and nobody clicked.</li>
+</ul>
 </div>
 <hr />
 <h2 id="deactivating-a-person-and-deactivating-a-device-are-not-the-same-rule">Deactivating a person and deactivating a device are not the same rule</h2>
@@ -1680,6 +1813,67 @@ equipment up in their name, or declare a return that never happened.</p>
 behavior is in
 <a href="../conta-do-administrador/">Administrator account</a>.</p>
 </div>
+<hr />
+<h2 id="the-rating-is-anonymous-and-each-person-is-asked-once-every-30-days">The rating is anonymous, and each person is asked once every 30 days</h2>
+<p><strong>What the system does.</strong> At the end of a <a href="../glossario/#pickup">pickup</a>, the
+confirmation screen may show four faces under the question <strong>Como foi a
+retirada?</strong> (How was the pickup?). They show up when the person was never
+asked or when the last time was <strong>30 days or more</strong> ago — counted from the day
+the faces <strong>showed up</strong>, whether the person tapped or not. One tap records the
+rating (from 1, <strong>Muito ruim</strong>, to 4, <strong>Muito bom</strong>) and the day. The system
+<strong>does not record</strong> who tapped, with which profile, or at what time: a rating
+row has only the rating and the day. The panel shows averages, counts and the
+response rate, never a vote; the downloaded spreadsheet carries only <code>dia</code>
+(day) and <code>nota</code> (rating).</p>
+<p><strong>Why it works this way.</strong> Whoever picks equipment up every day cannot be
+questioned every day — the survey that annoys is the survey nobody answers,
+and whoever ignores it would be exactly the one seeing it most. And anonymity
+has to be a property of the data, not a courtesy of the screen: a timestamp
+would cross with the pickup time and point at whoever gave the 1; the profile
+would point at the teacher of the day. Without those fields there is nothing
+to cross — not even for whoever opens the database.</p>
+<p><strong>What would break.</strong> Counting the 30 days from the <strong>answer</strong>, rather than
+from the appearance, would make the faces show up on every pickup for whoever
+ignores them — and the response rate, the metric that reveals fatigue, would
+stop existing. Storing the time "just to sort" would rebuild the crossing that
+dropping the timestamp exists to prevent; the same goes for a sequence number
+that grows with time, which is a time in disguise. The honest limit is the
+small population: on a day when <strong>a single person</strong> was asked, whoever reads
+the database knows whose rating it is. The screen never shows it, and this
+wiki says the limit exists instead of promising more than the data supports.</p>
+<div class="admonition info">
+<p class="admonition-title">The QR code is something else</p>
+<p>Next to the faces a QR code may show up which opens, on the phone, a
+suggestion form of the front desk — outside the system, because the phone
+cannot reach the front desk computer over the network. It only shows up
+when the link is set up in the <strong>Satisfação</strong> (Satisfaction) tab of the
+reports, and it is independent from the faces: either one can show up
+without the other.</p>
+</div>
+<hr />
+<h2 id="the-ranking-by-person-is-deliberate-and-the-rating-stays-anonymous">The ranking by person is deliberate, and the rating stays anonymous</h2>
+<p><strong>What the system does.</strong> The <strong>Ranking de Consumo</strong> (Usage ranking) tab of
+the reports shows, for the chosen period, who picked equipment up and how many
+times — with name, enrollment number and profile —, next to the rankings by
+device and by category. The exported spreadsheet carries the same list on its
+<strong>Pessoas</strong> (People) sheet; the <strong>Retiradas</strong> (Pickups) sheet, with one row per
+loan, leaves <strong>without</strong> name or enrollment number.</p>
+<p><strong>Why it works this way.</strong> The information about who picks up was promised to
+the academic coordination at the delivery of the system, and the decision to
+expose it is theirs, taken in September 2026 — a usage policy, not a technical
+choice. The loan was never anonymous: the record has carried the enrollment
+number since day one, because that is what allows chasing a device that did not
+come back. What changes is only the aggregated reading. The <strong>Retiradas</strong> sheet
+has no name because it exists for the pivot (by category, by day, by usage
+time), and each person's named history does not need to leave the panel inside
+a file that will travel.</p>
+<p><strong>What would break.</strong> Reading this rule as if it contradicted the previous
+one. They are two different tables: the loan has an enrollment number and the
+rating <strong>does not</strong> — and still does not. The ranking changes not one line of
+the anonymous rating rule, and nobody can get from a vote to a person through
+the ranking, because the vote has no time and no pickup day to cross with.
+Adding the rating to the ranking, or the enrollment number to the rating, is
+what would undo both rules at once.</p>
 <hr />
 <h2 id="where-to-go-next">Where to go next</h2>
 <ul>

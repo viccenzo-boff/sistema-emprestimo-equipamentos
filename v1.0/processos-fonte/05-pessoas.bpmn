@@ -5,7 +5,7 @@
   </bpmn:collaboration>
   <bpmn:process id="Processo_pessoas" isExecutable="false">
     <bpmn:laneSet id="Raias_pessoas">
-      <bpmn:lane id="Raia_secretaria" name="Secretaria">
+      <bpmn:lane id="Raia_secretario" name="Secretário">
         <bpmn:flowNodeRef>AbrePessoas</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>QualGesto</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EnviaPlanilha</bpmn:flowNodeRef>
@@ -160,7 +160,7 @@
       <bpmndi:BPMNShape id="Participante_pessoas_di" bpmnElement="Participante_pessoas" isHorizontal="true">
         <dc:Bounds x="160" y="80" width="1380" height="1260" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Raia_secretaria_di" bpmnElement="Raia_secretaria" isHorizontal="true">
+      <bpmndi:BPMNShape id="Raia_secretario_di" bpmnElement="Raia_secretario" isHorizontal="true">
         <dc:Bounds x="190" y="80" width="1350" height="500" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Raia_sistema_di" bpmnElement="Raia_sistema" isHorizontal="true">

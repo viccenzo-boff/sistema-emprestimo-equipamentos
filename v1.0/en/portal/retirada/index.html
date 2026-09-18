@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.0/en/portal/retirada/">
       
       
-        <link rel="prev" href="../../inicio-rapido/secretaria/">
+        <link rel="prev" href="../../inicio-rapido/secretario/">
       
       
         <link rel="next" href="../devolucao/">
@@ -411,7 +411,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../inicio-rapido/secretaria/" class="md-nav__link">
+      <a href="../../inicio-rapido/secretario/" class="md-nav__link">
         
   
   
@@ -712,6 +712,8 @@
       
         
       
+        
+      
     
     
     
@@ -828,6 +830,34 @@
     
   
     5. People management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/relatorios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Reports
   
 
     
@@ -1436,7 +1466,7 @@ offered to anybody else.</p>
 <a href="../../referencia/glossario/#category">category</a>,
 <a href="../../referencia/glossario/#loan">loan</a> and
 <a href="../../referencia/glossario/#inactive-record-person">inactive record</a>.</p>
-<p>These three belong to this page only — they are the parts of the screen that the
+<p>These five belong to this page only — they are the parts of the screen that the
 steps name:</p>
 <table>
 <thead>
@@ -1458,6 +1488,14 @@ steps name:</p>
 <td>Selection bar</td>
 <td>The fixed strip at the bottom that lists the selection and holds the <strong>Confirmar retirada</strong> (Confirm pickup) button.</td>
 </tr>
+<tr>
+<td>Rating faces</td>
+<td>The four faces under the question "Como foi a retirada?" (How was the pickup?) on the pickup confirmed screen. They show up at most once every 30 days per person.</td>
+</tr>
+<tr>
+<td>QR code</td>
+<td>The code next to the faces, which opens the front desk suggestion form on your phone. It only shows up when the front desk has set the link up.</td>
+</tr>
 </tbody>
 </table>
 <h2 id="4-who-does-what">4. Who does what</h2>
@@ -1477,12 +1515,12 @@ steps name:</p>
 </tr>
 <tr>
 <td>Portal (the tablet)</td>
-<td>Checks the record, shows what is free at the moment of the tap and records one loan per item.</td>
-<td>Does not keep a session: the identification lasts for one visit and ends with it.</td>
+<td>Checks the record, shows what is free at the moment of the tap, records one loan per item and, at most once every 30 days, asks how it went.</td>
+<td>Does not keep a session: the identification lasts for one visit and ends with it. Does not keep who answered the question.</td>
 </tr>
 <tr>
 <td>Front desk</td>
-<td>Keeps the inventory up to date and leaves the devices on the counter.</td>
+<td>Keeps the inventory up to date, leaves the devices on the counter and sets the suggestion form link up in the panel.</td>
 <td><strong>Takes no part in the pickup.</strong> Confirms nothing, and does not need to be there for a pickup to happen.</td>
 </tr>
 </tbody>
@@ -1708,7 +1746,28 @@ in a single confirmation.</p>
 </li>
 <li>
 <p>Take from the counter the devices shown on screen, checking each asset tag.</p>
-<p><a href="../../../assets/images/retirada/09-retirada-confirmada.png"><img alt="The pickup confirmed screen, listing the two asset tags recorded in the person's name" src="../../../assets/images/retirada/09-retirada-confirmada.png" /></a></p>
+<p><a href="../../../assets/images/retirada/09-retirada-confirmada.png"><img alt="The pickup confirmed screen, listing the two asset tags recorded in the person's name, with the four rating faces and the suggestion form QR code below" src="../../../assets/images/retirada/09-retirada-confirmada.png" /></a></p>
+</li>
+<li>
+<p>Did the four faces show up under the question <strong>Como foi a retirada?</strong> (How
+    was the pickup?)?</p>
+<ul>
+<li><strong>If YES</strong> → tap the face that says how it went, from sad to smiling,
+  <strong>or tap none of them</strong>. It is optional: one tap records the rating and
+  the screen goes back to the start after a short <strong>Obrigado!</strong> (Thank
+  you!); without a tap, <strong>Concluir</strong> and the countdown at the bottom work as
+  usual. Nobody learns who answered — see the
+  <a href="#7-rules-that-are-not-obvious">rule below</a>.</li>
+<li><strong>If NO</strong> → you were already asked in the last 30 days. The pickup is
+  recorded all the same; go on to step 14.</li>
+</ul>
+<p><a href="../../../assets/images/retirada/10-avaliacao-e-qr.png"><img alt="The four rating faces, from the sad red one to the smiling green one, and next to them the QR code with the suggestion or problem caption" src="../../../assets/images/retirada/10-avaliacao-e-qr.png" /></a></p>
+</li>
+<li>
+<p>Want to report a problem or a suggestion in writing? Point your phone
+    camera at the QR code next to the faces: it opens the front desk suggestion
+    form. It is optional as well, and the same QR code is usually on a sticker
+    next to the tablet — you can use it later, with no rush.</p>
 </li>
 <li>
 <p>Tap <strong>Concluir</strong> (Finish).</p>
@@ -1758,6 +1817,35 @@ are in your name.</p>
 enrollment number and <a href="../devolucao/">return</a> the item you are not going to
 use, leaving it on the counter. It is only offered to somebody else after
 the front desk collects it.</p>
+</div>
+<div class="admonition question">
+<p class="admonition-title">Why did the faces not show up today?</p>
+<p>Because you were already asked in the last <strong>30 days</strong> — and "asked" means
+the faces showed up, whether you tapped one of them or not. Whoever picks
+equipment up every day is asked once a month; whoever picks it up once a
+semester is asked every time.</p>
+<p>The rule exists so the survey does not become a nuisance: if the faces
+showed up on every pickup, the people who ignore them would be exactly the
+ones seeing them most. There is no way to ask for them again before the
+period is over.</p>
+</div>
+<div class="admonition question">
+<p class="admonition-title">I tapped the wrong face. Can I fix it?</p>
+<p>No — and that is a consequence of the anonymity, not an oversight. The
+system keeps only the rating and the day: there is no way to find "your"
+vote to change it, because nothing in it says it was yours.</p>
+<p>A wrong tap is one rating among dozens in the month, and the front desk
+reads averages, not votes. If what you meant fits in writing, the QR code
+next to the faces opens the suggestion form.</p>
+</div>
+<div class="admonition question">
+<p class="admonition-title">No QR code showed up. Is it broken?</p>
+<p>No. The QR code only shows up when the front desk has set the suggestion
+form link up in the panel; without a link, the screen shows only the
+faces. The faces and the QR code are independent: either one can show up
+without the other.</p>
+<p>If you want to report something and the QR code is not on screen, talk to
+the front desk.</p>
 </div>
 <h2 id="8-common-errors-and-what-to-do">8. Common errors and what to do</h2>
 <table>
@@ -1831,7 +1919,7 @@ the front desk collects it.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../../inicio-rapido/secretaria/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Front Desk">
+          <a href="../../inicio-rapido/secretario/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Front Desk">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>

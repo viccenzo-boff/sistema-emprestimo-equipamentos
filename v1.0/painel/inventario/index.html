@@ -411,14 +411,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../inicio-rapido/secretaria/" class="md-nav__link">
+      <a href="../../inicio-rapido/secretario/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Secretaria
+    Secretário
   
 
     
@@ -570,6 +570,8 @@
   
     
     
+      
+        
       
         
       
@@ -889,6 +891,34 @@
     
   
     5. Gestão de pessoas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../relatorios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Relatórios
   
 
     
@@ -1538,7 +1568,7 @@
 entra, o que quebrou sai de circulação, o que chegou ao fim da vida útil é
 aposentado, e o adesivo que descolou é corrigido.</p>
 <p>Quando termina, o portal do tablet oferece exatamente o que existe e está em
-condição de sair. Tudo o que a secretaria faz aqui muda o que a próxima pessoa
+condição de sair. Tudo o que o secretário faz aqui muda o que a próxima pessoa
 vê na grade de categorias.</p>
 <h2 id="2-pre-condicoes">2. Pré-condições</h2>
 <ul>
@@ -1598,7 +1628,7 @@ vê na grade de categorias.</p>
 </thead>
 <tbody>
 <tr>
-<td>Secretaria</td>
+<td>Secretário</td>
 <td>Cadastra o aparelho que chegou, corrige a etiqueta, separa para conserto, aposenta o que não serve mais, e cria as categorias.</td>
 <td>Não apaga equipamento — não existe essa ação, e a <a href="#por-que-nao-existe-um-botao-de-excluir-equipamento">regra abaixo</a> explica por quê.</td>
 </tr>
@@ -1615,14 +1645,14 @@ vê na grade de categorias.</p>
 </tbody>
 </table>
 <h2 id="5-diagrama-bpmn">5. Diagrama BPMN</h2>
-<p><a href="../../assets/diagramas/04-inventario.svg"><img alt="Diagrama BPMN da gestão de inventário: a secretaria abre a aba Inventário e escolhe entre cadastrar um equipamento, corrigir a etiqueta ou mudar a situação; o sistema valida a etiqueta, confere se o item tem empréstimo aberto e se a transição é permitida, e grava — ou recusa dizendo o motivo." src="../../assets/diagramas/04-inventario.svg" /></a></p>
+<p><a href="../../assets/diagramas/04-inventario.svg"><img alt="Diagrama BPMN da gestão de inventário: o secretário abre a aba Inventário e escolhe entre cadastrar um equipamento, corrigir a etiqueta ou mudar a situação; o sistema valida a etiqueta, confere se o item tem empréstimo aberto e se a transição é permitida, e grava — ou recusa dizendo o motivo." src="../../assets/diagramas/04-inventario.svg" /></a></p>
 <p>Clique no diagrama para abri-lo em tamanho cheio — na largura da página ele
 entra a pouco mais da metade do tamanho, e os rótulos ficam apertados.</p>
 <p>O diagrama tem <strong>três caminhos</strong> saindo da mesma pergunta, e é assim que a tela
 funciona: uma lista só, com o formulário de cadastro em cima e as ações na linha
 de cada aparelho.</p>
 <p><strong>A gestão de categorias não está no diagrama, de propósito.</strong> Ela é outra tela
-(<strong>Categorias</strong>, no menu) e não é um dos cinco processos do sistema — o que o
+(<strong>Categorias</strong>, no menu) e não é um dos processos documentados — o que o
 diagrama mostra é o cadastro <strong>escolhendo</strong> uma categoria que já existe. O
 procedimento 5 do passo a passo cobre a criação e a exclusão.</p>
 <p><a href="../../processos-fonte/04-inventario.bpmn">Baixar o arquivo <code>.bpmn</code></a> — a fonte do
@@ -1693,7 +1723,10 @@ ficou em "Notebook" seria pior. O cursor já volta sozinho para a etiqueta.</p>
 <p>Confira o aviso no alto da tela.</p>
 <p><a href="../../assets/images/inventario/05-item-em-manutencao.png"><img alt="A mesma linha depois da mudança: o selo âmbar Manutenção no lugar do verde, e agora só os botões Disponível e Inativar." src="../../assets/images/inventario/05-item-em-manutencao.png" /></a></p>
 <p>Ele diz o que aconteceu com o aparelho — "NOTE-05 foi para manutenção e saiu
-da lista do tablet." O selo da linha vira âmbar e o botão <strong>Editar</strong> some.</p>
+da lista do tablet." O selo da linha vira âmbar e o botão <strong>Editar</strong> some.
+O clique fica registrado, com o seu nome e a hora, no relatório
+<a href="../relatorios/#quem-fez-fica-registrado">Índice de Manutenção</a> — é de lá que sai o
+"desde quando" e o "quem".</p>
 </li>
 <li>
 <p>Separe o aparelho para conserto.</p>
@@ -1810,7 +1843,7 @@ portal com o primeiro equipamento.</p>
 <li><strong>Se NÃO</strong> → a linha tem o botão <strong>Excluir</strong>. Siga para o passo 8.</li>
 <li><strong>Se SIM</strong> → no lugar do botão a linha mostra a contagem, como "11
   equipamentos vinculados". Não há como excluí-la — ver a
-  <a href="#a-mensagem-manda-inativar-os-equipamentos-isso-libera-a-exclusao">regra sobre a categoria em uso</a>.</li>
+  <a href="#por-que-nao-da-para-excluir-uma-categoria-que-tem-equipamento">regra sobre a categoria em uso</a>.</li>
 </ul>
 </li>
 <li>
@@ -1947,28 +1980,33 @@ perderia.</p>
 <p>Por isso esta é a única exclusão de verdade do painel — e ela só é oferecida
 quando a categoria não tem nenhum equipamento vinculado.</p>
 </div>
-<p><a id="a-mensagem-manda-inativar-os-equipamentos-isso-libera-a-exclusao"></a></p>
+<p><a id="por-que-nao-da-para-excluir-uma-categoria-que-tem-equipamento"></a></p>
 <div class="admonition question">
-<p class="admonition-title">A mensagem manda inativar os equipamentos. Isso libera a exclusão?</p>
-<p><strong>Não.</strong> Inativar tira o aparelho de circulação, mas ele continua vinculado
-à categoria — e é o vínculo que trava a exclusão, não a situação.</p>
-<p>Isso foi medido: com o único aparelho de uma categoria marcado como
-<strong>Inativo</strong>, a exclusão continua sendo recusada com a mesma mensagem, e o
-banco de dados recusa igual.</p>
-<p>Na prática, <strong>categoria com equipamento não é excluída pelo painel</strong>. Não
-existe tela que mova um aparelho de uma categoria para outra, e equipamento
-nunca é apagado — então uma categoria só volta a ficar vazia se ela nunca
-tiver sido usada.</p>
-<p>O que resolve, quando a categoria foi criada por engano:</p>
+<p class="admonition-title">Por que não dá para excluir uma categoria que tem equipamento?</p>
+<p>Porque <strong>equipamento nunca é apagado</strong> (ver a
+<a href="#por-que-nao-existe-um-botao-de-excluir-equipamento">primeira pergunta desta seção</a>),
+e enquanto ele existe, ele está vinculado a uma categoria — e é o vínculo
+que trava a exclusão, não a situação do aparelho. Não existe tela que mova
+um aparelho de uma categoria para outra, então uma categoria só volta a
+ficar vazia se ela nunca tiver sido usada.</p>
+<p>Inativar os aparelhos <strong>não libera a exclusão</strong>, e isso foi medido: com o
+único aparelho de uma categoria marcado como <strong>Inativo</strong>, a exclusão continua
+sendo recusada com a mesma mensagem, e o banco de dados recusa igual. O que
+inativar faz é outra coisa, e é o que a mensagem da tela sugere: sem nenhuma
+unidade em circulação, <strong>a categoria some da grade do tablet sozinha</strong>,
+porque item inativo não conta.</p>
+<p>O que fazer, então, quando a categoria foi criada por engano:</p>
 <ol>
 <li><strong>Se ela ainda estiver vazia</strong>, apague agora. É o único momento em que dá.</li>
 <li><strong>Se já tiver aparelho</strong>, deixe-a onde está. Uma categoria a mais no
-   tablet incomoda menos que um histórico furado — e ela some da grade
-   sozinha se você aposentar os aparelhos dela, porque item inativo não
-   conta.</li>
+   painel incomoda menos que um histórico furado — e, aposentados os
+   aparelhos dela, ela desaparece do tablet.</li>
 </ol>
 <p>A frase que a tela escreve na recusa está registrada na
-<a href="#8-erros-comuns-e-o-que-fazer">tabela de erros</a>, com esta ressalva ao lado.</p>
+<a href="#8-erros-comuns-e-o-que-fazer">tabela de erros</a>. Até setembro de 2026 ela
+mandava "inativar os equipamentos antes de excluí-la", como se isso fosse
+liberar a exclusão; a frase foi corrigida quando esta página mediu que não
+libera.</p>
 </div>
 <div class="admonition question">
 <p class="admonition-title">Cadastrei uma etiqueta errada. Como desfaço?</p>
@@ -2017,7 +2055,7 @@ recusa diz isso. Minúscula pode: o sistema grava em maiúscula.</p>
 <p>Quando uma ação é recusada, a mensagem aparece <strong>dentro da linha</strong>, logo abaixo
 dos botões, e a lista é relida na hora. Isso é o sinal de que nada mudou: a
 situação do aparelho continua a que estava.</p>
-<p><a href="../../assets/images/inventario/12-recusa-ao-apagar-categoria.png"><img alt="A linha da categoria Microfone depois de uma exclusão recusada: um alerta vermelho dizendo Microfone ainda tem equipamentos, com o detalhe mandando inativar os equipamentos antes, e a contagem já corrigida para 1 equipamento vinculado." src="../../assets/images/inventario/12-recusa-ao-apagar-categoria.png" /></a></p>
+<p><a href="../../assets/images/inventario/12-recusa-ao-apagar-categoria.png"><img alt="A linha da categoria Microfone depois de uma exclusão recusada: um alerta vermelho dizendo Microfone ainda tem equipamentos, com o detalhe explicando que categoria com equipamento não pode ser excluída e que inativar os aparelhos a tira do tablet, e a contagem já corrigida para 1 equipamento vinculado." src="../../assets/images/inventario/12-recusa-ao-apagar-categoria.png" /></a></p>
 <p>Na tela de Categorias há um detalhe a mais: quando a exclusão é recusada, <strong>o
 diálogo continua aberto</strong>, ainda dizendo que a categoria está vazia — ele é do
 render anterior. Feche no <strong>Cancelar</strong>; o motivo está na linha, atrás dele.</p>
@@ -2098,7 +2136,7 @@ render anterior. Feche no <strong>Cancelar</strong>; o motivo está na linha, at
 <tr>
 <td>"Notebook ainda tem equipamentos."</td>
 <td>A categoria tem aparelho vinculado. Quem recusa é o banco de dados, não a tela.</td>
-<td>Não há como esvaziá-la pelo painel. O detalhe da mensagem manda inativar os equipamentos, e <strong>isso não resolve</strong> — ver a <a href="#a-mensagem-manda-inativar-os-equipamentos-isso-libera-a-exclusao">regra acima</a>.</td>
+<td>Não há como esvaziá-la pelo painel. Se a categoria não serve mais, inative os aparelhos dela: ela some do tablet, e a linha fica aqui — ver a <a href="#por-que-nao-da-para-excluir-uma-categoria-que-tem-equipamento">regra acima</a>.</td>
 </tr>
 <tr>
 <td>"Essa categoria já não existe."</td>

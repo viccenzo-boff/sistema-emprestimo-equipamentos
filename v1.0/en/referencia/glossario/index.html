@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.0/en/referencia/glossario/">
       
       
-        <link rel="prev" href="../../painel/pessoas/">
+        <link rel="prev" href="../../painel/relatorios/">
       
       
         <link rel="next" href="../estados-e-transicoes/">
@@ -411,7 +411,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../inicio-rapido/secretaria/" class="md-nav__link">
+      <a href="../../inicio-rapido/secretario/" class="md-nav__link">
         
   
   
@@ -575,6 +575,8 @@
       
         
       
+        
+      
     
     
     
@@ -691,6 +693,34 @@
     
   
     5. People management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/relatorios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Reports
   
 
     
@@ -974,6 +1004,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#maintenance-stay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintenance stay
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#on-loan" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1022,6 +1063,17 @@
     <span class="md-ellipsis">
       
         Profile
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating
       
     </span>
   </a>
@@ -1595,6 +1647,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#maintenance-stay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintenance stay
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#on-loan" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1643,6 +1706,17 @@
     <span class="md-ellipsis">
       
         Profile
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating
       
     </span>
   </a>
@@ -1852,6 +1926,18 @@ screen it is <strong>Manutenção</strong>.</p>
 <p>Different from <a href="#retirement-inactive-item">retirement</a>, which is permanent.</p>
 <p>A device with an open <a href="#loan">loan</a> cannot go under maintenance: its status is
 locked until the cycle closes.</p>
+<h2 id="maintenance-stay">Maintenance stay</h2>
+<p>The time between a device going to <a href="#maintenance">maintenance</a> and coming
+back from it — the <strong>Manutenção</strong> (Maintenance) click and the next
+<strong>Disponível</strong> (Available) or <strong>Inativar</strong> (Deactivate) click on the same
+<a href="#inventory">inventory</a> row. Without the second click, the stay is <strong>open</strong>.
+On screen, the pages call it <strong>estadia em manutenção</strong>.</p>
+<p>It is the unit of the <strong>Índice de Manutenção</strong> (Maintenance rate) report: the
+<strong>entry</strong> counts in the period it happened in, and the idle time counts by the
+part of the stay that falls inside the period. A device that was already in
+maintenance when the history started to exist (September 2026) has no stay —
+the screen shows "desde —" (since —), and its days do not count. See
+<a href="../../painel/relatorios/#the-two-period-rules">Reports, §6</a>.</p>
 <h2 id="on-loan">On loan</h2>
 <p>The <a href="#status">status</a> of a device that is off the shelf because somebody picked
 it up (<code>Equipamento.status = EMPRESTADO</code>). On screen it is <strong>Emprestado</strong>.</p>
@@ -1887,6 +1973,23 @@ visit.</p>
 <p>It is the only database field stored exactly in the form it appears on screen.
 It is used to filter and count records in the <a href="#admin-panel">admin panel</a>; it
 does not change what the person can pick up.</p>
+<h2 id="rating">Rating</h2>
+<p>The tap on one of the four faces that may show up at the end of a
+<a href="#pickup">pickup</a>, under the question <strong>Como foi a retirada?</strong> (How was the
+pickup?): 1 (<strong>Muito ruim</strong>, very bad), 2 (<strong>Ruim</strong>, bad), 3 (<strong>Bom</strong>, good) or
+4 (<strong>Muito bom</strong>, very good). One row in the <code>Avaliacao</code> table, with the rating
+and the day — and nothing else. On screen the panel tab is <strong>Satisfação</strong>
+(Satisfaction).</p>
+<p>It is <strong>anonymous by construction</strong>: there is no enrollment number, profile or
+time in the row, and the <a href="#admin-panel">admin panel</a> shows averages, counts and
+the response rate, never a vote. And it is <strong>optional</strong>: the row is born when
+the faces show up, with the rating blank; whoever does not tap leaves the row
+that way, and that is what gives the response rate.</p>
+<p>Each person is asked at most once every 30 days, counted from when the faces
+showed up. The whole rule is in
+<a href="../regras-de-negocio/#the-rating-is-anonymous-and-each-person-is-asked-once-every-30-days">Business rules</a>,
+and the report that reads it is the <strong>Satisfação</strong> tab of
+<a href="../../painel/relatorios/">Reports</a>.</p>
 <h2 id="retirement-inactive-item">Retirement (inactive item)</h2>
 <p>The permanent removal of a device from circulation, <strong>without deleting it</strong>
 (<code>Equipamento.status = INATIVO</code>). On screen it is <strong>Inativo</strong>, and the action is
@@ -1996,7 +2099,7 @@ with an open loan, and it blocks the <a href="#pickup">pickup</a> only.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../../painel/pessoas/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 5. People management">
+          <a href="../../painel/relatorios/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 6. Reports">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2006,7 +2109,7 @@ with an open loan, and it blocks the <a href="#pickup">pickup</a> only.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                5. People management
+                6. Reports
               </div>
             </div>
           </a>

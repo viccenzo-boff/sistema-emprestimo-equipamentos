@@ -6,7 +6,7 @@
   </bpmn:collaboration>
   <bpmn:process id="Processo_baixa" isExecutable="false">
     <bpmn:laneSet id="Raias_baixa">
-      <bpmn:lane id="Raia_secretaria" name="Secretaria">
+      <bpmn:lane id="Raia_secretario" name="Secretário">
         <bpmn:flowNodeRef>RecolheDaBancada</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EscolheModo</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ConfirmaUm</bpmn:flowNodeRef>
@@ -109,7 +109,7 @@
       <bpmndi:BPMNShape id="Participante_baixa_di" bpmnElement="Participante_baixa" isHorizontal="true">
         <dc:Bounds x="160" y="80" width="1530" height="840" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Raia_secretaria_di" bpmnElement="Raia_secretaria" isHorizontal="true">
+      <bpmndi:BPMNShape id="Raia_secretario_di" bpmnElement="Raia_secretario" isHorizontal="true">
         <dc:Bounds x="190" y="80" width="1500" height="320" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Raia_sistema_di" bpmnElement="Raia_sistema" isHorizontal="true">

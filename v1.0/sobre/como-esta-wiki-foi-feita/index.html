@@ -411,14 +411,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../inicio-rapido/secretaria/" class="md-nav__link">
+      <a href="../../inicio-rapido/secretario/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Secretaria
+    Secretário
   
 
     
@@ -575,6 +575,8 @@
       
         
       
+        
+      
     
     
     
@@ -691,6 +693,34 @@
     
   
     5. Gestão de pessoas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/relatorios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Relatórios
   
 
     
@@ -1195,6 +1225,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#quem-fez" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quem fez
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1507,6 +1548,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#quem-fez" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quem fez
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1574,8 +1626,8 @@ deles falava com quem opera o sistema:</p>
 </tbody>
 </table>
 <p>O <code>CONTRIBUTING.md</code> existia com <strong>zero byte</strong>. A pasta <code>docs/</code> não existia.</p>
-<p>Ou seja: quem estivesse de pé na bancada com um tablet na frente, ou na
-secretaria com a fila de devoluções aberta, não tinha onde procurar. O
+<p>Ou seja: quem estivesse de pé na bancada com um tablet na frente, ou no
+balcão com a fila de devoluções aberta, não tinha onde procurar. O
 conhecimento operacional estava inteiro na cabeça de quem construiu — e a única
 forma de consultá-lo era perguntar.</p>
 <h2 id="as-decisoes">As decisões</h2>
@@ -1613,7 +1665,7 @@ aparelho no tablet, ele <strong>não</strong> volta a ficar disponível:</p>
 <blockquote>
 <p>Devolver no tablet é uma <strong>declaração</strong>, não uma conferência. Enquanto o
 empréstimo está aguardando baixa, o aparelho está fisicamente na bancada mas
-ninguém da secretaria o recolheu ainda. Se ele voltasse para disponível nesse
+o secretário não o recolheu ainda. Se ele voltasse para disponível nesse
 momento, o tablet ofereceria a outra pessoa um equipamento que continua em
 cima da bancada.</p>
 </blockquote>
@@ -1644,7 +1696,7 @@ saíram na mesma sessão.</p>
 seletor de versão no alto da página existe para que versões futuras convivam
 com ela, em vez de substituí-la.</p>
 <p><strong>A alternativa descartada.</strong> Documentar a branch principal, que é o estado mais
-recente e o que a secretaria de fato usa.</p>
+recente e o que o secretário de fato usa.</p>
 <p><strong>O motivo.</strong> Captura de tela de alvo em movimento <strong>nasce vencida</strong>. A branch
 principal continua andando: um botão muda de lugar e as 49 capturas desta wiki
 passam a mostrar uma tela que não existe mais, sem que ninguém perceba, porque
@@ -1735,21 +1787,32 @@ erro real foi corrigido no texto.</p>
   e não o código de saída dele.</li>
 </ul>
 <h3 id="8-documentar-um-defeito-em-vez-de-corrigi-lo">8. Documentar um defeito em vez de corrigi-lo</h3>
-<p><strong>A decisão.</strong> Uma mensagem do painel dá um conselho que não funciona. Ao tentar
-excluir uma categoria que ainda tem equipamento, a tela sugere inativar os
-equipamentos primeiro — e inativar <strong>não</strong> libera a exclusão. A página de
-<a href="../../painel/inventario/">gestão de inventário</a> cita a mensagem com a grafia
-exata e, logo abaixo, desmente o conselho.</p>
+<p><strong>A decisão.</strong> Uma mensagem do painel dava um conselho que não funciona. Ao
+tentar excluir uma categoria que ainda tem equipamento, a tela da <code>v1.0</code> sugeria
+inativar os equipamentos primeiro — e inativar <strong>não</strong> libera a exclusão. A
+página de <a href="../../painel/inventario/">gestão de inventário</a> da <code>v1.0</code> cita a
+mensagem com a grafia exata e, logo abaixo, desmente o conselho.</p>
 <p><strong>A alternativa descartada.</strong> Corrigir a frase no produto, que é uma linha de
 código.</p>
 <p><strong>O motivo.</strong> A wiki descreve a versão <code>v1.0</code>, e a regra de escrita desta wiki é
 citar a tela <strong>inclusive quando a tela está errada</strong> — porque é pela frase que a
 pessoa chega à página, e corrigir no texto faria o leitor procurar uma mensagem
 que não existe. Corrigir o produto é uma tarefa de produto, com o seu próprio
-ciclo de verificação; ela continua em aberto e está registrada como tal.</p>
+ciclo de verificação; ficou registrada como defeito em aberto.</p>
 <p>A decisão vale como princípio: <strong>a wiki não conserta o sistema por escrito.</strong>
 Quando ela encontra um defeito, o registro é honesto e o conserto vira trabalho
 declarado.</p>
+<p><strong>O que aconteceu depois.</strong> O conserto veio em setembro de 2026, antes da
+entrega: a frase passou a dizer o que de fato acontece, a captura foi refeita
+contra o sistema rodando, e a página de <a href="../../painel/inventario/">gestão de
+inventário</a> descreve a mensagem nova. Por duas
+semanas a wiki publicou a correção como uma versão ao lado (<code>v1.1</code>, depois
+<code>v1.2</code>), com a página antiga congelada citando a mensagem antiga — a
+<a href="#4-documentar-uma-versao-congelada">decisão 4</a> funcionando como prometido.
+Só que versão é entrega, e nada tinha sido entregue: em 18 de setembro, com a
+implantação marcada, a numeração foi recolhida e tudo virou <code>v1.0</code>. A decisão
+4 continua de pé para a primeira versão <strong>depois</strong> da implantação — é aí que
+congelar passa a proteger alguém.</p>
 <h2 id="o-teste-que-vale-mais-que-os-tres-portoes">O teste que vale mais que os três portões</h2>
 <p>Nenhum portão pega uma página que está toda certa e mesmo assim não serve. Por
 isso o critério final da wiki não é uma ferramenta: é entregá-la a alguém que
@@ -1781,9 +1844,6 @@ isso, e essa parte do critério ainda não foi executada.</p>
 <h2 id="o-que-ficou-de-fora">O que ficou de fora</h2>
 <p>Honestidade sobre escopo vale mais que lista de conquistas.</p>
 <ul>
-<li><strong>Não há sexta página de processo.</strong> A funcionalidade de relatórios e ocupação
-  está especificada e <strong>não</strong> foi construída — a wiki descreve o que existe, e
-  ela não existe. Quando entrar, vira uma versão nova, publicada ao lado desta.</li>
 <li><strong>A interface do sistema continua só em português.</strong> A wiki é bilíngue; o
   produto não. Traduzir a interface é uma semana de trabalho que não cabia, e a
   solução foi um <strong>glossário de interface</strong> na trilha em inglês, com cada rótulo
@@ -1797,14 +1857,16 @@ isso, e essa parte do critério ainda não foi executada.</p>
   desde o começo: envelhecem pior que captura de tela e não têm diff no
   histórico.</li>
 <li><strong>O tempo de prateleira é medido e não é lido por ninguém.</strong> O sistema grava
-  quando a devolução foi declarada e quando a secretaria conferiu, mas não
+  quando a devolução foi declarada e quando o secretário conferiu, mas não
   existe tela que mostre a diferença. O dado está lá, esperando o relatório.</li>
 <li><strong>Não se registra quem deu a baixa.</strong> O sistema sabe <strong>quando</strong> cada
   conferência aconteceu e passou a ter contas individuais, mas o empréstimo não
   guarda qual conta confirmou o recebimento.</li>
-<li><strong>A mensagem errada do inventário continua errada</strong>, pelo motivo da decisão 8.</li>
 </ul>
 <h2 id="depois-o-que-existe-hoje">Depois: o que existe hoje</h2>
+<!-- Páginas e palavras saem de `npm run docs:palavras` (texto renderizado do
+     site construído, por idioma). Não conte no markdown: dá ~27 % a mais. -->
+
 <table>
 <thead>
 <tr>
@@ -1815,15 +1877,15 @@ isso, e essa parte do critério ainda não foi executada.</p>
 <tbody>
 <tr>
 <td>Páginas</td>
-<td>16 em português, 15 em inglês</td>
+<td>17 em português, 16 em inglês</td>
 </tr>
 <tr>
 <td>Palavras</td>
-<td>Cerca de 26.600 em português, 30.100 em inglês</td>
+<td>Cerca de 31.100 em português, 35.400 em inglês</td>
 </tr>
 <tr>
 <td>Processos documentados</td>
-<td>5, com as oito seções cada</td>
+<td>6 — cinco com as oito seções e o diagrama, e o de relatórios com sete, sem diagrama</td>
 </tr>
 <tr>
 <td>Diagramas BPMN</td>
@@ -1831,7 +1893,7 @@ isso, e essa parte do critério ainda não foi executada.</p>
 </tr>
 <tr>
 <td>Capturas de tela</td>
-<td>49, nenhuma com dado de pessoa real</td>
+<td>58, nenhuma com dado de pessoa real</td>
 </tr>
 <tr>
 <td>Portões no CI</td>
@@ -1842,6 +1904,18 @@ isso, e essa parte do critério ainda não foi executada.</p>
 <p>O número que importa não está na tabela: <strong>quem chega com uma dúvida operacional
 agora tem onde procurar</strong>, e a resposta explica a decisão em vez de descrever o
 botão.</p>
+<h2 id="quem-fez">Quem fez</h2>
+<p>O sistema e esta wiki foram feitos por <strong>Viccenzo Boff</strong>, sozinho, para a
+coordenação dos cursos. O crédito que aparece no rodapé da tela de matrícula do
+tablet e no pé da barra lateral do painel existe por autorização da
+coordenação — foi a contrapartida pelo trabalho.</p>
+<ul>
+<li>GitHub: <a href="https://github.com/viccenzo-boff">viccenzo-boff</a></li>
+<li>E-mail: <a href="mailto:viccenzoboff@gmail.com">viccenzoboff@gmail.com</a></li>
+</ul>
+<p>Para problema no sistema em uso, o caminho continua sendo o secretário e o
+<a href="https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos/issues">repositório do projeto</a>;
+o contato acima é para quem quer falar sobre o trabalho.</p>
 
 
 

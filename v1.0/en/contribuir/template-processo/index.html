@@ -409,7 +409,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../inicio-rapido/secretaria/" class="md-nav__link">
+      <a href="../../inicio-rapido/secretario/" class="md-nav__link">
         
   
   
@@ -573,6 +573,8 @@
       
         
       
+        
+      
     
     
     
@@ -689,6 +691,34 @@
     
   
     5. People management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../painel/relatorios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Reports
   
 
     
@@ -1461,7 +1491,7 @@ O que precisa ser verdade ANTES de começar. Lista curta, cada item
 verificável por quem vai executar.
 
 Exemplos do tipo certo: "o cadastro está ativo", "há pelo menos um
-equipamento DISPONIVEL na categoria", "a secretaria está com sessão aberta
+equipamento DISPONIVEL na categoria", "o secretário está com sessão aberta
 no painel".
 
 NÃO entra aqui: passo do processo. Pré-condição é estado, não ação.
@@ -1497,7 +1527,7 @@ correção que só uma delas receber.
 <h2 id="4-papeis-e-responsabilidades">4. Papéis e responsabilidades</h2>
 <!--
 Quem executa cada parte. Neste sistema são dois papéis: quem opera o tablet
-(estudante ou professor) e quem opera o painel (secretaria).
+(estudante ou professor) e quem opera o painel (secretário).
 
 Diga também o que cada papel NÃO faz — é a metade que evita a pergunta
 "então por que não apareceu para mim?".
@@ -1535,6 +1565,17 @@ rótulo se lê. Sem o link para si mesmo, a seção 5 vira uma mancha cinza.
 
 O texto alternativo descreve o caminho principal do diagrama em uma frase —
 um SVG sem alternativo é uma imagem vazia para quem usa leitor de tela.
+
+ESTA É A SEÇÃO QUE MAIS SE REMOVE, e removê-la tem uma consequência de
+numeração. Processo que é LEITURA, e não transação, não tem BPMN honesto: sem
+gateway que decida o destino de um registro e sem passagem de bastão entre
+raias, o diagrama vira uma fileira de caixas repetindo o passo a passo. A D04
+registrou que não se força BPMN onde ele não é a notação certa, e a página de
+Relatórios (Tarefa 13) é o primeiro caso.
+
+Ao remover esta seção, RENUMERE as seguintes: a página fica com 1 a 7, sem
+buraco. Um índice que pula do 4 para o 6 faz o leitor procurar o que não
+existe, e o custo de renumerar é uma linha por título.
 -->
 
 <p><em>O SVG do diagrama, com link para o <code>.bpmn</code> fonte.</em></p>
@@ -1562,7 +1603,7 @@ Ramificação SEMPRE explícita:
 
     3. O cadastro está ativo?
        - Se SIM → ... Siga para o passo 4.
-       - Se NÃO → ... Procure a secretaria.
+       - Se NÃO → ... Procure o secretário.
 
 Rótulo de tela citado literalmente, em negrito, com a grafia exata.
 
@@ -1618,7 +1659,7 @@ os do seu processo.
 <p class="admonition-title">Por que o equipamento não fica disponível assim que eu devolvo?</p>
 <p>Porque devolver no tablet é uma <strong>declaração</strong>, não uma conferência.
 Enquanto o empréstimo está em <code>AGUARDANDO_BAIXA</code>, o aparelho está
-fisicamente na bancada mas ninguém da secretaria o recolheu ainda. Se ele
+fisicamente na bancada mas o secretário não o recolheu ainda. Se ele
 voltasse para <code>DISPONIVEL</code> nesse momento, o tablet ofereceria a outro
 estudante um equipamento que continua em cima da bancada.</p>
 </div>
