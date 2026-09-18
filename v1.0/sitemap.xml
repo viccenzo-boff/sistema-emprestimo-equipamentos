@@ -36,6 +36,13 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.0en/inicio-rapido/secretario/"/>
     </url>
     <url>
+        <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.0/instalacao/windows-11/</loc>
+        <lastmod>2026-09-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.0/instalacao/windows-11/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.0en/instalacao/windows-11/"/>
+    </url>
+    <url>
         <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.0/painel/baixa-fisica/</loc>
         <lastmod>2026-09-18</lastmod>
         <changefreq>daily</changefreq>
@@ -243,5 +250,12 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.0/en/sobre/como-esta-wiki-foi-feita/"/>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.0sobre/como-esta-wiki-foi-feita/"/>
+    </url>
+    <url>
+        <loc>https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.0/en/instalacao/windows-11/</loc>
+        <lastmod>2026-09-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.0/en/instalacao/windows-11/"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/v1.0instalacao/windows-11/"/>
     </url>
 </urlset>
