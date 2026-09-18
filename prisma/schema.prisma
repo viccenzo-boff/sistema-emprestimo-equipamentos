@@ -154,6 +154,11 @@ model Administrador {
   /// a senha de alguém, ou apagar a conta, derruba a sessão daquela pessoa e só
   /// dela, sem nenhum segredo extra no `.env`.
   senha   String
+
+  /// As mudanças de situação de equipamento que esta conta fez (Tarefa 17).
+  /// A relação é opcional do outro lado, de propósito: apagar a conta para
+  /// recuperar a senha não pode nem ser recusado nem levar o histórico junto.
+  mudancas MudancaDeStatus[]
 }
 
 /// Categorias do inventário ("Notebook", "Tablet", "Extensão").
@@ -189,6 +194,59 @@ model Equipamento {
   /// banco, e não da tela: um DELETE com equipamento vinculado volta P2003.
   categoria   Categoria    @relation(fields: [categoria_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
   emprestimos Emprestimo[]
+  /// O histórico de situação (Tarefa 17) — ver `MudancaDeStatus`.
+  mudancas    MudancaDeStatus[]
+}
+
+/// Uma linha por mudança de situação feita **no painel** (Tarefa 17):
+/// `DISPONIVEL` ↔ `MANUTENCAO` ↔ `INATIVO`, com quem fez e quando. É o que o
+/// relatório Índice de Manutenção lê — antes dela, `Equipamento.status` guardava
+/// só o estado atual, e "desde quando o NOTE-09 está em conserto" não tinha
+/// resposta.
+///
+/// **`EMPRESTADO` não entra, de propósito.** Retirada e baixa já moram em
+/// `Emprestimo`, com os seus três carimbos; gravar o mesmo evento aqui seria
+/// dois donos para ele. Pelo mesmo motivo o seed e o `db:demo`, que escrevem
+/// `Equipamento.status` direto, não passam por aqui — só a action
+/// `alterarStatusEquipamento` grava, dentro da mesma transação que muda o
+/// status, e só quando a mudança de fato aconteceu (o `updateMany` contou 1).
+///
+/// **Vazio antes da migration, sem linha de abertura.** Um aparelho que já
+/// estava em manutenção no dia da instalação fica sem entrada: inventar uma com
+/// o carimbo da migration seria dado inventado dentro de uma métrica. O
+/// relatório mostra "desde —" para ele, e a saída dele não vira estadia.
+model MudancaDeStatus {
+  /// **Autoincremento de verdade**, ao contrário da `Avaliacao`: isto é log de
+  /// auditoria, e a ordem de gravação é informação, não vazamento.
+  id                 Int      @id @default(autoincrement())
+  equip_id           String
+  /// A situação lida **dentro da transação**, não a que a tela mostrava:
+  /// `DISPONIVEL` e `INATIVO` aceitam duas origens cada, e o valor visto antes
+  /// poderia ser o de outra aba.
+  de                 String
+  para               String
+  em                 DateTime @default(now())
+  /// Nulo quando a conta foi apagada — ver a relação abaixo.
+  administrador_id   Int?
+  /// **Retrato do nome na hora**, e não só a chave. A recuperação de senha
+  /// documentada é apagar a conta e ressemear: com `Restrict` o banco recusaria
+  /// assim que a conta tivesse histórico; com `Cascade` a senha esquecida
+  /// apagaria o histórico; com `SetNull` sem o retrato, o "quem" viraria "—".
+  /// Isto é semântica de auditoria — quem era, na hora —, e é por isso que um
+  /// nome corrigido no seed **não** reescreve as linhas antigas.
+  administrador_nome String
+
+  /// `onUpdate: Cascade` pelo mesmo motivo de `Emprestimo`: corrigir uma
+  /// etiqueta leva o histórico junto. `onDelete: Restrict` porque equipamento
+  /// nunca é apagado, e o histórico é mais um motivo para não ser.
+  equipamento   Equipamento    @relation(fields: [equip_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  /// `SetNull` provado em cópia do banco na Tarefa 17: apagar a conta deixa
+  /// `administrador_id` nulo, o nome intacto e o `foreign_key_check` vazio.
+  administrador Administrador? @relation(fields: [administrador_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  /// O relatório lê as linhas de um equipamento ordenadas por `em` para montar
+  /// as estadias; é a consulta que este índice serve.
+  @@index([equip_id, em])
 }
 
 /// Logs de movimentação — um registro isolado por item emprestado.
@@ -240,4 +298,9 @@ model Emprestimo {
   /// saída para um cadastro que sai de circulação.
   pessoa      Pessoa      @relation(fields: [pessoa_id], references: [matricula], onDelete: Restrict, onUpdate: Cascade)
   equipamento Equipamento @relation(fields: [equip_id], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  /// Todos os relatórios com período filtram por `data_retirada >= de AND
+  /// data_retirada < fim` (Tarefa 16). O índice entrou de carona na migration
+  /// da Tarefa 17, como a §0 da 16 prometeu — a 16 não teve migration.
+  @@index([data_retirada])
 }
