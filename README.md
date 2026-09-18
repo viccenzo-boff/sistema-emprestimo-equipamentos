@@ -48,7 +48,16 @@ alternativa descartada em cada decisão.
 
 ## Como rodar
 
-Requer Node.js 20.19+ (desenvolvido com 24.11).
+**Para instalar na coordenação** — como serviço do Windows, ligando sozinho
+com o computador, com backup diário e cópia de consulta — siga o guia
+[Instalar no Windows 11](docs/instalacao/windows-11.md) da wiki (também
+[publicado](https://viccenzo-boff.github.io/sistema-emprestimo-equipamentos/instalacao/windows-11/)).
+Ele usa os scripts de [`scripts/implantacao/`](scripts/implantacao/) e o
+banco nasce vazio, só com as contas do painel (`npm run db:seed:producao`).
+
+O que segue é o ambiente de **desenvolvimento**. Requer Node.js 24 (o
+`better-sqlite3` baixa o binário pré-compilado por versão de Node; sem
+Visual Studio, outra versão cai na compilação e falha).
 
 ```bash
 npm install          # instala dependências e gera o Prisma Client
@@ -74,8 +83,10 @@ Não há senha de painel em variável de ambiente: as contas do `/admin` ficam n
 | `npm run build`      | Build de produção.                                          |
 | `npm start`          | Servidor de produção (usado na máquina do secretário).      |
 | `npm run lint`       | ESLint.                                                     |
-| `npm run db:migrate` | Cria e aplica migrations.                                   |
+| `npm run db:migrate` | Cria e aplica migrations (desenvolvimento).                 |
+| `npm run db:deploy`  | Só aplica as migrations pendentes — o que a implantação usa; nunca propõe reset. |
 | `npm run db:seed`    | Importa pessoas, inventário e administradores (idempotente). |
+| `npm run db:seed:producao` | Só as contas do painel — o seed da implantação; nada de exemplo. |
 | `npm run db:sanear`  | Mostra (e com `-- --aplicar`, grava) a normalização dos cadastros já existentes. |
 | `npm run db:studio`  | Prisma Studio, para inspecionar o banco.                    |
 | `npm run db:reset`   | **Apaga o banco** e reaplica as migrations.                 |

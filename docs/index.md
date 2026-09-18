@@ -68,6 +68,10 @@ página do painel, e o contrário também vale.
   [guia de estilo](contribuir/guia-de-estilo.md) e o
   [template de processo](contribuir/template-processo.md), para quem escreve
   uma página nova.
+- **[Instalação](instalacao/windows-11.md)** — como pôr o sistema para rodar
+  sozinho no computador da coordenação, com o tablet no Wi-Fi, backup diário e
+  uma cópia do banco para consultar sem risco. Passo a passo para quem nunca
+  instalou nada.
 
 ## A versão que esta wiki descreve
 

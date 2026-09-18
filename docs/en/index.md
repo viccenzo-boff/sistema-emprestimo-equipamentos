@@ -81,6 +81,10 @@ an admin panel page, and the other way round as well.
   [style guide](contribuir/guia-de-estilo.md) and the
   [process template](contribuir/template-processo.md), for whoever writes a new
   page. These two are in Portuguese.
+- **[Installation](instalacao/windows-11.md)** — how to install the system as
+  a Windows service on the front desk computer, with the tablet on the Wi-Fi,
+  a daily backup and a read-only copy for queries. In Portuguese: it quotes
+  Windows labels as the person at the front desk sees them.
 
 ## The version this wiki describes
 

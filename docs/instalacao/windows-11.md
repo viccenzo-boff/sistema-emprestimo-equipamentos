@@ -1,0 +1,300 @@
+# Instalar no Windows 11
+
+Este guia põe o sistema para rodar **sozinho** num computador com Windows 11:
+ele liga junto com o Windows, sem ninguém precisar abrir nada, e o tablet
+alcança a tela de retirada pelo Wi-Fi. No fim, você tem também um backup
+automático todo dia e uma cópia do banco para consultar sem risco.
+
+Foi escrito para quem nunca instalou um sistema. Cada passo diz o que fazer e
+o que vai aparecer na tela. Se algo sair diferente, a seção
+[Se der errado](#se-der-errado) tem a resposta.
+
+**Tempo:** 30 a 40 minutos, a maior parte esperando o instalador.
+
+## O que você precisa
+
+- Um computador com **Windows 11**, ligado na tomada, em que você consiga
+  clicar em **Executar como administrador**.
+- Internet nesse computador durante a instalação (depois dela o sistema
+  funciona sem internet).
+- O tablet conectado no **mesmo Wi-Fi** que o computador (ou o computador no
+  cabo do mesmo roteador que dá o Wi-Fi ao tablet).
+- Cerca de 2 GB livres no disco.
+
+!!! warning "Se este computador já tem o sistema rodando pelo VS Code"
+    O instalador usa a porta 3000. Se houver um `npm run dev` aberto num
+    terminal, feche-o antes (Ctrl+C na janela dele) — senão o instalador para
+    no primeiro passo e diz qual programa está ocupando a porta.
+
+## Passo 1 — Instalar o Node.js e o Git
+
+São os dois programas de que o sistema depende. O Windows 11 tem um
+instalador de linha de comando, o `winget`, que baixa e instala os dois com
+uma linha cada.
+
+1. Clique com o **botão direito** no botão **Iniciar** e escolha
+   **Terminal (Admin)**. Aparece uma pergunta do Windows pedindo permissão:
+   clique em **Sim**.
+2. Copie a linha abaixo, cole na janela (botão direito cola) e aperte
+   **Enter**:
+
+    ```powershell
+    winget install --id OpenJS.NodeJS.LTS -e --accept-package-agreements --accept-source-agreements
+    ```
+
+    O que aparece: uma barra de progresso e, no fim, **Instalado com êxito**.
+    Se aparecer *"Nenhuma atualização disponível"* ou *"já está instalado"*,
+    está tudo certo — o programa já existia.
+
+3. Faça o mesmo com a segunda linha:
+
+    ```powershell
+    winget install --id Git.Git -e --accept-package-agreements --accept-source-agreements
+    ```
+
+4. **Feche a janela do Terminal.** Não pule isto: a janela aberta ainda não
+   sabe que os programas foram instalados, e o próximo passo abre uma nova.
+
+## Passo 2 — Baixar o sistema
+
+1. Abra o **Terminal (Admin)** de novo (botão direito em **Iniciar**).
+2. Cole esta linha e aperte **Enter**:
+
+    ```powershell
+    git clone https://github.com/viccenzo-boff/sistema-emprestimo-equipamentos C:\emprestimos\app
+    ```
+
+    O que aparece: algumas linhas de *"Receiving objects"* e, no fim, o
+    cursor de volta. Isso cria a pasta `C:\emprestimos\app` com o sistema
+    dentro.
+
+A pasta precisa ser **exatamente** `C:\emprestimos\app` — o instalador
+confere e recusa outra.
+
+## Passo 3 — Rodar o instalador
+
+1. Abra o **Explorador de Arquivos** e vá até
+   `C:\emprestimos\app\scripts\implantacao`.
+2. Clique com o **botão direito** em **instalar.cmd** e escolha
+   **Executar como administrador**. Clique em **Sim** na pergunta do Windows.
+3. Espere. Abre uma janela que explica cada etapa e leva de **5 a 10
+   minutos** — a etapa *"Instalando as dependências"* é a mais demorada e
+   parece parada; não é.
+
+O que a janela faz, na ordem em que imprime:
+
+| Etapa | O que acontece |
+| --- | --- |
+| 1. Conferindo o que a máquina precisa ter | Acha o Node e o Git e confere se a porta 3000 está livre |
+| 2. Criando as pastas | `C:\emprestimos\dados`, `backups`, `consulta`, `logs`, `ferramentas` |
+| 3. Apontando para o banco | Cria o arquivo que diz onde o banco de dados mora |
+| 4–6. Dependências, banco, compilação | Baixa as bibliotecas, cria as tabelas, cria as contas do painel e prepara o sistema para produção |
+| 7. NSSM | Baixa o programa que transforma o sistema em serviço do Windows |
+| 8. Serviço | Registra o serviço **Sistema de Emprestimos (Unoesc)** — é ele que liga com o Windows |
+| 9. Permissões | A pasta `dados` fica fechada para as contas comuns do computador |
+| 10–12. Firewall, energia, backup | Libera a porta 3000, impede o computador de suspender, agenda o backup diário das 19:00 |
+| 13. Atalhos | Três atalhos na área de trabalho, para todo mundo que usa o computador |
+| 14. Ligando | Sobe o sistema, espera ele responder e faz o primeiro backup |
+
+No fim aparece um quadro verde **INSTALADO** com os endereços. **Anote o
+endereço que começa com `http://192.168`** — é o que o tablet vai usar.
+
+!!! tip "Se a janela parar com PAROU AQUI em vermelho"
+    Leia a frase: ela diz o motivo e o que fazer. Corrija e rode o
+    **instalar.cmd** de novo — pode rodar quantas vezes precisar; ele não
+    apaga nada. Tudo que apareceu na janela fica gravado em
+    `C:\emprestimos\logs`; se precisar de ajuda, mande esse arquivo.
+
+## Passo 4 — Preparar o painel
+
+O banco nasce **vazio**: só as quatro contas do painel existem. Categorias,
+equipamentos e pessoas entram pelo próprio painel.
+
+1. Na área de trabalho, abra **Painel de Emprestimos**.
+2. Entre com **Usuário** `secretario` e **Senha** `Mudar@123`.
+3. Troque a senha agora: no pé da barra lateral, **Alterar senha**. Faça o
+   mesmo nas outras contas que forem ser usadas (`cidi`, `jeanzao`,
+   `viccenzo` — todas nascem com `Mudar@123`). A página
+   [Conta do administrador](../referencia/conta-do-administrador.md) explica
+   o que acontece com quem esquece a senha.
+4. Crie as categorias em **Categorias**, **nesta ordem**: `Notebook`,
+   `Tablet`, `Extensão`. A ordem em que você as cria é a ordem em que
+   aparecem no tablet.
+5. Cadastre os equipamentos em **Inventário**, com a etiqueta exatamente como
+   está no adesivo do aparelho — [4. Gestão de inventário](../painel/inventario.md).
+6. Importe as pessoas em **Pessoas**, pela planilha —
+   [5. Gestão de pessoas](../painel/pessoas.md). O botão
+   **Baixar planilha modelo** dá o arquivo no formato certo.
+
+## Passo 5 — O tablet
+
+1. Conecte o tablet no **mesmo Wi-Fi** do computador.
+2. Abra o navegador (Chrome, no Android; Safari, no iPad) e digite o
+   endereço anotado no Passo 3 — por exemplo `http://192.168.0.10:3000/`.
+   Aparece a tela **Digite sua matrícula**.
+3. Digite uma matrícula cadastrada e toque em **Continuar**. Se a grade de
+   categorias aparecer, o tablet está falando com o computador.
+
+Para deixar o tablet **preso nessa tela**, com a tela sempre ligada (o
+sistema volta sozinho para a matrícula depois de 2 minutos sem toque):
+
+- **Android:** instale o **Fully Kiosk Browser** pela Play Store. Nas
+  configurações dele, em **Web Content Settings → Start URL**, coloque o
+  endereço acima; em **Device Management**, ligue **Keep Screen On** e
+  **Launch on Boot**. A licença custa uns poucos euros por tablet, uma vez.
+  A alternativa gratuita é a **fixação de tela** do próprio Android: procure
+  por **Fixar** nas configurações de segurança, ligue, abra o Chrome no
+  endereço e fixe-o. A barra de endereço continua visível.
+- **iPad:** em **Ajustes → Acessibilidade → Acesso Guiado**, ligue e defina
+  um código. Abra o Safari no endereço e clique três vezes no botão lateral
+  para prender a tela.
+
+Dois cuidados que não têm a ver com o sistema:
+
+- **Carregador na tomada, não no computador.** A entrada USB de um
+  computador não dá carga suficiente para um tablet com a tela ligada o dia
+  inteiro — ele descarrega mesmo no cabo. Use o carregador original num
+  suporte.
+- **O endereço pode mudar.** Roteadores costumam trocar o número que dão ao
+  computador de tempos em tempos, e aí o tablet para de abrir a página. Para
+  fixar, entre na página do roteador e reserve o endereço para este
+  computador (o nome do ajuste varia: *reserva de DHCP*, *IP estático*,
+  *address reservation*). Se a rede for da instituição, peça isso ao
+  suporte de TI.
+
+## O dia a dia
+
+Não há nada para fazer de manhã. O computador só precisa estar **ligado** —
+pode estar bloqueado, com a tela apagada, sem ninguém conectado. Se for
+reiniciado (queda de luz, atualização do Windows à noite), o sistema volta
+sozinho.
+
+Os três atalhos da área de trabalho:
+
+| Atalho | Para quê |
+| --- | --- |
+| **Painel de Emprestimos** | Abre o painel neste computador. De outro computador da mesma rede, use o endereço `http://192.168…:3000/admin` |
+| **Atualizar copia para consulta** | Copia o banco de agora para a pasta de consulta (ver [abaixo](#consultar-o-banco-de-dados)) |
+| **Reiniciar o sistema** | Se o tablet mostrar erro de conexão. Pede permissão de administrador e leva uns 15 segundos |
+
+## Consultar o banco de dados
+
+Para um relatório que o painel não tem, a coordenação consulta **uma cópia**
+do banco — nunca o banco de verdade. A cópia é refeita toda noite às 19:00 e
+sempre que alguém clica em **Atualizar copia para consulta**. Nada que se
+faça nela chega ao sistema: pode consultar, filtrar, exportar e até apagar
+por engano que o tablet não sente.
+
+1. Instale o **DB Browser for SQLite** (gratuito). No **Terminal (Admin)**:
+
+    ```powershell
+    winget install --id DBBrowserForSQLite.DBBrowserForSQLite -e --accept-package-agreements --accept-source-agreements
+    ```
+
+2. Na área de trabalho, clique em **Atualizar copia para consulta**.
+3. Abra o DB Browser. Em **Arquivo**, escolha **Abrir banco de dados somente
+   leitura** (*Open Database Read Only*) e aponte para
+   `C:\emprestimos\consulta\emprestimos-consulta.db`.
+4. Para ver uma tabela: aba **Navegar dados** (*Browse Data*).
+5. Para uma pergunta pronta: aba **Executar SQL** (*Execute SQL*), ícone de
+   pasta **Abrir arquivo SQL**, e escolha um arquivo de
+   `C:\emprestimos\app\scripts\implantacao\consultas` — há um para "quem
+   está com o quê agora", um para as retiradas do mês, um para o histórico
+   de uma etiqueta e um para as devoluções com o tempo na bancada. Aperte
+   **Executar** (Ctrl+Enter).
+6. Para levar ao Excel: **Salvar os resultados → Exportar para CSV**, e abra
+   o arquivo pelo Excel em **Dados → De Texto/CSV**.
+
+!!! info "As datas estão em UTC"
+    O banco guarda as horas 3 horas à frente de Brasília. As consultas
+    prontas já convertem; quem escrever a própria consulta usa
+    `datetime(coluna, 'localtime')`. O arquivo `LEIA-ME.md` da pasta de
+    consultas explica isso e mais dois detalhes.
+
+A pasta `C:\emprestimos\dados` — onde mora o banco de verdade — fica fechada
+para as contas comuns do computador, de propósito. Não há motivo para abri-la.
+
+## Backup
+
+Todo dia às 19:00 o sistema grava uma cópia do banco em
+`C:\emprestimos\backups`, com a data no nome, e guarda os últimos 30 dias.
+Se o computador estiver desligado às 19:00, a cópia é feita quando ele ligar.
+
+O que o backup automático **não** faz é sair do computador. Uma vez por
+semana, copie a pasta `C:\emprestimos\backups` para um pendrive ou para o
+OneDrive — se o disco do computador morrer, é essa cópia que salva o
+semestre.
+
+## Atualizar o sistema
+
+Quando sair uma versão nova, quem mantém o sistema avisa o nome dela
+(por exemplo `v1.1`). Fora do horário de atendimento:
+
+1. Em `C:\emprestimos\app\scripts\implantacao`, botão direito em
+   **atualizar.cmd** → **Executar como administrador**.
+2. A janela mostra as versões disponíveis e pergunta qual instalar. Digite o
+   nome e aperte **Enter**.
+3. Espere uns 3 minutos. O sistema fica fora do ar durante a troca e volta
+   sozinho no fim, com um quadro verde **ATUALIZADO**.
+
+Antes de trocar qualquer coisa, o atualizador faz um backup. Se a versão nova
+der problema, rode de novo e digite a versão anterior.
+
+## Desinstalar
+
+Botão direito em **desinstalar.cmd** (na mesma pasta) → **Executar como
+administrador**. Ele tira o serviço, a regra do firewall, o backup agendado e
+os atalhos. **Não apaga o banco nem os backups**: quem quiser apagar tudo,
+apaga a pasta `C:\emprestimos` depois.
+
+## Se der errado
+
+| O que aparece | O que fazer |
+| --- | --- |
+| O instalador para em **A porta 3000 já está sendo usada** | Feche o programa que ele nomeia (em geral um `npm run dev` num terminal) e rode de novo |
+| O instalador para em **Node.js não encontrado** | O Terminal foi aberto antes de instalar o Node. Feche todas as janelas de Terminal e rode o instalador de novo |
+| O instalador para em **'Baixar as bibliotecas do sistema' terminou com erro** | Quase sempre é internet. Confira a conexão e rode de novo; ele continua de onde parou |
+| O tablet mostra **Não é possível acessar esse site** | Confira, nesta ordem: o computador está ligado? O tablet está no mesmo Wi-Fi? O endereço tem `:3000` no fim? Clique em **Reiniciar o sistema**. Se continuar, reinicie o computador |
+| O tablet abria e parou de abrir depois de uns dias | O endereço do computador mudou — veja "O endereço pode mudar" no Passo 5 |
+| O painel diz **Usuário ou senha inválidos** para todo mundo | Depois de cinco erros, a conta espera 1 minuto. Se a senha foi esquecida, a [Conta do administrador](../referencia/conta-do-administrador.md) diz como recuperar |
+| **Atualizar copia para consulta** diz que não conseguiu gravar | A cópia está aberta no DB Browser. Feche-o e clique de novo |
+| Nada disso | Mande a pasta `C:\emprestimos\logs` para quem mantém o sistema |
+
+??? note "Para quem mantém o sistema"
+
+    O que o instalador monta, para quem precisar mexer por baixo:
+
+    | Peça | Onde |
+    | --- | --- |
+    | Código | `C:\emprestimos\app` (clone do repositório; `git describe --tags` diz a versão) |
+    | Banco | `C:\emprestimos\dados\emprestimos.db`, apontado por `app\.env` com caminho absoluto (`DATABASE_URL="file:C:/emprestimos/dados/emprestimos.db"`) |
+    | Serviço | `Emprestimos`, registrado pelo NSSM (`ferramentas\nssm.exe`), conta `NT AUTHORITY\LocalService`, comando `node node_modules\next\dist\bin\next start -p 3000`, reinício automático 5 s após queda |
+    | Logs | `C:\emprestimos\logs\servico.log` e `servico.err.log` (rotação em 5 MB), mais um transcript por instalação e por atualização |
+    | Backup | Tarefa agendada **Sistema de Emprestimos - Backup diario** (19:00, como SYSTEM) rodando `scripts\implantacao\backup.mjs` |
+    | Firewall | Regra de entrada **Sistema de Emprestimos (porta 3000)**, TCP, todos os perfis |
+    | Permissões | `LocalService` com modificação em `C:\emprestimos`; `dados\` sem herança, só `LocalService`, `SYSTEM` e Administradores |
+
+    **Restaurar um backup:** em **Serviços**, pare **Sistema de Emprestimos
+    (Unoesc)**; copie o arquivo de `backups\` por cima de
+    `dados\emprestimos.db`; inicie o serviço. Migrations são aplicadas no
+    `atualizar`, nunca no restore — restaure sempre um backup da mesma
+    versão ou anterior.
+
+    **Trocar a porta:** defina a variável de ambiente `EMPRESTIMOS_PORTA`
+    antes de rodar o `instalar.ps1` — ela troca a porta do serviço, da regra
+    do firewall e dos atalhos. `EMPRESTIMOS_RAIZ` troca `C:\emprestimos`.
+    As duas existem para a verificação; a coordenação usa o padrão.
+
+    **Por que a cópia, e não abrir o banco vivo somente leitura:** SQLite não
+    tem contas; "somente leitura" seria só o modo do DB Browser, e mesmo
+    uma leitura segura um lock compartilhado que bloqueia o `commit` do
+    serviço. O `journal_mode` deste projeto é `delete` e o `better-sqlite3`
+    espera 5 s por lock antes de estourar `SQLITE_BUSY` — uma consulta longa
+    no arquivo vivo derruba a retirada no tablet naquele instante. O
+    `backup.mjs` usa a API de online backup, que produz cópia consistente
+    sem parar o serviço.
+
+    **Por que serviço do Windows e não PM2 ou Docker:** o serviço sobe no
+    boot, antes de qualquer login. O PM2 no Windows só sobe no logon de um
+    perfil; o Docker Desktop sobe com a sessão de quem entrou e é uma camada
+    a mais para diagnosticar num computador de coordenação.

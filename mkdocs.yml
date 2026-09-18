@@ -59,6 +59,10 @@ theme:
     - navigation.indexes
     - toc.follow
     - content.action.edit
+    # Botao de copiar em todo bloco de codigo (Tarefa 18): o guia de
+    # instalacao e feito de linhas para colar num terminal, e quem instala
+    # nao vai selecionar um comando de 90 caracteres com o mouse.
+    - content.code.copy
     - search.highlight
     - search.suggest
 
@@ -148,6 +152,8 @@ plugins:
             Sobre: About
             Arquitetura do sistema: System architecture
             Como esta wiki foi feita: How this wiki was made
+            Instalação: Installation
+            Instalar no Windows 11: Install on Windows 11
             Contribuir: Contributing
             Guia de estilo: Style guide
             Template de processo: Process template
@@ -209,6 +215,12 @@ nav:
   - Sobre:
       - Arquitetura do sistema: sobre/arquitetura-do-sistema.md
       - Como esta wiki foi feita: sobre/como-esta-wiki-foi-feita.md
+  # "Instalacao" entrou com a Tarefa 18 (2026-09-18): o guia que poe o
+  # sistema para rodar sozinho no PC da coordenacao. So em portugues, com
+  # fallback no /en/ como contribuir/ -- a plateia e quem instala na
+  # instituicao, e o guia cita rotulos do Windows em portugues.
+  - Instalação:
+      - Instalar no Windows 11: instalacao/windows-11.md
   # "Contribuir" nao esta na arvore da §4 da spec-wiki, e entrou aqui por
   # decisao da D03 -- que a D02 deixou explicitamente em aberto. O que decidiu
   # foi a §6.2: tudo que mora em docs/ vira pagina publicada, e as notas de
