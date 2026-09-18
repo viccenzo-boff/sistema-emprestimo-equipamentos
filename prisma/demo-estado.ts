@@ -309,7 +309,12 @@ const EMPRESTIMOS: EmprestimoDemo[] = [
   },
 ];
 
-/** Itens fora de circulação, para o inventário ter os quatro status na tela. */
+/**
+ * Itens fora de circulação, para o inventário ter os quatro status na tela.
+ * Desde a Tarefa 17 os dois de manutenção têm papéis diferentes no histórico:
+ * o `NOTE-09` tem a entrada aberta, o `EXT-05` não tem linha nenhuma (ver
+ * `SEM_LINHA_DE_ENTRADA`); e os dois aposentados ganham a linha `→ INATIVO`.
+ */
 const EM_MANUTENCAO = ["NOTE-09", "EXT-05"];
 const APOSENTADOS = ["NOTE-10", "TAB-05"];
 
@@ -483,6 +488,121 @@ function avaliacoesDoCenario(hoje: Date): { id: number; dia: string; nota: numbe
   }
 
   return linhas;
+}
+
+/* ------------------------------------------------------------------------- *
+ * Histórico de situação (Tarefa 17)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Faixa de ids reservada às mudanças de situação, pela mesma regra dos
+ * empréstimos e das avaliações (9001+). E, como as avaliações, **as linhas
+ * fora da faixa são apagadas**: uma mudança feita pela tela durante um teste
+ * entraria no Histórico da captura seguinte, com o nome de quem testou.
+ */
+const PRIMEIRO_ID_DE_MUDANCA = 9001;
+
+/**
+ * A conta que assina o histórico do cenário — achada por `usuario`, **nunca
+ * por id**: o id depende da ordem em que o seed criou as contas nesta
+ * máquina. É a conta neutra das capturas (ver o CONTRIBUTING).
+ */
+const CONTA_DO_CENARIO = "secretario";
+
+/**
+ * O aparelho em manutenção **sem** linha de entrada, de propósito: é o caso
+ * do dia da migration — ele já estava em conserto quando o histórico passou
+ * a existir —, e a captura precisa mostrar o "desde —" que a tela reserva
+ * para ele. O outro em manutenção (`NOTE-09`) tem a entrada aberta há alguns
+ * dias.
+ */
+const SEM_LINHA_DE_ENTRADA = ["EXT-05"];
+const DIAS_DESDE_A_ENTRADA_ABERTA = 4;
+
+/**
+ * Quem vai para o conserto no cenário, e quantas vezes: uma linha por
+ * estadia. Três aparelhos concentram — o `NOTE-03` quebrando três vezes é a
+ * linha que a captura da tabela por equipamento precisa. Onze estadias, para
+ * o gráfico ter mais de uma barra e a mediana ter amostra.
+ */
+const QUEM_QUEBRA = [
+  "NOTE-03", "NOTE-03", "NOTE-03",
+  "NOTE-07", "NOTE-07",
+  "TAB-03", "TAB-03",
+  "NOTE-06", "NOTE-08", "TAB-04", "EXT-03",
+];
+
+type EstadiaDemo = {
+  equipamento: string;
+  entrada: Date;
+  /** Nula na estadia aberta. */
+  saida: Date | null;
+};
+
+type Intervalo = { inicio: number; fim: number };
+
+/**
+ * As estadias concluídas dos últimos 90 dias: entrada em dia útil, de 1 a 20
+ * dias de conserto, terminando pelo menos um dia antes de hoje.
+ *
+ * Sorteio **determinístico** (mulberry32, semente fixa), como os empréstimos
+ * e as avaliações. E **uma estadia nunca sobrepõe uma retirada do mesmo
+ * aparelho** — nem outra estadia dele: o Ranking de Consumo e o Índice de
+ * Manutenção são fotografias do mesmo sistema, e um notebook retirado no meio
+ * do próprio conserto seria um cenário impossível publicado na wiki. O
+ * sorteio rejeita a janela que colide e sorteia outra; como a semente é fixa,
+ * o resultado continua o mesmo a cada execução. `ocupado` traz, por
+ * aparelho, os intervalos que as retiradas já ocupam.
+ */
+function estadiasDoCenario(hoje: Date, ocupado: Map<string, Intervalo[]>): EstadiaDemo[] {
+  let estado = 0x7a11ce;
+  const sortear = () => {
+    estado = (estado + 0x6d2b79f5) | 0;
+    let t = Math.imul(estado ^ (estado >>> 15), 1 | estado);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const entre = (a: number, b: number) => a + sortear() * (b - a);
+
+  const estadias: EstadiaDemo[] = [];
+  const reservado = new Map<string, Intervalo[]>();
+
+  const colide = (etiqueta: string, janela: Intervalo) =>
+    [...(ocupado.get(etiqueta) ?? []), ...(reservado.get(etiqueta) ?? [])].some(
+      (outro) => janela.inicio < outro.fim && outro.inicio < janela.fim,
+    );
+
+  for (const etiqueta of QUEM_QUEBRA) {
+    let cabe: EstadiaDemo | null = null;
+
+    for (let tentativa = 0; tentativa < 200 && !cabe; tentativa++) {
+      const atras = Math.floor(entre(3, DIAS_DE_HISTORICO));
+      const dia = inicioDoDia(hoje, atras);
+      if (dia.getDay() === 0 || dia.getDay() === 6) continue;
+
+      // Entrada e saída em horário de balcão (8h–17h), a saída de 1 a 20 dias
+      // depois — uma alta às 00:40 seria uma captura estranha na wiki.
+      const entrada = new Date(dia.getTime() + entre(8, 17) * HORA);
+      const saida = new Date(inicioDoDia(dia, -Math.floor(entre(1, 21))).getTime() + entre(8, 17) * HORA);
+      if (saida.getTime() > inicioDoDia(hoje, 1).getTime()) continue;
+
+      const janela = { inicio: entrada.getTime(), fim: saida.getTime() };
+      if (colide(etiqueta, janela)) continue;
+
+      reservado.set(etiqueta, [...(reservado.get(etiqueta) ?? []), janela]);
+      cabe = { equipamento: etiqueta, entrada, saida };
+    }
+
+    if (!cabe) {
+      recusar(
+        `não coube uma estadia de manutenção para ${etiqueta} sem cruzar uma retirada dele.`,
+        `O sorteio é determinístico: mude a semente ou tire ${etiqueta} de QUEM_QUEBRA.`,
+      );
+    }
+    estadias.push(cabe);
+  }
+
+  return estadias;
 }
 
 /* ------------------------------------------------------------------------- *
@@ -724,6 +844,156 @@ async function main() {
     });
     console.log(`Formulário de sugestões: ${URL_DO_FORMULARIO_DE_EXEMPLO}.`);
 
+    // 6. O histórico de situação (Tarefa 17).
+    //
+    // Quem assina é a conta neutra das capturas, achada por `usuario`. Sem
+    // ela o script recusa com o comando: o histórico sem "quem" não é o que a
+    // captura precisa mostrar, e a conta só nasce no seed.
+    const conta = await prisma.administrador.findUnique({
+      where: { usuario: CONTA_DO_CENARIO },
+      select: { id: true, nome: true },
+    });
+    if (!conta) {
+      recusar(
+        `a conta "${CONTA_DO_CENARIO}" não existe.`,
+        `O histórico de situação é gravado em nome dela, e ela nasce no seed.\n` +
+          `Rode: npm run db:seed && npm run db:demo`,
+      );
+    }
+
+    // O que as retiradas já ocupam, por aparelho: os dez empréstimos fixos
+    // (aberto vai até agora) e o histórico sorteado. É contra isto que o
+    // sorteio das estadias se recusa a colidir.
+    const ocupado = new Map<string, Intervalo[]>();
+    const reservar = (etiqueta: string, inicio: Date, fim: Date) =>
+      ocupado.set(etiqueta, [...(ocupado.get(etiqueta) ?? []), { inicio: inicio.getTime(), fim: fim.getTime() }]);
+    for (const e of EMPRESTIMOS) {
+      reservar(
+        e.equipamento,
+        new Date(agora - e.retiradaHa * HORA),
+        e.baixaHa ? new Date(agora - e.baixaHa * HORA) : new Date(agora),
+      );
+    }
+    for (const e of historico) reservar(e.equipamento, e.retirada, e.baixa);
+
+    const hoje = inicioDoDia(new Date(agora));
+    const estadias = estadiasDoCenario(hoje, ocupado);
+
+    // A estadia aberta: o NOTE-09 entrou há alguns dias e ainda não voltou.
+    // O EXT-05 não ganha linha nenhuma — é o caso do dia da migration.
+    const abertos = EM_MANUTENCAO.filter((etiqueta) => !SEM_LINHA_DE_ENTRADA.includes(etiqueta));
+    for (const etiqueta of abertos) {
+      estadias.push({
+        equipamento: etiqueta,
+        entrada: new Date(inicioDoDia(hoje, DIAS_DESDE_A_ENTRADA_ABERTA).getTime() + 9.5 * HORA),
+        saida: null,
+      });
+    }
+
+    // A guarda de coerência: aparelho com estadia aberta tem que estar em
+    // manutenção, e vice-versa — menos a exceção declarada acima. Duas listas
+    // que discordassem produziriam um "desde" num aparelho disponível.
+    const comEstadiaAberta = new Set(estadias.filter((e) => e.saida === null).map((e) => e.equipamento));
+    for (const etiqueta of comEstadiaAberta) {
+      if (!EM_MANUTENCAO.includes(etiqueta)) {
+        recusar(
+          `${etiqueta} tem estadia de manutenção aberta e não está em EM_MANUTENCAO.`,
+          `O cenário se contradiz. Corrija EM_MANUTENCAO ou a estadia.`,
+        );
+      }
+    }
+    for (const etiqueta of EM_MANUTENCAO) {
+      if (!comEstadiaAberta.has(etiqueta) && !SEM_LINHA_DE_ENTRADA.includes(etiqueta)) {
+        recusar(
+          `${etiqueta} está em EM_MANUTENCAO sem estadia aberta nem na lista SEM_LINHA_DE_ENTRADA.`,
+          `Ou ele ganha uma entrada, ou é declarado como o caso do dia da migration.`,
+        );
+      }
+    }
+
+    type MudancaDemo = { equip_id: string; de: string; para: string; em: Date };
+    const mudancas: MudancaDemo[] = [];
+    for (const estadia of estadias) {
+      mudancas.push({
+        equip_id: estadia.equipamento,
+        de: STATUS_EQUIPAMENTO.disponivel,
+        para: STATUS_EQUIPAMENTO.manutencao,
+        em: estadia.entrada,
+      });
+      if (estadia.saida) {
+        mudancas.push({
+          equip_id: estadia.equipamento,
+          de: STATUS_EQUIPAMENTO.manutencao,
+          para: STATUS_EQUIPAMENTO.disponivel,
+          em: estadia.saida,
+        });
+      }
+    }
+
+    // As duas aposentadorias, em datas diferentes, para o Histórico ter uma
+    // transição que não é manutenção. O NOTE-10 tem retiradas no histórico
+    // (de propósito, Tarefa 16), então ele só é aposentado depois da última
+    // baixa dele; o TAB-05 não circula no histórico e vai há 45 dias.
+    const ultimaBaixaDoNote10 = historico
+      .filter((e) => e.equipamento === "NOTE-10")
+      .reduce((maior, e) => Math.max(maior, e.baixa.getTime()), 0);
+    const aposentadoriaDoNote10 = new Date(
+      Math.min(
+        Math.max(inicioDoDia(new Date(ultimaBaixaDoNote10), -1).getTime(), inicioDoDia(hoje, 20).getTime()) +
+          10 * HORA,
+        // Nunca no futuro: se a última baixa foi ontem, a aposentadoria é hoje
+        // de manhã — ou há uma hora, se ainda não deu dez da manhã.
+        agora - HORA,
+      ),
+    );
+    const quandoAposentou = new Map<string, Date>([
+      ["NOTE-10", aposentadoriaDoNote10],
+      ["TAB-05", new Date(inicioDoDia(hoje, 45).getTime() + 11 * HORA)],
+    ]);
+    for (const etiqueta of APOSENTADOS) {
+      const em = quandoAposentou.get(etiqueta);
+      if (!em) {
+        recusar(
+          `${etiqueta} está em APOSENTADOS e não tem data de aposentadoria no histórico.`,
+          `Acrescente a etiqueta a quandoAposentou, no passo 6.`,
+        );
+      }
+      mudancas.push({ equip_id: etiqueta, de: STATUS_EQUIPAMENTO.disponivel, para: STATUS_EQUIPAMENTO.inativo, em });
+    }
+
+    // Em ordem de `em`, com ids da faixa reservada: a ordem dos ids é a ordem
+    // cronológica, que é o que um log de auditoria de verdade teria.
+    mudancas.sort((a, b) => a.em.getTime() - b.em.getTime());
+    const idsDasMudancas: number[] = [];
+    let idDeMudanca = PRIMEIRO_ID_DE_MUDANCA;
+    for (const mudanca of mudancas) {
+      const dados = {
+        ...mudanca,
+        administrador_id: conta.id,
+        administrador_nome: conta.nome,
+      };
+      await prisma.mudancaDeStatus.upsert({
+        where: { id: idDeMudanca },
+        update: dados,
+        create: { id: idDeMudanca, ...dados },
+      });
+      idsDasMudancas.push(idDeMudanca);
+      idDeMudanca++;
+    }
+    const mudancasApagadas = await prisma.mudancaDeStatus.deleteMany({
+      where: { id: { notIn: idsDasMudancas } },
+    });
+
+    const concluidas = estadias.filter((e) => e.saida !== null).length;
+    console.log(
+      `Mudanças de situação: ${mudancas.length} linhas — ${concluidas} estadias de manutenção ` +
+        `concluídas nos últimos ${DIAS_DE_HISTORICO} dias, ${abertos.length} aberta, ` +
+        `${SEM_LINHA_DE_ENTRADA.length} sem entrada (${SEM_LINHA_DE_ENTRADA.join(", ")}), ` +
+        `${APOSENTADOS.length} aposentadorias (ids ${PRIMEIRO_ID_DE_MUDANCA}–${idDeMudanca - 1}` +
+        `${mudancasApagadas.count > 0 ? `; ${mudancasApagadas.count} de fora do cenário apagadas` : ""}), ` +
+        `em nome de "${conta.nome}".`,
+    );
+
     const [pessoas, emprestimos, fila] = await Promise.all([
       prisma.pessoa.count(),
       prisma.emprestimo.count(),
@@ -732,7 +1002,8 @@ async function main() {
 
     console.log(
       `\nBanco de demonstração: ${pessoas} pessoas, ${emprestimos} empréstimos ` +
-        `(${fila} na fila de devoluções), ${avaliacoes.length} avaliações.\n` +
+        `(${fila} na fila de devoluções), ${avaliacoes.length} avaliações, ` +
+        `${mudancas.length} mudanças de situação.\n` +
         `Capturas do painel: entre como "secretario" — ver o CONTRIBUTING.md.`,
     );
   } finally {
