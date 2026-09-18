@@ -580,18 +580,19 @@ export type EstadoDaImportacao =
 /**
  * As abas do `/admin/relatorios`, **na ordem em que aparecem na barra**.
  *
- * Duas delas ainda não têm relatório: a Tarefa 13 entregou a estrutura de
- * navegação e o primeiro painel, e consumo e manutenção ficaram declaradas com
- * o texto de "em desenvolvimento". Estão aqui como valores, e não só como texto
- * na tela, porque é a lista que o componente de abas percorre — acrescentar
- * uma aba é editar um lugar.
+ * A Tarefa 13 entregou a estrutura de navegação e o primeiro painel, com as
+ * outras abas declaradas e vazias; a 14 construiu Satisfação, a 16 o Ranking
+ * de Consumo e a 17 o Índice de Manutenção — desde ela, nenhuma aba está
+ * vazia. Estão aqui como valores, e não só como texto na tela, porque é a
+ * lista que o componente de abas percorre — acrescentar uma aba é editar um
+ * lugar.
  *
  * A Tarefa 14 acrescentou **Satisfação**, e ela entrou em segundo, e não em
- * quarto como o enunciado escrevia: com as duas vazias no meio, a barra
+ * quarto como o enunciado escrevia: com as duas então vazias no meio, a barra
  * ficaria *relatório · vazio · vazio · relatório*, e quem procura o segundo
- * relatório clicaria em dois avisos antes de achá-lo. Os dois que existem
- * ficam juntos; os que ainda não existem vão para o fim. Decisão do dono do
- * repositório (2026-09-16).
+ * relatório clicaria em dois avisos antes de achá-lo. Decisão do dono do
+ * repositório (2026-09-16). A ordem ficou, porque a wiki e os links guardados
+ * a citam.
  */
 export const ABA_DE_RELATORIO = {
   ocupacao: "ocupacao",
@@ -911,4 +912,163 @@ export type RelatorioDeConsumo = {
   pessoas: PessoaNoRanking[];
   /** Uma linha por empréstimo do período, para a aba crua da planilha. */
   linhas: RetiradaExportada[];
+};
+
+/* ------------------------------------------------------------------------- *
+ * Índice de Manutenção (Tarefa 17)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Uma linha da tabela por equipamento do Índice de Manutenção: **só quem teve
+ * entrada em manutenção no período ou está em manutenção agora**. Aqui zero é
+ * a norma, ao contrário do Ranking de Consumo, onde "nunca sai da prateleira"
+ * é argumento — vinte linhas de zero esconderiam as três que importam. O
+ * rodapé da tabela diz quantos ficaram de fora.
+ *
+ * O aposentado entra se tiver entrada no período (o precedente da Tarefa 16:
+ * esconder o que aconteceu faria o número de agosto mudar quando o aparelho é
+ * aposentado em setembro — e aposentar direto do conserto é o caso comum).
+ * Os dias dele aparecem na linha e **não entram no índice**, cujo numerador e
+ * denominador são o estoque de hoje.
+ */
+export type EquipamentoNaManutencao = {
+  id: string;
+  categoria: string;
+  /** A situação **atual** do aparelho. */
+  status: string;
+  /** Entradas em manutenção com `em` dentro do período (regra de evento). */
+  entradas: number;
+  /** Dias-equipamento parados dentro do período (regra de tempo), com uma casa. */
+  dias: number;
+  /** `dias` formatado em pt-BR ("3,5"), no servidor. */
+  diasTexto: string;
+  /**
+   * Em manutenção agora: a entrada da estadia aberta, ou nula quando não há
+   * estadia aberta (o aparelho já estava em conserto no dia da instalação —
+   * "desde —"). Fora de manutenção: a última entrada dentro do período.
+   */
+  ultimaEntrada: string | null;
+  /** `ultimaEntrada` no formato da planilha (`AAAA-MM-DD HH:MM`). */
+  ultimaEntradaPlanilha: string | null;
+  /** Quem fez a última entrada — o nome gravado na hora —, ou nulo. */
+  quem: string | null;
+};
+
+/**
+ * Uma linha da tabela por categoria: todas, com zero. É a que responde "qual
+ * prateleira mais para". A cor é a mesma do Ranking de Consumo, fixada pela
+ * posição na ordem de `id`.
+ */
+export type CategoriaNaManutencao = {
+  id: number;
+  nome: string;
+  cor: string;
+  corDoRotulo: string;
+  /** Tudo menos os aposentados — o mesmo denominador do tablet e da Ocupação. */
+  emCirculacao: number;
+  /** Entradas no período, de qualquer aparelho da categoria (regra de evento). */
+  entradas: number;
+  /** Dias-equipamento parados no período, só dos aparelhos em circulação (regra de tempo). */
+  dias: number;
+  diasTexto: string;
+  /** 0 a 100, ou nulo sem denominador (categoria sem aparelho em circulação, ou período no futuro). */
+  indice: number | null;
+  /**
+   * A largura da barra em linha, proporcional ao **maior índice da tabela**
+   * (a convenção da Tarefa 13), e não ao índice em si: índices típicos ficam
+   * nas unidades de por cento, e na escala absoluta 6% virava um ponto —
+   * visto na primeira captura. A barra existe para o olho achar o topo.
+   */
+  barra: number;
+  /** Mediana das estadias concluídas cuja entrada cai no período. */
+  tempoMediano: string | null;
+  tempoMedianoMin: number | null;
+};
+
+/**
+ * Uma linha do Histórico: **toda** transição do período, inclusive inativar e
+ * reativar, que não são manutenção. É a tabela de auditoria — a única do
+ * painel que responde "quem inativou o NOTE-10". Os rótulos já vêm prontos.
+ */
+export type MudancaNoHistorico = {
+  id: number;
+  /** "17/09/2026, 14:32" — `dataHora` do painel. */
+  em: string;
+  /** `AAAA-MM-DD HH:MM`, para a planilha. */
+  emPlanilha: string;
+  etiqueta: string;
+  categoria: string;
+  /** Rótulos de tela ("Disponível", "Manutenção", "Inativo"). */
+  de: string;
+  para: string;
+  /** O nome gravado na hora — fica mesmo depois de a conta ser apagada. */
+  quem: string;
+};
+
+/**
+ * O relatório Índice de Manutenção (Tarefa 17, §3).
+ *
+ * **Estadia** é uma entrada em manutenção (`para = MANUTENCAO`) até a próxima
+ * saída do mesmo aparelho (`de = MANUTENCAO`, para Disponível ou Inativo).
+ * Sem saída, a estadia está aberta. Uma saída sem entrada — o aparelho que já
+ * estava em conserto no dia da instalação — **não vira estadia**: fica fora
+ * da mediana e contribui zero ao índice, mesmo que tenha passado o período
+ * inteiro parado. A alternativa (contar desde o começo do período) inventaria
+ * dias; a tela mostra "desde —" e a wiki explica o buraco.
+ *
+ * **São duas regras de período, e as duas moram aqui para ninguém as unificar
+ * na Tarefa 18:**
+ *
+ * - **Regra de evento** — uma entrada pertence ao período em que `em` cai, e
+ *   só a esse. É o que conta em `entradas` e o que escolhe as estadias da
+ *   mediana (as abertas contam na entrada e ficam fora dela, como o `ATIVO`
+ *   do Consumo).
+ * - **Regra de tempo** — cada estadia contribui com a **fatia** que cai dentro
+ *   de `[de, fim)`, recortada também em **hoje**: uma estadia que começou
+ *   antes do período e continua conta o período inteiro; uma que começou
+ *   ontem conta um dia. É o que soma em `dias` e no índice.
+ *
+ * O exemplo que separa as duas: um aparelho parado 40 dias, de 20 de agosto a
+ * 29 de setembro. Pela regra de evento ele é **uma** entrada, em agosto, e a
+ * estadia de 40 dias entra na mediana de agosto. Pela regra de tempo ele pesa
+ * 12 dias em agosto e 28 em setembro — contá-lo só no mês em que começou
+ * daria 0% em setembro com o aparelho parado o mês inteiro.
+ *
+ * **O índice** é dias-equipamento parados ÷ (equipamentos em circulação hoje ×
+ * dias do período até hoje), em inteiro de 0 a 100 com o arredondamento da
+ * Tarefa 13 (nunca fecha nem zera o que não está fechado nem zerado). O
+ * denominador é o estoque de **hoje** — reconstituir quantos estavam em
+ * circulação em cada dia exigiria histórico anterior à migration —, e por
+ * isso os aposentados ficam fora do numerador e do denominador. Um mês pela
+ * metade tem 17 dias no denominador, não 30; um período todo no futuro tem
+ * zero, e o índice é "—".
+ */
+export type RelatorioDeManutencao = {
+  /** O período por extenso, formatado no servidor. */
+  periodo: string;
+  /** Fotografia pelo `Equipamento.status`, fora do período. */
+  emManutencaoAgora: number;
+  /** Tudo menos os aposentados: o "de M" do primeiro cartão e o denominador do índice. */
+  emCirculacao: number;
+  /** Regra de evento. */
+  entradas: number;
+  /** Mediana das estadias concluídas cuja entrada cai no período; nula sem amostra. */
+  tempoMediano: string | null;
+  tempoMedianoMin: number | null;
+  /** Regra de tempo, somada sobre os aparelhos em circulação, com uma casa. */
+  diasParados: number;
+  /** Dias do período até hoje, com uma casa — o outro fator do denominador. */
+  diasDoPeriodo: number;
+  /** 0 a 100, ou nulo sem denominador. */
+  indice: number | null;
+  /** "Entradas em manutenção por dia" (ou por semana, ou por mês), com os baldes vazios. */
+  serie: SerieDeRetiradas;
+  /** Ordenada: em manutenção agora primeiro, depois entradas, dias, ordem do inventário. */
+  equipamentos: EquipamentoNaManutencao[];
+  /** Quantos aparelhos em circulação ficaram fora da tabela — o rodapé que faz a soma fechar. */
+  semManutencao: number;
+  /** Todas, ordenadas por índice (nulo por último), desempate por `id`. */
+  categorias: CategoriaNaManutencao[];
+  /** Mais recente primeiro. */
+  historico: MudancaNoHistorico[];
 };

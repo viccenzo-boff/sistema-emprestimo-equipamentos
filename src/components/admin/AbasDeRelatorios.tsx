@@ -43,7 +43,7 @@ const ABAS: { id: AbaDeRelatorio; rotulo: string }[] = [
   { id: ABA_DE_RELATORIO.ocupacao, rotulo: "Ocupação e picos de uso" },
   // A Tarefa 14 acrescentou esta, em segundo — ver `ABA_DE_RELATORIO`.
   { id: ABA_DE_RELATORIO.satisfacao, rotulo: "Satisfação" },
-  // A Tarefa 16 construiu esta; a de baixo continua declarada e vazia.
+  // A Tarefa 16 construiu esta e a 17 a de baixo: nenhuma aba está vazia.
   { id: ABA_DE_RELATORIO.consumo, rotulo: "Ranking de Consumo" },
   { id: ABA_DE_RELATORIO.manutencao, rotulo: "Índice de Manutenção" },
 ];
@@ -53,11 +53,13 @@ export function AbasDeRelatorios({
   ocupacao,
   satisfacao,
   consumo,
+  manutencao,
 }: {
   abaInicial: AbaDeRelatorio;
   ocupacao: ReactNode;
   satisfacao: ReactNode;
   consumo: ReactNode;
+  manutencao: ReactNode;
 }) {
   const [ativa, setAtiva] = useState<AbaDeRelatorio>(abaInicial);
   const barra = useRef<HTMLDivElement>(null);
@@ -179,7 +181,7 @@ export function AbasDeRelatorios({
           ) : id === ABA_DE_RELATORIO.consumo ? (
             consumo
           ) : (
-            <EmDesenvolvimento />
+            manutencao
           )}
         </div>
       ))}
@@ -193,32 +195,4 @@ function idDaAba(id: AbaDeRelatorio): string {
 
 function idDoPainel(id: AbaDeRelatorio): string {
   return `painel-${id}`;
-}
-
-/**
- * O lugar reservado do relatório que ainda não existe (Índice de Manutenção,
- * Tarefa 17).
- *
- * A primeira linha é a do enunciado, palavra por palavra. A segunda é o que
- * transforma um aviso em uma saída: sozinha, "Relatório em desenvolvimento"
- * dentro de um painel em branco é indistinguível de uma tela que falhou ao
- * carregar, e quem clicou fica olhando a mesma aba esperando.
- *
- * A borda tracejada diz a mesma coisa em silêncio — é a única superfície do
- * painel que não é uma caixa fechada, porque é a única que ainda não é nada.
- */
-function EmDesenvolvimento() {
-  return (
-    <div className="rounded-2xl border border-dashed border-borda bg-superficie-2 px-6 py-16 text-center">
-      <p className="text-lg font-semibold text-tinta-suave">
-        Relatório em desenvolvimento...
-      </p>
-      <p className="mt-2 text-base text-tinta-tenue">
-        Esta aba ainda não tem dados. Os relatórios disponíveis são{" "}
-        <strong className="font-semibold">Ocupação e picos de uso</strong>,{" "}
-        <strong className="font-semibold">Satisfação</strong> e{" "}
-        <strong className="font-semibold">Ranking de Consumo</strong>.
-      </p>
-    </div>
-  );
 }

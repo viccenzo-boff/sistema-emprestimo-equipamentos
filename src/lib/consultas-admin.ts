@@ -14,6 +14,7 @@ import {
   NOTAS_DE_AVALIACAO,
   PERFIL,
   ROTULO_DO_STATUS_DE_EMPRESTIMO,
+  ROTULO_DO_STATUS_DE_EQUIPAMENTO,
   STATUS_EMPRESTIMO,
   STATUS_EQUIPAMENTO,
   STATUS_PESSOA,
@@ -28,7 +29,11 @@ import {
   type OpcaoDeCategoria,
   type PessoaNoRanking,
   type RecorteDeSatisfacao,
+  type CategoriaNaManutencao,
+  type EquipamentoNaManutencao,
+  type MudancaNoHistorico,
   type RelatorioDeConsumo,
+  type RelatorioDeManutencao,
   type RelatorioDeOcupacao,
   type RelatorioDeSatisfacao,
   type ResumoDePessoas,
@@ -498,14 +503,26 @@ const TITULO_DA_SERIE: Record<GraoDaSerie, string> = {
   mes: "Retiradas por mês",
 };
 
+/** O mesmo grão, para a série do Índice de Manutenção (Tarefa 17). */
+const TITULO_DA_SERIE_DE_MANUTENCAO: Record<GraoDaSerie, string> = {
+  dia: "Entradas em manutenção por dia",
+  semana: "Entradas em manutenção por semana",
+  mes: "Entradas em manutenção por mês",
+};
+
 /**
- * Distribui as retiradas nos baldes do período. Os baldes vêm de
+ * Distribui as datas nos baldes do período. Os baldes vêm de
  * [periodo.ts](periodo.ts) **com os vazios incluídos**, e é isso que faz um
  * dia sem retirada aparecer com zero em vez de sumir — o buraco é a
  * informação. O título diz o grão ("Retiradas por semana"), porque a barra
- * sozinha não diz se é um dia ou um mês.
+ * sozinha não diz se é um dia ou um mês. A Tarefa 17 passou a chamá-la com
+ * os títulos das entradas em manutenção; a forma é a mesma.
  */
-function montarSerie(periodo: Periodo, datas: readonly Date[]): SerieDeRetiradas {
+function montarSerie(
+  periodo: Periodo,
+  datas: readonly Date[],
+  titulos: Record<GraoDaSerie, string> = TITULO_DA_SERIE,
+): SerieDeRetiradas {
   const grao = graoDaSerie(periodo);
   const baldes = baldesDaSerie(periodo, grao);
   const contagem = baldes.map(() => 0);
@@ -520,7 +537,7 @@ function montarSerie(periodo: Periodo, datas: readonly Date[]): SerieDeRetiradas
 
   return {
     grao,
-    titulo: TITULO_DA_SERIE[grao],
+    titulo: titulos[grao],
     pontos: baldes.map((balde, i) => ({
       rotulo: balde.rotulo,
       detalhe: balde.detalhe,
@@ -601,13 +618,23 @@ function medirOcupacao(
 
 function percentualDeOcupacao(ocupados: number, emCirculacao: number): number {
   if (emCirculacao <= 0) return 0;
+  return arredondarPercentual(ocupados, emCirculacao);
+}
 
-  const bruto = (ocupados / emCirculacao) * 100;
-  const arredondado = Math.round(bruto);
+/**
+ * A regra de arredondamento da Tarefa 13, num lugar só desde que o Índice de
+ * Manutenção (Tarefa 17) passou a precisar dela: **100 só quando não sobrou
+ * nada; 0 só quando não saiu nada.** Com uma unidade livre em 500, o
+ * arredondamento normal daria 100% e a barra diria "cheia" ao lado de um
+ * alerta amarelo; com uma ocupada em 500, daria 0% com um aparelho fora. Os
+ * dois extremos ficam reservados para os casos exatos. Quem chama garante
+ * `todo > 0`.
+ */
+function arredondarPercentual(parte: number, todo: number): number {
+  const arredondado = Math.round((parte / todo) * 100);
 
-  // 100 só quando não sobrou nada; 0 só quando não saiu nada.
-  if (arredondado >= 100 && ocupados < emCirculacao) return 99;
-  if (arredondado <= 0 && ocupados > 0) return 1;
+  if (arredondado >= 100 && parte < todo) return 99;
+  if (arredondado <= 0 && parte > 0) return 1;
 
   return arredondado;
 }
@@ -837,6 +864,261 @@ function mediana(valores: readonly (number | null)[]): number | null {
 /** Milissegundos em minutos inteiros, para a planilha. */
 function emMinutos(milissegundos: number | null): number | null {
   return milissegundos === null ? null : Math.round(milissegundos / 60_000);
+}
+
+/* ------------------------------------------------------------------------- *
+ * Índice de Manutenção (Tarefa 17)
+ * ------------------------------------------------------------------------- */
+
+const MILISSEGUNDOS_POR_DIA = 86_400_000;
+
+const DIAS_COM_UMA_CASA = new Intl.NumberFormat("pt-BR", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+
+/** Uma linha do histórico como a agregação a lê. */
+type Mudanca = { id: number; equip_id: string; de: string; para: string; em: Date; administrador_nome: string };
+
+/** Uma estadia em manutenção: da entrada até a saída, ou aberta (`saida` nula). */
+type Estadia = {
+  entrada: Mudanca;
+  saida: Date | null;
+};
+
+/**
+ * Monta as estadias de um equipamento a partir das linhas dele, em ordem de
+ * `em`. Uma linha `para = MANUTENCAO` abre; a próxima com `de = MANUTENCAO`
+ * (para Disponível ou Inativo) fecha. **Uma saída sem entrada não vira
+ * estadia** — é o aparelho que já estava em conserto no dia da instalação, e
+ * "o que o histórico não tem, não conta" (ver `RelatorioDeManutencao` em
+ * [tipos.ts](tipos.ts)).
+ *
+ * A alternância é garantida pela action, que lê a origem dentro da mesma
+ * transação que grava a linha; duas entradas seguidas só apareceriam por
+ * escrita à mão no banco. Nesse caso a segunda é **ignorada** — o aparelho
+ * já estava em manutenção, e uma nova entrada não é uma nova estadia. A
+ * alternativa (abrir outra estadia) deixaria a primeira aberta para sempre,
+ * contando até hoje em todo período e inflando o índice sem erro nenhum —
+ * medido num roteiro que plantou as mesmas linhas duas vezes.
+ */
+function montarEstadias(linhas: readonly Mudanca[]): Estadia[] {
+  const estadias: Estadia[] = [];
+  let aberta: Estadia | null = null;
+
+  for (const linha of linhas) {
+    if (linha.para === STATUS_EQUIPAMENTO.manutencao) {
+      if (aberta) continue;
+      aberta = { entrada: linha, saida: null };
+      estadias.push(aberta);
+    } else if (linha.de === STATUS_EQUIPAMENTO.manutencao && aberta) {
+      aberta.saida = linha.em;
+      aberta = null;
+    }
+  }
+
+  return estadias;
+}
+
+/**
+ * A regra de tempo: a fatia da estadia dentro de `[de, fim)`, em
+ * milissegundos. `fim` já vem recortado em hoje; uma estadia aberta termina
+ * em `agora`. Zero quando a estadia não toca o período.
+ */
+function fatiaNoPeriodo(estadia: Estadia, de: Date, fim: Date, agora: Date): number {
+  const inicio = Math.max(estadia.entrada.em.getTime(), de.getTime());
+  const termino = Math.min((estadia.saida ?? agora).getTime(), fim.getTime());
+  return Math.max(0, termino - inicio);
+}
+
+function emDias(milissegundos: number): number {
+  return Math.round((milissegundos / MILISSEGUNDOS_POR_DIA) * 10) / 10;
+}
+
+/**
+ * O relatório Índice de Manutenção (Tarefa 17, §3).
+ *
+ * **Carrega o histórico inteiro e agrega em Node**, como o Consumo — e aqui
+ * o "inteiro" é deliberado, não só o período: uma estadia que começou antes
+ * do período e continua conta o período inteiro (regra de tempo), e "em
+ * manutenção desde" precisa da entrada aberta mesmo que ela seja de meses
+ * atrás. A um ou dois eventos por semana, o histórico de anos cabe no render.
+ *
+ * As duas regras de período estão escritas no tipo `RelatorioDeManutencao`;
+ * esta função só as aplica. Em resumo: `entradas` e a mediana são pela regra
+ * de evento (a entrada cai no período); `dias` e o índice são pela regra de
+ * tempo (a fatia da estadia dentro do período, recortada em hoje). O
+ * denominador do índice é o estoque em circulação **hoje** — reconstituir o
+ * de cada dia exigiria histórico anterior à migration.
+ *
+ * Nada aqui é Server Action: o painel lê o banco no render (regra no
+ * cabeçalho deste arquivo).
+ */
+export async function montarRelatorioDeManutencao(periodo: Periodo): Promise<RelatorioDeManutencao> {
+  const agora = new Date();
+
+  const [mudancas, equipamentos, categorias] = await Promise.all([
+    prisma.mudancaDeStatus.findMany({
+      select: { id: true, equip_id: true, de: true, para: true, em: true, administrador_nome: true },
+      // `em` e depois `id`: duas linhas no mesmo milissegundo (o `db:demo`
+      // grava em lote) saem na ordem de gravação, que é a de auditoria.
+      orderBy: [{ em: "asc" }, { id: "asc" }],
+    }),
+    prisma.equipamento.findMany({
+      select: { id: true, status: true, categoria: { select: { id: true, nome: true } } },
+    }),
+    prisma.categoria.findMany({ select: { id: true, nome: true }, orderBy: { id: "asc" } }),
+  ]);
+
+  // O período efetivo da regra de tempo: até `fim`, ou até agora se o
+  // período ainda não acabou. Com o período todo no futuro dá zero, e o
+  // índice fica sem denominador.
+  const fimEfetivo = new Date(Math.min(periodo.fim.getTime(), agora.getTime()));
+  const msDoPeriodo = Math.max(0, fimEfetivo.getTime() - periodo.de.getTime());
+  const noPeriodo = (em: Date) =>
+    em.getTime() >= periodo.de.getTime() && em.getTime() < periodo.fim.getTime();
+
+  const porEquipamento = agrupar(mudancas, (mudanca) => mudanca.equip_id);
+
+  const medidas = equipamentos.map((equipamento) => {
+    const estadias = montarEstadias(porEquipamento.get(equipamento.id) ?? []);
+    const entradasNoPeriodo = estadias.filter((estadia) => noPeriodo(estadia.entrada.em));
+    const emManutencaoAgora = equipamento.status === STATUS_EQUIPAMENTO.manutencao;
+
+    // A estadia aberta é a última sem saída; "desde —" quando o aparelho está
+    // em manutenção e não há nenhuma (a saída sem entrada do §3.1). Fora de
+    // manutenção, a última entrada do período é o que a coluna mostra.
+    const aberta = [...estadias].reverse().find((estadia) => estadia.saida === null) ?? null;
+    const ultima = emManutencaoAgora ? aberta?.entrada ?? null : (entradasNoPeriodo.at(-1)?.entrada ?? null);
+
+    return {
+      id: equipamento.id,
+      categoria: equipamento.categoria,
+      status: equipamento.status,
+      aposentado: equipamento.status === STATUS_EQUIPAMENTO.inativo,
+      emManutencaoAgora,
+      entradas: entradasNoPeriodo.length,
+      ms: estadias.reduce((soma, estadia) => soma + fatiaNoPeriodo(estadia, periodo.de, fimEfetivo, agora), 0),
+      // Só as concluídas entram na mediana; a aberta conta na entrada e fica fora.
+      duracoes: entradasNoPeriodo
+        .filter((estadia) => estadia.saida !== null)
+        .map((estadia) => estadia.saida!.getTime() - estadia.entrada.em.getTime()),
+      datasDasEntradas: entradasNoPeriodo.map((estadia) => estadia.entrada.em),
+      ultima,
+    };
+  });
+
+  const emCirculacao = medidas.filter((medida) => !medida.aposentado);
+  const emManutencaoAgora = medidas.filter((medida) => medida.emManutencaoAgora).length;
+  const entradas = medidas.reduce((soma, medida) => soma + medida.entradas, 0);
+  const msParados = emCirculacao.reduce((soma, medida) => soma + medida.ms, 0);
+  const capacidade = emCirculacao.length * msDoPeriodo;
+  const tempoMediano = mediana(medidas.flatMap((medida) => medida.duracoes));
+
+  // Por equipamento: só quem teve entrada no período ou está em manutenção
+  // agora (inclusive o aposentado com entrada — decisão do dono, Tarefa 17).
+  // Em manutenção agora primeiro, depois por entradas, dias, e a ordem do
+  // inventário (categoria, etiqueta).
+  const linhas = medidas
+    .filter((medida) => medida.entradas > 0 || medida.emManutencaoAgora)
+    .sort(
+      (a, b) =>
+        Number(b.emManutencaoAgora) - Number(a.emManutencaoAgora) ||
+        b.entradas - a.entradas ||
+        b.ms - a.ms ||
+        a.categoria.id - b.categoria.id ||
+        a.id.localeCompare(b.id, "pt-BR", { numeric: true }),
+    );
+  const semManutencao = emCirculacao.filter(
+    (medida) => medida.entradas === 0 && !medida.emManutencaoAgora,
+  ).length;
+
+  // Por categoria: todas, com zero, na cor fixada pela posição em `id` (a
+  // mesma do Consumo) ANTES de ordenar por índice.
+  const porCategoria = agrupar(medidas, (medida) => medida.categoria.id);
+  const categoriasNoRelatorio = categorias
+    .map((categoria, posicao) => {
+      const grupo = porCategoria.get(categoria.id) ?? [];
+      const circulando = grupo.filter((medida) => !medida.aposentado);
+      const ms = circulando.reduce((soma, medida) => soma + medida.ms, 0);
+      const capacidadeDaCategoria = circulando.length * msDoPeriodo;
+      const tempo = mediana(grupo.flatMap((medida) => medida.duracoes));
+      const tom = tomDaPosicao(posicao);
+
+      return {
+        id: categoria.id,
+        nome: categoria.nome,
+        cor: tom.cor,
+        corDoRotulo: tom.corDoRotulo,
+        emCirculacao: circulando.length,
+        entradas: grupo.reduce((soma, medida) => soma + medida.entradas, 0),
+        dias: emDias(ms),
+        diasTexto: DIAS_COM_UMA_CASA.format(emDias(ms)),
+        indice: capacidadeDaCategoria <= 0 ? null : arredondarPercentual(ms, capacidadeDaCategoria),
+        tempoMediano: tempo === null ? null : formatarDuracao(tempo),
+        tempoMedianoMin: emMinutos(tempo),
+      };
+    })
+    .sort((a, b) => (b.indice ?? -1) - (a.indice ?? -1) || a.id - b.id);
+  const maiorIndice = Math.max(0, ...categoriasNoRelatorio.map((categoria) => categoria.indice ?? 0));
+  const categoriasComBarra = categoriasNoRelatorio.map(
+    (categoria): CategoriaNaManutencao => ({
+      ...categoria,
+      barra: maiorIndice === 0 || categoria.indice === null ? 0 : Math.round((categoria.indice / maiorIndice) * 100),
+    }),
+  );
+
+  const nomeDaCategoria = new Map(equipamentos.map((equipamento) => [equipamento.id, equipamento.categoria.nome]));
+  const rotulo = (status: string) => ROTULO_DO_STATUS_DE_EQUIPAMENTO[status] ?? status;
+
+  return {
+    periodo: periodo.porExtenso,
+    emManutencaoAgora,
+    emCirculacao: emCirculacao.length,
+    entradas,
+    tempoMediano: tempoMediano === null ? null : formatarDuracao(tempoMediano),
+    tempoMedianoMin: emMinutos(tempoMediano),
+    diasParados: emDias(msParados),
+    diasDoPeriodo: emDias(msDoPeriodo),
+    indice: capacidade <= 0 ? null : arredondarPercentual(msParados, capacidade),
+    serie: montarSerie(
+      periodo,
+      medidas.flatMap((medida) => medida.datasDasEntradas),
+      TITULO_DA_SERIE_DE_MANUTENCAO,
+    ),
+    equipamentos: linhas.map(
+      (medida): EquipamentoNaManutencao => ({
+        id: medida.id,
+        categoria: medida.categoria.nome,
+        status: medida.status,
+        entradas: medida.entradas,
+        dias: emDias(medida.ms),
+        diasTexto: DIAS_COM_UMA_CASA.format(emDias(medida.ms)),
+        ultimaEntrada: medida.ultima ? dataHora(medida.ultima.em) : null,
+        ultimaEntradaPlanilha: medida.ultima ? dataHoraDePlanilha(medida.ultima.em) : null,
+        quem: medida.ultima?.administrador_nome ?? null,
+      }),
+    ),
+    semManutencao,
+    categorias: categoriasComBarra,
+    // Todas as transições do período, mais recente primeiro — inclusive as
+    // que não são manutenção. É a tabela de auditoria.
+    historico: mudancas
+      .filter((mudanca) => noPeriodo(mudanca.em))
+      .reverse()
+      .map(
+        (mudanca): MudancaNoHistorico => ({
+          id: mudanca.id,
+          em: dataHora(mudanca.em),
+          emPlanilha: dataHoraDePlanilha(mudanca.em),
+          etiqueta: mudanca.equip_id,
+          categoria: nomeDaCategoria.get(mudanca.equip_id) ?? "",
+          de: rotulo(mudanca.de),
+          para: rotulo(mudanca.para),
+          quem: mudanca.administrador_nome,
+        }),
+      ),
+  };
 }
 
 /* ------------------------------------------------------------------------- *
