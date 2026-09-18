@@ -34,7 +34,7 @@ descreve o sistema, não o define.
 | --- | --- |
 | [`especificacoes/spec.md`](especificacoes/spec.md) | A base arquitetural. Manda sobre o sistema inteiro. |
 | [`especificacoes/spec-wiki.md`](especificacoes/spec-wiki.md) | Manda sobre `docs/` e sobre a série `tarefa-doc-NN`. |
-| [`especificacoes/tarefas/pendentes/`](especificacoes/tarefas/pendentes/) | Enunciado de tarefa ainda **não** executada. Hoje, um: a Tarefa 17. |
+| [`especificacoes/tarefas/pendentes/`](especificacoes/tarefas/pendentes/) | Enunciado de tarefa ainda **não** executada. Hoje, nenhum. |
 | [`especificacoes/tarefas/concluidas/`](especificacoes/tarefas/concluidas/) | Enunciados já executados, guardados como histórico. Não são fonte de trabalho novo. |
 | `docs/` | A wiki publicada pelo MkDocs. **Enunciado de tarefa nunca entra aqui** — o Vale lintaria e o MkDocs publicaria. |
 
@@ -45,54 +45,50 @@ arquivos que as ferramentas exigem lá: `README.md`, `CLAUDE.md`, `AGENTS.md` e
 
 ### Fila de trabalho — "faça a próxima tarefa" quer dizer isto
 
-Atualizada em 2026-09-17, na sessão de alinhamento da Tarefa 17. O dono do
-repositório abre a sessão só com esse prompt; esta seção é a resposta.
+Atualizada em 2026-09-17, no fim da Tarefa 17. O dono do repositório abre a
+sessão só com esse prompt; esta seção é a resposta.
 
-**A próxima tarefa é a 17 — Índice de Manutenção e histórico de situação —,
-e o enunciado está pronto em
-[tarefa-17-indice-de-manutencao.md](especificacoes/tarefas/pendentes/tarefa-17-indice-de-manutencao.md).**
-Execute-o pela `executar-tarefa-especificada`: leia o enunciado inteiro, a
-§0 dele (dezoito decisões já tomadas e aprovadas, com o porquê — **não as
-reabra sem motivo novo**) e depois este arquivo. É a primeira tarefa desde a
-14 com **migration** (tabela `MudancaDeStatus` e dois índices; sem
-transformação de dado), e a migration vai contra cópia do `dev.db` e contra o
-`dev-demo.db` desta máquina primeiro — o `dev.db` do dono só no fim, quando
-ele disser. Ela **fecha a `v1.2`** (§6 do enunciado, pela tabela do
-CONTRIBUTING). Três coisas que a varredura do alinhamento achou e que o
-enunciado manda corrigir de passagem, em commit próprio: a §3 da `spec.md`
-ainda descreve o `Equipamento` com `tipo` e três status (defeito desde a
-Tarefa 6); a migration `20260917090000_conta_secretario` existe no
-repositório (commit `ec6f343`, renomeia a conta `secretaria` → `secretario`)
-e este arquivo não a registrava — a fila tem **oito** migrations, não sete;
-e `alterarStatusEquipamento` usa `temSessaoAdmin()` (sem `id`) e faz o
-`updateMany` fora de transação, o que a §2 do enunciado manda mudar. As duas
-peças que a 17 consome já existem e têm dono: o período em
-[periodo.ts](src/lib/periodo.ts) (puro; a página passa o `Periodo` já
-interpretado) e a exportação em [exportar-xlsx.ts](src/lib/exportar-xlsx.ts)
-(o `BotaoBaixarXlsx` recebe as abas prontas), mais o `GraficoDeSerie` em
-`src/components/admin/graficos/`. As demais ideias de "Próximos passos
-possíveis", no fim do estado atual, **não estão na spec** e precisam de um
-enunciado antes de virar código — inclusive "quem deu baixa", que a §0 da 17
-deixou fora de escopo de propósito (seria coluna sem tela que a leia).
+**Não há próxima tarefa enunciada.** A Tarefa 17 — Índice de Manutenção e
+histórico de situação — foi executada nesta data e **fechou a `v1.2`**; o
+enunciado dela está em `concluidas/`. Os quatro relatórios declarados na
+Tarefa 13 existem, e `especificacoes/tarefas/pendentes/` está vazia. O que
+sobra são ideias, não tarefas: as de "Próximos passos possíveis", no fim do
+estado atual, **não estão na spec** e precisam de uma sessão de alinhamento e
+de um enunciado antes de virar código — o dono conduz isso como fez para a 16
+e a 17 (varredura, estratégia, decisões em lote, enunciado no formato da
+tarefa mais recente em `concluidas/`, execução em outra sessão). A primeira
+tarefa que mudar o produto **abre a `v1.3`**: a tabela da seção "Como a wiki é
+publicada" do [CONTRIBUTING.md](CONTRIBUTING.md) diz os quatro lugares a
+mexer, e o número do `mike deploy` muda junto.
+
+**Duas coisas ficaram para o dono, e as duas estão no relatório da sessão da
+Tarefa 17:** o `dev.db` dele **ainda não recebeu a migration**
+`20260917214045_mudanca_de_status` (a nona da fila) — `npm run dev` contra ele
+antes do `npm run db:migrate` quebra o `/admin/relatorios` e a mudança de
+situação no inventário com "no such table: MudancaDeStatus"; e as tags `v1.1`
+e `v1.2` continuam sendo dele criar e publicar (nenhuma existe no local nem no
+remoto — conferido em 2026-09-17). O `push` continua sendo do dono, a menos
+que ele autorize na mensagem.
 
 O que **não** precisa ser refeito: o Pages está no ar; a tag `v1.0` está no
-remoto; a **`v1.2` continua aberta até a 17 fechar** — o workflow publica
-`v1.2 (em andamento)`, o `set-default`
-continua na `v1.1`, e as duas homes dizem "em andamento". Quando a `v1.2`
-fechar, a tabela da seção "Como a wiki é publicada" do
-[CONTRIBUTING.md](CONTRIBUTING.md) diz os quatro lugares a mexer. **A tag
-`v1.1` continua sendo do dono criar e publicar** (não existe nem no local nem
-no remoto — conferido em 2026-09-16), e a `v1.2` será dele quando fechar. O
-`push` continua sendo do dono, a menos que ele autorize na mensagem.
+remoto; o workflow publica `v1.2` (sem "em andamento"), o `set-default` aponta
+para a `v1.2`, e as duas homes dizem "descreve a versão v1.2".
 
 **Esta máquina tem um `dev-demo.db` na raiz** (ignorado pelo Git), criado na
-Tarefa 16 pela receita "Capturar sem mexer no seu `dev.db`" do CONTRIBUTING:
-é o banco de captura, com o cenário do `db:demo` e o histórico de 90 dias. O
-`next dev` desta sessão subiu na porta 3100 apontando para ele e **foi
-encerrado no fim**; o `dev.db` do dono não foi tocado (md5 conferido no
-começo e no fim). Para testar a Tarefa 16 com dado de verdade, `npm run dev`
-como sempre; para ver o relatório cheio, `DATABASE_URL="file:./dev-demo.db"
-npx next dev -p 3100`.
+Tarefa 16 pela receita "Capturar sem mexer no seu `dev.db`" do CONTRIBUTING e
+**recriado do zero na Tarefa 17** (reset + seed + demo, com a migration nova):
+é o banco de captura, com o cenário do `db:demo`, o histórico de 90 dias e as
+25 mudanças de situação. O `next dev` da sessão subiu na porta 3100 apontando
+para ele e **foi encerrado no fim**; o `dev.db` do dono não foi tocado (md5
+`66245a887a3f11cf9952c6df1716b9b1` conferido no começo e no fim). Para ver o
+relatório cheio, `DATABASE_URL="file:./dev-demo.db" npx next dev -p 3100`.
+
+**A porta 3000 desta máquina estava ocupada pelo `npm run dev` do próprio
+dono** (contra o `dev.db`, subido antes da sessão da Tarefa 17), e não por
+"outro processo" como este arquivo dizia: o Next reconheceu o projeto e
+recusou subir o segundo servidor, e ele foi encerrado pela sessão (a receita
+do CONTRIBUTING — o servidor antigo serviria código velho contra um banco sem
+a tabela nova). Antes de subir um servidor, confira **quem** está na porta.
 
 **O `dev.db` desta máquina recebeu duas migrations na Tarefa 14**, e não uma:
 ele estava com a `20260822160000_perfil_estudante` (Tarefa 8.1) **por aplicar**
@@ -271,6 +267,23 @@ tablet normalmente — a grade de categorias é que dá lugar a uma explicação
 mesmo motivo, inativar alguém com empréstimo aberto é **permitido** (com aviso),
 ao contrário do equipamento, cuja situação trava até o ciclo fechar.
 
+**Toda mudança de situação feita no painel grava uma linha em
+`MudancaDeStatus`** (Tarefa 17): `de`, `para`, `em`, `administrador_id` e o
+**retrato** `administrador_nome`. Só as transições do painel
+(`DISPONIVEL` ↔ `MANUTENCAO` ↔ `INATIVO`) — o `EMPRESTADO` não entra, porque
+retirada e baixa já moram em `Emprestimo`, e o seed e o `db:demo` escrevem
+`Equipamento.status` sem passar por ali. A linha nasce **na mesma transação**
+do `updateMany`, e só quando ele contou 1: histórico é de mudança que
+aconteceu. A FK do administrador é nula com `SetNull` porque a recuperação de
+senha documentada é apagar a conta e ressemear — e o nome fica gravado ao
+lado para o "quem" não virar "—". **Não há linha de abertura para quem já
+estava em manutenção na instalação**: o relatório mostra "desde —" e conta
+zero dias, de propósito. O relatório monta as **estadias** (entrada até a
+saída seguinte do mesmo aparelho) e aplica duas regras de período escritas no
+tipo `RelatorioDeManutencao`: evento (a entrada conta no período em que `em`
+cai) e tempo (a fatia da estadia dentro do período, recortada em hoje). Quem
+"unificar" as duas faz um mês inteiro parado valer zero.
+
 A matrícula é editável no painel, e a correção dela **leva o histórico junto**
 (`onUpdate: Cascade` + `PRAGMA foreign_keys = 1`). Só aceita dígitos, até 15,
 porque é isso que o teclado do tablet consegue digitar.
@@ -372,7 +385,8 @@ normalização de etiqueta e categoria, e o bloqueio por tentativas.
   que **não** mudou: `secure` fica **falso** de propósito, porque a rede do
   secretário é HTTP e com a flag ligada o navegador descartaria o cookie.
 - **`temSessaoAdmin()` é chamada em cada página e em cada action**, nunca no
-  layout. Layout não re-renderiza entre rotas irmãs e não impede um POST direto
+  layout. (Desde a Tarefa 17 `alterarStatusEquipamento` chama `sessaoAdmin()`
+  — a mesma verificação, devolvendo o `id` e o nome que o histórico grava.) Layout não re-renderiza entre rotas irmãs e não impede um POST direto
   no endpoint da Server Action — usar layout como porta dá sensação de proteção
   sem proteção. Pelo mesmo motivo a barra lateral é o componente `CascaAdmin`,
   composto dentro de cada página: é o que mantém o contador da fila correto ao
@@ -1757,6 +1771,120 @@ nem referenciado pelas outras telas.
 - **O CONTRIBUTING agora registra que a faixa de ids do `db:demo` é
   9001–9048 e que a sequência do SQLite avança junto.** Um empréstimo criado
   pela tela num banco de captura nasce em 9049.
+
+**Tarefa 17 — Índice de Manutenção e histórico de situação (concluída, e
+ela fecha a `v1.2`):** os oito blocos de
+[tarefa-17-indice-de-manutencao.md](especificacoes/tarefas/concluidas/tarefa-17-indice-de-manutencao.md)
+— a tabela `MudancaDeStatus` (uma linha por transição do painel, com `de`,
+`para`, `em`, `administrador_id` nulo com `SetNull` e o retrato
+`administrador_nome`) e o índice de carona em `Emprestimo.data_retirada`,
+numa migration gerada com `--create-only` contra cópia e ensaiada nela;
+`alterarStatusEquipamento` com `sessaoAdmin()` e leitura, `updateMany` e
+`create` do histórico numa transação só; o relatório **Índice de Manutenção**
+(quatro cartões, o gráfico "Entradas em manutenção por dia/semana/mês", as
+tabelas por equipamento e por categoria e o **Histórico**), com as duas
+regras de período escritas no tipo; a exportação em `.xlsx` com três abas;
+o `db:demo` com 25 mudanças de situação (11 estadias, a aberta do `NOTE-09`,
+o `EXT-05` sem linha, duas aposentadorias) e a limpeza fora da faixa; a
+wiki nos dois idiomas com cinco capturas; e o fechamento da `v1.2`.
+`EmDesenvolvimento` sumiu — nenhuma aba está vazia. **Sem dependência nova.**
+`tsc`, `lint` e `build` em 0, com as seis rotas do painel dinâmicas (`ƒ`) e a
+`/` estática; `mkdocs build --strict`, `vale docs/` (33 arquivos, 0 erro),
+`npm run docs:links` (36 páginas, 3071 referências) e
+`npm run docs:diagramas -- --verificar` em 0. A migration **só não foi
+aplicada no `dev.db` do dono** — decisão dele, como nas Tarefas 14 e 16.
+
+Verificação em seis degraus, tudo contra cópia do `dev.db` e contra o
+`dev-demo.db` (recriado do zero), com o `dev.db` do dono **conferido por md5**
+no fim (idêntico): as premissas de banco em cópia (23 asserções — `SetNull`
+deixando o id nulo e o nome intacto, `Cascade` levando o histórico na
+renomeação, duas transações concorrentes com o mesmo destino serializadas
+pelo mutex do adapter com a segunda contando 0 e não gravando, o status
+mudado por outra conexão antes do clique lido dentro da transação, a escrita
+por fora com a transação aberta recebendo `SQLITE_BUSY`, e o `em` indo e
+voltando como texto `+00:00`); a aritmética do relatório contra um cálculo
+independente pelo driver, em seis períodos, com o aposentado e a saída sem
+entrada plantados e desfeitos (102 asserções, duas execuções seguidas); o
+`db:demo` conferido por um programa separado (60 — nenhuma estadia cruzando
+retirada, nenhuma linha no futuro) e a idempotência por comparação byte a
+byte da tabela; HTTP real com o login pela via sem JavaScript (61 — as cinco
+transições gravando uma linha cada com o id da conta, as cinco recusas
+gravando zero, a rota sem cookie para o login, os 15 pedaços do inventário
+sem Recharts nem SheetJS); navegador real por CDP (72 — os números da aba
+contra o banco, o "desde —", o Histórico com inativação e manutenção lado a
+lado, o seletor de visualização com chave própria, o download lido de volta
+pelo `XLSX.read` com as três abas e as contagens da tela, o estado vazio, as
+cinco larguras com as três tabelas, o contraste pelo pixel do canvas, e o
+clique de verdade no inventário aparecendo no relatório com o nome e a hora,
+a volta fechando a estadia, e o `db:demo` desfazendo); e a leitura visual das
+cinco capturas, que achou os dois defeitos que nenhuma asserção viu (as
+saídas de manutenção às 00:40 e a barra do índice virando um ponto).
+
+**Decisões da Tarefa 17** (não refazer sem motivo):
+
+- **O aposentado com entrada no período entra na tabela por equipamento, com
+  selo Inativo, e os dias dele ficam fora do índice.** O enunciado não dizia;
+  o precedente da Tarefa 16 decidiu (esconder o que aconteceu faria o número
+  de agosto mudar quando o aparelho é aposentado em setembro — e aposentar
+  direto do conserto é o caso comum). As entradas dele contam no cartão e na
+  coluna da categoria; os dias, não, porque numerador e denominador do índice
+  são o estoque de hoje (§0). A linha de detalhe do cartão diz isso. Decisão
+  do dono.
+- **Clique errado em Manutenção não se apaga: o clique de volta desfaz, e as
+  duas linhas ficam.** A estadia de um minuto conta como entrada e entra na
+  mediana. A alternativa — ignorar estadias abaixo de N minutos — inventaria
+  uma regra que esconde dado de auditoria. Está na §6 da página de relatórios.
+  Decisão do dono.
+- **A `spec.md` §3 também tinha o `perfil` como "ALUNO ou PROFESSOR"**, e foi
+  corrigido no mesmo commit de defeito antigo que o `Equipamento`. Decisão do
+  dono.
+- **A frase do estado vazio sai do formatador único:** "Nenhuma entrada em
+  manutenção em setembro de 2026." — o enunciado escreveu "entre 3 e 9 de
+  agosto", que nenhum formatador do projeto produz. A aba da planilha é
+  `Histórico`, com acento (o formato aceita e o rótulo da tela tem).
+- **A barra do índice por categoria é proporcional ao maior da tabela**, como
+  nos rankings — e não à escala absoluta, que foi a primeira versão. Índices
+  típicos ficam nas unidades de por cento, e 6% virava um ponto: visto na
+  captura, não em asserção.
+- **`montarEstadias` ignora uma segunda entrada com estadia aberta.** A
+  alternância é garantida pela transação; duas entradas seguidas só vêm de
+  escrita à mão. Abrir outra estadia deixaria a primeira aberta para sempre,
+  contando até hoje em todo período — medido num roteiro que plantou as
+  mesmas linhas duas vezes.
+- **O mutex do adapter serializa só transações entre si**, e uma escrita por
+  outra conexão com a transação aberta recebe `SQLITE_BUSY` (journal em modo
+  `delete`, medido). É o que dispensa qualquer trava própria na action; o
+  `de` lido dentro da transação é o de verdade.
+- **O histórico da Tarefa 16 deixou de gerar ciclos que terminariam depois de
+  hoje** — defeito antigo, commit próprio: uma retirada de ontem com 70 h de
+  uso e 48 h de prateleira dava um `CONCLUIDO` com a baixa no futuro, e foi a
+  aposentadoria do `NOTE-10` (que precisa vir depois da última baixa dele)
+  que pegou. São **37** concluídos agora, não 38; a faixa é 9001–9047.
+- **As estadias do `db:demo` não cruzam retiradas do mesmo aparelho, e entram
+  e saem em horário de balcão.** Sorteio com rejeição, ainda determinístico;
+  a primeira versão dava alta às 00:40, visto na captura do Histórico.
+- **As capturas usam o intervalo de 90 dias, e não o mês corrente.** É o
+  único período que garante o `NOTE-03` com as três entradas em qualquer
+  data — um mês de calendário não garante. O gráfico sai "por semana".
+- **A captura do Histórico é recortada nas dez primeiras linhas.** Vinte e
+  cinco linhas davam 1,6 mil pixels de altura sem acrescentar informação.
+- **A migration do `dev.db` do dono fica para ele**, como nas Tarefas 14 e
+  16; o `dev.db` desta máquina está idêntico ao do começo da sessão.
+- **O `npm run dev` do dono, na porta 3000, foi encerrado pela sessão.** O
+  Next reconhece o projeto e recusa um segundo servidor; e aquele servidor
+  passaria a servir o client regenerado contra um banco sem a tabela. É a
+  receita do CONTRIBUTING — mas é o servidor dele, e está dito no relatório.
+- **Um `chrome.exe --version` abriu uma janela e foi encerrado com `taskkill
+  /IM chrome.exe`** — que derruba todo Chrome da máquina, e a sessão não
+  conferiu antes se havia um aberto. Está dito no relatório; não repita:
+  confira `ls` no executável em vez de executá-lo.
+- **`innerText` traz o texto `sr-only`**: a célula "Disponível → Manutenção"
+  lê "Disponível → para Manutenção" no roteiro. A asserção usa expressão
+  regular com o "para" opcional.
+- **Duas escritas de script por heredoc quebraram na mesma sessão** (o
+  `\n` de uma string virou quebra de linha; um bloco com acento e aspas morreu
+  com "unexpected EOF"). A regra do CLAUDE.md global vale para reescrever
+  roteiro, não só para o primeiro; o script vai pela ferramenta de arquivo.
 
 **Tarefa D01 — Congelar a v1.0 e criar o estado de demonstração (concluída):**
 a primeira da **série de documentação** (`tarefa-doc-NN`, regida pela
@@ -3243,16 +3371,18 @@ criou a identidade, a 11 deu a cada pessoa uma senha própria, a 12 passou a
 registrar **quando** a baixa aconteceu — e o **quem** continua não existindo,
 porque `Emprestimo` não tem coluna de administrador).
 
-Os relatórios cresceram nas Tarefas 13, 14 e 16: ocupação, satisfação e o
-Ranking de Consumo, com período e exportação em `.xlsx`. O que continua fora:
-o **Índice de Manutenção** (Tarefa 17, sem enunciado; precisa de histórico de
-status), a comparação com o período anterior (delta, seta de tendência), picos
-por hora do dia ou por dia da semana, e filtro por categoria, pessoa ou perfil
-dentro do relatório — todos listados como fora de escopo na §9 da Tarefa 16. A
+Os quatro relatórios declarados existem desde a Tarefa 17: ocupação,
+satisfação, o Ranking de Consumo e o Índice de Manutenção, com período e
+exportação em `.xlsx`. O que continua fora: a comparação com o período
+anterior (delta, seta de tendência), picos por hora do dia ou por dia da
+semana, filtro por categoria, pessoa ou perfil dentro do relatório (§9 da
+Tarefa 16), o motivo ou observação da manutenção (campo de texto ao mudar a
+situação) e "em manutenção desde" no selo do inventário (§8 da Tarefa 17). A
 aba **Satisfação** continua exportando a lista crua em CSV; o Excel em
 português a abre numa coluna só ao clicar duas vezes, e a troca de separador
-para `;` é uma linha, se um dia incomodar. Nada disso está na spec — confirmar
-antes de construir.
+para `;` é uma linha, se um dia incomodar. Subir o Next para a 16.3.5 é
+sessão própria, curta, com `build` e navegador refeitos. Nada disso está na
+spec — confirmar antes de construir.
 
 **Correções fora de tarefa (2026-09-14):** o detalhe da recusa ao excluir
 categoria em uso (`AJUDA_DA_CATEGORIA_EM_USO`, em
@@ -3308,8 +3438,10 @@ aberto.
   correção; a SheetJS distribui as versões novas apenas pelo próprio CDN. Trocar
   para `npm i xlsx` reinstala a versão vulnerável. Para atualizar, troque o
   número da versão na URL dentro do `package.json`.
-- A porta 3000 desta máquina costuma estar ocupada por outro processo; o Next cai
-  para 3001+ sozinho.
+- A porta 3000 desta máquina costuma estar ocupada — na Tarefa 17, pelo
+  `npm run dev` do próprio dono, que o Next reconhece e por isso **recusa**
+  subir um segundo servidor (com outro processo qualquer ele cairia para
+  3001+ sozinho). Confira quem está na porta antes de subir.
 - **As ferramentas da wiki são Python e ficam fora do `package.json`** (D02):
   `mkdocs-material`, `mkdocs-static-i18n` e `mike`, com versões **fixadas** em
   `docs-requirements.txt` — o site é publicado por uma Action, e faixa de versão
