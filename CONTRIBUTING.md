@@ -663,6 +663,46 @@ Para tirar o site do ar por inteiro, **Settings → Pages → Source: None**. A
 branch `gh-pages` pode ficar onde está: sem o Pages ligado, ela é só um
 diretório de arquivos no Git.
 
+## Implantação na coordenação (Tarefa 18)
+
+O guia é a página [Instalar no Windows 11](docs/instalacao/windows-11.md)
+da wiki — escrita para leigo, com o bloco recolhido "Para quem mantém o
+sistema" no fim, que é o dono dos detalhes (pastas, serviço, conta,
+permissões, restaurar backup). Este trecho só guarda o que é de quem
+desenvolve:
+
+- **`npm run db:deploy`, nunca `db:migrate`, numa máquina de produção.** O
+  `migrate dev` é de desenvolvimento e, num banco com drift, *propõe reset*.
+  Os scripts de `scripts/implantacao/` só chamam `deploy`.
+- **`npm run db:seed:producao`** cria só as quatro contas. O `db:seed`
+  comum insere 20 equipamentos e 4 pessoas de exemplo — em produção isso é
+  inventário de mentira.
+- **Atualização é por tag** (`atualizar.cmd v1.1`): um `push` na `main` não
+  muda o que está instalado. Depois de fechar uma entrega, mova ou crie a
+  tag e publique-a (`git push origin v1.1`) — é ela que o `atualizar.ps1`
+  lista. **A `v1.0` do remoto ainda aponta para `5515ba1` (agosto)**: o
+  primeiro `atualizar v1.0` num PC instalado da `main` seria uma volta no
+  tempo. Mover a tag para o commit da entrega fica com o dono do repositório.
+- **`better-sqlite3` fica na faixa do adapter (`^12.6.0`).** O `^13` que
+  estava no `package.json` desde o primeiro commit era uma cópia duplicada
+  que nada usava, e derrubava o `npm ci` em qualquer PC sem Visual Studio: o
+  arborist do npm decide o `node-gyp rebuild` padrão lendo o `gypfile` do
+  lockfile, que não carrega o campo. Medido em 2026-09-18 com o npm 11.18 e
+  com o 11.6.1 do Node 24. Se um dia subir para o 13, rode `npm ci` num
+  clone limpo antes de commitar.
+- **Verificar os scripts sem administrador:** `EMPRESTIMOS_RAIZ` e
+  `EMPRESTIMOS_PORTA` no ambiente e `instalar.ps1 -SomenteAplicacao` rodam
+  o pipeline (clone → `npm ci` → migrations → seed → build → NSSM) numa pasta
+  de verificação; o `next start` do clone sobe à mão na porta escolhida. O
+  que exige elevação (serviço, ACL, firewall, tarefa) só se prova rodando o
+  `instalar.cmd` de verdade. Os `.ps1` são analisados com
+  `[System.Management.Automation.Language.Parser]::ParseFile` — o parser do
+  5.1, sem executar.
+- **Os `.ps1` são UTF-8 com BOM e CRLF; os `.cmd` são ASCII.** O PowerShell
+  5.1 lê acento de arquivo sem BOM como ANSI, e o `cmd` mostra lixo em
+  qualquer acento. Editor que "normaliza" para UTF-8 sem BOM quebra as
+  mensagens sem quebrar o script.
+
 ## O formulário de sugestões do tablet (Tarefa 14)
 
 O QR code da tela de retirada confirmada aponta para um formulário **fora do
