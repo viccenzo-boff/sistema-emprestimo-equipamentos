@@ -79,6 +79,15 @@ stateDiagram-v2
 | `MANUTENCAO` → `INATIVO` | Front desk | Panel, **Inativar** (Deactivate) button on the row |
 | `INATIVO` → `DISPONIVEL` | Front desk | Panel, **Reativar** (Reactivate) button on the row |
 
+The five panel transitions — the ones the front desk triggers with the row
+buttons — leave a trace since September 2026: each becomes a row in the status
+history, with who and when, which the **Índice de Manutenção** (Maintenance
+rate) report reads. The two of the loan cycle (pickup and physical check-in)
+were already recorded in the [loan](glossario.md#loan) itself; registration,
+which makes the device be born `DISPONIVEL`, is not a transition and is not
+recorded. The whole rule is in
+[Business rules](regras-de-negocio.md#every-status-change-made-in-the-panel-is-recorded-with-who-and-when).
+
 ### The three absences, and the reason for each
 
 <a id="equipment-absences"></a>

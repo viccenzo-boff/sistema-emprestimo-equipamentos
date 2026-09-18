@@ -140,6 +140,45 @@ organized by category.
 
 ---
 
+## Every status change made in the panel is recorded, with who and when
+
+**What the system does.** Each click on **Manutenção** (Maintenance),
+**Disponível** (Available), **Inativar** (Deactivate) or **Reativar**
+(Reactivate) on the Inventory tab writes a row to the status history: the
+device, where it came from, where it went, the time, and the **name of whoever
+was signed in**. The **Índice de Manutenção** (Maintenance rate) report reads
+that history — the [maintenance stays](glossario.md#maintenance-stay), the rate
+and the **Histórico** (History) table, which answers "who retired `NOTE-10`,
+and when".
+
+**Why it does it that way.** Because, until September 2026, the system kept
+only each device's **current** status: nobody knew since when `NOTE-09` had
+been in repair, or how many times it had been there. And because each person
+has their own account since the
+[administrator account](conta-do-administrador.md) precisely so that "who did
+this" has an answer.
+
+**What would break.** An editable history would stop answering "who"; a history
+that stored only the account key would lose the name when the account was
+deleted to recover its password. That is why the name is stored **next to** the
+link, as a snapshot of the moment: if the account goes away, the link is
+undone and the name stays. And that is why a wrong click is not deleted — it is
+undone with the click back, and both rows stay.
+
+!!! note "What is left out, on purpose"
+
+    - **The pickup and the physical check-in.** They already have their
+      records — the [loan](glossario.md#loan), with its three times. Recording
+      the same event in two places is how two records start to disagree.
+    - **Whatever happened before this version.** The history starts empty at
+      installation; a device that was already in maintenance on that day
+      shows up in the report with "desde —" (since —), and its days do not
+      count. Making up an entry date would be making up days inside a metric.
+    - **What the installation and demo scripts write.** They are not the
+      panel, and nobody clicked.
+
+---
+
 ## Deactivating a person and deactivating a device are not the same rule
 
 **What the system does.** The two fields share a name and have opposite rules

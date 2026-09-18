@@ -133,10 +133,16 @@ semester with it. Deactivating is retirement, not deletion.
 The **Relatórios** (Reports) tab, the last one in the menu, is the only one
 that just reads. The line above the tabs chooses the **period** — day, month,
 year or interval, with the current month as the default — and applies to the
-occupancy and to the usage ranking; the satisfaction tab has its own two fixed
-windows and ignores it. Each tab with a period has a **Baixar planilha
-(.xlsx)** (Download spreadsheet) button with what is on screen. The step by
-step is in [Reports](../painel/relatorios.md).
+occupancy, to the usage ranking and to the maintenance rate; the satisfaction
+tab has its own two fixed windows and ignores it. Each tab with a period has a
+**Baixar planilha (.xlsx)** (Download spreadsheet) button with what is on
+screen. The step by step is in [Reports](../painel/relatorios.md).
+
+What you do on the Inventory tab with a device's status — **Manutenção**
+(Maintenance), **Disponível** (Available), **Inativar** (Deactivate),
+**Reativar** (Reactivate) — shows up in the **Índice de Manutenção**
+(Maintenance rate) report with your name and the time. That is what your own
+account is for.
 
 ## If something goes wrong
 

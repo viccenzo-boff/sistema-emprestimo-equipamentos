@@ -78,6 +78,15 @@ stateDiagram-v2
 | `MANUTENCAO` → `INATIVO` | Secretário | Painel, botão **Inativar** na linha |
 | `INATIVO` → `DISPONIVEL` | Secretário | Painel, botão **Reativar** na linha |
 
+As cinco transições do painel — as que o secretário dispara pelos botões da
+linha — deixam rastro desde setembro de 2026: cada uma vira uma linha no
+histórico de situação, com quem e quando, que o relatório **Índice de
+Manutenção** lê. As duas do ciclo de empréstimo (retirada e baixa física) já
+estavam registradas no próprio [empréstimo](glossario.md#emprestimo); o
+cadastro, que faz o aparelho nascer `DISPONIVEL`, não é uma transição e não
+entra. A regra inteira está em
+[Regras de negócio](regras-de-negocio.md#toda-mudanca-de-situacao-feita-no-painel-fica-registrada-com-quem-e-quando).
+
 ### As três ausências, e o motivo de cada uma
 
 <a id="ausencias-do-equipamento"></a>

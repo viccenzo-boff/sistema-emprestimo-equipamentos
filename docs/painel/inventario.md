@@ -138,6 +138,9 @@ emprestado não tem botão nenhum.
 
     Ele diz o que aconteceu com o aparelho — "NOTE-05 foi para manutenção e saiu
     da lista do tablet." O selo da linha vira âmbar e o botão **Editar** some.
+    O clique fica registrado, com o seu nome e a hora, no relatório
+    [Índice de Manutenção](relatorios.md#quem-fez-fica-registrado) — é de lá que sai o
+    "desde quando" e o "quem".
 
 5. Separe o aparelho para conserto.
 

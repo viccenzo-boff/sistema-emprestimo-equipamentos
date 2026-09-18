@@ -5,14 +5,17 @@
 Este processo transforma o que o sistema já registrou em um argumento: quantas
 retiradas passaram pelo balcão no período escolhido, quantos aparelhos estão
 fora da prateleira agora, o quanto cada categoria chegou perto de acabar — e,
-desde a `v1.2`, como as pessoas avaliam a retirada e **o que sai, quem leva e
-por quanto tempo**, no Ranking de Consumo.
+desde a `v1.2`, como as pessoas avaliam a retirada, **o que sai, quem leva e
+por quanto tempo**, no Ranking de Consumo, e **quanto do estoque fica parado no
+conserto**, no Índice de Manutenção.
 
 Quando termina, o secretário tem um número para levar à coordenação — ou uma
-planilha, porque as abas com período exportam o que está na tela em `.xlsx` —
+planilha, porque as três abas com período exportam o que está na tela em `.xlsx` —
 e a coordenação tem com que decidir se compra mais aparelho, ou se o
 atendimento precisa de atenção. É a única tela do painel que quase não muda
 nada: ela lê, e a única coisa que grava é o link do formulário de sugestões.
+Desde a Tarefa 17 ela também é a tela que responde **quem** mudou a situação
+de um aparelho, e **quando** — o Histórico da aba Índice de Manutenção.
 
 ## 2. Pré-condições
 
@@ -34,8 +37,9 @@ Os termos que atravessam vários processos moram no
 [manutenção](../referencia/glossario.md#manutencao),
 [aposentadoria](../referencia/glossario.md#aposentadoria-item-inativo),
 [bancada](../referencia/glossario.md#bancada),
-[empréstimo](../referencia/glossario.md#emprestimo) e
-[tempo de prateleira](../referencia/glossario.md#tempo-de-prateleira).
+[empréstimo](../referencia/glossario.md#emprestimo),
+[tempo de prateleira](../referencia/glossario.md#tempo-de-prateleira) e
+[estadia em manutenção](../referencia/glossario.md#estadia-em-manutencao).
 
 Estes são só desta página:
 
@@ -58,12 +62,18 @@ Estes são só desta página:
 | Pedida                 | Uma vez em que os rostos apareceram, tenha alguém tocado ou não. Cada pessoa é perguntada no máximo uma vez a cada 30 dias.                |
 | Taxa de resposta       | Respondidas ÷ pedidas, em %. É o número que denuncia a fadiga com a pesquisa antes de qualquer reclamação: quando ela cai, a média deixa de valer. |
 | Formulário de sugestões | O formulário externo (do Google, numa conta institucional do setor) que o QR code da tela de retirada abre. O link é configurado aqui.    |
+| Entrada em manutenção  | O clique em **Manutenção** na aba Inventário: o começo de uma [estadia](../referencia/glossario.md#estadia-em-manutencao). Conta no período em que aconteceu. |
+| Dias parado            | Os dias que o aparelho passou em manutenção **dentro** do período — só a parte da estadia que cai na janela, até hoje. Somados por equipamento e por categoria. |
+| Índice de manutenção   | Dias parado ÷ (equipamentos em circulação hoje × dias do período até hoje), em %. É a parte do estoque que passou o período no conserto. |
+| Em manutenção agora    | Quantos aparelhos estão em manutenção neste instante. Fotografia — o período não muda este número.                                      |
+| "desde —"              | Um aparelho em manutenção cuja entrada o sistema não tem: ele já estava no conserto quando o histórico passou a existir. Os dias dele não contam. |
+| Histórico              | A tabela de auditoria da aba: toda mudança de situação feita no painel dentro do período — manutenção, aposentadoria e reativação —, com quem fez e quando. |
 
 ## 4. Papéis e responsabilidades
 
 | Papel                  | Faz                                                                                                          | Não faz                                                                                                             |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Secretário             | Escolhe o período, abre a aba, lê os números e leva à coordenação o que está esgotado ou crítico, quem mais retira e a média de satisfação — na tela ou na planilha exportada. Configura o link do formulário de sugestões. | Não corrige nada aqui. O que aparece errado nesta tela se conserta nas abas **Inventário** e **Fila de Devoluções**. Não vê quem votou, porque ninguém vê. |
+| Secretário             | Escolhe o período, abre a aba, lê os números e leva à coordenação o que está esgotado ou crítico, quem mais retira, a média de satisfação e quanto do estoque fica parado — na tela ou na planilha exportada. Configura o link do formulário de sugestões. É também quem aparece, pelo nome, no Histórico de manutenção: cada mudança de situação que faz no Inventário fica registrada aqui. | Não corrige nada aqui. O que aparece errado nesta tela se conserta nas abas **Inventário** e **Fila de Devoluções**. Não vê quem votou, porque ninguém vê. |
 | Coordenação            | Decide a compra e a política de uso, a partir do que o secretário mostra — ou da planilha que recebe.            | Não abre o painel. Ela não tem conta — o painel é do secretário.                                                          |
 | Painel (o computador)  | Soma o que está gravado, no instante em que a página abre, dentro do período escolhido.                          | Não guarda histórico do relatório, não manda aviso e não compara com o período anterior. Cada abertura é uma fotografia nova. |
 | Estudante ou professor | Toca num rosto no fim da retirada, no tablet, quando os rostos aparecem — ou não toca. É a única parte dele.      | Não vê esta tela. O que ele percebe é a consequência: a categoria que aparece esgotada aqui é a que ele acha vazia lá.     |
@@ -240,16 +250,88 @@ Uma sequência só, do login à planilha que sai desta tela.
     o Excel somar e tirar média. A aba **Ocupação e picos de uso** tem o mesmo
     botão, e o arquivo dela (`ocupacao-…xlsx`) traz **Categorias** (a fotografia
     do estoque, com a data e hora da leitura na primeira linha) e a série
-    **Retiradas por dia**. A tela não recarrega.
+    **Retiradas por dia**. A aba **Índice de Manutenção** também — o arquivo
+    dela está no passo 27. A tela não recarrega.
 20. Colou um link com uma data que não existe, ou com o fim antes do início? A
     tela avisa e mostra o mês atual, em vez de dar erro.
 
     [![O seletor de período e, abaixo dele, o aviso amarelo Período inválido. Mostrando o mês atual.](../assets/images/relatorios/19-periodo-invalido.png)](../assets/images/relatorios/19-periodo-invalido.png)
 
-21. A aba **Índice de Manutenção** ainda não tem relatório. Abri-la mostra um
-    aviso, e não um erro.
+21. Clique na aba **Índice de Manutenção**. Ela obedece ao mesmo período do
+    topo — nas capturas abaixo, um **Período** de 90 dias, que é a janela em
+    que o cenário de demonstração tem manutenção. Os quatro cartões respondem duas perguntas diferentes da coordenação
+    — **quantas vezes quebra** e **quanto do estoque fica parado**: **Em
+    manutenção agora** é a fotografia deste instante (o período não muda esse
+    número, e a linha de detalhe diz isso); **Entradas em manutenção** é
+    quantas vezes um aparelho foi para o conserto no período; **Tempo em
+    manutenção (mediana)** é o tempo de conserto mediano das estadias que
+    começaram no período e já terminaram; e **Índice de manutenção** é a
+    parte do estoque em circulação que passou o período parada, em %.
 
-    [![A aba Índice de Manutenção selecionada, mostrando a caixa tracejada com o aviso de relatório em desenvolvimento e os três relatórios que existem](../assets/images/relatorios/20-aba-sem-relatorio.png)](../assets/images/relatorios/20-aba-sem-relatorio.png)
+    [![A aba Índice de Manutenção: a frase de abertura, o botão Baixar planilha e os quatro cartões — 2 em manutenção agora, 12 entradas, 5 dias de mediana e 5% de índice](../assets/images/relatorios/20-indice-de-manutencao.png)](../assets/images/relatorios/20-indice-de-manutencao.png)
+
+22. Leia a linha de detalhe do índice: **78,9 dias-equipamento parados sobre os
+    18 equipamentos em circulação hoje, nos 90,0 dias do período até hoje** é a
+    conta inteira. Os dias parados são a soma, sobre todos os aparelhos em
+    circulação, da parte de cada estadia que cai dentro do período; o
+    denominador é o estoque de hoje vezes os dias do período que já passaram.
+    Um mês pela metade tem metade dos dias no denominador, e um período no
+    futuro mostra "—". Aposentados ficam fora dos dois lados.
+23. Desça até **Entradas em manutenção**. O gráfico **Entradas em manutenção
+    por dia** tem uma barra por dia do período — por semana acima de 31 dias,
+    por mês acima de 182, e o título diz qual —, com os dias sem entrada em
+    zero. **Barras** e **Linha** trocam a visualização, como no gráfico de
+    retiradas, e **Ver como tabela** abre a série em números.
+
+    [![O gráfico Entradas em manutenção por semana em barras: uma barra por semana dos 90 dias, a maioria em zero, e o número 3 em cima da mais alta, na semana de 10 de agosto](../assets/images/relatorios/21-entradas-em-manutencao-barras.png)](../assets/images/relatorios/21-entradas-em-manutencao-barras.png)
+
+24. Desça até **Por equipamento**. Só entra quem foi para o conserto no
+    período ou está em manutenção agora — aqui zero é a norma, e vinte linhas
+    de zero esconderiam as três que importam. Os que estão em manutenção agora
+    vêm primeiro, com **desde** e a data da entrada; os outros, por entradas.
+    A coluna **Quem** é o nome de quem clicou em **Manutenção** da última vez.
+    O rodapé diz quantos ficaram de fora: **9 equipamentos sem manutenção no
+    período**.
+
+    [![A tabela por equipamento: NOTE-09 em manutenção desde 13/09, EXT-05 em manutenção com desde — e quem —, o NOTE-03 emprestado com três entradas e 13,3 dias parado, e mais seis aparelhos com uma ou duas entradas](../assets/images/relatorios/22-manutencao-por-equipamento.png)](../assets/images/relatorios/22-manutencao-por-equipamento.png)
+
+    - **Se uma linha diz "desde —"** → o aparelho está em manutenção e o
+      sistema não sabe desde quando: ele já estava no conserto quando o
+      histórico passou a existir. Os dias dele não contam no índice, e a coluna
+      **Quem** fica em "—". Ver a [regra abaixo](#o-historico-comeca-na-instalacao).
+
+25. Desça até **Por categoria**. Todas entram, inclusive as sem manutenção. O
+    número da coluna **Índice** é a mesma conta do cartão, por categoria; a
+    barra ao lado é proporcional ao maior índice da tabela, como nos rankings,
+    e a tabela vem ordenada por ele: a primeira linha é a prateleira que mais
+    para. **Tempo mediano** é a mediana das estadias daquela categoria que
+    começaram no período e já terminaram.
+
+    [![A tabela por categoria: Notebook com 9 em circulação, 8 entradas, 46,5 dias parado e 6% de índice; Tablet com 3 entradas e 6%; Extensão com 1 entrada e 2%; cada linha com a barra na cor da categoria e o tempo mediano](../assets/images/relatorios/23-manutencao-por-categoria.png)](../assets/images/relatorios/23-manutencao-por-categoria.png)
+
+26. Desça até **Histórico**. É a tabela de auditoria da aba: **toda** mudança
+    de situação feita no painel dentro do período — inclusive aposentar e
+    reativar, que não são manutenção —, com a data e hora, a etiqueta, a
+    mudança (**Disponível → Manutenção**) e **quem** fez. Mais recente
+    primeiro. É a única tabela do painel que responde "quem inativou o
+    `NOTE-10`, e quando".
+
+    [![As dez linhas mais recentes do Histórico: NOTE-09 indo para manutenção em 13/09, NOTE-10 aposentado em 30/08, e as entradas e saídas de manutenção de agosto, todas com Secretário na coluna Quem](../assets/images/relatorios/24-historico-de-situacao.png)](../assets/images/relatorios/24-historico-de-situacao.png)
+
+27. Quer levar à coordenação? Clique em **Baixar planilha (.xlsx)**, no alto
+    da aba. O arquivo `manutencao-AAAA-MM-DD-a-AAAA-MM-DD.xlsx` chega à pasta
+    de downloads com três abas: **Equipamentos** e **Categorias** são as duas
+    tabelas da tela, coluna a coluna (entradas e dias como número, o índice de
+    0 a 100, o tempo mediano em minutos, e o "desde —" como célula vazia); e
+    **Histórico** é o log cru do período — data e hora, etiqueta, categoria,
+    de, para e quem. A tela não recarrega.
+28. O período que você escolheu não tem nenhuma entrada em manutenção? A aba
+    diz "Nenhuma entrada em manutenção em …" no lugar do gráfico e acima das
+    duas tabelas; os cartões de entradas e de mediana mostram **0** e **—**.
+    **Em manutenção agora** continua preenchido, porque é fotografia, e o
+    índice pode ser maior que zero mesmo assim — um aparelho que entrou no
+    conserto antes do período e continua nele conta pelos dias que passou
+    parado dentro da janela.
 
 ## 6. Regras que não são óbvias
 
@@ -416,9 +498,69 @@ Uma sequência só, do login à planilha que sai desta tela.
     caminho é o ano inteiro no seletor (o gráfico de retiradas passa a ser por
     mês) ou a planilha exportada, onde a coordenação faz o pivô que quiser.
 
-    A aba **Índice de Manutenção** continua declarada e não construída: o
-    nome está no menu para dizer o que vem por aí, e o aviso dentro dela diz
-    que ainda não vem.
+<a id="o-historico-comeca-na-instalacao"></a>
+
+!!! question "Por que o índice de agosto é zero se o NOTE-09 passou agosto inteiro parado?"
+
+    Porque o histórico de situação **começa na instalação desta versão**. Um
+    aparelho que já estava em manutenção nesse dia não tem a linha de entrada
+    — o sistema sabe que ele *está* no conserto, não *desde quando*. Inventar
+    uma data de entrada seria inventar dias dentro de uma métrica; a tela
+    prefere dizer a verdade: a linha dele mostra **desde —** e **—** na coluna
+    Quem, os dias dele não contam no índice nem na mediana, e o mês em que
+    ele passou parado sai como zero.
+
+    Isso se resolve sozinho: na primeira vez que ele voltar para **Disponível**
+    e for para **Manutenção** de novo, a entrada existe, e dali em diante ele
+    conta como todos os outros. Os aparelhos que entraram no conserto **depois**
+    da instalação nunca passam por isso.
+
+<a id="quem-fez-fica-registrado"></a>
+
+!!! question "Quem mandou o aparelho para o conserto fica registrado?"
+
+    Fica — com o nome de quem estava logado no painel, na hora do clique. É
+    para isso que cada pessoa tem a sua conta desde a
+    [conta do administrador](../referencia/conta-do-administrador.md): toda
+    mudança de situação feita no Inventário (manutenção, volta, aposentadoria,
+    reativação) vira uma linha no Histórico desta aba, com data, hora e o
+    nome. Se um dia a conta for apagada para recuperar a senha, a linha fica —
+    com o nome que a conta tinha na hora.
+
+    O que **não** entra no Histórico: a retirada e a baixa física, que já têm
+    os seus próprios registros (o empréstimo); e o que aconteceu antes da
+    instalação desta versão.
+
+<a id="as-duas-regras-de-periodo"></a>
+
+!!! question "Um aparelho parado 40 dias, de 20 de agosto a 29 de setembro, conta em qual mês?"
+
+    Nos dois — e de duas maneiras diferentes, porque a aba mede duas coisas.
+
+    - **A entrada conta no mês em que aconteceu.** Ele é **uma** entrada, em
+      agosto; setembro não ganha entrada nenhuma por ele. A mediana segue a
+      mesma regra: a estadia inteira de 40 dias entra na mediana de agosto.
+    - **O tempo parado conta pela parte que cai em cada mês.** Ele pesa 12
+      dias em agosto e 28 em setembro, nos dias parados e no índice. Se o
+      tempo contasse só no mês da entrada, setembro mostraria 0% de índice
+      com o aparelho parado o mês inteiro.
+
+    A parte de um período que ainda não chegou também não conta: um mês pela
+    metade tem 17 dias no denominador, não 30 — e um período todo no futuro
+    mostra "—" no índice, porque não há dias para dividir.
+
+<a id="cliquei-em-manutencao-por-engano"></a>
+
+!!! question "Cliquei em Manutenção por engano. Dá para apagar?"
+
+    Não — e é de propósito. O Histórico é registro de auditoria: o caminho de
+    volta é clicar em **Disponível** na mesma linha do Inventário, e as duas
+    mudanças ficam gravadas, com o seu nome, a um minuto de distância. Essa
+    estadia de um minuto conta como uma entrada no período e entra na mediana
+    (ela é curtíssima, então puxa a mediana para baixo, não para cima).
+
+    Um clique errado por semestre não muda nenhum número que a coordenação
+    lê; um Histórico que pudesse ser editado deixaria de responder "quem".
 
 <a id="por-que-a-planilha-nao-tem-nome"></a>
 
@@ -497,7 +639,8 @@ Uma sequência só, do login à planilha que sai desta tela.
 | --------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | "Período inválido. Mostrando o mês atual." | O endereço trazia uma data que não existe (30 de fevereiro), um formato errado, ou um início depois do fim — quase sempre um link copiado pela metade. | Nada se perdeu: a tela mostra o mês atual. Escolha o período de novo no seletor. Não é erro do sistema: é o link. |
 | "Nenhuma retirada em …"                 | O período escolhido não tem nenhuma retirada registrada. Os cartões mostram 0 e "—".            | Confira a janela no seletor. Se o período está certo, o número é esse mesmo — ninguém retirou.               |
-| "Relatório em desenvolvimento..."       | Você abriu **Índice de Manutenção**. Esse ainda não existe.                                     | Volte para uma das outras três abas. Não é erro: a tela está avisando.                                       |
+| "Nenhuma entrada em manutenção em …"     | O período escolhido não tem nenhum aparelho indo para o conserto. Os cartões de entradas e mediana mostram 0 e "—". | Confira a janela no seletor. Se o período está certo, o número é esse mesmo. O índice ainda pode ser maior que zero: é o aparelho que já estava parado quando o período começou. |
+| "Nenhuma mudança de situação em …"       | Ninguém mudou a situação de nenhum aparelho no painel dentro do período — nem manutenção, nem aposentadoria, nem reativação. | Nada a fazer. Se você espera ver uma mudança de antes da instalação desta versão, ela não existe no histórico — ver a [regra acima](#o-historico-comeca-na-instalacao). |
 | "Nenhuma categoria cadastrada ainda."   | Não há categoria no sistema, então não há prateleira para medir.                                | Crie a primeira na aba **Categorias**. Sem categoria, o tablet também não mostra nada.                       |
 | "Sem unidades em circulação"            | A categoria existe, mas não tem aparelho em circulação — nenhum cadastrado, ou todos aposentados. | Cadastre um aparelho nela pela aba **Inventário**, ou apague a categoria se ela não serve mais.              |
 | "Nenhuma avaliação ainda. Os rostos aparecem no tablet ao fim da retirada, uma vez a cada 30 dias por pessoa." | Os rostos ainda não apareceram para ninguém — o sistema acabou de ser instalado, ou ninguém retirou equipamento desde então. | Nada a fazer. O primeiro cartão aparece com a primeira retirada. Não é erro: a tela está avisando. |

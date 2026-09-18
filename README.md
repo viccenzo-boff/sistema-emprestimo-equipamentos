@@ -133,7 +133,7 @@ especificacoes/
   tarefas/concluidas/        enunciados já executados, guardados como histórico
 docs/                        a wiki (MkDocs); ver "Documentação" acima
 prisma/
-  schema.prisma              modelos Pessoa, Administrador, Categoria, Equipamento, Emprestimo
+  schema.prisma              modelos Pessoa, Administrador, Categoria, Equipamento, Emprestimo, MudancaDeStatus...
   migrations/                histórico de migrations
   seed.ts                    importação da planilha + inventário inicial
   data/pessoas.example.csv   formato esperado da planilha
@@ -253,8 +253,8 @@ endpoint POST público, e esconder o botão na tela não fecha a porta.
 
 ## Modelo de dados
 
-Conforme a seção 3 de [spec.md](especificacoes/spec.md), mais o que as tarefas 6, 8, 8.1, 10, 12 e 14
-acrescentaram:
+Conforme a seção 3 de [spec.md](especificacoes/spec.md), mais o que as tarefas 6, 8, 8.1, 10, 12, 14
+e 17 acrescentaram:
 
 - **Pessoa** — `matricula` (PK, string para preservar zeros à esquerda), `nome` (Title Case),
   `perfil` (`Estudante` | `Professor`), `cursos` (em ordem hierárquica), `status`
@@ -284,6 +284,13 @@ acrescentaram:
 - **Configuracao** — chave-valor para o que precisa mudar sem deploy (Tarefa 14). Hoje uma chave
   só, `url_formulario_feedback`: a URL do formulário externo que o QR code da tela de sucesso
   abre. Sem a linha, o QR não aparece.
+- **MudancaDeStatus** — o histórico de situação do equipamento (Tarefa 17): uma linha por
+  transição feita **no painel** (`DISPONIVEL` ↔ `MANUTENCAO` ↔ `INATIVO`), com `equip_id`
+  (`onUpdate: Cascade`, como o `Emprestimo`), `de`, `para`, `em`, `administrador_id` (**nulo com
+  `onDelete: SetNull`** — apagar a conta para recuperar a senha não pode ser recusado nem levar o
+  histórico) e `administrador_nome` (o retrato: quem era, na hora). O `EMPRESTADO` não entra —
+  retirada e baixa já moram no `Emprestimo`. Nasce vazia na migration, sem linha de abertura para
+  quem já estava em manutenção; é o que o relatório Índice de Manutenção lê.
 
 O status `AGUARDANDO_BAIXA` é o que separa "a pessoa disse que devolveu" de "o secretário
 recolheu o equipamento": enquanto o empréstimo está nesse estado, o equipamento **não** volta a

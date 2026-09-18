@@ -102,6 +102,13 @@ primeiro acesso.
 Isso exige **acesso ao servidor do secretário**, com as ferramentas de
 desenvolvimento instaladas. Quem está no balcão não consegue fazer sozinho.
 
+Uma consequência a conhecer, desde setembro de 2026: as mudanças de situação
+que aquela conta fez no Inventário continuam no histórico do relatório
+**Índice de Manutenção**, **com o nome** que a conta tinha — o que se perde é
+só o vínculo com a conta nova, que nasce com outro número. O "quem" da
+auditoria não depende de a conta existir; ver
+[Regras de negócio](regras-de-negocio.md#toda-mudanca-de-situacao-feita-no-painel-fica-registrada-com-quem-e-quando).
+
 !!! note "Se ainda houver outra conta funcionando, o caminho é mais curto"
 
     Não há como uma conta trocar a senha de outra — mas quem ainda entra

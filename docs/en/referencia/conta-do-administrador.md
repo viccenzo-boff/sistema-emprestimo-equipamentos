@@ -111,6 +111,13 @@ person changes it on first use.
 That requires **access to the front desk server**, with the development tools
 installed. Somebody at the desk cannot do it on their own.
 
+One consequence to know about, since September 2026: the status changes that
+account made in the Inventory stay in the history of the **Índice de
+Manutenção** (Maintenance rate) report, **with the name** the account had —
+what is lost is only the link to the new account, which is born with another
+number. The audit's "who" does not depend on the account existing; see
+[Business rules](regras-de-negocio.md#every-status-change-made-in-the-panel-is-recorded-with-who-and-when).
+
 !!! note "If another account still works, the path is shorter"
 
     No account can change another one's password — but whoever can still get in

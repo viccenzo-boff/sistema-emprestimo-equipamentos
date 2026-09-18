@@ -75,7 +75,7 @@ a handful of people per hour, that is room to spare.
 
 ## The data model
 
-Five tables. The arrows point from whichever table holds the reference to the
+Eight tables. The arrows point from whichever table holds the reference to the
 one being referenced.
 
 ```mermaid
@@ -83,6 +83,8 @@ erDiagram
     Pessoa ||--o{ Emprestimo : "picks up"
     Equipamento ||--o{ Emprestimo : "is picked up in"
     Categoria ||--o{ Equipamento : "groups"
+    Equipamento ||--o{ MudancaDeStatus : "changes status in"
+    Administrador |o--o{ MudancaDeStatus : "made"
     Administrador {
         int id
         string nome
@@ -124,12 +126,27 @@ erDiagram
         string chave
         string valor
     }
+    MudancaDeStatus {
+        int id
+        string equip_id
+        string de
+        string para
+        datetime em
+        int administrador_id
+        string administrador_nome
+    }
 ```
 
-`Administrador` stands apart on purpose. It is the account of whoever operates
-the admin panel, and it appears in **no** loan. Recording who performed each
-check-in is a column that does not exist yet, and it sits on the list of
-[what was left out](como-esta-wiki-foi-feita.md#what-was-left-out).
+`Administrador` appears in **no** loan: recording who performed each check-in
+is a column that does not exist yet, and it sits on the list of
+[what was left out](como-esta-wiki-foi-feita.md#what-was-left-out). Where it
+does appear, since `v1.2`, is in `MudancaDeStatus`: one row per status change
+made in the panel (maintenance, retirement, reactivation), with from where, to
+where, when, and **who** — the link to the account and, next to it, the name it
+had at the time. The link is optional on purpose: recovering a forgotten
+password means deleting the account and seeding again, and neither may the
+database refuse that because of the history, nor may the history go away with
+it. The name stays. That table is what the maintenance rate report reads.
 
 `Avaliacao` and `Configuracao` stand apart as well, for opposite reasons
 (`v1.2`). `Avaliacao` **cannot** point at a person or at a loan: it is the

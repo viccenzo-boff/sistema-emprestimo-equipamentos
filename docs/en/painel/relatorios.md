@@ -12,15 +12,18 @@
 This process turns what the system already recorded into an argument: how many
 pickups went through the counter in the chosen period, how many devices are off
 the shelf right now, how close each category came to running out — and, since
-`v1.2`, how people rate the pickup and **what goes out, who takes it and for how
-long**, in the usage ranking.
+`v1.2`, how people rate the pickup, **what goes out, who takes it and for how
+long**, in the usage ranking, and **how much of the stock sits in repair**, in
+the maintenance rate.
 
 When it ends, the front desk has a number to take to the academic coordination
-— or a spreadsheet, because the tabs with a period export what is on screen as
-`.xlsx` — and the coordination has something to decide a purchase with, or to
-tell whether the service needs attention. It is the only panel screen that
-changes almost nothing: it reads, and the only thing it stores is the suggestion
-form link.
+— or a spreadsheet, because the three tabs with a period export what is on
+screen as `.xlsx` — and the coordination has something to decide a purchase
+with, or to tell whether the service needs attention. It is the only panel
+screen that changes almost nothing: it reads, and the only thing it stores is
+the suggestion form link. Since Task 17 it is also the screen that answers
+**who** changed a device's status, and **when** — the history on the
+**Índice de Manutenção** (Maintenance rate) tab.
 
 ## 2. Preconditions
 
@@ -42,8 +45,9 @@ Terms that cross several processes live in the
 [maintenance](../referencia/glossario.md#maintenance),
 [retirement](../referencia/glossario.md#retirement-inactive-item),
 [counter](../referencia/glossario.md#counter),
-[loan](../referencia/glossario.md#loan) and
-[shelf time](../referencia/glossario.md#shelf-time).
+[loan](../referencia/glossario.md#loan),
+[shelf time](../referencia/glossario.md#shelf-time) and
+[maintenance stay](../referencia/glossario.md#maintenance-stay).
 
 These belong to this page only:
 
@@ -66,12 +70,18 @@ These belong to this page only:
 | Asked                             | One time the faces showed up, whether somebody tapped or not. Each person is asked at most once every 30 days.                       |
 | **Taxa de resposta** (Response rate) | Answered ÷ asked, in %. It is the number that reveals survey fatigue before any complaint: when it drops, the average stops meaning much. |
 | **Formulário de sugestões** (Suggestion form) | The external form (a Google form, on an institutional account of the sector) that the QR code on the pickup screen opens. The link is set up here. |
+| **Entrada em manutenção** (Maintenance entry) | The **Manutenção** (Maintenance) click on the Inventory tab: the start of a [stay](../referencia/glossario.md#maintenance-stay). It counts in the period it happened in. |
+| **Dias parado** (Days idle) | The days the device spent in maintenance **inside** the period — only the part of the stay that falls in the window, up to today. Added up by device and by category. |
+| **Índice de manutenção** (Maintenance rate) | Days idle ÷ (devices in circulation today × days of the period up to today), in %. It is the share of the stock that spent the period in repair. |
+| **Em manutenção agora** (In maintenance now) | How many devices are in maintenance at this instant. A snapshot — the period does not change this number. |
+| "desde —" (since —) | A device in maintenance whose entry the system does not have: it was already in repair when the history started to exist. Its days do not count. |
+| **Histórico** (History) | The tab's audit table: every status change made in the panel inside the period — maintenance, retirement and reactivation — with who did it and when. |
 
 ## 4. Roles and responsibilities
 
 | Role                  | Does                                                                                     | Does not                                                                                                              |
 | --------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| Front desk            | Chooses the period, opens the tab, reads the numbers, and takes to the coordination what is out of stock or low, who picks up the most, and the satisfaction average — on screen or in the exported spreadsheet. Sets the suggestion form link up. | Fixes nothing here. Whatever looks wrong on this screen is corrected in **Inventário** (Inventory) and **Fila de Devoluções** (Return queue). Does not see who voted, because nobody does. |
+| Front desk            | Chooses the period, opens the tab, reads the numbers, and takes to the coordination what is out of stock or low, who picks up the most, the satisfaction average and how much of the stock sits idle — on screen or in the exported spreadsheet. Sets the suggestion form link up. It is also who shows up, by name, in the maintenance history: every status change made in the Inventory is recorded here. | Fixes nothing here. Whatever looks wrong on this screen is corrected in **Inventário** (Inventory) and **Fila de Devoluções** (Return queue). Does not see who voted, because nobody does. |
 | Academic coordination | Decides the purchase and the usage policy, based on what the front desk shows — or on the spreadsheet it receives. | Does not open the panel. It has no account — the panel belongs to the front desk.                                          |
 | Panel (the computer)  | Adds up what is stored, at the instant the page opens, inside the chosen period.             | Keeps no report history, sends no alert, and compares nothing with the previous period. Every opening is a fresh snapshot.  |
 | Student or teacher    | Taps a face at the end of a pickup, on the tablet, when the faces show up — or does not. That is their only part. | Does not see this screen. What they notice is the consequence: the category shown as out of stock here is the empty one there. |
@@ -258,17 +268,100 @@ A single sequence, from sign-in to the spreadsheet that comes out of this screen
     and average them. The **Ocupação e picos de uso** tab has the same button,
     and its file (`ocupacao-…xlsx`) brings **Categorias** (the stock snapshot,
     with the reading date and time on the first row) and the **Retiradas por
-    dia** series. The screen does not reload.
+    dia** series. So does the **Índice de Manutenção** tab — its file is in
+    step 27. The screen does not reload.
 20. Pasted a link with a date that does not exist, or with the end before the
     start? The screen warns you and shows the current month, instead of
     failing.
 
     [![The period selector and, below it, the amber notice Invalid period. Showing the current month.](../assets/images/relatorios/19-periodo-invalido.png)](../assets/images/relatorios/19-periodo-invalido.png)
 
-21. The **Índice de Manutenção** (Maintenance rate) tab has no report yet.
-    Opening it shows a notice, not an error.
+21. Select the **Índice de Manutenção** (Maintenance rate) tab. It follows the
+    same period as the top — in the captures below, a 90-day **Período**, the
+    window in which the demo scenario has maintenance. The four cards answer
+    two different questions from the coordination — **how often things break**
+    and **how much of the stock sits idle**: **Em manutenção agora** (In
+    maintenance now) is the snapshot of this instant (the period does not
+    change that number, and the detail line says so); **Entradas em
+    manutenção** (Maintenance entries) is how many times a device went to
+    repair in the period; **Tempo em manutenção (mediana)** (Time in
+    maintenance, median) is the median repair time of the stays that started
+    in the period and already ended; and **Índice de manutenção** (Maintenance
+    rate) is the share of the circulating stock that spent the period idle,
+    in %.
 
-    [![The maintenance rate tab selected, showing the dashed box with the report under development notice and the three reports that exist](../assets/images/relatorios/20-aba-sem-relatorio.png)](../assets/images/relatorios/20-aba-sem-relatorio.png)
+    [![The maintenance rate tab: the opening sentence, the Download spreadsheet button and the four cards — 2 in maintenance now, 12 entries, a 5-day median and a 5% rate](../assets/images/relatorios/20-indice-de-manutencao.png)](../assets/images/relatorios/20-indice-de-manutencao.png)
+
+22. Read the rate's detail line: **78,9 dias-equipamento parados sobre os 18
+    equipamentos em circulação hoje, nos 90,0 dias do período até hoje** (78.9
+    device-days idle over the 18 devices in circulation today, in the 90.0 days
+    of the period up to today) is the whole calculation. The idle days are the
+    sum, over every device in circulation, of the part of each stay that falls
+    inside the period; the denominator is today's stock times the days of the
+    period that already went by. A half-elapsed month has half the days in the
+    denominator, and a period in the future shows "—". Retired devices are out
+    on both sides.
+23. Scroll down to **Entradas em manutenção** (Maintenance entries). The
+    **Entradas em manutenção por dia** (Maintenance entries per day) chart has
+    one bar per day of the period — per week above 31 days, per month above
+    182, and the title says which — with the days without an entry at zero.
+    **Barras** (Bars) and **Linha** (Line) switch the visualization, as on the
+    pickups chart, and **Ver como tabela** (View as table) opens the series as
+    numbers.
+
+    [![The Maintenance entries per week chart as bars: one bar per week of the 90 days, most at zero, and the number 3 on top of the tallest, in the week of August 10](../assets/images/relatorios/21-entradas-em-manutencao-barras.png)](../assets/images/relatorios/21-entradas-em-manutencao-barras.png)
+
+24. Scroll down to **Por equipamento** (By device). Only whoever went to
+    repair in the period or is in maintenance now is listed — here zero is
+    the norm, and twenty zero rows would hide the three that matter. The ones
+    in maintenance now come first, with **desde** (since) and the entry date;
+    the rest, by entries. The **Quem** (Who) column is the name of whoever
+    selected **Manutenção** the last time. The footer says how many were left
+    out: **9 equipamentos sem manutenção no período** (9 devices without
+    maintenance in the period).
+
+    [![The table by device: NOTE-09 in maintenance since 13/09, EXT-05 in maintenance with since — and who —, NOTE-03 on loan with three entries and 13.3 days idle, and six more devices with one or two entries](../assets/images/relatorios/22-manutencao-por-equipamento.png)](../assets/images/relatorios/22-manutencao-por-equipamento.png)
+
+    - **If a row says "desde —"** → the device is in maintenance and the
+      system does not know since when: it was already in repair when the
+      history started to exist. Its days do not count in the rate, and the
+      **Quem** column stays "—". See the
+      [rule below](#the-history-starts-at-installation).
+
+25. Scroll down to **Por categoria** (By category). All of them are listed,
+    including the ones without maintenance. The number in the **Índice**
+    (Rate) column is the card's calculation, per category; the bar next to it
+    is proportional to the largest rate in the table, as in the rankings, and
+    the table comes ordered by it: the first row is the shelf that idles the
+    most. **Tempo mediano** (Median time) is the median of that category's
+    stays that started in the period and already ended.
+
+    [![The table by category: Notebook with 9 in circulation, 8 entries, 46.5 days idle and a 6% rate; Tablet with 3 entries and 6%; Extensão with 1 entry and 2%; each row with the bar in the category's color and the median time](../assets/images/relatorios/23-manutencao-por-categoria.png)](../assets/images/relatorios/23-manutencao-por-categoria.png)
+
+26. Scroll down to **Histórico** (History). It is the tab's audit table:
+    **every** status change made in the panel inside the period — including
+    retiring and reactivating, which are not maintenance — with the date and
+    time, the asset tag, the change (**Disponível → Manutenção**) and **who**
+    did it. Most recent first. It is the only table in the panel that answers
+    "who retired `NOTE-10`, and when".
+
+    [![The ten most recent rows of the history: NOTE-09 going to maintenance on 13/09, NOTE-10 retired on 30/08, and August's maintenance entries and exits, all with Secretário in the Who column](../assets/images/relatorios/24-historico-de-situacao.png)](../assets/images/relatorios/24-historico-de-situacao.png)
+
+27. Want to take it to the coordination? Select **Baixar planilha (.xlsx)**
+    (Download spreadsheet), at the top of the tab. The
+    `manutencao-YYYY-MM-DD-a-YYYY-MM-DD.xlsx` file lands in the downloads
+    folder with three sheets: **Equipamentos** and **Categorias** are the two
+    tables on screen, column by column (entries and days as numbers, the rate
+    from 0 to 100, the median time in minutes, and "desde —" as an empty
+    cell); and **Histórico** is the period's raw log — date and time, asset
+    tag, category, from, to and who. The screen does not reload.
+28. The period you chose has no maintenance entry at all? The tab says
+    "Nenhuma entrada em manutenção em …" (No maintenance entry in …) in place
+    of the chart and above the two tables; the entries and median cards show
+    **0** and **—**. **Em manutenção agora** stays filled, because it is a
+    snapshot, and the rate can still be above zero — a device that went to
+    repair before the period and is still there counts for the days it spent
+    idle inside the window.
 
 ## 6. Rules that are not obvious
 
@@ -437,9 +530,70 @@ A single sequence, from sign-in to the spreadsheet that comes out of this screen
     the exported spreadsheet, where the coordination builds whatever pivot it
     wants.
 
-    The **Índice de Manutenção** tab is still declared and not built: the name
-    is in the menu to say what is coming, and the notice inside it says it is
-    not here yet.
+<a id="the-history-starts-at-installation"></a>
+
+!!! question "Why is August's rate zero if NOTE-09 spent the whole of August idle?"
+
+    Because the status history **starts at the installation of this
+    version**. A device that was already in maintenance on that day has no
+    entry row — the system knows it *is* in repair, not *since when*. Making
+    up an entry date would be making up days inside a metric; the screen
+    prefers to tell the truth: its row shows **desde —** (since —) and **—**
+    in the Who column, its days do not count in the rate or in the median,
+    and the month it spent idle comes out as zero.
+
+    This fixes itself: the first time it goes back to **Disponível**
+    (Available) and to **Manutenção** (Maintenance) again, the entry exists,
+    and from then on it counts like every other device. Devices that went to
+    repair **after** the installation never go through this.
+
+<a id="who-did-it-is-recorded"></a>
+
+!!! question "Is whoever sent the device to repair recorded?"
+
+    Yes — with the name of whoever was signed in to the panel at the moment
+    of the click. That is what individual accounts exist for, since the
+    [administrator account](../referencia/conta-do-administrador.md): every
+    status change made in the Inventory (maintenance, back, retirement,
+    reactivation) becomes a row in this tab's history, with date, time and
+    the name. If one day the account is deleted to recover its password, the
+    row stays — with the name the account had at the time.
+
+    What does **not** go into the history: the pickup and the physical
+    check-in, which have their own records (the loan); and whatever happened
+    before this version was installed.
+
+<a id="the-two-period-rules"></a>
+
+!!! question "A device idle for 40 days, from August 20 to September 29, counts in which month?"
+
+    In both — and in two different ways, because the tab measures two things.
+
+    - **The entry counts in the month it happened in.** It is **one** entry,
+      in August; September gets no entry for it. The median follows the same
+      rule: the whole 40-day stay goes into August's median.
+    - **The idle time counts by the part that falls in each month.** It
+      weighs 12 days in August and 28 in September, in the idle days and in
+      the rate. If the time counted only in the entry month, September would
+      show a 0% rate with the device idle the whole month.
+
+    The part of a period that has not arrived yet does not count either: a
+    half-elapsed month has 17 days in the denominator, not 30 — and a period
+    entirely in the future shows "—" for the rate, because there are no days
+    to divide by.
+
+<a id="i-selected-maintenance-by-mistake"></a>
+
+!!! question "I selected Manutenção by mistake. Can it be deleted?"
+
+    No — on purpose. The history is an audit record: the way back is to
+    select **Disponível** (Available) on the same Inventory row, and both
+    changes stay recorded, with your name, a minute apart. That one-minute
+    stay counts as one entry in the period and goes into the median (it is
+    very short, so it pulls the median down, not up).
+
+    One wrong click per semester changes no number the coordination reads; a
+    history that could be edited would stop answering "who".
 
 <a id="why-does-the-spreadsheet-carry-no-name"></a>
 
@@ -522,7 +676,8 @@ A single sequence, from sign-in to the spreadsheet that comes out of this screen
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | "Período inválido. Mostrando o mês atual." | The address carried a date that does not exist (February 30th), a wrong format, or a start after the end — almost always a link copied halfway. | Nothing is lost: the screen shows the current month. Choose the period again in the selector. It is not a system error: it is the link. |
 | "Nenhuma retirada em …"                   | The chosen period has no pickup recorded. The cards show 0 and "—".                                  | Check the window in the selector. If the period is right, that is the number — nobody picked anything up.             |
-| "Relatório em desenvolvimento..."         | You opened **Índice de Manutenção**. That one does not exist yet.                                    | Go back to one of the other three tabs. It is not an error: the screen is telling you so.                            |
+| "Nenhuma entrada em manutenção em …"       | The chosen period has no device going to repair. The entries and median cards show 0 and "—".      | Check the window in the selector. If the period is right, that is the number. The rate can still be above zero: it is the device that was already idle when the period started. |
+| "Nenhuma mudança de situação em …"         | Nobody changed any device's status in the panel inside the period — no maintenance, no retirement, no reactivation. | Nothing to do. If you expect a change from before this version was installed, it is not in the history — see the [rule above](#the-history-starts-at-installation). |
 | "Nenhuma categoria cadastrada ainda."     | No category exists in the system, so there is no shelf to measure.                                   | Create the first one in the **Categorias** tab. Without a category, the tablet shows nothing either.                 |
 | "Sem unidades em circulação"              | The category exists but has no device in circulation, either none registered or all of them retired. | Register a device in it through the **Inventário** tab, or delete the category if it is no longer useful.            |
 | "Nenhuma avaliação ainda. Os rostos aparecem no tablet ao fim da retirada, uma vez a cada 30 dias por pessoa." | The faces have not shown up for anybody yet — the system was just installed, or nobody picked equipment up since. | Nothing to do. The first card shows up with the first pickup. It is not an error: the screen is telling you so. |

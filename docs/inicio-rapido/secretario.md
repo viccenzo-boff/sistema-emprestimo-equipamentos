@@ -65,6 +65,10 @@ categoria nova — o link **Gerenciar**, ao lado do rótulo, leva direto até l�
 assim de propósito: dois lugares criando categoria é como nascem "notebook" e
 "Notebook" no mesmo armário.
 
+O que você faz nesta aba com a situação de um aparelho — **Manutenção**,
+**Disponível**, **Inativar**, **Reativar** — aparece no relatório **Índice de
+Manutenção** com o seu nome e a hora. É para isso que a conta é sua.
+
 [Processo 4 — Gestão de inventário](../painel/inventario.md), com os cinco
 procedimentos da aba: cadastrar, mandar para manutenção, aposentar, trocar a
 etiqueta e cuidar das categorias.
@@ -123,10 +127,11 @@ levaria junto o semestre passado. Inativar é aposentadoria, não exclusão.
 
 A aba **Relatórios**, a última do menu, é a única que só lê. A linha acima
 das abas escolhe o **período** — dia, mês, ano ou intervalo, com o mês
-corrente como padrão — e vale para a Ocupação e para o Ranking de Consumo;
-a Satisfação tem os seus dois recortes fixos e não a obedece. Cada aba com
-período tem um botão **Baixar planilha (.xlsx)** com o que está na tela. O
-passo a passo está em [Relatórios](../painel/relatorios.md).
+corrente como padrão — e vale para a Ocupação, para o Ranking de Consumo e
+para o Índice de Manutenção; a Satisfação tem os seus dois recortes fixos e
+não a obedece. Cada aba com período tem um botão **Baixar planilha (.xlsx)**
+com o que está na tela. O passo a passo está em
+[Relatórios](../painel/relatorios.md).
 
 ## Se algo der errado
 

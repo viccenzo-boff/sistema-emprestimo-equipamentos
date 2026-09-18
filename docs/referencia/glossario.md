@@ -145,6 +145,19 @@ empréstimos em `ATIVO`, com o nome de quem está com o aparelho e desde quando.
 [fila de devoluções](#fila-de-devolucoes). Esta aba responde "onde está o
 `NOTE-04`?", e nada mais.
 
+## Estadia em manutenção
+
+O tempo entre um aparelho ir para [manutenção](#manutencao) e voltar dela — o
+clique em **Manutenção** e o clique seguinte em **Disponível** (ou **Inativar**)
+na mesma linha do [inventário](#inventario). Sem o segundo clique, a estadia
+está **aberta**.
+
+É a unidade do relatório **Índice de Manutenção**: a **entrada** conta no
+período em que aconteceu, e o tempo parado conta pela parte da estadia que cai
+dentro do período. Um aparelho que já estava em manutenção quando o histórico
+passou a existir (setembro de 2026) não tem estadia — a tela mostra "desde —",
+e os dias dele não contam. Ver [Relatórios, §6](../painel/relatorios.md#as-duas-regras-de-periodo).
+
 ## Etiqueta
 
 O código colado no aparelho, como `NOTE-01` ou `EXT-05` (`Equipamento.id`). É o

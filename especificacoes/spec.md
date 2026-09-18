@@ -53,6 +53,19 @@ Armazena o inventário físico.
 > `nome` (String, único) — porque cada grafia digitada no cadastro ("notebook", "Notebook") abria
 > uma categoria nova no tablet; e acrescentou o status `INATIVO`, a aposentadoria do aparelho:
 > ele sai de circulação sem sair do banco, porque `Emprestimo.equip_id` aponta para ele.
+>
+> A **Tarefa 17** criou o histórico de situação — a tabela **`MudancaDeStatus`**: `id` (Int, PK,
+> Auto-increment: é log de auditoria, e a ordem de gravação é informação), `equip_id` (String, FK
+> para `Equipamento.id`, com `onUpdate: Cascade` — corrigir a etiqueta leva o histórico junto),
+> `de` e `para` (String: a situação antes e depois), `em` (DateTime), `administrador_id` (Int,
+> FK para `Administrador.id`, **Nullable, `onDelete: SetNull`**) e `administrador_nome` (String).
+> Uma linha por transição feita **no painel** (`DISPONIVEL` ↔ `MANUTENCAO` ↔ `INATIVO`); o
+> `EMPRESTADO` não entra, porque retirada e baixa já moram em `Emprestimo`. A FK é nula e o nome
+> é gravado ao lado de propósito: a recuperação de senha documentada é apagar a conta e
+> ressemear — com `Restrict` o banco recusaria assim que a conta tivesse histórico, com `Cascade`
+> a senha esquecida apagaria o histórico, e sem o retrato o "quem" viraria "—". O nome é quem era,
+> na hora. Nenhuma linha é semeada na instalação: o que já estava em manutenção antes fica sem
+> entrada, e o relatório mostra "desde —".
 
 ### Tabela: Emprestimo
 Registra os logs de movimentação (um log isolado por item).
@@ -108,15 +121,16 @@ Registra os logs de movimentação (um log isolado por item).
   1. **Fila de Devoluções:** Uma visualização em destaque mostrando todos os empréstimos `AGUARDANDO_BAIXA`. O secretário pega o equipamento na bancada e clica em "Confirmar Recebimento". O `Emprestimo` vai para `CONCLUIDO` e o `Equipamento` volta para `DISPONIVEL`.
   2. **Gestão de Inventário:** Mudar o status de equipamentos para `MANUTENCAO` (removendo-os da visão do tablet) ou cadastrar novos.
   3. **Visão Geral:** Ver quem está com qual equipamento no momento (logs `ATIVO`).
-  4. **Relatórios:** Ler o que o sistema já registrou, sem mudar nada. Um **seletor de período** (dia, mês, ano ou intervalo; padrão o mês corrente) acima das abas, com o período e a aba na URL (Tarefa 16). A aba **Ocupação e picos de uso** traz as retiradas no período, o gráfico de retiradas por dia (por semana ou por mês nos períodos longos) e a taxa de ocupação de cada categoria — esta é a fotografia do agora —, com alerta de estoque esgotado ou crítico. A aba **Satisfação** (Tarefa 14): média, taxa de resposta e distribuição das avaliações anônimas em dois recortes fixos, que **não** obedecem ao período, com "Baixar planilha" (CSV `dia,nota`) e o cartão que configura a URL do formulário de sugestões — a única escrita da tela. A aba **Ranking de Consumo** (Tarefa 16): retiradas, pessoas distintas, tempo de uso e tempo de prateleira em mediana, e os rankings por equipamento, categoria e pessoa, com o gráfico de retiradas por categoria. As duas abas com período exportam o que está na tela em `.xlsx`, gerado no navegador. A aba **Índice de Manutenção** continua declarada e não construída (Tarefa 17).
+  4. **Relatórios:** Ler o que o sistema já registrou, sem mudar nada. Um **seletor de período** (dia, mês, ano ou intervalo; padrão o mês corrente) acima das abas, com o período e a aba na URL (Tarefa 16). A aba **Ocupação e picos de uso** traz as retiradas no período, o gráfico de retiradas por dia (por semana ou por mês nos períodos longos) e a taxa de ocupação de cada categoria — esta é a fotografia do agora —, com alerta de estoque esgotado ou crítico. A aba **Satisfação** (Tarefa 14): média, taxa de resposta e distribuição das avaliações anônimas em dois recortes fixos, que **não** obedecem ao período, com "Baixar planilha" (CSV `dia,nota`) e o cartão que configura a URL do formulário de sugestões — a única escrita da tela. A aba **Ranking de Consumo** (Tarefa 16): retiradas, pessoas distintas, tempo de uso e tempo de prateleira em mediana, e os rankings por equipamento, categoria e pessoa, com o gráfico de retiradas por categoria. A aba **Índice de Manutenção** (Tarefa 17): quantos aparelhos estão em manutenção agora, as entradas em manutenção no período, o tempo mediano em conserto e o índice de manutenção (dias-equipamento parados sobre o estoque em circulação), com as tabelas por equipamento e por categoria, o gráfico de entradas por dia e o **Histórico** — toda mudança de situação feita no painel, com quem fez e quando. As três abas com período exportam o que está na tela em `.xlsx`, gerado no navegador.
 
 > O item 4 entrou na **Tarefa 13**, e é a primeira funcionalidade do painel que
 > esta seção não previa. O motivo é externo ao sistema: a coordenação decide a
 > compra de equipamento e não tinha número nenhum para decidir com. As três
 > funcionalidades acima operam o sistema; esta só lê, e por isso não cria
-> regra de negócio nova — ela expõe as que já existem. A aba abre espaço para
-> outros relatórios: o Ranking de Consumo entrou na Tarefa 16, e o Índice de
-> Manutenção continua declarado no menu e ainda não foi construído.
+> regra de negócio nova — ela expõe as que já existem. A aba abriu espaço para
+> outros relatórios: o Ranking de Consumo entrou na Tarefa 16 e o Índice de
+> Manutenção na Tarefa 17, que para existir criou a única regra de negócio nova
+> desta seção — o histórico de situação, gravado com quem e quando.
 
 ## 5. Diretrizes para a IA (Claude)
 * Siga rigorosamente a arquitetura de dados descrita usando Prisma.

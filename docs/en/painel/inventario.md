@@ -183,7 +183,10 @@ on loan has no button at all.
 
     It says what happened to the device — "NOTE-05 foi para manutenção e saiu da
     lista do tablet." (NOTE-05 went for repair and left the tablet list.) The
-    row badge turns amber and the **Editar** (Edit) button disappears.
+    row badge turns amber and the **Editar** (Edit) button disappears. The
+    click is recorded, with your name and the time, in the
+    [Índice de Manutenção](relatorios.md#who-did-it-is-recorded) (Maintenance rate)
+    report — that is where "since when" and "who" come from.
 
 5. Set the device aside for repair.
 

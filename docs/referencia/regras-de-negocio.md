@@ -135,6 +135,42 @@ e eles sumiriam do portal inteiro, porque a grade é organizada por categoria.
 
 ---
 
+## Toda mudança de situação feita no painel fica registrada, com quem e quando
+
+**O que o sistema faz.** Cada clique em **Manutenção**, **Disponível**,
+**Inativar** ou **Reativar** na aba Inventário grava uma linha no histórico de
+situação: o aparelho, de onde saiu, para onde foi, a hora, e o **nome de quem
+estava logado**. O relatório **Índice de Manutenção** lê esse histórico — as
+[estadias em manutenção](glossario.md#estadia-em-manutencao), o índice e a
+tabela **Histórico**, que responde "quem inativou o `NOTE-10`, e quando".
+
+**Por que faz assim.** Porque, até setembro de 2026, o sistema guardava só a
+situação **atual** de cada aparelho: ninguém sabia desde quando o `NOTE-09`
+estava em conserto, nem quantas vezes já tinha ido. E porque cada pessoa tem a
+sua conta desde a [conta do administrador](conta-do-administrador.md) justamente
+para "quem fez isto" ter resposta.
+
+**O que quebraria.** Um histórico editável deixaria de responder "quem"; um
+histórico que gravasse só a chave da conta perderia o nome quando a conta fosse
+apagada para recuperar a senha. Por isso o nome é gravado **ao lado** do
+vínculo, como um retrato da hora: se a conta some, o vínculo se desfaz e o
+nome fica. E por isso um clique errado não se apaga — se desfaz com o clique de
+volta, e as duas linhas ficam.
+
+!!! note "O que fica de fora, de propósito"
+
+    - **A retirada e a baixa física.** Elas já têm os seus registros — o
+      [empréstimo](glossario.md#emprestimo), com os três horários. Gravar o
+      mesmo evento em dois lugares é como dois registros passam a discordar.
+    - **O que aconteceu antes desta versão.** O histórico começa vazio na
+      instalação; um aparelho que já estava em manutenção nesse dia aparece
+      no relatório com "desde —", e os dias dele não contam. Inventar uma
+      data de entrada seria inventar dias dentro de uma métrica.
+    - **O que os scripts de instalação e de demonstração escrevem.** Eles não
+      são o painel, e ninguém clicou.
+
+---
+
 ## Inativar pessoa e inativar equipamento não são a mesma regra
 
 **O que o sistema faz.** Os dois campos têm o mesmo nome e regras opostas quanto

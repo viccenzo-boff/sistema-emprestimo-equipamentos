@@ -155,6 +155,21 @@ Different from [retirement](#retirement-inactive-item), which is permanent.
 A device with an open [loan](#loan) cannot go under maintenance: its status is
 locked until the cycle closes.
 
+## Maintenance stay
+
+The time between a device going to [maintenance](#maintenance) and coming
+back from it — the **Manutenção** (Maintenance) click and the next
+**Disponível** (Available) or **Inativar** (Deactivate) click on the same
+[inventory](#inventory) row. Without the second click, the stay is **open**.
+On screen, the pages call it **estadia em manutenção**.
+
+It is the unit of the **Índice de Manutenção** (Maintenance rate) report: the
+**entry** counts in the period it happened in, and the idle time counts by the
+part of the stay that falls inside the period. A device that was already in
+maintenance when the history started to exist (September 2026) has no stay —
+the screen shows "desde —" (since —), and its days do not count. See
+[Reports, §6](../painel/relatorios.md#the-two-period-rules).
+
 ## On loan
 
 The [status](#status) of a device that is off the shelf because somebody picked

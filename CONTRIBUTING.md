@@ -324,7 +324,8 @@ O resultado é sempre o mesmo cenário:
 | O que                        | Quanto                                                      |
 | ---------------------------- | ----------------------------------------------------------- |
 | Pessoas                      | 15, sendo 2 inativas e 3 professores                        |
-| Empréstimos                  | 48 — os 10 do cenário (3 `ATIVO`, 4 `AGUARDANDO_BAIXA`, 3 `CONCLUIDO`) mais 38 `CONCLUIDO` sorteados nos últimos 90 dias úteis (Tarefa 16), com usos e prateleiras variados e quatro pessoas concentrando as retiradas; sorteio determinístico, só as datas andam com o calendário |
+| Empréstimos                  | 47 — os 10 do cenário (3 `ATIVO`, 4 `AGUARDANDO_BAIXA`, 3 `CONCLUIDO`) mais 37 `CONCLUIDO` sorteados nos últimos 90 dias úteis (Tarefa 16), com usos e prateleiras variados e quatro pessoas concentrando as retiradas; sorteio determinístico, só as datas andam com o calendário. Eram 38 até a Tarefa 17: o sorteio deixou de gerar ciclos que terminariam depois de hoje |
+| Mudanças de situação (Tarefa 17) | 25 linhas em nome de `secretario` — 11 estadias de manutenção concluídas nos últimos 90 dias (1 a 20 dias cada, três aparelhos concentrando: o `NOTE-03` quebra três vezes), a entrada aberta do `NOTE-09` há 4 dias, **nenhuma linha para o `EXT-05`** (é o caso do dia da migration, "desde —"), e as aposentadorias do `NOTE-10` e do `TAB-05` em datas diferentes; nenhuma estadia cruza uma retirada do mesmo aparelho |
 | Equipamentos                 | 20 — 9 disponíveis, 7 emprestados, 2 manutenção, 2 inativos |
 | Fila de Devoluções           | 4 linhas, com esperas diferentes (há 5 h, 3 h, 2 h, 1 h)    |
 | "Meus equipamentos" (tablet) | matrícula `0012345` (Ana Souza), com 2 itens                |
@@ -338,12 +339,12 @@ sessões, se algo tiver saído do lugar de vez.
 
 **Com uma exceção, medida na D05: o `db:demo` não desfaz uma retirada feita pelo
 tablet.** Ele faz `upsert` nos empréstimos da faixa de ids reservada (9001 em
-diante — hoje 9001–9048, os dez do cenário mais o histórico da Tarefa 16; o
+diante — hoje 9001–9047, os dez do cenário mais o histórico da Tarefa 16; o
 console diz a faixa) e reescreve o status de todo equipamento — mas um
 `Emprestimo` novo, criado pela tela, nasce com id próprio, **depois do último
 da faixa**, e ele não apaga. **A sequência do SQLite avança junto com a faixa:**
 o id explícito no `upsert` empurra o `AUTOINCREMENT`, então o próximo
-empréstimo criado pela tela num banco de captura nasce em 9049, e não em 11.
+empréstimo criado pela tela num banco de captura nasce em 9048, e não em 11.
 Nenhuma tela exibe o id, então isso não aparece em lugar nenhum. O efeito
 é traiçoeiro justamente porque metade se desfaz: o equipamento volta a
 `DISPONIVEL`, o empréstimo fica, e a pessoa aparece com item na mão na captura
@@ -367,7 +368,13 @@ que fizer, ou recrie o banco com a receita de três passos acima.
 **As avaliações são a exceção da exceção (Tarefa 14): o `db:demo` apaga o que
 a tela criou.** Uma avaliação nascida de um toque de teste tem id fora da faixa
 reservada (9001+) e entraria na média da captura seguinte — então o script
-regrava as suas ~68 linhas e apaga qualquer outra. Ele também devolve
+regrava as suas ~68 linhas e apaga qualquer outra. **O histórico de situação
+(Tarefa 17) segue a mesma regra:** as 25 linhas do cenário têm ids 9001–9025,
+e uma mudança feita pela tela durante um teste — que nasce em 9026, porque a
+sequência avança junto — é apagada na execução seguinte, senão entraria no
+Histórico da captura com o nome de quem testou. Exercitado: mandar um aparelho
+para manutenção e trazer de volta cria duas linhas, e o `db:demo` seguinte as
+apaga e devolve o aparelho a `DISPONIVEL`. Ele também devolve
 `avaliacao_pedida_em` a nulo nas **onze** pessoas dele, para os rostos voltarem
 a aparecer numa retirada de captura; a Ana Souza e os outros três do seed, de
 novo, ficam como estão. Para fotografar os rostos use o João Pedro (`0112345`),
@@ -532,6 +539,11 @@ fotografar:
 - **Três empréstimos concluídos com 6 h, 20 h e 48 h de prateleira** — o
   intervalo `data_baixa - data_devolucao` da Tarefa 12. Se as duas datas
   coincidissem, a métrica daria zero e não haveria o que mostrar.
+- **`NOTE-03` com três estadias de manutenção e `EXT-05` sem nenhuma linha**
+  (Tarefa 17) — a linha que concentra na tabela por equipamento, e o caso do
+  dia da migration, que a tela mostra como "desde —". O `NOTE-09` tem a
+  entrada aberta, para o "desde" preenchido; `NOTE-10` e `TAB-05` têm a linha
+  de aposentadoria, para o Histórico ter uma transição que não é manutenção.
 
 ### Como a wiki é publicada
 

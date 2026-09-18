@@ -73,7 +73,7 @@ punhado de pessoas por hora, é folga.
 
 ## O modelo de dados
 
-Cinco tabelas. As setas apontam de quem guarda a referência para quem é
+Oito tabelas. As setas apontam de quem guarda a referência para quem é
 referenciado.
 
 ```mermaid
@@ -81,6 +81,8 @@ erDiagram
     Pessoa ||--o{ Emprestimo : "retira"
     Equipamento ||--o{ Emprestimo : "e retirado em"
     Categoria ||--o{ Equipamento : "agrupa"
+    Equipamento ||--o{ MudancaDeStatus : "muda de situacao em"
+    Administrador |o--o{ MudancaDeStatus : "fez"
     Administrador {
         int id
         string nome
@@ -122,12 +124,27 @@ erDiagram
         string chave
         string valor
     }
+    MudancaDeStatus {
+        int id
+        string equip_id
+        string de
+        string para
+        datetime em
+        int administrador_id
+        string administrador_nome
+    }
 ```
 
-O `Administrador` fica solto de propósito: ele é a conta de quem opera o painel,
-e **não** aparece em nenhum empréstimo. Registrar quem deu a baixa em cada item é
-uma coluna que ainda não existe — está na lista de [o que ficou de
-fora](como-esta-wiki-foi-feita.md#o-que-ficou-de-fora).
+O `Administrador` **não** aparece em nenhum empréstimo: registrar quem deu a
+baixa em cada item é uma coluna que ainda não existe — está na lista de [o que
+ficou de fora](como-esta-wiki-foi-feita.md#o-que-ficou-de-fora). Onde ele
+aparece, desde a `v1.2`, é na `MudancaDeStatus`: uma linha por mudança de
+situação feita no painel (manutenção, aposentadoria, reativação), com de onde,
+para onde, quando, e **quem** — o vínculo com a conta e, ao lado, o nome que
+ela tinha na hora. O vínculo é opcional de propósito: recuperar uma senha
+esquecida é apagar a conta e semear de novo, e nem o banco pode recusar isso
+por causa do histórico, nem o histórico pode ir embora junto. O nome fica. É
+essa tabela que o relatório Índice de Manutenção lê.
 
 A `Avaliacao` e a `Configuracao` também ficam soltas, e por motivos opostos
 (`v1.2`). A `Avaliacao` **não pode** apontar para pessoa nem para empréstimo:

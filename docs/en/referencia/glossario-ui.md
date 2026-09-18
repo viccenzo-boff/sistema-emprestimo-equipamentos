@@ -100,15 +100,13 @@ physical check-in — are in the [Glossary](glossario.md) instead.
 
 ## Reports
 
-<!-- vale Microsoft.Ellipses = NO -->
-
 | On screen | In English |
 | --- | --- |
 | **Relatórios** | Reports — the last tab of the panel |
 | **Ocupação e picos de uso** | Occupancy and usage peaks — the first tab |
 | **Satisfação** | Satisfaction — the second tab, with the rating report |
 | **Ranking de Consumo** | Usage ranking — the third tab, with the three rankings |
-| **Índice de Manutenção** | Maintenance rate — declared, not built |
+| **Índice de Manutenção** | Maintenance rate — the fourth tab, with the status history |
 | **Dia** | Day — the first unit of the period selector |
 | **Mês** | Month — the second unit, and the default (the current month) |
 | **Ano** | Year — the third unit, a list of the years that have pickups |
@@ -144,7 +142,24 @@ physical check-in — are in the [Glossary](glossario.md) instead.
 | **Uso mediano** | Median usage — the last column of the three rankings |
 | **Por equipamento** | By device — the second ranking |
 | **Por pessoa** | By person — the third ranking |
-| **Situação atual** | Current status — the device's status today, on the ranking by device |
+| **Situação atual** | Current status — the device's status today, on the ranking by device and on the maintenance table by device |
+| **Em manutenção agora** | In maintenance now — the first card of the maintenance rate tab, a snapshot |
+| **Entradas em manutenção** | Maintenance entries — the second card, and the heading of the entries chart |
+| **Tempo em manutenção (mediana)** | Time in maintenance (median) — the third card |
+| **Índice de manutenção** | Maintenance rate — the fourth card; lowercase "manutenção", unlike the tab's label |
+| **Entradas em manutenção por dia** | Maintenance entries per day — the series chart; **por semana** (per week) and **por mês** (per month) above 31 and 182 days |
+| **Por categoria** | By category — the maintenance table with the rate per shelf |
+| **Dias parado** | Days idle — the column with the idle days inside the period |
+| **Índice** | Rate — the column with the maintenance rate per category |
+| **Última entrada** | Last entry — the column with the date of the last maintenance entry |
+| **Quem** | Who — the column with the name of whoever made the change |
+| **Histórico** | History — the audit table of every status change in the period |
+| **Mudança** | Change — the column with from → to |
+| **Data e hora** | Date and time — the first column of the history |
+| "desde DD/MM/AAAA, HH:MM" | since DD/MM/YYYY, HH:MM — a device in maintenance now, with the entry date and time |
+| "desde —" | since — — a device in maintenance now whose entry the history does not have |
+| "N equipamentos sem manutenção no período" | N devices without maintenance in the period — the footer of the table by device |
+| "Disponível → Manutenção" | Available → Maintenance — a row of the history; the other changes read the same way |
 | **Período inválido. Mostrando o mês atual.** | Invalid period. Showing the current month. — the notice for a broken link |
 | **Formulário de sugestões** | Suggestion form — the card where the QR code link is set up |
 | **Endereço do formulário** | Form address — the link field |
@@ -157,10 +172,9 @@ physical check-in — are in the [Glossary](glossario.md) instead.
 | "4 livres · 4 emprestados · 1 em manutenção" | 4 free, 4 on loan, 1 under maintenance |
 | "(+ 1 aposentado, fora da conta)" | (+ 1 retired, outside the count) |
 | "Sem unidades em circulação" | No units in circulation |
-| "Relatório em desenvolvimento..." | Report under development |
+| "Nenhuma entrada em manutenção em …" | No maintenance entry in … — the empty state of the maintenance rate tab |
+| "Nenhuma mudança de situação em …" | No status change in … — the empty history |
 | "Nenhuma categoria cadastrada ainda." | No category registered yet |
-
-<!-- vale Microsoft.Ellipses = YES -->
 
 ## People
 
