@@ -499,7 +499,7 @@ const ORIGENS_PERMITIDAS = new Map<string, readonly string[]>([
 
 /**
  * Move um equipamento entre as situações que o painel controla: `DISPONIVEL`,
- * `MANUTENCAO` e `INATIVO`.
+ * `MANUTENCAO` e `INATIVO` — e grava a mudança no histórico (Tarefa 17).
  *
  * As transições válidas estão em `ORIGENS_PERMITIDAS`. Além delas, duas travas:
  *
@@ -508,12 +508,28 @@ const ORIGENS_PERMITIDAS = new Map<string, readonly string[]>([
  * - `EMPRESTADO` sem empréstimo aberto é inconsistência de dados, e a action
  *   recusa em vez de "consertar" — liberar um item que talvez esteja com
  *   alguém é pior do que uma mensagem pedindo para conferir o histórico.
+ *
+ * **É `sessaoAdmin()`, e não `temSessaoAdmin()`**: o histórico grava quem fez,
+ * e o booleano não carrega o `id`. O nome que a sessão devolve já é o do banco
+ * (regra da Tarefa 10), e vai gravado como retrato — quem era, na hora.
+ *
+ * **Leitura, `updateMany` e `create` do histórico numa transação só, nesta
+ * ordem.** O `de` gravado é o status lido **dentro** da transação: `DISPONIVEL`
+ * e `INATIVO` aceitam duas origens cada, e o valor lido fora dela poderia ser o
+ * de outra aba. O `create` só acontece quando o `updateMany` contou 1 —
+ * histórico é de mudança que aconteceu, e as três recusas não gravam nada.
+ * Provado em cópia do banco (Tarefa 17): duas transações concorrentes com o
+ * mesmo destino são serializadas pelo mutex do adapter `better-sqlite3`, a
+ * segunda lê a origem já mudada, conta 0 e não grava; e uma escrita por outra
+ * conexão com a transação aberta recebe `SQLITE_BUSY` (journal em modo
+ * `delete`) — não há corrida entre a leitura e o `updateMany`.
  */
 export async function alterarStatusEquipamento(
   equipIdBruto: string,
   novoStatusBruto: string,
 ): Promise<Resultado<{ id: string; status: string }>> {
-  if (!(await temSessaoAdmin())) return semSessao();
+  const admin = await sessaoAdmin();
+  if (!admin) return semSessao();
 
   const equipId = typeof equipIdBruto === "string" ? equipIdBruto.trim() : "";
 
@@ -533,69 +549,83 @@ export async function alterarStatusEquipamento(
   }
 
   try {
-    const equipamento = await prisma.equipamento.findUnique({
-      where: { id: equipId },
-      select: {
-        id: true,
-        status: true,
-        emprestimos: {
-          where: {
-            status: {
-              in: [STATUS_EMPRESTIMO.ativo, STATUS_EMPRESTIMO.aguardandoBaixa],
+    const resultado = await prisma.$transaction(async (tx) => {
+      const equipamento = await tx.equipamento.findUnique({
+        where: { id: equipId },
+        select: {
+          id: true,
+          status: true,
+          emprestimos: {
+            where: {
+              status: {
+                in: [STATUS_EMPRESTIMO.ativo, STATUS_EMPRESTIMO.aguardandoBaixa],
+              },
             },
+            select: { status: true, pessoa: { select: { nome: true } } },
+            take: 1,
           },
-          select: { status: true, pessoa: { select: { nome: true } } },
-          take: 1,
         },
-      },
+      });
+
+      if (!equipamento) {
+        return falha(
+          "EQUIPAMENTO_NAO_ENCONTRADO",
+          `Equipamento ${equipId} não existe.`,
+          "Atualize a página: a lista pode estar desatualizada.",
+        );
+      }
+
+      const aberto = equipamento.emprestimos[0];
+
+      if (aberto) {
+        const comQuem = aberto.pessoa.nome;
+
+        return falha(
+          "EQUIPAMENTO_EM_USO",
+          `${equipId} está em um empréstimo aberto.`,
+          aberto.status === STATUS_EMPRESTIMO.aguardandoBaixa
+            ? `Confirme o recebimento na Fila de Devoluções (${comQuem}) antes de mudar a situação.`
+            : `Está com ${comQuem}. A situação só muda depois da devolução.`,
+        );
+      }
+
+      if (equipamento.status === STATUS_EQUIPAMENTO.emprestado) {
+        return falha(
+          "EQUIPAMENTO_EM_USO",
+          `${equipId} consta como emprestado.`,
+          "Nenhum empréstimo aberto foi encontrado para ele. Verifique o histórico antes de liberar o item.",
+        );
+      }
+
+      const alterados = await tx.equipamento.updateMany({
+        where: { id: equipId, status: { in: [...origens] } },
+        data: { status: destino },
+      });
+
+      if (alterados.count !== 1) {
+        return falha(
+          "STATUS_INVALIDO",
+          `${equipId} não pode ir de ${rotuloDeStatus(equipamento.status)} para ${rotuloDeStatus(destino)}.`,
+          "A situação mudou em outra aba. A lista foi atualizada.",
+        );
+      }
+
+      await tx.mudancaDeStatus.create({
+        data: {
+          equip_id: equipId,
+          de: equipamento.status,
+          para: destino,
+          administrador_id: admin.id,
+          administrador_nome: admin.nome,
+        },
+      });
+
+      return { ok: true as const, dados: { id: equipId, status: destino } };
     });
 
-    if (!equipamento) {
-      return falha(
-        "EQUIPAMENTO_NAO_ENCONTRADO",
-        `Equipamento ${equipId} não existe.`,
-        "Atualize a página: a lista pode estar desatualizada.",
-      );
-    }
+    if (resultado.ok) revalidatePath(RAIZ_DO_PAINEL, "layout");
 
-    const aberto = equipamento.emprestimos[0];
-
-    if (aberto) {
-      const comQuem = aberto.pessoa.nome;
-
-      return falha(
-        "EQUIPAMENTO_EM_USO",
-        `${equipId} está em um empréstimo aberto.`,
-        aberto.status === STATUS_EMPRESTIMO.aguardandoBaixa
-          ? `Confirme o recebimento na Fila de Devoluções (${comQuem}) antes de mudar a situação.`
-          : `Está com ${comQuem}. A situação só muda depois da devolução.`,
-      );
-    }
-
-    if (equipamento.status === STATUS_EQUIPAMENTO.emprestado) {
-      return falha(
-        "EQUIPAMENTO_EM_USO",
-        `${equipId} consta como emprestado.`,
-        "Nenhum empréstimo aberto foi encontrado para ele. Verifique o histórico antes de liberar o item.",
-      );
-    }
-
-    const alterados = await prisma.equipamento.updateMany({
-      where: { id: equipId, status: { in: [...origens] } },
-      data: { status: destino },
-    });
-
-    if (alterados.count !== 1) {
-      return falha(
-        "STATUS_INVALIDO",
-        `${equipId} não pode ir de ${rotuloDeStatus(equipamento.status)} para ${rotuloDeStatus(destino)}.`,
-        "A situação mudou em outra aba. A lista foi atualizada.",
-      );
-    }
-
-    revalidatePath(RAIZ_DO_PAINEL, "layout");
-
-    return { ok: true, dados: { id: equipId, status: destino } };
+    return resultado;
   } catch (erro) {
     return falhaInterna(erro);
   }
