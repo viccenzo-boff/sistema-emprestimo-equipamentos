@@ -395,14 +395,17 @@ function historicoDoCenario(hoje: Date): EmprestimoDoHistorico[] {
       const devolucao = new Date(retirada.getTime() + uso);
       const prateleira = sortear() < 0.5 ? entre(10, 90) * 60 * 1000 : entre(2, 48) * HORA;
       const baixa = new Date(devolucao.getTime() + prateleira);
+      const pessoa = sortear() < 0.7 ? escolher(ASSIDUOS) : escolher(EVENTUAIS);
+      const equipamento = escolher(EQUIPAMENTOS_DO_HISTORICO);
 
-      historico.push({
-        pessoa: sortear() < 0.7 ? escolher(ASSIDUOS) : escolher(EVENTUAIS),
-        equipamento: escolher(EQUIPAMENTOS_DO_HISTORICO),
-        retirada,
-        devolucao,
-        baixa,
-      });
+      // Um ciclo que terminaria hoje ou depois não entra: uma retirada de
+      // ontem com uso de 70 h e prateleira de 48 h daria um CONCLUIDO com a
+      // baixa no futuro — cenário impossível, e foi o que a aposentadoria do
+      // NOTE-10 (Tarefa 17) pegou. Os sorteios acima já foram consumidos, de
+      // propósito: pular aqui só tira este empréstimo, sem deslocar os outros.
+      if (baixa.getTime() >= hoje.getTime()) continue;
+
+      historico.push({ pessoa, equipamento, retirada, devolucao, baixa });
     }
   }
 
