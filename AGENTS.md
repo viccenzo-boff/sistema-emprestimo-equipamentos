@@ -61,14 +61,13 @@ tarefa que mudar o produto **abre a `v1.3`**: a tabela da seção "Como a wiki �
 publicada" do [CONTRIBUTING.md](CONTRIBUTING.md) diz os quatro lugares a
 mexer, e o número do `mike deploy` muda junto.
 
-**Duas coisas ficaram para o dono, e as duas estão no relatório da sessão da
-Tarefa 17:** o `dev.db` dele **ainda não recebeu a migration**
-`20260917214045_mudanca_de_status` (a nona da fila) — `npm run dev` contra ele
-antes do `npm run db:migrate` quebra o `/admin/relatorios` e a mudança de
-situação no inventário com "no such table: MudancaDeStatus"; e as tags `v1.1`
-e `v1.2` continuam sendo dele criar e publicar (nenhuma existe no local nem no
-remoto — conferido em 2026-09-17). O `push` continua sendo do dono, a menos
-que ele autorize na mensagem.
+**O `dev.db` desta máquina recebeu a migration
+`20260917214045_mudanca_de_status` (a nona da fila) em 2026-09-18, por
+decisão do dono**, pelo `prisma migrate deploy`: as sete tabelas com as
+mesmas contagens de antes, `MudancaDeStatus` vazia, os dois índices em
+`sqlite_master`, `foreign_key_check` vazio. O que fica com ele: as tags
+`v1.1` e `v1.2` (nenhuma existe no local nem no remoto — conferido em
+2026-09-17) e o `push`, a menos que ele autorize na mensagem.
 
 O que **não** precisa ser refeito: o Pages está no ar; a tag `v1.0` está no
 remoto; o workflow publica `v1.2` (sem "em andamento"), o `set-default` aponta
@@ -79,8 +78,10 @@ Tarefa 16 pela receita "Capturar sem mexer no seu `dev.db`" do CONTRIBUTING e
 **recriado do zero na Tarefa 17** (reset + seed + demo, com a migration nova):
 é o banco de captura, com o cenário do `db:demo`, o histórico de 90 dias e as
 25 mudanças de situação. O `next dev` da sessão subiu na porta 3100 apontando
-para ele e **foi encerrado no fim**; o `dev.db` do dono não foi tocado (md5
-`66245a887a3f11cf9952c6df1716b9b1` conferido no começo e no fim). Para ver o
+para ele e **foi encerrado no fim**; o `dev.db` do dono não foi tocado pela
+verificação (md5 `66245a887a3f11cf9952c6df1716b9b1` conferido no começo e no
+fim da sessão) — só recebeu a migration no dia seguinte, quando ele
+autorizou. Para ver o
 relatório cheio, `DATABASE_URL="file:./dev-demo.db" npx next dev -p 3100`.
 
 **A porta 3000 desta máquina estava ocupada pelo `npm run dev` do próprio
