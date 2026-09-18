@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
+    "db:seed:producao": "tsx prisma/seed.ts --somente-administradores",
     "db:sanear": "tsx prisma/sanear-dados.ts",
     "db:demo": "tsx prisma/demo-estado.ts",
     "db:reset": "prisma migrate reset",
@@ -53,5 +55,8 @@
     "unrs-resolver@1.12.2": true,
     "better-sqlite3@12.11.1": true,
     "better-sqlite3@13.0.3": true
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

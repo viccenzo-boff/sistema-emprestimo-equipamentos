@@ -34,6 +34,9 @@ import { PERFIL } from "../src/lib/tipos";
  * Se o arquivo não existir, um conjunto pequeno de dados de exemplo é usado
  * para permitir testar os fluxos do tablet e do painel administrativo.
  *
+ * Com `--somente-administradores` (`npm run db:seed:producao`) só as contas do
+ * painel nascem — é o modo de produção; ver SOMENTE_ADMINISTRADORES abaixo.
+ *
  * O script é idempotente: pode ser executado várias vezes sem duplicar dados,
  * sem resetar o status de equipamentos que já estão emprestados e sem devolver
  * ao padrão a senha de um administrador que já existe.
@@ -141,6 +144,22 @@ const ADMINISTRADORES: { nome: string; usuario: string }[] = [
 
 /** Senha inicial das quatro contas. Existe para ser trocada. */
 const SENHA_PADRAO = "Mudar@123";
+
+/**
+ * `--somente-administradores` (Tarefa 18): o modo de **produção** do seed.
+ *
+ * Sem a bandeira, o seed semeia pessoas (da planilha ou os 4 registros de
+ * exemplo), as 3 categorias e os 20 equipamentos de exemplo — o que é certo
+ * numa máquina de desenvolvimento e **errado no PC da coordenação**, onde
+ * `NOTE-01…10`, `TAB-01…05` e `EXT-01…05` virariam inventário de mentira ao
+ * lado do de verdade. Com a bandeira, só as contas do painel nascem; categoria,
+ * equipamento e pessoa entram pelo próprio painel, que é a porta de produção
+ * desde a Tarefa 8. É o que `npm run db:seed:producao` chama.
+ *
+ * Argumento de linha de comando, e não variável de ambiente, porque `tsx` a
+ * repassa igual no Windows e no Linux — `VAR=1 npm run` não existe no cmd.
+ */
+const SOMENTE_ADMINISTRADORES = process.argv.includes("--somente-administradores");
 
 /**
  * Remove acentos e normaliza para comparar **cabeçalhos**.
@@ -303,91 +322,98 @@ async function main() {
   try {
     console.log("Seed - Sistema de Empréstimo de Equipamentos\n");
 
-    // 1. Pessoas (planilha da coordenação, ou dados de exemplo)
-    const { caminho: CAMINHO_CSV, legado } = caminhoDoCsv();
-    let pessoas: PessoaSeed[];
-
-    if (existsSync(CAMINHO_CSV)) {
-      pessoas = lerPessoasDoCsv(CAMINHO_CSV);
-      console.log(`Pessoas: ${pessoas.length} lidas de ${CAMINHO_CSV}`);
-
-      if (legado) {
-        console.warn(
-          `  Aviso: este arquivo usa o nome antigo. Renomeie para\n` +
-            `  prisma/data/pessoas.csv — "usuarios.csv" segue aceito, mas é legado.`,
-        );
-      }
-    } else {
-      pessoas = PESSOAS_EXEMPLO;
+    if (SOMENTE_ADMINISTRADORES) {
       console.log(
-        `Pessoas: ${CAMINHO_CSV} não encontrado - usando ${pessoas.length} registros de exemplo.\n` +
-          `  Para importar a planilha real, exporte-a como CSV com as colunas\n` +
-          `  matricula, nome, perfil, cursos e salve em prisma/data/pessoas.csv`,
+        "Modo produção (--somente-administradores): pessoas, categorias e\n" +
+          "  equipamentos NÃO são semeados. Cadastre-os pelo painel.\n",
       );
-    }
+    } else {
+      // 1. Pessoas (planilha da coordenação, ou dados de exemplo)
+      const { caminho: CAMINHO_CSV, legado } = caminhoDoCsv();
+      let pessoas: PessoaSeed[];
 
-    for (const pessoa of pessoas) {
-      await prisma.pessoa.upsert({
-        where: { matricula: pessoa.matricula },
-        /*
-          Reimportar a planilha atualiza os dados cadastrais — e **não toca no
-          `status`**, de propósito (Tarefa 8).
+      if (existsSync(CAMINHO_CSV)) {
+        pessoas = lerPessoasDoCsv(CAMINHO_CSV);
+        console.log(`Pessoas: ${pessoas.length} lidas de ${CAMINHO_CSV}`);
 
-          É a mesma regra da importação de .xlsx pelo painel: campo que a
-          origem não menciona é campo que o banco preserva. O CSV do seed não
-          tem coluna de status, então rodar `db:seed` de novo não pode
-          ressuscitar um cadastro que o secretário inativou na semana passada.
-          `status` também não aparece no `create`: quem cadastra novo nasce
-          `ATIVO` pelo padrão da coluna.
-        */
-        update: {
-          nome: pessoa.nome,
-          perfil: pessoa.perfil,
-          cursos: pessoa.cursos,
-        },
-        create: pessoa,
-      });
-    }
-
-    // 2. Categorias
-    //
-    // Sequencial, e não `Promise.all`: a ordem de criação vira o `id`, e o `id`
-    // é o que ordena as categorias nas telas. Em paralelo, a ordem sairia do
-    // acaso do agendamento.
-    const idPorCategoria = new Map<string, number>();
-
-    for (const nome of CATEGORIAS) {
-      const categoria = await prisma.categoria.upsert({
-        where: { nome },
-        update: {},
-        create: { nome },
-      });
-
-      idPorCategoria.set(nome, categoria.id);
-    }
-    console.log(`Categorias: ${CATEGORIAS.length} (${CATEGORIAS.join(", ")}).`);
-
-    // 3. Equipamentos
-    for (const equipamento of INVENTARIO) {
-      const categoria_id = idPorCategoria.get(equipamento.categoria);
-
-      if (categoria_id === undefined) {
-        throw new Error(
-          `Equipamento ${equipamento.id} referencia a categoria ` +
-            `"${equipamento.categoria}", que não está em CATEGORIAS.`,
+        if (legado) {
+          console.warn(
+            `  Aviso: este arquivo usa o nome antigo. Renomeie para\n` +
+              `  prisma/data/pessoas.csv — "usuarios.csv" segue aceito, mas é legado.`,
+          );
+        }
+      } else {
+        pessoas = PESSOAS_EXEMPLO;
+        console.log(
+          `Pessoas: ${CAMINHO_CSV} não encontrado - usando ${pessoas.length} registros de exemplo.\n` +
+            `  Para importar a planilha real, exporte-a como CSV com as colunas\n` +
+            `  matricula, nome, perfil, cursos e salve em prisma/data/pessoas.csv`,
         );
       }
 
-      await prisma.equipamento.upsert({
-        where: { id: equipamento.id },
-        // O status nao e atualizado de proposito: um item ja EMPRESTADO, em
-        // MANUTENCAO ou INATIVO nao pode voltar para DISPONIVEL por
-        // reexecucao do seed.
-        update: { categoria_id },
-        create: { id: equipamento.id, categoria_id, status: "DISPONIVEL" },
-      });
+      for (const pessoa of pessoas) {
+        await prisma.pessoa.upsert({
+          where: { matricula: pessoa.matricula },
+          /*
+            Reimportar a planilha atualiza os dados cadastrais — e **não toca no
+            `status`**, de propósito (Tarefa 8).
+
+            É a mesma regra da importação de .xlsx pelo painel: campo que a
+            origem não menciona é campo que o banco preserva. O CSV do seed não
+            tem coluna de status, então rodar `db:seed` de novo não pode
+            ressuscitar um cadastro que o secretário inativou na semana passada.
+            `status` também não aparece no `create`: quem cadastra novo nasce
+            `ATIVO` pelo padrão da coluna.
+          */
+          update: {
+            nome: pessoa.nome,
+            perfil: pessoa.perfil,
+            cursos: pessoa.cursos,
+          },
+          create: pessoa,
+        });
+      }
+
+      // 2. Categorias
+      //
+      // Sequencial, e não `Promise.all`: a ordem de criação vira o `id`, e o `id`
+      // é o que ordena as categorias nas telas. Em paralelo, a ordem sairia do
+      // acaso do agendamento.
+      const idPorCategoria = new Map<string, number>();
+
+      for (const nome of CATEGORIAS) {
+        const categoria = await prisma.categoria.upsert({
+          where: { nome },
+          update: {},
+          create: { nome },
+        });
+
+        idPorCategoria.set(nome, categoria.id);
+      }
+      console.log(`Categorias: ${CATEGORIAS.length} (${CATEGORIAS.join(", ")}).`);
+
+      // 3. Equipamentos
+      for (const equipamento of INVENTARIO) {
+        const categoria_id = idPorCategoria.get(equipamento.categoria);
+
+        if (categoria_id === undefined) {
+          throw new Error(
+            `Equipamento ${equipamento.id} referencia a categoria ` +
+              `"${equipamento.categoria}", que não está em CATEGORIAS.`,
+          );
+        }
+
+        await prisma.equipamento.upsert({
+          where: { id: equipamento.id },
+          // O status nao e atualizado de proposito: um item ja EMPRESTADO, em
+          // MANUTENCAO ou INATIVO nao pode voltar para DISPONIVEL por
+          // reexecucao do seed.
+          update: { categoria_id },
+          create: { id: equipamento.id, categoria_id, status: "DISPONIVEL" },
+        });
+      }
+      console.log(`Equipamentos: ${INVENTARIO.length} itens no inventário.`);
     }
-    console.log(`Equipamentos: ${INVENTARIO.length} itens no inventário.`);
 
     /*
       4. Administradores do painel (Tarefa 10).
