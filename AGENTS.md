@@ -49,29 +49,43 @@ Atualizada em 2026-09-17, no fim da Tarefa 17. O dono do repositório abre a
 sessão só com esse prompt; esta seção é a resposta.
 
 **Não há próxima tarefa enunciada.** A Tarefa 17 — Índice de Manutenção e
-histórico de situação — foi executada nesta data e **fechou a `v1.2`**; o
-enunciado dela está em `concluidas/`. Os quatro relatórios declarados na
+histórico de situação — foi executada nesta data, e é a última antes da
+implantação; o enunciado dela está em `concluidas/`. Os quatro relatórios declarados na
 Tarefa 13 existem, e `especificacoes/tarefas/pendentes/` está vazia. O que
 sobra são ideias, não tarefas: as de "Próximos passos possíveis", no fim do
 estado atual, **não estão na spec** e precisam de uma sessão de alinhamento e
 de um enunciado antes de virar código — o dono conduz isso como fez para a 16
 e a 17 (varredura, estratégia, decisões em lote, enunciado no formato da
 tarefa mais recente em `concluidas/`, execução em outra sessão). A primeira
-tarefa que mudar o produto **abre a `v1.3`**: a tabela da seção "Como a wiki é
-publicada" do [CONTRIBUTING.md](CONTRIBUTING.md) diz os quatro lugares a
-mexer, e o número do `mike deploy` muda junto.
+versão **depois da implantação** entra no `mike` ao lado da `v1.0`: a tabela
+da seção "Como a wiki é publicada" do [CONTRIBUTING.md](CONTRIBUTING.md) diz
+os quatro lugares a mexer, e o número é decisão de entrega, não de tarefa.
+
+**Uma versão só: tudo é `v1.0` (decisão do dono, 2026-09-18).** Entre
+2026-09-14 e 2026-09-18 a numeração foi por tarefa — a `v1.1` "fechou" com a
+Tarefa 13 e a `v1.2` com a 17, e o `mike` publicou as três lado a lado —, mas
+nada tinha sido implantado: a entrega à coordenação é a semana de 21/09, e a
+17 era a última tarefa. O workflow voltou a publicar `v1.0` e a apontar o
+padrão para ela, com um passo de limpeza que tira `v1.1/` e `v1.2/` da
+`gh-pages` na primeira execução (e não faz nada depois; pode ser removido); as
+duas homes, o README, o `mkdocs.yml`, a §2.1 da spec-wiki e o estudo de caso
+dizem "v1.0"; o `package.json` passou a `1.0.0`. **Os blocos das Tarefas 13
+a 17 abaixo continuam dizendo "fechou a `v1.1`" e "abriu/fechou a `v1.2`" —
+é história, e está certo como história**; o que vale hoje é este parágrafo.
+Duas coisas ficaram com o dono: **mover a tag `v1.0` do remoto** (ela aponta
+para `5515ba1`, de 2026-08-24, antes da Tarefa 13) para o commit da entrega —
+`git tag -fa v1.0 <commit>` e `git push --force origin v1.0`, ou apagar e
+recriar —, e o `push` da `main`, que dispara a Action que republica e limpa.
 
 **O `dev.db` desta máquina recebeu a migration
 `20260917214045_mudanca_de_status` (a nona da fila) em 2026-09-18, por
 decisão do dono**, pelo `prisma migrate deploy`: as sete tabelas com as
 mesmas contagens de antes, `MudancaDeStatus` vazia, os dois índices em
-`sqlite_master`, `foreign_key_check` vazio. O que fica com ele: as tags
-`v1.1` e `v1.2` (nenhuma existe no local nem no remoto — conferido em
-2026-09-17) e o `push`, a menos que ele autorize na mensagem.
+`sqlite_master`, `foreign_key_check` vazio. O `push` continua sendo do dono,
+a menos que ele autorize na mensagem.
 
-O que **não** precisa ser refeito: o Pages está no ar; a tag `v1.0` está no
-remoto; o workflow publica `v1.2` (sem "em andamento"), o `set-default` aponta
-para a `v1.2`, e as duas homes dizem "descreve a versão v1.2".
+O que **não** precisa ser refeito: o Pages está no ar, apontado para a
+`gh-pages`; o workflow publica `v1.0` e aponta o padrão para ela.
 
 **Esta máquina tem um `dev-demo.db` na raiz** (ignorado pelo Git), criado na
 Tarefa 16 pela receita "Capturar sem mexer no seu `dev.db`" do CONTRIBUTING e
@@ -1773,8 +1787,10 @@ nem referenciado pelas outras telas.
   9001–9048 e que a sequência do SQLite avança junto.** Um empréstimo criado
   pela tela num banco de captura nasce em 9049.
 
-**Tarefa 17 — Índice de Manutenção e histórico de situação (concluída, e
-ela fecha a `v1.2`):** os oito blocos de
+**Tarefa 17 — Índice de Manutenção e histórico de situação (concluída; a
+última antes da implantação — chamou-se "fechamento da `v1.2`" até a
+numeração ser recolhida para `v1.0` em 2026-09-18, ver a fila):** os oito
+blocos de
 [tarefa-17-indice-de-manutencao.md](especificacoes/tarefas/concluidas/tarefa-17-indice-de-manutencao.md)
 — a tabela `MudancaDeStatus` (uma linha por transição do painel, com `de`,
 `para`, `em`, `administrador_id` nulo com `SetNull` e o retrato
