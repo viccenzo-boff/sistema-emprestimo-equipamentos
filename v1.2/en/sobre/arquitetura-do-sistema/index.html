@@ -1584,12 +1584,14 @@ restoring means putting it back.</p>
 machine is the ceiling for everything. For a counter with dozens of devices and
 a handful of people per hour, that is room to spare.</p>
 <h2 id="the-data-model">The data model</h2>
-<p>Five tables. The arrows point from whichever table holds the reference to the
+<p>Eight tables. The arrows point from whichever table holds the reference to the
 one being referenced.</p>
 <pre class="mermaid"><code>erDiagram
     Pessoa ||--o{ Emprestimo : "picks up"
     Equipamento ||--o{ Emprestimo : "is picked up in"
     Categoria ||--o{ Equipamento : "groups"
+    Equipamento ||--o{ MudancaDeStatus : "changes status in"
+    Administrador |o--o{ MudancaDeStatus : "made"
     Administrador {
         int id
         string nome
@@ -1630,11 +1632,26 @@ one being referenced.</p>
     Configuracao {
         string chave
         string valor
+    }
+    MudancaDeStatus {
+        int id
+        string equip_id
+        string de
+        string para
+        datetime em
+        int administrador_id
+        string administrador_nome
     }</code></pre>
-<p><code>Administrador</code> stands apart on purpose. It is the account of whoever operates
-the admin panel, and it appears in <strong>no</strong> loan. Recording who performed each
-check-in is a column that does not exist yet, and it sits on the list of
-<a href="../como-esta-wiki-foi-feita/#what-was-left-out">what was left out</a>.</p>
+<p><code>Administrador</code> appears in <strong>no</strong> loan: recording who performed each check-in
+is a column that does not exist yet, and it sits on the list of
+<a href="../como-esta-wiki-foi-feita/#what-was-left-out">what was left out</a>. Where it
+does appear, since <code>v1.2</code>, is in <code>MudancaDeStatus</code>: one row per status change
+made in the panel (maintenance, retirement, reactivation), with from where, to
+where, when, and <strong>who</strong> — the link to the account and, next to it, the name it
+had at the time. The link is optional on purpose: recovering a forgotten
+password means deleting the account and seeding again, and neither may the
+database refuse that because of the history, nor may the history go away with
+it. The name stays. That table is what the maintenance rate report reads.</p>
 <p><code>Avaliacao</code> and <code>Configuracao</code> stand apart as well, for opposite reasons
 (<code>v1.2</code>). <code>Avaliacao</code> <strong>cannot</strong> point at a person or at a loan: it is the
 anonymous rating at the end of a pickup, and the row keeps only the rating and

@@ -1582,12 +1582,14 @@ e restaurar é colocá-lo de volta.</p>
 secretário é o limite de tudo. Para uma bancada com dezenas de aparelhos e um
 punhado de pessoas por hora, é folga.</p>
 <h2 id="o-modelo-de-dados">O modelo de dados</h2>
-<p>Cinco tabelas. As setas apontam de quem guarda a referência para quem é
+<p>Oito tabelas. As setas apontam de quem guarda a referência para quem é
 referenciado.</p>
 <pre class="mermaid"><code>erDiagram
     Pessoa ||--o{ Emprestimo : "retira"
     Equipamento ||--o{ Emprestimo : "e retirado em"
     Categoria ||--o{ Equipamento : "agrupa"
+    Equipamento ||--o{ MudancaDeStatus : "muda de situacao em"
+    Administrador |o--o{ MudancaDeStatus : "fez"
     Administrador {
         int id
         string nome
@@ -1628,11 +1630,26 @@ referenciado.</p>
     Configuracao {
         string chave
         string valor
+    }
+    MudancaDeStatus {
+        int id
+        string equip_id
+        string de
+        string para
+        datetime em
+        int administrador_id
+        string administrador_nome
     }</code></pre>
-<p>O <code>Administrador</code> fica solto de propósito: ele é a conta de quem opera o painel,
-e <strong>não</strong> aparece em nenhum empréstimo. Registrar quem deu a baixa em cada item é
-uma coluna que ainda não existe — está na lista de <a href="../como-esta-wiki-foi-feita/#o-que-ficou-de-fora">o que ficou de
-fora</a>.</p>
+<p>O <code>Administrador</code> <strong>não</strong> aparece em nenhum empréstimo: registrar quem deu a
+baixa em cada item é uma coluna que ainda não existe — está na lista de <a href="../como-esta-wiki-foi-feita/#o-que-ficou-de-fora">o que
+ficou de fora</a>. Onde ele
+aparece, desde a <code>v1.2</code>, é na <code>MudancaDeStatus</code>: uma linha por mudança de
+situação feita no painel (manutenção, aposentadoria, reativação), com de onde,
+para onde, quando, e <strong>quem</strong> — o vínculo com a conta e, ao lado, o nome que
+ela tinha na hora. O vínculo é opcional de propósito: recuperar uma senha
+esquecida é apagar a conta e semear de novo, e nem o banco pode recusar isso
+por causa do histórico, nem o histórico pode ir embora junto. O nome fica. É
+essa tabela que o relatório Índice de Manutenção lê.</p>
 <p>A <code>Avaliacao</code> e a <code>Configuracao</code> também ficam soltas, e por motivos opostos
 (<code>v1.2</code>). A <code>Avaliacao</code> <strong>não pode</strong> apontar para pessoa nem para empréstimo:
 é a nota anônima do fim da retirada, e a linha guarda só a nota e o dia — até

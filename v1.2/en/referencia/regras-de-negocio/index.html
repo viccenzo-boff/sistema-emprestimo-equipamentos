@@ -983,6 +983,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#every-status-change-made-in-the-panel-is-recorded-with-who-and-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Every status change made in the panel is recorded, with who and when
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#deactivating-a-person-and-deactivating-a-device-are-not-the-same-rule" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1438,6 +1449,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#every-status-change-made-in-the-panel-is-recorded-with-who-and-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Every status change made in the panel is recorded, with who and when
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#deactivating-a-person-and-deactivating-a-device-are-not-the-same-rule" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1657,6 +1679,42 @@ tablet, because an inactive item does not count in the grid.</p>
 <a href="../../painel/inventario/#why-can-a-category-with-equipment-not-be-deleted">Inventory management, §7</a>.
 Until September 2026 the refusal message told you to deactivate "before
 deleting it", as if that allowed the deletion; the sentence was corrected.</p>
+</div>
+<hr />
+<h2 id="every-status-change-made-in-the-panel-is-recorded-with-who-and-when">Every status change made in the panel is recorded, with who and when</h2>
+<p><strong>What the system does.</strong> Each click on <strong>Manutenção</strong> (Maintenance),
+<strong>Disponível</strong> (Available), <strong>Inativar</strong> (Deactivate) or <strong>Reativar</strong>
+(Reactivate) on the Inventory tab writes a row to the status history: the
+device, where it came from, where it went, the time, and the <strong>name of whoever
+was signed in</strong>. The <strong>Índice de Manutenção</strong> (Maintenance rate) report reads
+that history — the <a href="../glossario/#maintenance-stay">maintenance stays</a>, the rate
+and the <strong>Histórico</strong> (History) table, which answers "who retired <code>NOTE-10</code>,
+and when".</p>
+<p><strong>Why it does it that way.</strong> Because, until September 2026, the system kept
+only each device's <strong>current</strong> status: nobody knew since when <code>NOTE-09</code> had
+been in repair, or how many times it had been there. And because each person
+has their own account since the
+<a href="../conta-do-administrador/">administrator account</a> precisely so that "who did
+this" has an answer.</p>
+<p><strong>What would break.</strong> An editable history would stop answering "who"; a history
+that stored only the account key would lose the name when the account was
+deleted to recover its password. That is why the name is stored <strong>next to</strong> the
+link, as a snapshot of the moment: if the account goes away, the link is
+undone and the name stays. And that is why a wrong click is not deleted — it is
+undone with the click back, and both rows stay.</p>
+<div class="admonition note">
+<p class="admonition-title">What is left out, on purpose</p>
+<ul>
+<li><strong>The pickup and the physical check-in.</strong> They already have their
+  records — the <a href="../glossario/#loan">loan</a>, with its three times. Recording
+  the same event in two places is how two records start to disagree.</li>
+<li><strong>Whatever happened before this version.</strong> The history starts empty at
+  installation; a device that was already in maintenance on that day
+  shows up in the report with "desde —" (since —), and its days do not
+  count. Making up an entry date would be making up days inside a metric.</li>
+<li><strong>What the installation and demo scripts write.</strong> They are not the
+  panel, and nobody clicked.</li>
+</ul>
 </div>
 <hr />
 <h2 id="deactivating-a-person-and-deactivating-a-device-are-not-the-same-rule">Deactivating a person and deactivating a device are not the same rule</h2>

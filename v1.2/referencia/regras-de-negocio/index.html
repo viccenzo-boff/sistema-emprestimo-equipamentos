@@ -983,6 +983,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#toda-mudanca-de-situacao-feita-no-painel-fica-registrada-com-quem-e-quando" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Toda mudança de situação feita no painel fica registrada, com quem e quando
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#inativar-pessoa-e-inativar-equipamento-nao-sao-a-mesma-regra" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1438,6 +1449,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#toda-mudanca-de-situacao-feita-no-painel-fica-registrada-com-quem-e-quando" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Toda mudança de situação feita no painel fica registrada, com quem e quando
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#inativar-pessoa-e-inativar-equipamento-nao-sao-a-mesma-regra" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1652,6 +1674,39 @@ faz é tirá-la do tablet, porque item inativo não conta na grade.</p>
 <a href="../../painel/inventario/#por-que-nao-da-para-excluir-uma-categoria-que-tem-equipamento">Gestão de inventário, §7</a>.
 Até setembro de 2026 a mensagem de recusa mandava inativar "antes de
 excluí-la", como se isso liberasse; a frase foi corrigida.</p>
+</div>
+<hr />
+<h2 id="toda-mudanca-de-situacao-feita-no-painel-fica-registrada-com-quem-e-quando">Toda mudança de situação feita no painel fica registrada, com quem e quando</h2>
+<p><strong>O que o sistema faz.</strong> Cada clique em <strong>Manutenção</strong>, <strong>Disponível</strong>,
+<strong>Inativar</strong> ou <strong>Reativar</strong> na aba Inventário grava uma linha no histórico de
+situação: o aparelho, de onde saiu, para onde foi, a hora, e o <strong>nome de quem
+estava logado</strong>. O relatório <strong>Índice de Manutenção</strong> lê esse histórico — as
+<a href="../glossario/#estadia-em-manutencao">estadias em manutenção</a>, o índice e a
+tabela <strong>Histórico</strong>, que responde "quem inativou o <code>NOTE-10</code>, e quando".</p>
+<p><strong>Por que faz assim.</strong> Porque, até setembro de 2026, o sistema guardava só a
+situação <strong>atual</strong> de cada aparelho: ninguém sabia desde quando o <code>NOTE-09</code>
+estava em conserto, nem quantas vezes já tinha ido. E porque cada pessoa tem a
+sua conta desde a <a href="../conta-do-administrador/">conta do administrador</a> justamente
+para "quem fez isto" ter resposta.</p>
+<p><strong>O que quebraria.</strong> Um histórico editável deixaria de responder "quem"; um
+histórico que gravasse só a chave da conta perderia o nome quando a conta fosse
+apagada para recuperar a senha. Por isso o nome é gravado <strong>ao lado</strong> do
+vínculo, como um retrato da hora: se a conta some, o vínculo se desfaz e o
+nome fica. E por isso um clique errado não se apaga — se desfaz com o clique de
+volta, e as duas linhas ficam.</p>
+<div class="admonition note">
+<p class="admonition-title">O que fica de fora, de propósito</p>
+<ul>
+<li><strong>A retirada e a baixa física.</strong> Elas já têm os seus registros — o
+  <a href="../glossario/#emprestimo">empréstimo</a>, com os três horários. Gravar o
+  mesmo evento em dois lugares é como dois registros passam a discordar.</li>
+<li><strong>O que aconteceu antes desta versão.</strong> O histórico começa vazio na
+  instalação; um aparelho que já estava em manutenção nesse dia aparece
+  no relatório com "desde —", e os dias dele não contam. Inventar uma
+  data de entrada seria inventar dias dentro de uma métrica.</li>
+<li><strong>O que os scripts de instalação e de demonstração escrevem.</strong> Eles não
+  são o painel, e ninguém clicou.</li>
+</ul>
 </div>
 <hr />
 <h2 id="inativar-pessoa-e-inativar-equipamento-nao-sao-a-mesma-regra">Inativar pessoa e inativar equipamento não são a mesma regra</h2>

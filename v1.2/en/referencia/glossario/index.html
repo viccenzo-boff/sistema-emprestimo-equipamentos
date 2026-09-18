@@ -1004,6 +1004,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#maintenance-stay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintenance stay
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#on-loan" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1636,6 +1647,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#maintenance-stay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintenance stay
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#on-loan" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1904,6 +1926,18 @@ screen it is <strong>Manutenção</strong>.</p>
 <p>Different from <a href="#retirement-inactive-item">retirement</a>, which is permanent.</p>
 <p>A device with an open <a href="#loan">loan</a> cannot go under maintenance: its status is
 locked until the cycle closes.</p>
+<h2 id="maintenance-stay">Maintenance stay</h2>
+<p>The time between a device going to <a href="#maintenance">maintenance</a> and coming
+back from it — the <strong>Manutenção</strong> (Maintenance) click and the next
+<strong>Disponível</strong> (Available) or <strong>Inativar</strong> (Deactivate) click on the same
+<a href="#inventory">inventory</a> row. Without the second click, the stay is <strong>open</strong>.
+On screen, the pages call it <strong>estadia em manutenção</strong>.</p>
+<p>It is the unit of the <strong>Índice de Manutenção</strong> (Maintenance rate) report: the
+<strong>entry</strong> counts in the period it happened in, and the idle time counts by the
+part of the stay that falls inside the period. A device that was already in
+maintenance when the history started to exist (September 2026) has no stay —
+the screen shows "desde —" (since —), and its days do not count. See
+<a href="../../painel/relatorios/#the-two-period-rules">Reports, §6</a>.</p>
 <h2 id="on-loan">On loan</h2>
 <p>The <a href="#status">status</a> of a device that is off the shelf because somebody picked
 it up (<code>Equipamento.status = EMPRESTADO</code>). On screen it is <strong>Emprestado</strong>.</p>

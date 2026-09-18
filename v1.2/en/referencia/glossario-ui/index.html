@@ -1639,8 +1639,6 @@ physical check-in — are in the <a href="../glossario/">Glossary</a> instead.</
 </tbody>
 </table>
 <h2 id="reports">Reports</h2>
-<!-- vale Microsoft.Ellipses = NO -->
-
 <table>
 <thead>
 <tr>
@@ -1667,7 +1665,7 @@ physical check-in — are in the <a href="../glossario/">Glossary</a> instead.</
 </tr>
 <tr>
 <td><strong>Índice de Manutenção</strong></td>
-<td>Maintenance rate — declared, not built</td>
+<td>Maintenance rate — the fourth tab, with the status history</td>
 </tr>
 <tr>
 <td><strong>Dia</strong></td>
@@ -1811,7 +1809,75 @@ physical check-in — are in the <a href="../glossario/">Glossary</a> instead.</
 </tr>
 <tr>
 <td><strong>Situação atual</strong></td>
-<td>Current status — the device's status today, on the ranking by device</td>
+<td>Current status — the device's status today, on the ranking by device and on the maintenance table by device</td>
+</tr>
+<tr>
+<td><strong>Em manutenção agora</strong></td>
+<td>In maintenance now — the first card of the maintenance rate tab, a snapshot</td>
+</tr>
+<tr>
+<td><strong>Entradas em manutenção</strong></td>
+<td>Maintenance entries — the second card, and the heading of the entries chart</td>
+</tr>
+<tr>
+<td><strong>Tempo em manutenção (mediana)</strong></td>
+<td>Time in maintenance (median) — the third card</td>
+</tr>
+<tr>
+<td><strong>Índice de manutenção</strong></td>
+<td>Maintenance rate — the fourth card; lowercase "manutenção", unlike the tab's label</td>
+</tr>
+<tr>
+<td><strong>Entradas em manutenção por dia</strong></td>
+<td>Maintenance entries per day — the series chart; <strong>por semana</strong> (per week) and <strong>por mês</strong> (per month) above 31 and 182 days</td>
+</tr>
+<tr>
+<td><strong>Por categoria</strong></td>
+<td>By category — the maintenance table with the rate per shelf</td>
+</tr>
+<tr>
+<td><strong>Dias parado</strong></td>
+<td>Days idle — the column with the idle days inside the period</td>
+</tr>
+<tr>
+<td><strong>Índice</strong></td>
+<td>Rate — the column with the maintenance rate per category</td>
+</tr>
+<tr>
+<td><strong>Última entrada</strong></td>
+<td>Last entry — the column with the date of the last maintenance entry</td>
+</tr>
+<tr>
+<td><strong>Quem</strong></td>
+<td>Who — the column with the name of whoever made the change</td>
+</tr>
+<tr>
+<td><strong>Histórico</strong></td>
+<td>History — the audit table of every status change in the period</td>
+</tr>
+<tr>
+<td><strong>Mudança</strong></td>
+<td>Change — the column with from → to</td>
+</tr>
+<tr>
+<td><strong>Data e hora</strong></td>
+<td>Date and time — the first column of the history</td>
+</tr>
+<tr>
+<td>"desde DD/MM/AAAA, HH:MM"</td>
+<td>since DD/MM/YYYY, HH:MM — a device in maintenance now, with the entry date and time</td>
+</tr>
+<tr>
+<td>"desde —"</td>
+<td>since — — a device in maintenance now whose entry the history does not have</td>
+</tr>
+<tr>
+<td>"N equipamentos sem manutenção no período"</td>
+<td>N devices without maintenance in the period — the footer of the table by device</td>
+</tr>
+<tr>
+<td>"Disponível → Manutenção"</td>
+<td>Available → Maintenance — a row of the history; the other changes read the same way</td>
 </tr>
 <tr>
 <td><strong>Período inválido. Mostrando o mês atual.</strong></td>
@@ -1862,8 +1928,12 @@ physical check-in — are in the <a href="../glossario/">Glossary</a> instead.</
 <td>No units in circulation</td>
 </tr>
 <tr>
-<td>"Relatório em desenvolvimento..."</td>
-<td>Report under development</td>
+<td>"Nenhuma entrada em manutenção em …"</td>
+<td>No maintenance entry in … — the empty state of the maintenance rate tab</td>
+</tr>
+<tr>
+<td>"Nenhuma mudança de situação em …"</td>
+<td>No status change in … — the empty history</td>
 </tr>
 <tr>
 <td>"Nenhuma categoria cadastrada ainda."</td>
@@ -1871,8 +1941,6 @@ physical check-in — are in the <a href="../glossario/">Glossary</a> instead.</
 </tr>
 </tbody>
 </table>
-<!-- vale Microsoft.Ellipses = YES -->
-
 <h2 id="people">People</h2>
 <table>
 <thead>
