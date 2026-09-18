@@ -21,7 +21,7 @@ O Prisma deve ser configurado com as seguintes tabelas e regras de negócio:
 Armazena estudantes e professores (dados importados inicialmente via planilha).
 * `matricula` (String, PK): Chave primária (string para preservar zeros à esquerda).
 * `nome` (String): Nome completo.
-* `perfil` (String): "ALUNO" ou "PROFESSOR".
+* `perfil` (String): "Estudante" ou "Professor". (Eram "ALUNO" e "PROFESSOR" em caixa alta até a Tarefa 8.1, que passou a gravar o valor na forma exibida.)
 * `cursos` (String): Cursos vinculados (ex: "Sistemas de Informação, Ciência da Computação").
 
 > Chamava-se `Usuario` até a Tarefa 10, que a renomeou para `Pessoa`: com a chegada da tabela
@@ -45,8 +45,14 @@ Armazena estudantes e professores (dados importados inicialmente via planilha).
 ### Tabela: Equipamento
 Armazena o inventário físico.
 * `id` (String, PK): Identificador único da etiqueta (ex: "NOTE-01", "EXT-05").
-* `tipo` (String): Categoria (ex: "Notebook", "Tablet", "Extensão").
-* `status` (String): "DISPONIVEL", "EMPRESTADO" ou "MANUTENCAO".
+* `categoria_id` (Int, FK): Relacionamento com `Categoria.id`. Obrigatório.
+* `status` (String): "DISPONIVEL", "EMPRESTADO", "MANUTENCAO" ou "INATIVO".
+
+> Até a Tarefa 6 esta tabela tinha um campo `tipo` (String: "Notebook", "Tablet", "Extensão") e
+> três status. A Tarefa 6 trocou o texto pela tabela **`Categoria`** — `id` (Int, PK, Auto-increment),
+> `nome` (String, único) — porque cada grafia digitada no cadastro ("notebook", "Notebook") abria
+> uma categoria nova no tablet; e acrescentou o status `INATIVO`, a aposentadoria do aparelho:
+> ele sai de circulação sem sair do banco, porque `Emprestimo.equip_id` aponta para ele.
 
 ### Tabela: Emprestimo
 Registra os logs de movimentação (um log isolado por item).
