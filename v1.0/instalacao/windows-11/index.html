@@ -1179,10 +1179,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#passo-1-instalar-o-nodejs-e-o-git" class="md-nav__link">
+  <a href="#passo-1-instalar-o-git" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Passo 1 — Instalar o Node.js e o Git
+        Passo 1 — Instalar o Git
       
     </span>
   </a>
@@ -1474,10 +1474,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#passo-1-instalar-o-nodejs-e-o-git" class="md-nav__link">
+  <a href="#passo-1-instalar-o-git" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Passo 1 — Instalar o Node.js e o Git
+        Passo 1 — Instalar o Git
       
     </span>
   </a>
@@ -1644,10 +1644,11 @@ o que vai aparecer na tela. Se algo sair diferente, a seção
 terminal, feche-o antes (Ctrl+C na janela dele) — senão o instalador para
 no primeiro passo e diz qual programa está ocupando a porta.</p>
 </div>
-<h2 id="passo-1-instalar-o-nodejs-e-o-git">Passo 1 — Instalar o Node.js e o Git</h2>
-<p>São os dois programas de que o sistema depende. O Windows 11 tem um
-instalador de linha de comando, o <code>winget</code>, que baixa e instala os dois com
-uma linha cada.</p>
+<h2 id="passo-1-instalar-o-git">Passo 1 — Instalar o Git</h2>
+<p>O Git é o programa que baixa o sistema (e, depois, as atualizações). O
+Windows 11 tem um instalador de linha de comando, o <code>winget</code>, que o instala
+com uma linha. O outro programa de que o sistema depende, o <strong>Node.js</strong>, o
+instalador do Passo 3 instala sozinho se faltar — não precisa fazer nada.</p>
 <ol>
 <li>Clique com o <strong>botão direito</strong> no botão <strong>Iniciar</strong> e escolha
    <strong>Terminal (Admin)</strong>. Aparece uma pergunta do Windows pedindo permissão:
@@ -1655,20 +1656,15 @@ uma linha cada.</p>
 <li>
 <p>Copie a linha abaixo, cole na janela (botão direito cola) e aperte
    <strong>Enter</strong>:</p>
-<div class="highlight"><pre><span></span><code><span class="n">winget</span> <span class="n">install</span> <span class="p">-</span><span class="n">-id</span> <span class="n">OpenJS</span><span class="p">.</span><span class="n">NodeJS</span><span class="p">.</span><span class="n">LTS</span> <span class="n">-e</span> <span class="p">-</span><span class="n">-accept-package-agreements</span> <span class="p">-</span><span class="n">-accept-source-agreements</span>
+<div class="highlight"><pre><span></span><code><span class="n">winget</span> <span class="n">install</span> <span class="p">-</span><span class="n">-id</span> <span class="n">Git</span><span class="p">.</span><span class="n">Git</span> <span class="n">-e</span> <span class="p">-</span><span class="n">-accept-package-agreements</span> <span class="p">-</span><span class="n">-accept-source-agreements</span>
 </code></pre></div>
 <p>O que aparece: uma barra de progresso e, no fim, <strong>Instalado com êxito</strong>.
 Se aparecer <em>"Nenhuma atualização disponível"</em> ou <em>"já está instalado"</em>,
 está tudo certo — o programa já existia.</p>
 </li>
 <li>
-<p>Faça o mesmo com a segunda linha:</p>
-<div class="highlight"><pre><span></span><code><span class="n">winget</span> <span class="n">install</span> <span class="p">-</span><span class="n">-id</span> <span class="n">Git</span><span class="p">.</span><span class="n">Git</span> <span class="n">-e</span> <span class="p">-</span><span class="n">-accept-package-agreements</span> <span class="p">-</span><span class="n">-accept-source-agreements</span>
-</code></pre></div>
-</li>
-<li>
 <p><strong>Feche a janela do Terminal.</strong> Não pule isto: a janela aberta ainda não
-   sabe que os programas foram instalados, e o próximo passo abre uma nova.</p>
+   sabe que o Git foi instalado, e o próximo passo abre uma nova.</p>
 </li>
 </ol>
 <h2 id="passo-2-baixar-o-sistema">Passo 2 — Baixar o sistema</h2>
@@ -1706,11 +1702,11 @@ confere e recusa outra.</p>
 <tbody>
 <tr>
 <td>1. Conferindo o que a máquina precisa ter</td>
-<td>Acha o Node e o Git e confere se a porta 3000 está livre</td>
+<td>Acha o Git e o Node — <strong>instala o Node se faltar</strong>, ou o atualiza se for antigo — e confere se a porta 3000 está livre</td>
 </tr>
 <tr>
-<td>2. Criando as pastas</td>
-<td><code>C:\emprestimos\dados</code>, <code>backups</code>, <code>consulta</code>, <code>logs</code>, <code>ferramentas</code></td>
+<td>2. Pastas e permissões</td>
+<td><code>C:\emprestimos\dados</code>, <code>backups</code>, <code>consulta</code>, <code>logs</code>, <code>ferramentas</code>; a pasta <code>dados</code> fica fechada para as contas comuns do computador</td>
 </tr>
 <tr>
 <td>3. Apontando para o banco</td>
@@ -1729,20 +1725,20 @@ confere e recusa outra.</p>
 <td>Registra o serviço <strong>Sistema de Emprestimos (Unoesc)</strong> — é ele que liga com o Windows</td>
 </tr>
 <tr>
-<td>9. Permissões</td>
-<td>A pasta <code>dados</code> fica fechada para as contas comuns do computador</td>
-</tr>
-<tr>
-<td>10–12. Firewall, energia, backup</td>
+<td>9–11. Firewall, energia, backup</td>
 <td>Libera a porta 3000, impede o computador de suspender, agenda o backup diário das 19:00</td>
 </tr>
 <tr>
-<td>13. Atalhos</td>
-<td>Três atalhos na área de trabalho, para todo mundo que usa o computador</td>
+<td>12. Atalho</td>
+<td><strong>Painel de Emprestimos</strong> na área de trabalho, para todo mundo que usa o computador</td>
 </tr>
 <tr>
-<td>14. Ligando</td>
-<td>Sobe o sistema, espera ele responder e faz o primeiro backup</td>
+<td>13. Ligando</td>
+<td>Sobe o sistema, espera ele responder e confere que ele consegue ler o banco</td>
+</tr>
+<tr>
+<td>14. Primeiro backup</td>
+<td>A primeira cópia em <code>backups</code> e em <code>consulta</code></td>
 </tr>
 </tbody>
 </table>
@@ -1816,33 +1812,33 @@ sistema volta sozinho para a matrícula depois de 2 minutos sem toque):</p>
 pode estar bloqueado, com a tela apagada, sem ninguém conectado. Se for
 reiniciado (queda de luz, atualização do Windows à noite), o sistema volta
 sozinho.</p>
-<p>Os três atalhos da área de trabalho:</p>
+<p>Na área de trabalho fica um atalho só, <strong>Painel de Emprestimos</strong>, que abre o
+painel neste computador (de outro computador da mesma rede, use o endereço
+<code>http://192.168…:3000/admin</code>). Os outros dois gestos do dia a dia são
+arquivos da pasta <code>C:\emprestimos\app\scripts\implantacao</code> — duplo clique
+neles, e eles pedem permissão de administrador sozinhos:</p>
 <table>
 <thead>
 <tr>
-<th>Atalho</th>
+<th>Arquivo</th>
 <th>Para quê</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Painel de Emprestimos</strong></td>
-<td>Abre o painel neste computador. De outro computador da mesma rede, use o endereço <code>http://192.168…:3000/admin</code></td>
+<td><strong>reiniciar.cmd</strong></td>
+<td>Se o tablet mostrar erro de conexão com o computador ligado. Leva uns 15 segundos</td>
 </tr>
 <tr>
-<td><strong>Atualizar copia para consulta</strong></td>
+<td><strong>atualizar-copia-para-consulta.cmd</strong></td>
 <td>Copia o banco de agora para a pasta de consulta (ver <a href="#consultar-o-banco-de-dados">abaixo</a>)</td>
-</tr>
-<tr>
-<td><strong>Reiniciar o sistema</strong></td>
-<td>Se o tablet mostrar erro de conexão. Pede permissão de administrador e leva uns 15 segundos</td>
 </tr>
 </tbody>
 </table>
 <h2 id="consultar-o-banco-de-dados">Consultar o banco de dados</h2>
 <p>Para um relatório que o painel não tem, a coordenação consulta <strong>uma cópia</strong>
 do banco — nunca o banco de verdade. A cópia é refeita toda noite às 19:00 e
-sempre que alguém clica em <strong>Atualizar copia para consulta</strong>. Nada que se
+sempre que alguém roda o <strong>atualizar-copia-para-consulta.cmd</strong>. Nada que se
 faça nela chega ao sistema: pode consultar, filtrar, exportar e até apagar
 por engano que o tablet não sente.</p>
 <ol>
@@ -1852,7 +1848,9 @@ por engano que o tablet não sente.</p>
 </code></pre></div>
 </li>
 <li>
-<p>Na área de trabalho, clique em <strong>Atualizar copia para consulta</strong>.</p>
+<p>Em <code>C:\emprestimos\app\scripts\implantacao</code>, dê duplo clique em
+   <strong>atualizar-copia-para-consulta.cmd</strong> e clique em <strong>Sim</strong> na pergunta do
+   Windows.</p>
 </li>
 <li>Abra o DB Browser. Em <strong>Arquivo</strong>, escolha <strong>Abrir banco de dados somente
    leitura</strong> (<em>Open Database Read Only</em>) e aponte para
@@ -1916,8 +1914,12 @@ apaga a pasta <code>C:\emprestimos</code> depois.</p>
 <td>Feche o programa que ele nomeia (em geral um <code>npm run dev</code> num terminal) e rode de novo</td>
 </tr>
 <tr>
-<td>O instalador para em <strong>Node.js não encontrado</strong></td>
-<td>O Terminal foi aberto antes de instalar o Node. Feche todas as janelas de Terminal e rode o instalador de novo</td>
+<td>O instalador para em <strong>Git não encontrado</strong></td>
+<td>O Terminal foi aberto antes de instalar o Git. Feche todas as janelas de Terminal e rode o instalador de novo</td>
+</tr>
+<tr>
+<td>O instalador para em <strong>O winget terminou, mas o Node não apareceu</strong></td>
+<td>Feche a janela e rode o instalador de novo — na segunda vez ele encontra o Node que acabou de instalar</td>
 </tr>
 <tr>
 <td>O instalador para em <strong>'Baixar as bibliotecas do sistema' terminou com erro</strong></td>
@@ -1925,7 +1927,7 @@ apaga a pasta <code>C:\emprestimos</code> depois.</p>
 </tr>
 <tr>
 <td>O tablet mostra <strong>Não é possível acessar esse site</strong></td>
-<td>Confira, nesta ordem: o computador está ligado? O tablet está no mesmo Wi-Fi? O endereço tem <code>:3000</code> no fim? Clique em <strong>Reiniciar o sistema</strong>. Se continuar, reinicie o computador</td>
+<td>Confira, nesta ordem: o computador está ligado? O tablet está no mesmo Wi-Fi? O endereço tem <code>:3000</code> no fim? Rode o <strong>reiniciar.cmd</strong> (em <code>C:\emprestimos\app\scripts\implantacao</code>). Se continuar, reinicie o computador</td>
 </tr>
 <tr>
 <td>O tablet abria e parou de abrir depois de uns dias</td>
@@ -1936,8 +1938,8 @@ apaga a pasta <code>C:\emprestimos</code> depois.</p>
 <td>Depois de cinco erros, a conta espera 1 minuto. Se a senha foi esquecida, a <a href="../../referencia/conta-do-administrador/">Conta do administrador</a> diz como recuperar</td>
 </tr>
 <tr>
-<td><strong>Atualizar copia para consulta</strong> diz que não conseguiu gravar</td>
-<td>A cópia está aberta no DB Browser. Feche-o e clique de novo</td>
+<td>O <strong>atualizar-copia-para-consulta.cmd</strong> diz que não conseguiu gravar</td>
+<td>A cópia está aberta no DB Browser. Feche-o e rode de novo</td>
 </tr>
 <tr>
 <td>Nada disso</td>
@@ -1982,7 +1984,11 @@ apaga a pasta <code>C:\emprestimos</code> depois.</p>
 </tr>
 <tr>
 <td>Permissões</td>
-<td><code>LocalService</code> com modificação em <code>C:\emprestimos</code>; <code>dados\</code> sem herança, só <code>LocalService</code>, <code>SYSTEM</code> e Administradores</td>
+<td><code>LocalService</code> com modificação em <code>C:\emprestimos</code>; <code>dados\</code> sem herança, só <code>LocalService</code>, <code>SYSTEM</code> e Administradores — <strong>as entradas ficam na pasta e os arquivos herdam</strong> (aplicar <code>(OI)(CI)</code> num arquivo com <code>/T</code> deixa o arquivo sem nenhuma permissão)</td>
+</tr>
+<tr>
+<td>Gestos do dia a dia</td>
+<td><code>reiniciar.cmd</code> e <code>atualizar-copia-para-consulta.cmd</code>, em <code>scripts\implantacao</code>; só o atalho do painel vai à área de trabalho</td>
 </tr>
 </tbody>
 </table>
