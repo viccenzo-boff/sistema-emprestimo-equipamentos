@@ -45,11 +45,23 @@ arquivos que as ferramentas exigem lá: `README.md`, `CLAUDE.md`, `AGENTS.md` e
 
 ### Fila de trabalho — "faça a próxima tarefa" quer dizer isto
 
-Atualizada em 2026-09-18, no fim da Tarefa 18. O dono do repositório abre a
+Atualizada em 2026-09-18, depois da Tarefa 18. O dono do repositório abre a
 sessão só com esse prompt; esta seção é a resposta.
 
-**Não há próxima tarefa enunciada.** A Tarefa 18 — Implantação local no
-Windows 11 — foi executada nesta data, na mesma sessão em que foi alinhada
+**A próxima tarefa é a 19 — Tela cheia no tablet**, enunciada em
+[especificacoes/tarefas/pendentes/tarefa-19-tela-cheia-no-tablet.md](especificacoes/tarefas/pendentes/tarefa-19-tela-cheia-no-tablet.md)
+e ainda **não executada**. Nasceu da foto do iPad da coordenação com o
+portal aberto como texto puro: aquele iPad (iOS ≤ 12) **não roda** o
+sistema — o CSS compilado usa `@layer`, `@property` e `color-mix()`, e o
+JS usa `??`/`?.`, nada disso existe no Safari dele; o piso é Safari 16.4
+(iPadOS 16.4, 2023) ou Chrome 111. A tarefa faz o que dá para fazer com
+código — web app da tela de início no iPad (`apple-mobile-web-app-capable`
++ ícone + manifest), sem barra de endereço — e escreve no guia qual tablet
+serve. Siga a §0 do enunciado; o "Atenção Claude" da §1 é a armadilha que
+faria a tarefa parecer pronta sem estar (o Next 16 emite
+`mobile-web-app-capable`, e o iPadOS até 17.3 só lê a tag com prefixo
+`apple-`). A Tarefa 18 — Implantação local no Windows 11 — foi executada
+nesta data, na mesma sessão em que foi alinhada
 (o dono pediu execução imediata, contra o ciclo habitual de "enunciado
 numa sessão, execução na outra"); o enunciado está em `concluidas/`. Ela
 entrega os scripts de `scripts/implantacao/`, o `db:seed:producao`, o
@@ -3543,8 +3555,8 @@ recorte ampliado. O banco de demonstração voltou idêntico à linha de base.
   `--strict` e o `lychee` ignoram, com razão, por não serem links. Conferidor que
   varre markdown precisa tirar os blocos antes de contar.
 
-**Próximos passos possíveis:** PWA do tablet (manifest e ícones já previstos no
-`public/`), histórico de empréstimos concluídos no painel, e — agora que existe
+**Próximos passos possíveis:** ~~PWA do tablet~~ (virou a Tarefa 19, na
+fila), histórico de empréstimos concluídos no painel, e — agora que existe
 conta individual — registrar **quem** deu baixa em cada empréstimo (a Tarefa 10
 criou a identidade, a 11 deu a cada pessoa uma senha própria, a 12 passou a
 registrar **quando** a baixa aconteceu — e o **quem** continua não existindo,
