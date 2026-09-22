@@ -80,6 +80,32 @@ iPad aponta para o endereço velho e para de abrir. Quem já instalou
 número de tarefa, na caixa "Se o endereço do sistema mudar um dia" do Passo
 6 de [Instalar no Windows 11](docs/instalacao/windows-11.md).
 
+**O estado da entrega, medido nesta máquina em 2026-09-22 — não lembrado.**
+O `push` **aconteceu**: a `main` local e a `origin/main` estão no mesmo
+`420c962`, a Action `Documentacao` passou em verde e o Pages republicou em
+seguida. A **implantação está de pé e sã**: o serviço `Emprestimos` está
+`Running`, a `/` e o `/admin` respondem 200, e o `/admin` traz o formulário
+de login **sem** o aviso de instalação incompleta — ou seja, o banco abre e
+as quatro contas existem, que é a conferência que a Tarefa 18 fixou ("o 200
+da home não prova banco"). A pasta `dados\` recusa acesso à conta comum,
+como o `icacls` corrigido desenhou, e há backup diário de 19, 20, 21 e
+22/09, todos às 19:00. **O `SQLITE_CANTOPEN` que ainda está no
+`servico.err.log` é resíduo de 2026-09-18**, e não o estado de hoje: quem
+responde pelo hoje é o `/admin` servido agora.
+
+**Falta uma coisa, e ela bloqueia a Tarefa 19 no balcão.** O que está
+instalado em `C:\emprestimos\app` é o commit `9c1a308`, de 2026-09-18 —
+quatro dias antes da 19. Conferido pelo que o serviço **serve**, e não pelo
+`git log`: `/manifest.webmanifest` responde **404** e a tag
+`apple-mobile-web-app-capable` **não está** no HTML da `/`. Instalar o
+ícone num iPad hoje daria um atalho do Safari **com** barra de endereço, e a
+19 pareceria quebrada sem nada estar quebrado. A ordem é: **mover a tag
+`v1.0`** (ainda em `5515ba1`, de 2026-08-24, mais de 120 commits atrás) para
+o commit da entrega, rodar o `atualizar.cmd` escolhendo `v1.0`, e **só
+então** testar o ícone no iPad. O `atualizar.ps1` já faz
+`git fetch --tags --force` — tag movida é tag que chega, e isso foi lido no
+script, não suposto.
+
 A Tarefa 18 — Implantação local no Windows 11 — foi executada
 em 2026-09-18, na mesma sessão em que foi alinhada
 (o dono pediu execução imediata, contra o ciclo habitual de "enunciado
@@ -96,7 +122,9 @@ os scripts**; para o teste local de hoje, o clone pode vir da pasta
 `C:\Projetos\sistema-emprestimo-equipamentos` em vez do GitHub; (3) mover a
 tag `v1.0` do remoto (aponta para `5515ba1`, de agosto) para o commit da
 entrega — o `atualizar.cmd` lista tags, e um `atualizar v1.0` hoje seria uma
-volta no tempo. Os quatro relatórios declarados na Tarefa 13 existem, e
+volta no tempo. **Dos três, (1) e (2) foram feitos e conferidos em
+2026-09-22 — ver o bloco "O estado da entrega" acima; só o (3) continua
+aberto.** Os quatro relatórios declarados na Tarefa 13 existem, e
 `especificacoes/tarefas/pendentes/` está vazia. O que sobra são ideias, não
 tarefas: as de "Próximos passos possíveis", no fim do estado atual, **não
 estão na spec** e precisam de uma sessão de alinhamento e de um enunciado
@@ -3783,10 +3811,21 @@ aberto.
   correção; a SheetJS distribui as versões novas apenas pelo próprio CDN. Trocar
   para `npm i xlsx` reinstala a versão vulnerável. Para atualizar, troque o
   número da versão na URL dentro do `package.json`.
-- A porta 3000 desta máquina costuma estar ocupada — na Tarefa 17, pelo
-  `npm run dev` do próprio dono, que o Next reconhece e por isso **recusa**
-  subir um segundo servidor (com outro processo qualquer ele cairia para
-  3001+ sozinho). Confira quem está na porta antes de subir.
+- **A porta 3000 desta máquina é o SISTEMA EM PRODUÇÃO, e não mais o
+  `npm run dev` do dono.** Quem escuta ali é o serviço do Windows
+  `Emprestimos` (NSSM + `next start` a partir de `C:\emprestimos\app`),
+  rodando como `LocalService` — por isso a linha de comando do processo não
+  se lê com a conta comum, e um `node.exe` anônimo na porta **não** é um
+  servidor de desenvolvimento esquecido. **Não o encerre:** um `taskkill`
+  ali derruba o balcão. Confira com `Get-Service Emprestimos` antes de
+  concluir qualquer coisa sobre quem está na porta, e suba servidor de
+  verificação em 3100+, como as Tarefas 17 a 19 fizeram. **Pelo mesmo
+  motivo, não rode `npm run build` nesta pasta sem pensar**: ele reescreve
+  `.next\` — o que derrubaria o serviço se a pasta instalada fosse esta (não
+  é: o serviço roda de `C:\emprestimos\app`, e o `build` daqui não o
+  alcança). Na Tarefa 17 quem estava na porta era o `npm run dev` do dono,
+  que o Next reconhece e por isso **recusa** subir um segundo servidor (com
+  outro processo qualquer ele cairia para 3001+ sozinho).
 - **As ferramentas da wiki são Python e ficam fora do `package.json`** (D02):
   `mkdocs-material`, `mkdocs-static-i18n` e `mike`, com versões **fixadas** em
   `docs-requirements.txt` — o site é publicado por uma Action, e faixa de versão
