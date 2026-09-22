@@ -64,7 +64,7 @@ desta tarefa**:
   manifest é entregue e fica correto; quem dá a tela cheia continua sendo o
   **Fully Kiosk Browser**, como o guia já descreve.
 
-Quem destrava o Android é a **[Tarefa 20 — HTTPS na rede local](tarefa-20-https-na-rede-local.md)**,
+Quem destrava o Android é a **[Tarefa 20 — HTTPS na rede local](../pendentes/tarefa-20-https-na-rede-local.md)**,
 enunciada junto com esta e marcada para **depois da entrega à coordenação**.
 Escrever o manifest agora é o que faz a Tarefa 20 ser só infraestrutura.
 
@@ -176,7 +176,7 @@ refazer.
 * Suporte a Safari anterior ao 16.4 (o iPad da foto). Não há versão do
   Tailwind 4 que rode nele.
 * Service worker, modo offline, notificações.
-* **HTTPS na rede local — é a [Tarefa 20](tarefa-20-https-na-rede-local.md)**,
+* **HTTPS na rede local — é a [Tarefa 20](../pendentes/tarefa-20-https-na-rede-local.md)**,
   e é ela que torna o Android instalável.
 * Qualquer mudança nas telas do portal ou do painel, inclusive o botão de
   tela cheia que foi oferecido e recusado.

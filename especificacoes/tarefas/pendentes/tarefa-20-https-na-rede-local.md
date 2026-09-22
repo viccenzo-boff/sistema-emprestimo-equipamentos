@@ -7,7 +7,7 @@ de uma autoridade própria instalada uma vez em cada tablet. É uma tarefa de
 tocado. Nenhuma tela muda. Nenhuma tabela muda.**
 
 **Pré-requisitos: a Tarefa 18 executada** (está) e a
-**[Tarefa 19](tarefa-19-tela-cheia-no-tablet.md) executada** — é ela que
+**[Tarefa 19](../concluidas/tarefa-19-tela-cheia-no-tablet.md) executada** — é ela que
 entrega o manifest e os ícones que esta tarefa faz valer no Android.
 
 **Quando:** **depois da entrega à coordenação** (decisão do dono,

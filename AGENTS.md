@@ -45,36 +45,40 @@ arquivos que as ferramentas exigem lá: `README.md`, `CLAUDE.md`, `AGENTS.md` e
 
 ### Fila de trabalho — "faça a próxima tarefa" quer dizer isto
 
-Atualizada em 2026-09-22, no alinhamento que dividiu a Tarefa 19 e criou a
-20 (o corpo dela, sobre a Tarefa 18, é de 2026-09-18). O dono do repositório
-abre a sessão só com esse prompt; esta seção é a resposta.
+Atualizada em 2026-09-22, no fim da execução da Tarefa 19 (o alinhamento que
+a dividiu e criou a 20 é do mesmo dia; o corpo sobre a Tarefa 18, de
+2026-09-18). O dono do repositório abre a sessão só com esse prompt; esta
+seção é a resposta.
 
-**A próxima tarefa é a 19 — Tela cheia no tablet**, enunciada em
-[especificacoes/tarefas/pendentes/tarefa-19-tela-cheia-no-tablet.md](especificacoes/tarefas/pendentes/tarefa-19-tela-cheia-no-tablet.md)
-e ainda **não executada**. Nasceu da foto do iPad da coordenação com o
-portal aberto como texto puro: aquele iPad (iOS ≤ 12) **não roda** o
-sistema — o CSS compilado usa `@layer`, `@property` e `color-mix()`, e o
-JS usa `??`/`?.`, nada disso existe no Safari dele; o piso é Safari 16.4
-(iPadOS 16.4, 2023) ou Chrome 111. A tarefa faz o que dá para fazer com
-código — web app da tela de início no iPad (`apple-mobile-web-app-capable`
-+ ícone + manifest), sem barra de endereço — e escreve no guia qual tablet
-serve. Siga a §0 do enunciado; o "Atenção Claude" da §2 é a armadilha que
-faria a tarefa parecer pronta sem estar (o Next 16 emite
-`mobile-web-app-capable`, e o iPadOS até 17.3 só lê a tag com prefixo
-`apple-`).
+**A Tarefa 19 — Tela cheia no tablet — foi executada em 2026-09-22**, e o
+enunciado está em `concluidas/`. Ela ficou **concluída, menos o degrau do
+iPad**: o aparelho é do dono e ele ainda não testou (ver o bloco da Tarefa
+19 no estado atual, que diz exatamente o que falta conferir lá).
 
-**A 19 entrega o iPad e NÃO entrega o Android** — está na §1 dela, que é
-seção própria por ter passado despercebida quando era célula de tabela. O
-install do Chrome exige o protocolo `https://`, e hoje o sistema serve
-`http://192.168…:3000`. Quem destrava o Android é a **Tarefa 20 — HTTPS na
-rede local**, enunciada em
+**A próxima tarefa é a entrega à coordenação — e ela não é tarefa de
+código.** Depois dela vem a **Tarefa 20 — HTTPS na rede local**, enunciada
+em
 [especificacoes/tarefas/pendentes/tarefa-20-https-na-rede-local.md](especificacoes/tarefas/pendentes/tarefa-20-https-na-rede-local.md)
-na mesma sessão de alinhamento (2026-09-22) e marcada **para depois da
-entrega à coordenação**, por decisão do dono. Ela não toca `src/`: é Caddy
-como proxy, CA interna, certificado instalado uma vez por tablet, e a porta
-3000 fechada na rede. O motivo que a justifica sozinha não é o PWA — é que
-hoje a senha do secretário e os dados pessoais dos estudantes trafegam em
-texto claro no Wi-Fi. **A ordem é 19, entrega, depois 20.**
+no alinhamento de 2026-09-22 e marcada **para depois da entrega**, por
+decisão do dono. **A ordem é 19 (feita), entrega, depois 20.** Se a sessão
+abrir com "faça a próxima tarefa" e a entrega ainda não tiver acontecido,
+**pergunte antes de começar a 20** — ela muda o endereço que os tablets
+usam, e fazer isso na véspera da entrega é trocar o chão debaixo de quem
+vai apresentar.
+
+A 20 não toca `src/`: é Caddy como proxy, CA interna, certificado instalado
+uma vez por tablet, e a porta 3000 fechada na rede. O motivo que a
+justifica sozinha **não é o PWA** — é que hoje a senha do secretário e os
+dados pessoais dos estudantes trafegam em texto claro no Wi-Fi. O que ela
+destrava de quebra é o Android: o install do Chrome exige o protocolo
+`https://`, e por isso a 19 entregou o iPad e **não** o Android.
+
+**Quando a 20 rodar, o endereço muda** de `http://192.168…:3000/` para
+`https://192.168…/` — e todo ícone que a 19 instalou numa tela de início de
+iPad aponta para o endereço velho e para de abrir. Quem já instalou
+**remove e adiciona de novo**. O guia já diz isso ao leigo, sem citar
+número de tarefa, na caixa "Se o endereço do sistema mudar um dia" do Passo
+6 de [Instalar no Windows 11](docs/instalacao/windows-11.md).
 
 A Tarefa 18 — Implantação local no Windows 11 — foi executada
 em 2026-09-18, na mesma sessão em que foi alinhada
@@ -2093,6 +2097,127 @@ enunciado tem o porquê de cada uma):
 - **Um `nssm help` com a saída redirecionada ficou pendurado** e foi morto
   com `Stop-Process`. Não redirecione a saída do NSSM; leia o registro.
 
+**Tarefa 19 — Tela cheia no tablet (concluída, menos o degrau do iPad):**
+o portal passa a abrir **sem barra de endereço** quando aberto pelo ícone da
+tela de início de um iPad —
+[tarefa-19-tela-cheia-no-tablet.md](especificacoes/tarefas/concluidas/tarefa-19-tela-cheia-no-tablet.md).
+Entrega as tags de web app no `metadata` do [layout](src/app/layout.tsx), o
+[manifest.ts](src/app/manifest.ts) (rota `/manifest.webmanifest`, estática),
+os três ícones em `public/` gerados por
+[scripts/gerar-icones.mjs](scripts/gerar-icones.mjs), e a seção **Requisitos
+do tablet** mais os Passos 5 e 6 reescritos em
+[Instalar no Windows 11](docs/instalacao/windows-11.md). **Nenhuma tela do
+portal ou do painel mudou** — e isso foi afirmado, não suposto (ver a última
+decisão). **Sem dependência nova** e sem migration: o `sharp` que gera os
+ícones é dependência do próprio Next e só roda no script.
+
+`tsc`, `lint` e `build` em 0, com a `/` e o `/manifest.webmanifest`
+**estáticos** (`○`) e as seis rotas do painel dinâmicas (`ƒ`);
+`mkdocs build --strict`, `vale docs/` (34 arquivos, 0 erro) e
+`npm run docs:links` (38 páginas, 3277 referências) em 0. Verificação em
+quatro degraus, com o `dev.db` do dono **conferido por md5** no fim
+(`fc22b0b856d7da6b0a704e861939190b`, idêntico — nunca foi tocado): as
+medidas da logo por `sharp` contra o arquivo real; o gerador rodado duas
+vezes com comparação byte a byte; HTTP real contra o `next start` na porta
+3102 (36 asserções — as duas tags de web app, o manifest e os três PNG com
+as dimensões lidas **dos bytes** do IHDR, não do nome do arquivo); e
+navegador real por CDP nas duas orientações do tablet (14).
+
+**O que NÃO foi visto acontecer:** o degrau do iPad. O aparelho é do dono e
+ele ainda não testou. Falta conferir lá: a página abre **com estilo**;
+"Adicionar à Tela de Início" cria o ícone com o nome **Empréstimos**;
+aberto pelo ícone, **não há barra de endereço**; a retirada inteira funciona
+(teclado, categorias, confirmação, QR); volta à matrícula em 2 min; o Acesso
+Guiado prende a tela. **Anote a versão do iPadOS** — há relato de que o
+iPadOS 26 abre como web app *qualquer* site adicionado à tela de início, e
+nesse caso o teste **não prova** que as tags funcionam; o degrau só fecha num
+aparelho entre 16.4 e 25.
+
+**Decisões da Tarefa 19** (não refazer sem motivo):
+
+- **`src/app/icon.png` NÃO entrou, contra a letra do enunciado — e a razão
+  foi medida.** Ele o pedia como "favicon, convenção do Next", mas o projeto
+  já tem `src/app/favicon.ico`, e **com o `.ico` presente o Next emite um só
+  `<link rel="icon">`, apontando para ele** (`sizes="256x256"`). O
+  `icon.png` virava uma rota estática (`/icon.png`, 200, `image/png`) que
+  **nenhuma página referenciava** — e nada acusaria: o build passa, o
+  arquivo existe, o ícone do navegador continua certo porque vem do `.ico`.
+  Conferido por HTTP contra o `next start`, lendo as tags do HTML da `/`.
+  O comentário em `ALVOS`, dentro do gerador, diz onde ele volta se o
+  `favicon.ico` sair um dia.
+- **A tag da Apple é escrita à mão em `other`, e as duas convivem de
+  propósito.** Para `appleWebApp`, o Next 16 emite
+  `<meta name="mobile-web-app-capable">` — o nome padronizado — e **não**
+  `apple-mobile-web-app-capable`, que é o que o iPadOS 16.4 a 17.3 entende.
+  Sem a segunda, "Adicionar à Tela de Início" naquela faixa abre **com** a
+  barra do Safari e a tarefa parece feita. As duas foram afirmadas no HTML
+  servido **e** no DOM montado. Não remova nenhuma.
+- **Os ícones são gerados por script versionado, não feitos à mão**, e o
+  gerador é **determinístico**: rodado duas vezes, sai byte a byte igual
+  (`--verificar` compara por SHA-256 e sai em 1 se divergir). Sem isso, um
+  portão de comparação reprovaria arquivo recém-gerado — a armadilha que os
+  SVG dos diagramas já tinham dado na D04.
+- **O recorte é por LINHA, nunca por coluna, e a caixa do símbolo é
+  calculada — não cravada.** A logo é empilhada, com uma faixa horizontal
+  inteiramente vazia em `y=233..263` (31px); o maior vão vertical vazio do
+  arquivo inteiro tem **5px**, então não existe corte limpo entre símbolo e
+  palavra no eixo horizontal. O script corta `y=0..232` e acha a caixa
+  envolvente sozinho. **Refaça a medição se a logo for trocada** — é o único
+  número cravado no script.
+- **Dois números da §3 do enunciado estavam errados, e não mudam a
+  receita.** Ela diz que o símbolo ocupa "~181 colunas" e a palavra "295":
+  medido sob cinco limiares diferentes de alfa, todos concordando, o símbolo
+  é **x=105..340 (236 colunas) × 233 linhas** e a palavra ocupa a largura
+  inteira (444). Como o gerador calcula a caixa, os dois eram contexto, não
+  entrada. Os números **decisivos** conferiram exatos: 444×351, a faixa
+  vazia, o vão de 5px e o corte em `y=232`.
+- **A ampliação do ícone de 512 é 1,76×, e não os 2,2× que o enunciado
+  aceitou.** O 2,2 é `512/232`, sem a margem; com os 10% de cada lado o
+  conteúdo tem 409,6px. A decisão do dono (aceitar ampliar) vale com folga
+  maior do que a que ele aprovou. Os dois que aparecem na tela saem por
+  **redução**: 0,62× no de 180 e 0,66× no de 192.
+- **Branco OPACO no fundo, e não transparência.** O iOS compõe o
+  `apple-touch-icon` sobre **preto** — um PNG com alfa sairia com halo
+  escuro em volta do símbolo. Vale para os três, porque o mesmo arquivo pode
+  acabar em qualquer um dos dois sistemas.
+- **A reserva de DHCP virou Passo 5, com o tablet empurrado para Passo 6.**
+  Ela era conselho no fim do Passo 5 ("Dois cuidados que não têm a ver com o
+  sistema") e agora é passo obrigatório **antes** de instalar o ícone: o
+  ícone da tela de início grava o endereço do dia, e se o roteador trocar o
+  IP ele para de abrir — semanas depois, sem o tablet dizer o motivo. A
+  renumeração levou junto a linha da tabela "Se der errado" que apontava
+  para o Passo 5, que agora aponta para a âncora certa **e** manda remover e
+  readicionar o ícone, que a reserva sozinha não conserta.
+- **O guia não cita número de tarefa.** Quem o lê é a coordenação: a
+  consequência da futura Tarefa 20 está escrita como "se o endereço do
+  sistema mudar um dia", e a ausência do "Instalar aplicativo" no Android
+  como "o Chrome só instala páginas servidas por `https://`" — sem mandar
+  ninguém procurar um enunciado.
+- **As âncoras geradas são ASCII e o markdownlint do editor acusa errado** —
+  ele esperava `#passo-5-fixar-o-endereço-…` com acento. Conferido no HTML
+  **gerado**: o Python-Markdown escreve
+  `id="passo-5-fixar-o-endereco-do-computador-no-roteador"`. Mesma armadilha
+  já registrada na D03; não "corrija" para a forma acentuada.
+- **A promessa "nenhuma tela do portal muda" foi afirmada, e não suposta.**
+  `viewport-fit=cover` é mudança de renderização: o roteiro de navegador
+  mediu as duas orientações do tablet (1280x800 e 800x1280) e afirmou tela
+  renderizada com a folha de estilo aplicada, **sem rolagem horizontal**
+  (documento igual à janela nas duas) e os 13 botões do teclado no lugar.
+  **O que ele não cobre é o iPad Pro:** `viewport-fit=cover` estende o
+  conteúdo até as bordas arredondadas, e a `BarraSelecao` é fixa no rodapé —
+  se o teste do dono for num iPad Pro, **olhe se o botão de confirmar
+  encosta no indicador de início**. Num iPad sem bordas arredondadas não há
+  o que ver.
+- **Esperar o texto do `h1` não prova que a folha de estilo aplicou.** A
+  asserção de fonte reprovou **só na primeira** orientação e passou na
+  segunda — duas asserções vizinhas se contradizendo, que é sintoma de
+  roteiro e não de produto. A condição de "pronto" passou a incluir o CSS
+  ter aplicado; sem isso, mede-se a primeira pintura.
+- **A verificação nunca tocou a porta 3000.** Ela estava com um processo
+  `node` do dono (pid 6728); o `next start` da sessão subiu na **3102** e foi
+  encerrado **por PID**, nunca por nome de imagem. O `dev.db` tem o mesmo md5
+  do começo da sessão.
+
 **Tarefa D01 — Congelar a v1.0 e criar o estado de demonstração (concluída):**
 a primeira da **série de documentação** (`tarefa-doc-NN`, regida pela
 [spec-wiki.md](especificacoes/spec-wiki.md)), e a única dela que mexe fora de `docs/`. Entrega
@@ -3571,8 +3696,12 @@ recorte ampliado. O banco de demonstração voltou idêntico à linha de base.
   `--strict` e o `lychee` ignoram, com razão, por não serem links. Conferidor que
   varre markdown precisa tirar os blocos antes de contar.
 
-**Próximos passos possíveis:** ~~PWA do tablet~~ (virou a Tarefa 19, na
-fila), histórico de empréstimos concluídos no painel, e — agora que existe
+**Próximos passos possíveis:** ~~PWA do tablet~~ (virou a Tarefa 19, **feita**
+em 2026-09-22 — o que sobra dela é o install do Chrome no Android, que
+depende do HTTPS da Tarefa 20, e um service worker, que continua
+deliberadamente **fora** de escopo: sem o PC não há o que fazer offline, e
+cache velho é a fonte clássica de "atualizei e o tablet mostra o antigo"),
+histórico de empréstimos concluídos no painel, e — agora que existe
 conta individual — registrar **quem** deu baixa em cada empréstimo (a Tarefa 10
 criou a identidade, a 11 deu a cada pessoa uma senha própria, a 12 passou a
 registrar **quando** a baixa aconteceu — e o **quem** continua não existindo,
