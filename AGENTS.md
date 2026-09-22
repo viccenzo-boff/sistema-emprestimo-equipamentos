@@ -45,8 +45,9 @@ arquivos que as ferramentas exigem lá: `README.md`, `CLAUDE.md`, `AGENTS.md` e
 
 ### Fila de trabalho — "faça a próxima tarefa" quer dizer isto
 
-Atualizada em 2026-09-18, depois da Tarefa 18. O dono do repositório abre a
-sessão só com esse prompt; esta seção é a resposta.
+Atualizada em 2026-09-22, no alinhamento que dividiu a Tarefa 19 e criou a
+20 (o corpo dela, sobre a Tarefa 18, é de 2026-09-18). O dono do repositório
+abre a sessão só com esse prompt; esta seção é a resposta.
 
 **A próxima tarefa é a 19 — Tela cheia no tablet**, enunciada em
 [especificacoes/tarefas/pendentes/tarefa-19-tela-cheia-no-tablet.md](especificacoes/tarefas/pendentes/tarefa-19-tela-cheia-no-tablet.md)
@@ -57,11 +58,26 @@ JS usa `??`/`?.`, nada disso existe no Safari dele; o piso é Safari 16.4
 (iPadOS 16.4, 2023) ou Chrome 111. A tarefa faz o que dá para fazer com
 código — web app da tela de início no iPad (`apple-mobile-web-app-capable`
 + ícone + manifest), sem barra de endereço — e escreve no guia qual tablet
-serve. Siga a §0 do enunciado; o "Atenção Claude" da §1 é a armadilha que
+serve. Siga a §0 do enunciado; o "Atenção Claude" da §2 é a armadilha que
 faria a tarefa parecer pronta sem estar (o Next 16 emite
 `mobile-web-app-capable`, e o iPadOS até 17.3 só lê a tag com prefixo
-`apple-`). A Tarefa 18 — Implantação local no Windows 11 — foi executada
-nesta data, na mesma sessão em que foi alinhada
+`apple-`).
+
+**A 19 entrega o iPad e NÃO entrega o Android** — está na §1 dela, que é
+seção própria por ter passado despercebida quando era célula de tabela. O
+install do Chrome exige o protocolo `https://`, e hoje o sistema serve
+`http://192.168…:3000`. Quem destrava o Android é a **Tarefa 20 — HTTPS na
+rede local**, enunciada em
+[especificacoes/tarefas/pendentes/tarefa-20-https-na-rede-local.md](especificacoes/tarefas/pendentes/tarefa-20-https-na-rede-local.md)
+na mesma sessão de alinhamento (2026-09-22) e marcada **para depois da
+entrega à coordenação**, por decisão do dono. Ela não toca `src/`: é Caddy
+como proxy, CA interna, certificado instalado uma vez por tablet, e a porta
+3000 fechada na rede. O motivo que a justifica sozinha não é o PWA — é que
+hoje a senha do secretário e os dados pessoais dos estudantes trafegam em
+texto claro no Wi-Fi. **A ordem é 19, entrega, depois 20.**
+
+A Tarefa 18 — Implantação local no Windows 11 — foi executada
+em 2026-09-18, na mesma sessão em que foi alinhada
 (o dono pediu execução imediata, contra o ciclo habitual de "enunciado
 numa sessão, execução na outra"); o enunciado está em `concluidas/`. Ela
 entrega os scripts de `scripts/implantacao/`, o `db:seed:producao`, o
