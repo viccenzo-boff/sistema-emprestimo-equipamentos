@@ -121,41 +121,110 @@ equipamentos e pessoas entram pelo próprio painel.
    [5. Gestão de pessoas](../painel/pessoas.md). O botão
    **Baixar planilha modelo** dá o arquivo no formato certo.
 
-## Passo 5 — O tablet
+## Requisitos do tablet
+
+Nem todo tablet roda o sistema. O aparelho precisa de um navegador recente —
+não por capricho: as telas usam recursos gráficos que navegadores antigos
+simplesmente não conhecem.
+
+| Tablet | O que precisa |
+| --- | --- |
+| **iPad** | **iPadOS 16.4 ou mais novo** (março de 2023) |
+| **Android** | **Chrome 111 ou mais novo** — ele se atualiza sozinho pela Play Store, então basta o tablet aceitar as atualizações |
+
+**Como conferir no iPad:** **Ajustes → Geral → Sobre → Versão**.
+
+Aceitam o iPadOS 16.4 estes modelos — qualquer um deles serve:
+
+- **iPad** da 5ª geração (2017) em diante;
+- **iPad mini** 5 em diante;
+- **iPad Air** 3 em diante;
+- **qualquer iPad Pro**.
+
+!!! warning "Como um tablet velho demais se apresenta"
+    A página abre, mas **como texto puro**: sem cores, sem botões, com a
+    letra de jornal e a logo enorme. O teclado numérico aparece como uma
+    fileira de retângulos cinzentos que não respondem ao toque.
+
+    Não é defeito da instalação e não tem conserto pelo computador — é o
+    navegador do tablet que não entende as telas. Use um aparelho da lista
+    acima.
+
+## Passo 5 — Fixar o endereço do computador no roteador
+
+**Faça isto antes de mexer no tablet.** Roteadores costumam trocar de tempos
+em tempos o número que dão a cada computador. Quando isso acontece, o
+endereço que você anotou no Passo 3 deixa de valer e o tablet para de abrir
+a página.
+
+O problema é que ninguém liga uma coisa à outra: o tablet funciona por
+semanas e um dia para, sem dizer o motivo.
+
+1. Entre na página de configuração do roteador (o endereço e a senha costumam
+   estar numa etiqueta embaixo dele).
+2. Procure a reserva de endereço — o nome do ajuste varia: **reserva de
+   DHCP**, **IP estático**, **address reservation**.
+3. Reserve, para este computador, o endereço anotado no Passo 3.
+
+Se a rede for da instituição, peça isso ao suporte de TI — informe o nome do
+computador e o endereço que o instalador mostrou.
+
+## Passo 6 — O tablet
+
+Primeiro confira que o tablet alcança o sistema:
 
 1. Conecte o tablet no **mesmo Wi-Fi** do computador.
-2. Abra o navegador (Chrome, no Android; Safari, no iPad) e digite o
+2. Abra o navegador (Safari, no iPad; Chrome, no Android) e digite o
    endereço anotado no Passo 3 — por exemplo `http://192.168.0.10:3000/`.
    Aparece a tela **Digite sua matrícula**.
-3. Digite uma matrícula cadastrada e toque em **Continuar**. Se a grade de
-   categorias aparecer, o tablet está falando com o computador.
+3. Digite uma matrícula cadastrada e toque em **Continuar**. Se a tela
+   seguinte aparecer, o tablet está falando com o computador.
 
-Para deixar o tablet **preso nessa tela**, com a tela sempre ligada (o
-sistema volta sozinho para a matrícula depois de 2 minutos sem toque):
+Agora deixe o tablet **preso nessa tela**, com a tela sempre ligada. O
+sistema volta sozinho para a matrícula depois de 2 minutos sem toque; o que
+falta é a tela não apagar e o aparelho não sair da página.
 
-- **Android:** instale o **Fully Kiosk Browser** pela Play Store. Nas
-  configurações dele, em **Web Content Settings → Start URL**, coloque o
-  endereço acima; em **Device Management**, ligue **Keep Screen On** e
-  **Launch on Boot**. A licença custa uns poucos euros por tablet, uma vez.
-  A alternativa gratuita é a **fixação de tela** do próprio Android: procure
-  por **Fixar** nas configurações de segurança, ligue, abra o Chrome no
-  endereço e fixe-o. A barra de endereço continua visível.
-- **iPad:** em **Ajustes → Acessibilidade → Acesso Guiado**, ligue e defina
-  um código. Abra o Safari no endereço e clique três vezes no botão lateral
-  para prender a tela.
+### No iPad
 
-Dois cuidados que não têm a ver com o sistema:
+1. Com o endereço aberto no Safari, toque no botão **Compartilhar** (o
+   quadrado com a seta para cima, na barra de cima).
+2. Escolha **Adicionar à Tela de Início**. O nome sugerido é
+   **Empréstimos** — mantenha. Toque em **Adicionar**.
+3. Feche o Safari e abra o sistema **pelo ícone** que apareceu na tela de
+   início. Ele abre **sem barra de endereço e sem os botões do navegador**:
+   a tela inteira é o portal.
+4. Em **Ajustes → Tela e Brilho → Bloqueio Automático**, escolha **Nunca**.
+   Deixe o tablet no carregador.
+5. Em **Ajustes → Acessibilidade → Acesso Guiado**, ligue e defina um
+   código. Abra o sistema pelo ícone e clique três vezes no botão lateral
+   para prender a tela.
 
-- **Carregador na tomada, não no computador.** A entrada USB de um
-  computador não dá carga suficiente para um tablet com a tela ligada o dia
-  inteiro — ele descarrega mesmo no cabo. Use o carregador original num
-  suporte.
-- **O endereço pode mudar.** Roteadores costumam trocar o número que dão ao
-  computador de tempos em tempos, e aí o tablet para de abrir a página. Para
-  fixar, entre na página do roteador e reserve o endereço para este
-  computador (o nome do ajuste varia: *reserva de DHCP*, *IP estático*,
-  *address reservation*). Se a rede for da instituição, peça isso ao
-  suporte de TI.
+!!! note "Se o endereço do sistema mudar um dia"
+    O ícone guarda o endereço que estava aberto na hora em que foi criado.
+    Se o endereço mudar — porque a reserva do Passo 5 não foi feita, ou
+    porque o sistema passou a usar outro endereço —, o ícone para de abrir.
+    **Remova o ícone e adicione de novo**, com o endereço novo.
+
+### No Android
+
+1. Instale o **Fully Kiosk Browser** pela Play Store. Nas configurações
+   dele, em **Web Content Settings → Start URL**, coloque o endereço; em
+   **Device Management**, ligue **Keep Screen On** e **Launch on Boot**. A
+   licença custa uns poucos euros por tablet, uma vez.
+2. A alternativa gratuita é a **fixação de tela** do próprio Android:
+   procure por **Fixar** nas configurações de segurança, ligue, abra o
+   Chrome no endereço e fixe-o. A barra de endereço continua visível.
+
+O Chrome **ainda não oferece "Instalar aplicativo"** para este sistema, e
+não é erro de instalação: o Chrome só instala páginas servidas por
+`https://`, e na rede local o sistema é servido por `http://`. Enquanto for
+assim, quem dá a tela cheia no Android é o Fully Kiosk Browser.
+
+### Um cuidado que não tem a ver com o sistema
+
+**Carregador na tomada, não no computador.** A entrada USB de um computador
+não dá carga suficiente para um tablet com a tela ligada o dia inteiro — ele
+descarrega mesmo no cabo. Use o carregador original num suporte.
 
 ## O dia a dia
 
@@ -256,7 +325,8 @@ apaga a pasta `C:\emprestimos` depois.
 | O instalador para em **O winget terminou, mas o Node não apareceu** | Feche a janela e rode o instalador de novo — na segunda vez ele encontra o Node que acabou de instalar |
 | O instalador para em **'Baixar as bibliotecas do sistema' terminou com erro** | Quase sempre é internet. Confira a conexão e rode de novo; ele continua de onde parou |
 | O tablet mostra **Não é possível acessar esse site** | Confira, nesta ordem: o computador está ligado? O tablet está no mesmo Wi-Fi? O endereço tem `:3000` no fim? Rode o **reiniciar.cmd** (em `C:\emprestimos\app\scripts\implantacao`). Se continuar, reinicie o computador |
-| O tablet abria e parou de abrir depois de uns dias | O endereço do computador mudou — veja "O endereço pode mudar" no Passo 5 |
+| A página abre no tablet **como texto puro**, sem cores, e o teclado não responde | O navegador do tablet é antigo demais. Veja [Requisitos do tablet](#requisitos-do-tablet) — não há conserto pelo computador |
+| O tablet abria e parou de abrir depois de uns dias | O endereço do computador mudou. Faça a reserva do [Passo 5](#passo-5-fixar-o-endereco-do-computador-no-roteador); no iPad, remova o ícone da tela de início e adicione de novo, já com o endereço certo |
 | O painel diz **Usuário ou senha inválidos** para todo mundo | Depois de cinco erros, a conta espera 1 minuto. Se a senha foi esquecida, a [Conta do administrador](../referencia/conta-do-administrador.md) diz como recuperar |
 | O **atualizar-copia-para-consulta.cmd** diz que não conseguiu gravar | A cópia está aberta no DB Browser. Feche-o e rode de novo |
 | Nada disso | Mande a pasta `C:\emprestimos\logs` para quem mantém o sistema |
