@@ -15,6 +15,8 @@
     6. firewall, energia (sem suspender), tarefa agendada do backup, o atalho
        do painel na área de trabalho
     7. sobe o serviço, espera ele responder e roda o primeiro backup
+    8. confere o acesso PELA REDE (é por onde o tablet entra) e imprime o
+       endereço de cada placa — o 200 em localhost não prova nenhum dos dois
 
   Rodar de novo é seguro: para o serviço, refaz tudo e preserva o banco e o
   .env. É também o jeito de reparar uma instalação.
