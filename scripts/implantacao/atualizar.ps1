@@ -155,8 +155,15 @@ try {
 
   Etapa "Trocando o código para a versão $Tag"
   # --force descarta alteração local em arquivo versionado: nesta máquina
-  # ninguém edita código, e o 'prisma generate' do npm ci reescreve
-  # src/generated, que é versionado — sem --force o checkout recusaria.
+  # ninguém edita código, e um arquivo mexido à mão não pode travar a
+  # atualização de um sistema que a coordenação usa no balcão.
+  #
+  # Este comentário dizia que o --force era necessário porque o
+  # 'prisma generate' do npm ci reescreve src/generated, "que é versionado".
+  # Não é: /src/generated/prisma está no .gitignore desde sempre (conferido em
+  # 2026-09-23 com `git log --all -- src/generated`, que não devolve um único
+  # commit). O checkout nunca reclamaria daquela pasta. O --force fica pelo
+  # motivo de cima, que continua valendo.
   Rodar "git checkout $Tag" $git @("checkout", "--force", "--quiet", $Tag)
   Ok "Código em $((& $git describe --tags --always).Trim())"
 

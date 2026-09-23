@@ -106,6 +106,66 @@ então** testar o ícone no iPad. O `atualizar.ps1` já faz
 `git fetch --tags --force` — tag movida é tag que chega, e isso foi lido no
 script, não suposto.
 
+**A coordenação recebeu uma instalação em 2026-09-23, e o estado dela NÃO é
+conhecido aqui.** O dono rodou o `instalar.cmd` no computador da coordenação
+(usuário Windows `403077`, outra máquina), disse que "aparentemente deu certo",
+e a página não abriu em `http://192.168.0.105:3000/`. Os únicos logs que
+chegaram foram os do npm em `%LOCALAPPDATA%\npm-cache\_logs`, que cobrem só a
+fatia do instalador que usa npm. O que eles provam:
+
+- **A primeira execução (00:50) falhou no `npm ci`, e a causa está escrita no
+  log:** `cmd.exe /d /s /c node scripts/preinstall-entry.js` seguido de
+  `'node' não é reconhecido como um comando interno ou externo`. O instalador
+  achava o `node.exe` pelo caminho absoluto e não punha a pasta dele no
+  `$env:PATH`, então todo script de ciclo de vida que o npm lança por `cmd.exe`
+  não encontrava o `node`. Reproduzido nesta máquina e corrigido no commit
+  `69e3ce6` (o `atualizar.ps1` tinha o mesmo buraco). **O efeito colateral era
+  pior que a falha:** o `DiagnosticoDoNpm` testava os quatro endereços de rede,
+  os quatro respondiam, e a tela concluía "não é falta de internet" mandando
+  investigar proxy e certificado — num problema de PATH.
+- **A segunda execução (01:23–01:24) passou:** `npm ci`, `db:deploy`,
+  `db:seed:producao` e `build`, os quatro em 0. Depois do `build` o instalador
+  não usa npm, então a ausência de log dali em diante é o esperado e **não
+  informa nada** sobre serviço, firewall ou rede.
+
+**O endereço testado não é evidência sobre a coordenação, e isso foi medido:**
+`192.168.0.105` é o IP da placa **Ethernet desta máquina de desenvolvimento**,
+que responde 200 agora (a de Wi-Fi é `192.168.0.123`, e responde também). Ou o
+dono digitou o endereço da máquina errada, ou a máquina da coordenação tem
+coincidentemente o mesmo número em outra rede. **Quem responde isso é o
+`diagnostico.cmd` rodado lá**, e nada nesta máquina.
+
+**O que esta sessão entregou** (commits `69e3ce6`, `1ff040d`, `006af39`,
+`f907336`): a propagação do PATH; uma etapa nova no instalador que confere o
+acesso **pela rede** antes de imprimir o quadro verde (em que endereço o
+servidor escuta, se cada IPv4 responde, o perfil de firewall) e que declara o
+que ela não prova; o `instalar.cmd` lendo o código de saída e dizendo em
+português se terminou bem ou não — era o `pause` idêntico nos dois casos que
+produzia o "aparentemente deu certo"; e o `diagnostico.cmd`, que responde "por
+que o tablet não abre?" em nove seções sem mudar nada e grava
+`C:\emprestimos\logs\diagnostico-<data>.txt`.
+
+**Quatro fatos medidos nesta sessão que enganam quem os supõe:**
+
+- **O `next start` escuta em `::`, e não em `0.0.0.0`.** A ajuda do Next diz
+  que o padrão é `0.0.0.0`; o `Get-NetTCPConnection` do serviço real devolve
+  uma linha só, `::`. É soquete de pilha dupla, e o IPv4 da máquina responde
+  200 pelo mesmo teste. Quem "corrigir" a verificação para aceitar só
+  `0.0.0.0` faz o instalador reprovar toda instalação boa.
+- **A data de modificação do `servico.err.log` não diz quando o erro
+  aconteceu:** o NSSM abre o arquivo toda vez que o serviço sobe, e isso
+  atualiza a data sem acrescentar linha. Medido: `node` criado às 11:00:50,
+  arquivo modificado às 11:00:50, conteúdo inteiro (458 bytes) de 2026-09-18 —
+  ou seja, o `SQLITE_CANTOPEN` **continua sendo resíduo**, como este arquivo já
+  dizia. O teste honesto é "o arquivo cresceu **depois** da subida?".
+- **O npm não registra `info run` do postinstall do pacote raiz**, só dos
+  pacotes em `node_modules`. O silêncio no log não quer dizer que o
+  `prisma generate` não rodou; quem prova que ele rodou é o `db:seed:producao`
+  ter saído em 0, porque o seed importa `../src/generated/prisma/client`.
+- **No PowerShell o nome de variável não distingue caixa:** `$SERVICO` e
+  `$servico` são a mesma variável. Custou dois defeitos no `diagnostico.ps1`
+  antes de ele ser rodado — e nenhum deles dava erro.
+
 A Tarefa 18 — Implantação local no Windows 11 — foi executada
 em 2026-09-18, na mesma sessão em que foi alinhada
 (o dono pediu execução imediata, contra o ciclo habitual de "enunciado
@@ -2104,8 +2164,13 @@ enunciado tem o porquê de cada uma):
 - **Atualização por tag, com o serviço parado, `git checkout --force`.** Um
   `push` na `main` não muda o que está instalado. O serviço para porque o
   `next build` reescreve `.next\` embaixo do servidor e a migration não pode
-  disputar lock. `--force` porque o `prisma generate` do `npm ci` reescreve
-  `src/generated`, que **é versionado** — sem ele o checkout recusaria.
+  disputar lock. ~~`--force` porque o `prisma generate` do `npm ci` reescreve
+  `src/generated`, que **é versionado**~~ — **esta razão era falsa, e foi
+  corrigida em 2026-09-23**: `/src/generated/prisma` está no `.gitignore` e
+  nunca foi versionado (`git log --all -- src/generated` não devolve um único
+  commit), então o checkout jamais reclamaria daquela pasta. O `--force`
+  continua no script pelo motivo que sobra: arquivo mexido à mão nesta máquina
+  não pode travar a atualização de um sistema que está no balcão.
 - **O DATABASE_URL de produção é absoluto** (`file:C:/emprestimos/dados/
   emprestimos.db`), provado contra o `migrate deploy` e o adapter antes de
   virar decisão. O `.env` só é escrito se não existir — reinstalar preserva.
