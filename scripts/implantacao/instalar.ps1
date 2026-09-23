@@ -632,14 +632,113 @@ if (Test-Path $erroServico) {
 }
 Ok "http://localhost:$PORTA/admin respondeu 200 e o serviço leu o banco"
 
+# ------------------------------------------------------- 10. acesso pela rede
+
+# Os dois testes acima são por localhost, e localhost NÃO prova o que o tablet
+# precisa: ele não sai pela placa de rede e não passa pelo firewall de entrada.
+# Até a versão anterior o instalador parava aqui e imprimia o quadro verde
+# "INSTALADO" — dizendo que o sistema estava no ar sem nunca ter falado com ele
+# por um endereço da rede. Foi o que aconteceu na coordenação em 2026-09-23: a
+# instalação terminou em verde e a página não abriu em http://192.168.0.105:3000.
+#
+# O que dá para conferir de dentro desta máquina são três coisas: em qual
+# endereço o servidor escuta, se cada IP responde, e se o firewall está
+# aceitando regras de entrada. O que NÃO dá está escrito no fim do bloco, e
+# está escrito de propósito — um teste que mente sobre o próprio alcance é
+# pior que nenhum.
+
+Etapa "Conferindo o acesso pela rede (é por aqui que o tablet entra)"
+
+# 1. Em que endereço o servidor escuta. Se aparecer só 127.0.0.1 aqui, alguém
+#    pôs um -H no AppParameters do serviço: nenhum tablet alcançaria, e o quadro
+#    verde seria mentira. É o único caso deste bloco que derruba a instalação.
+#
+#    O "::" na lista é ACEITO, e a aceitação é medida, não teórica: a ajuda do
+#    Next diz que o padrão de `next start` é 0.0.0.0, mas o que o Windows mostra
+#    num serviço rodando de verdade é `::` sozinho (medido em 2026-09-23 no
+#    serviço desta instalação: Get-NetTCPConnection devolve uma linha só, `::`).
+#    É soquete de pilha dupla — o mesmo teste confirmou 200 em http://<IPv4
+#    da máquina>:3000/. Quem "corrigir" esta condição para aceitar só 0.0.0.0
+#    faz o instalador reprovar toda instalação boa.
+$escutas = @()
+try {
+  $escutas = @(Get-NetTCPConnection -LocalPort $PORTA -State Listen -ErrorAction SilentlyContinue |
+    Select-Object -ExpandProperty LocalAddress -Unique)
+} catch {}
+if ($escutas.Count -gt 0) {
+  Info "O servidor escuta em: $($escutas -join ', ')  (porta $PORTA)"
+  $emTodasAsPlacas = $false
+  foreach ($endereco in $escutas) {
+    if ($endereco -eq "0.0.0.0" -or $endereco -eq "::") { $emTodasAsPlacas = $true }
+  }
+  if (-not $emTodasAsPlacas) {
+    Falhar "O servidor está escutando só em $($escutas -join ', ') — em nenhuma placa de rede. Nenhum tablet consegue alcançá-lo. Confira se o AppParameters do serviço ganhou um '-H' (o esperado é '$binNext start -p $PORTA')."
+  }
+  Ok "Escuta em todas as placas de rede, e não só em localhost"
+}
+
+# 2. Cada endereço IPv4 da máquina, um a um, com o nome da placa ao lado. O
+#    nome da placa é o que separa o Wi-Fi da coordenação de um adaptador
+#    virtual (WSL, Docker, VirtualBox) — os três aparecem aqui como 172.x ou
+#    192.168.x e enganam quem só vê o número.
+$enderecos = @(Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue |
+  Where-Object { $_.IPAddress -notlike "127.*" -and $_.IPAddress -notlike "169.254.*" })
+
+$algumRespondeu = $false
+foreach ($endereco in $enderecos) {
+  $alcancou = $false
+  try {
+    $resposta = Invoke-WebRequest -Uri "http://$($endereco.IPAddress):$PORTA/" -UseBasicParsing -TimeoutSec 8
+    if ($resposta.StatusCode -eq 200) { $alcancou = $true }
+  } catch {}
+  if ($alcancou) {
+    $algumRespondeu = $true
+    Ok "http://$($endereco.IPAddress):$PORTA/ respondeu 200   (placa: $($endereco.InterfaceAlias))"
+  } else {
+    Write-Host "    NAO RESPONDEU  http://$($endereco.IPAddress):$PORTA/   (placa: $($endereco.InterfaceAlias))" -ForegroundColor Red
+  }
+}
+if (-not $algumRespondeu -and $enderecos.Count -gt 0) {
+  Write-Host "    Nenhum endereço da rede respondeu, embora o localhost responda." -ForegroundColor Red
+  Write-Host "    Mande o registro desta instalação para quem mantém o sistema." -ForegroundColor Yellow
+}
+
+# 3. O firewall. A regra criada na etapa anterior é ignorada quando o perfil da
+#    rede está com "bloquear todas as conexões de entrada" — a regra existe, a
+#    tela do firewall a mostra, e mesmo assim nada entra. AllowInboundRules vem
+#    como texto True/False/NotConfigured; só o False explícito é bloqueio.
+try {
+  foreach ($perfil in (Get-NetFirewallProfile -ErrorAction SilentlyContinue)) {
+    if ("$($perfil.Enabled)" -eq "True" -and "$($perfil.AllowInboundRules)" -eq "False") {
+      Write-Host "    ATENCAO  O perfil de firewall '$($perfil.Name)' está com 'bloquear todas as conexões de entrada' ligado." -ForegroundColor Red
+      Write-Host "             Ele ignora a regra que este instalador criou. Desligue em: Segurança do" -ForegroundColor Yellow
+      Write-Host "             Windows > Firewall e proteção de rede > $($perfil.Name) > desmarcar a opção." -ForegroundColor Yellow
+    }
+  }
+} catch {}
+
+# 4. O perfil de cada rede conectada. Uma rede nova nasce "Pública" no Windows
+#    11; a regra vale para todos os perfis de propósito, então isto é
+#    informação para o diagnóstico, e não um erro.
+try {
+  foreach ($rede in (Get-NetConnectionProfile -ErrorAction SilentlyContinue)) {
+    Info "Rede '$($rede.Name)' na placa '$($rede.InterfaceAlias)': perfil $($rede.NetworkCategory)"
+  }
+} catch {}
+
+Write-Host ""
+Write-Host "    O que este teste NAO prova, e ninguem consegue provar desta maquina:" -ForegroundColor Yellow
+Write-Host "    conectar no proprio IP a partir do proprio computador nao atravessa o" -ForegroundColor Yellow
+Write-Host "    firewall de ENTRADA como um tablet atravessa, e nao passa pelo roteador." -ForegroundColor Yellow
+Write-Host "    Se as linhas acima responderam 200 e mesmo assim o tablet nao abre, o" -ForegroundColor Yellow
+Write-Host "    problema esta ENTRE os dois: Wi-Fi diferente, isolamento de clientes no" -ForegroundColor Yellow
+Write-Host "    roteador, ou o firewall. O teste que vale e abrir a pagina no CELULAR," -ForegroundColor Yellow
+Write-Host "    ligado no MESMO Wi-Fi que o tablet vai usar." -ForegroundColor Yellow
+
 Etapa "Fazendo o primeiro backup e a primeira cópia de consulta"
 Rodar "backup.mjs" $node @($scriptBackup)
 
 # ----------------------------------------------------------------- resumo
-
-$ips = Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue |
-  Where-Object { $_.IPAddress -notlike "127.*" -and $_.IPAddress -notlike "169.254.*" } |
-  Select-Object -ExpandProperty IPAddress
 
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Green
@@ -647,9 +746,19 @@ Write-Host " INSTALADO. O sistema já está no ar e sobe sozinho com o Windows."
 Write-Host "================================================================" -ForegroundColor Green
 Write-Host ""
 Write-Host " Painel (neste computador):  http://localhost:$PORTA/admin"
-foreach ($ip in $ips) {
-  Write-Host " No tablet / outro PC:       http://${ip}:${PORTA}/         (portal)"
-  Write-Host "                             http://${ip}:${PORTA}/admin    (painel)"
+# O nome da placa vai junto do número: quando a máquina tem Wi-Fi e cabo, ou um
+# adaptador virtual, "anote o endereço que começa com 192.168" não basta — são
+# dois, e só um deles é a rede em que o tablet está.
+foreach ($endereco in $enderecos) {
+  Write-Host ""
+  Write-Host " Pela placa '$($endereco.InterfaceAlias)':"
+  Write-Host "   No tablet / outro PC:     http://$($endereco.IPAddress):${PORTA}/         (portal)"
+  Write-Host "                             http://$($endereco.IPAddress):${PORTA}/admin    (painel)"
+}
+if ($enderecos.Count -gt 1) {
+  Write-Host ""
+  Write-Host " Sao $($enderecos.Count) enderecos porque este computador tem mais de uma placa de rede." -ForegroundColor Yellow
+  Write-Host " Use o da placa que esta no MESMO Wi-Fi do tablet - o nome aparece acima." -ForegroundColor Yellow
 }
 Write-Host ""
 Write-Host " Contas do painel: secretario, cidi, jeanzao, viccenzo — senha inicial Mudar@123"
@@ -663,6 +772,15 @@ Write-Host " Reiniciar / copiar para consulta / atualizar: os .cmd em $APP\scrip
 Write-Host ""
 Write-Host " Se o tablet não abrir a página: confira se ele está no MESMO Wi-Fi que este"
 Write-Host " computador, e tente o endereço com o IP acima. O guia tem o restante."
+Write-Host ""
+# O caminho da transcrição só aparecia no começo da execução (cinza, etapa 2) e
+# na mensagem de falha. Quem chega ao fim e descobre o problema DEPOIS — o
+# tablet que não abre — já rolou a janela para longe daquela linha, e manda o
+# que encontra sozinho: os logs do npm, que não dizem nada sobre serviço,
+# firewall ou rede. Aconteceu em 2026-09-23. A linha fica no quadro verde
+# porque é o quadro que continua na tela.
+Write-Host " Registro desta instalacao: $($script:LOG)"
+Write-Host " Se algo nao funcionar, mande ESSE arquivo - ele tem as 10 etapas acima."
 Write-Host ""
 
 Stop-Transcript | Out-Null
