@@ -103,13 +103,129 @@ function Falhar($mensagem) {
 # A saída do programa vai direto para a tela (Out-Host): sem isso ela viraria
 # parte do valor devolvido pela função, junto com o código — regra do
 # PowerShell, e custou um "npm ci terminou com erro (código <571 pacotes>)".
+#
+# O 2>&1 NÃO é enfeite, e a ausência dele custou uma viagem inteira. Sem ele o
+# stderr do programa vai direto para o console, sem passar pelo PowerShell — e
+# o Start-Transcript só grava o que passa pelo PowerShell. Medido nesta máquina
+# em 2026-09-22: de duas linhas de stderr de um programa de teste, a
+# transcrição guardava ZERO; com o 2>&1, guarda as duas, e o código de saída
+# sobrevive igual nos dois casos. Foi exatamente isso que aconteceu na primeira
+# instalação no computador da coordenação: o npm ci falhou, o instalador disse
+# "leia as linhas acima", e o arquivo que o guia manda enviar não tinha uma
+# palavra do motivo — porque o motivo do npm sai todo em stderr.
+#
+# O ForEach desembrulha o ErrorRecord: no 5.1 cada linha de stderr de programa
+# nativo chega embrulhada, e o ToString() dela devolve
+# "System.Management.Automation.RemoteException" em vez do texto (medido). O
+# texto de verdade está em TargetObject. O $LASTEXITCODE sobrevive ao 2>&1; o
+# $? não sobrevive, e é por isso que ninguém o lê aqui.
 function Executar($exe, [string[]]$argumentos) {
   $anterior = $ErrorActionPreference
   $ErrorActionPreference = "Continue"
-  & $exe @argumentos | Out-Host
+  & $exe @argumentos 2>&1 | ForEach-Object {
+    if ($_ -is [System.Management.Automation.ErrorRecord]) {
+      if ($null -ne $_.TargetObject) { [string]$_.TargetObject } else { $_.Exception.Message }
+    } else { $_ }
+  } | Out-Host
   $codigo = $LASTEXITCODE
   $ErrorActionPreference = $anterior
   return $codigo
+}
+
+# Tenta abrir uma conexão com um servidor, com prazo. Serve para dizer QUAL
+# servidor não responde, em vez de deixar a pessoa adivinhando. O prazo é
+# explícito porque o Test-NetConnection do Windows pode demorar bem mais que
+# isso quando o pacote é descartado em silêncio por um firewall.
+function AlcancaServidor($nome, $porta, $milissegundos = 6000) {
+  $cliente = $null
+  try {
+    $cliente = New-Object System.Net.Sockets.TcpClient
+    $tentativa = $cliente.BeginConnect($nome, $porta, $null, $null)
+    if ($tentativa.AsyncWaitHandle.WaitOne($milissegundos, $false) -and $cliente.Connected) {
+      $cliente.EndConnect($tentativa)
+      return $true
+    }
+    return $false
+  } catch {
+    return $false
+  } finally {
+    if ($cliente) { $cliente.Close() }
+  }
+}
+
+# Quando um comando do npm falha, o motivo costuma estar em dois lugares que
+# ninguém vai procurar de pé no balcão: o log que o próprio npm grava, e a
+# lista de servidores que ele precisou alcançar.
+#
+# Este projeto baixa de QUATRO endereços diferentes, e não só do registro do
+# npm: o pacote xlsx aponta para uma URL do CDN da SheetJS (decisão da Tarefa
+# 8 — a versão do registro é a vulnerável), e o better-sqlite3 baixa o binário
+# já compilado de um release do GitHub. Numa rede institucional é comum um
+# passar e outro não; a mensagem do npm nem sempre diz qual, e a diferença
+# entre "a internet caiu" e "o firewall bloqueia um host" é a diferença entre
+# esperar e abrir chamado.
+function DiagnosticoDoNpm {
+  Write-Host ""
+  Write-Host "  ---- diagnóstico automático: por que o npm parou ----" -ForegroundColor Yellow
+
+  $pastaDeLogs = $null
+  foreach ($cache in @($env:npm_config_cache, (Join-Path $env:LOCALAPPDATA "npm-cache"), (Join-Path $env:APPDATA "npm-cache"))) {
+    if ($cache) {
+      $possivel = Join-Path $cache "_logs"
+      if (Test-Path $possivel) { $pastaDeLogs = $possivel; break }
+    }
+  }
+
+  if ($pastaDeLogs) {
+    $ultimo = Get-ChildItem -Path $pastaDeLogs -Filter "*.log" -ErrorAction SilentlyContinue |
+              Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    if ($ultimo) {
+      Write-Host "  O npm gravou o detalhe em $($ultimo.FullName)." -ForegroundColor Yellow
+      Write-Host "  Últimas 40 linhas desse arquivo:" -ForegroundColor Yellow
+      Get-Content -Path $ultimo.FullName -Tail 40 -ErrorAction SilentlyContinue |
+        ForEach-Object { Write-Host "    | $_" }
+    } else {
+      Write-Host "  O npm não deixou nenhum log em $pastaDeLogs." -ForegroundColor Yellow
+    }
+  } else {
+    Write-Host "  Não encontrei a pasta de logs do npm nesta máquina." -ForegroundColor Yellow
+  }
+
+  Write-Host ""
+  Write-Host "  Servidores que a instalação precisa alcançar (porta 443):" -ForegroundColor Yellow
+  $servidores = @(
+    @("registry.npmjs.org",             "as bibliotecas do sistema"),
+    @("cdn.sheetjs.com",                "a leitura de planilhas (xlsx), que vem de fora do npm"),
+    @("github.com",                     "o banco de dados (better-sqlite3)"),
+    @("objects.githubusercontent.com",  "o arquivo do banco de dados em si")
+  )
+  $algumBloqueado = $false
+  foreach ($servidor in $servidores) {
+    if (AlcancaServidor $servidor[0] 443) {
+      Write-Host "    responde       $($servidor[0])  -  $($servidor[1])" -ForegroundColor Green
+    } else {
+      Write-Host "    NAO RESPONDE   $($servidor[0])  -  $($servidor[1])" -ForegroundColor Red
+      $algumBloqueado = $true
+    }
+  }
+
+  Write-Host ""
+  if ($algumBloqueado) {
+    Write-Host "  Algum servidor acima não respondeu. Numa rede de instituição isso" -ForegroundColor Yellow
+    Write-Host "  costuma ser o firewall ou o proxy. Peça à TI para liberar os" -ForegroundColor Yellow
+    Write-Host "  endereços marcados, ou rode a instalação numa rede sem bloqueio" -ForegroundColor Yellow
+    Write-Host "  (um celular compartilhando internet resolve): depois do npm ci a" -ForegroundColor Yellow
+    Write-Host "  instalação não precisa mais desses servidores." -ForegroundColor Yellow
+  } else {
+    Write-Host "  Todos os servidores responderam, então não é falta de internet." -ForegroundColor Yellow
+    Write-Host "  Se o log acima falar em certificado (as siglas SELF_SIGNED_CERT_IN_CHAIN" -ForegroundColor Yellow
+    Write-Host "  ou UNABLE_TO_GET_LOCAL_ISSUER_CERT), o caso é o proxy da rede abrindo" -ForegroundColor Yellow
+    Write-Host "  as conexões para inspecionar: o Windows confia nele e o npm não." -ForegroundColor Yellow
+    Write-Host "  A saída é a TI informar o certificado da instituição, ou instalar" -ForegroundColor Yellow
+    Write-Host "  por uma rede sem esse proxy." -ForegroundColor Yellow
+  }
+  Write-Host "  -----------------------------------------------------" -ForegroundColor Yellow
+  Write-Host ""
 }
 
 # Como Executar, mas para se o programa devolver erro.
@@ -118,6 +234,7 @@ function Rodar($descricao, $exe, [string[]]$argumentos) {
   Info "$exe $($argumentos -join ' ')"
   $codigo = Executar $exe $argumentos
   if ($codigo -ne 0) {
+    if ($exe -like "*npm*") { DiagnosticoDoNpm }
     Falhar "'$descricao' terminou com erro (código $codigo). Leia as linhas acima."
   }
 }

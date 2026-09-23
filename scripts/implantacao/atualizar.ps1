@@ -56,12 +56,25 @@ function Falhar($mensagem) {
   exit 1
 }
 
+# O 2>&1 e o ForEach existem pelo mesmo motivo que no instalar.ps1: sem eles o
+# stderr do programa vai direto para o console, sem passar pelo PowerShell, e o
+# Start-Transcript não o grava — este script promete, ao falhar, que "tudo que
+# apareceu nesta janela está gravado", e sem isso a promessa é falsa justamente
+# na linha que interessa. Medido em 2026-09-22: zero das duas linhas de stderr
+# de um programa de teste chegavam ao arquivo. No 5.1 cada linha de stderr
+# nativo chega embrulhada num ErrorRecord cujo ToString() devolve
+# "System.Management.Automation.RemoteException"; o texto está em TargetObject.
+# O $LASTEXITCODE sobrevive ao 2>&1 (o $? não, e por isso ninguém o lê aqui).
 function Rodar($descricao, $exe, [string[]]$argumentos) {
   Write-Host "    > $descricao" -ForegroundColor White
   Info "$exe $($argumentos -join ' ')"
   $anterior = $ErrorActionPreference
   $ErrorActionPreference = "Continue"
-  & $exe @argumentos
+  & $exe @argumentos 2>&1 | ForEach-Object {
+    if ($_ -is [System.Management.Automation.ErrorRecord]) {
+      if ($null -ne $_.TargetObject) { [string]$_.TargetObject } else { $_.Exception.Message }
+    } else { $_ }
+  } | Out-Host
   $codigo = $LASTEXITCODE
   $ErrorActionPreference = $anterior
   if ($codigo -ne 0) { Falhar "'$descricao' terminou com erro (código $codigo). Leia as linhas acima." }
