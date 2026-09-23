@@ -105,6 +105,15 @@ $npm = Join-Path (Split-Path $node) "npm.cmd"
 $git = (Get-Command git.exe -ErrorAction SilentlyContinue).Source
 if (-not $git) { Falhar "Git não encontrado." }
 
+# Mesma armadilha do instalar.ps1: os scripts de ciclo de vida que o npm dispara
+# saem por `cmd.exe /d /s /c node ...` e procuram o node no PATH herdado. Achar
+# o node.exe aqui não basta para eles. Vale só para este processo e os filhos.
+foreach ($pastaDeProgramas in @((Split-Path $node), (Split-Path $git))) {
+  if (-not $env:PATH.ToLower().Contains($pastaDeProgramas.ToLower())) {
+    $env:PATH = "$pastaDeProgramas;$env:PATH"
+  }
+}
+
 New-Item -ItemType Directory -Force -Path $LOGS | Out-Null
 $script:LOG = Join-Path $LOGS ("atualizacao-" + (Get-Date -Format "yyyy-MM-dd-HHmmss") + ".log")
 Start-Transcript -Path $script:LOG | Out-Null

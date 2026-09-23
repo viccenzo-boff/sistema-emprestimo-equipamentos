@@ -341,6 +341,29 @@ $npm = Join-Path $pastaNode "npm.cmd"
 if (-not (Test-Path $npm)) { Falhar "Achei o Node em $node mas não o npm ao lado dele." }
 Ok "Node $versaoNode em $node"
 
+# Achar o node.exe resolve as chamadas DESTE script — e só elas. Todo script de
+# ciclo de vida de pacote é lançado pelo npm como `cmd.exe /d /s /c node ...`,
+# que procura o node no PATH herdado: o preinstall do prisma, o install do
+# better-sqlite3 e o postinstall 'prisma generate' do próprio projeto (sem ele
+# não existe src\generated\prisma num clone novo, e o build não compila).
+#
+# Quando o winget acaba de instalar o Node, a janela aberta ainda não vê o PATH
+# novo — a mesma razão por que $NODE_PADRAO existe. Aí o instalador acha o node,
+# seguia em frente, e o `npm ci` morria com "'node' não é reconhecido como um
+# comando interno ou externo". Aconteceu no computador da coordenação em
+# 2026-09-23, e o pior não foi a falha: o instalador culpa a internet quando o
+# npm falha, então a tela mandava conferir a conexão de uma máquina conectada.
+#
+# Mexer no $env:PATH vale para este processo e para os filhos dele. O PATH
+# gravado no Windows não é alterado — nada aqui sobrevive ao fechar a janela.
+$pastaGit = Split-Path $git
+foreach ($pastaDeProgramas in @($pastaNode, $pastaGit)) {
+  if (-not $env:PATH.ToLower().Contains($pastaDeProgramas.ToLower())) {
+    $env:PATH = "$pastaDeProgramas;$env:PATH"
+    Info "PATH desta execução: acrescentei $pastaDeProgramas"
+  }
+}
+
 # A porta: se for o nosso próprio serviço de uma instalação anterior, ele é
 # parado (o npm ci precisa dos arquivos livres). Qualquer outro programa faz o
 # instalador parar e dizer qual é — o caso típico é um 'npm run dev' aberto.
