@@ -91,8 +91,18 @@ O que a janela faz, na ordem em que imprime:
 | 13. Ligando | Sobe o sistema, espera ele responder e confere que ele consegue ler o banco |
 | 14. Primeiro backup | A primeira cópia em `backups` e em `consulta` |
 
-No fim aparece um quadro verde **INSTALADO** com os endereços. **Anote o
-endereço que começa com `http://192.168`** — é o que o tablet vai usar.
+No fim aparece um quadro verde **INSTALADO** com os endereços, agrupados pelo
+nome da placa de rede (`Wi-Fi`, `Ethernet`). **Anote o endereço da placa que
+está na mesma rede do tablet** — é esse que o tablet vai usar.
+
+!!! warning "O endereço é deste computador, e não de qualquer um"
+    Um computador com cabo **e** Wi-Fi aparece com dois endereços, os dois
+    começando com `http://192.168` — e só um deles está na rede do tablet. E
+    se o sistema já estiver instalado em outra máquina, o endereço dela não
+    abre nada aqui: são dois sistemas diferentes, cada um com o seu banco.
+    Na dúvida, rode o **diagnostico.cmd** (ver
+    [Se der errado](#se-der-errado)): ele imprime o endereço certo deste
+    computador.
 
 !!! tip "Se a janela parar com PAROU AQUI em vermelho"
     Leia a frase: ela diz o motivo e o que fazer. Corrija e rode o
@@ -235,13 +245,14 @@ sozinho.
 
 Na área de trabalho fica um atalho só, **Painel de Emprestimos**, que abre o
 painel neste computador (de outro computador da mesma rede, use o endereço
-`http://192.168…:3000/admin`). Os outros dois gestos do dia a dia são
-arquivos da pasta `C:\emprestimos\app\scripts\implantacao` — duplo clique
-neles, e eles pedem permissão de administrador sozinhos:
+`http://192.168…:3000/admin`). Os outros gestos do dia a dia são arquivos da
+pasta `C:\emprestimos\app\scripts\implantacao` — duplo clique neles, e eles
+pedem permissão de administrador sozinhos:
 
 | Arquivo | Para quê |
 | --- | --- |
 | **reiniciar.cmd** | Se o tablet mostrar erro de conexão com o computador ligado. Leva uns 15 segundos |
+| **diagnostico.cmd** | Descobre por que o tablet não abre a página. Não muda nada: só olha e escreve um relatório |
 | **atualizar-copia-para-consulta.cmd** | Copia o banco de agora para a pasta de consulta (ver [abaixo](#consultar-o-banco-de-dados)) |
 
 ## Consultar o banco de dados
@@ -318,18 +329,30 @@ apaga a pasta `C:\emprestimos` depois.
 
 ## Se der errado
 
+**Antes de procurar na tabela, rode o `diagnostico.cmd`.** Ele está em
+`C:\emprestimos\app\scripts\implantacao`, pede permissão de administrador
+sozinho e não muda nada no computador: só confere, em nove passos, tudo que
+precisa estar certo para o tablet abrir a página — o serviço, a porta, o
+endereço de cada placa de rede, o firewall, o banco e os registros. No fim ele
+lista o que encontrou e diz o endereço certo deste computador.
+
+O relatório fica gravado em `C:\emprestimos\logs\diagnostico-<data>.txt`. **É
+esse arquivo que se manda para quem mantém o sistema** — e não os registros do
+npm que ficam na pasta `AppData`, que não sabem nada sobre serviço, rede ou
+firewall.
+
 | O que aparece | O que fazer |
 | --- | --- |
 | O instalador para em **A porta 3000 já está sendo usada** | Feche o programa que ele nomeia (em geral um `npm run dev` num terminal) e rode de novo |
 | O instalador para em **Git não encontrado** | O Terminal foi aberto antes de instalar o Git. Feche todas as janelas de Terminal e rode o instalador de novo |
 | O instalador para em **O winget terminou, mas o Node não apareceu** | Feche a janela e rode o instalador de novo — na segunda vez ele encontra o Node que acabou de instalar |
 | O instalador para em **'Baixar as bibliotecas do sistema' terminou com erro** | Quase sempre é internet. Confira a conexão e rode de novo; ele continua de onde parou |
-| O tablet mostra **Não é possível acessar esse site** | Confira, nesta ordem: o computador está ligado? O tablet está no mesmo Wi-Fi? O endereço tem `:3000` no fim? Rode o **reiniciar.cmd** (em `C:\emprestimos\app\scripts\implantacao`). Se continuar, reinicie o computador |
+| O tablet mostra **Não é possível acessar esse site** | Rode o **diagnostico.cmd** e leia o fim do relatório: ele diz se o problema é deste computador e qual é o endereço certo. Se ele não achar nada, o problema está entre os dois aparelhos — confira se o endereço digitado é o **deste** computador, se o tablet está no mesmo Wi-Fi, e se o endereço tem `http://` na frente e `:3000` no fim. Um celular no mesmo Wi-Fi é o teste mais rápido: se o celular também não abrir, é a rede, e não o sistema |
 | A página abre no tablet **como texto puro**, sem cores, e o teclado não responde | O navegador do tablet é antigo demais. Veja [Requisitos do tablet](#requisitos-do-tablet) — não há conserto pelo computador |
 | O tablet abria e parou de abrir depois de uns dias | O endereço do computador mudou. Faça a reserva do [Passo 5](#passo-5-fixar-o-endereco-do-computador-no-roteador); no iPad, remova o ícone da tela de início e adicione de novo, já com o endereço certo |
 | O painel diz **Usuário ou senha inválidos** para todo mundo | Depois de cinco erros, a conta espera 1 minuto. Se a senha foi esquecida, a [Conta do administrador](../referencia/conta-do-administrador.md) diz como recuperar |
 | O **atualizar-copia-para-consulta.cmd** diz que não conseguiu gravar | A cópia está aberta no DB Browser. Feche-o e rode de novo |
-| Nada disso | Mande a pasta `C:\emprestimos\logs` para quem mantém o sistema |
+| Nada disso | Rode o **diagnostico.cmd** e mande a pasta `C:\emprestimos\logs` inteira para quem mantém o sistema — ela tem o relatório do diagnóstico, o registro de cada instalação e os registros do servidor |
 
 ??? note "Para quem mantém o sistema"
 
@@ -344,7 +367,8 @@ apaga a pasta `C:\emprestimos` depois.
     | Backup | Tarefa agendada **Sistema de Emprestimos - Backup diario** (19:00, como SYSTEM) rodando `scripts\implantacao\backup.mjs` |
     | Firewall | Regra de entrada **Sistema de Emprestimos (porta 3000)**, TCP, todos os perfis |
     | Permissões | `LocalService` com modificação em `C:\emprestimos`; `dados\` sem herança, só `LocalService`, `SYSTEM` e Administradores — **as entradas ficam na pasta e os arquivos herdam** (aplicar `(OI)(CI)` num arquivo com `/T` deixa o arquivo sem nenhuma permissão) |
-    | Gestos do dia a dia | `reiniciar.cmd` e `atualizar-copia-para-consulta.cmd`, em `scripts\implantacao`; só o atalho do painel vai à área de trabalho |
+    | Gestos do dia a dia | `reiniciar.cmd`, `diagnostico.cmd` e `atualizar-copia-para-consulta.cmd`, em `scripts\implantacao`; só o atalho do painel vai à área de trabalho |
+    | Diagnóstico | `diagnostico.cmd` não muda nada. Confere serviço, porta e endereço de escuta, resposta em `localhost` e em cada IPv4, regra de firewall e o perfil da rede ativa (uma política de domínio com `AllowLocalFirewallRules=False` anula a regra sem erro nenhum), `servico.err.log`, o último `instalacao-*.log` e a versão. Grava `diagnostico-<data>.txt` na pasta de logs |
 
     **Restaurar um backup:** em **Serviços**, pare **Sistema de Emprestimos
     (Unoesc)**; copie o arquivo de `backups\` por cima de
