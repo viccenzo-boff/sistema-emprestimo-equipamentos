@@ -1864,8 +1864,19 @@ confere e recusa outra.</p>
 </tr>
 </tbody>
 </table>
-<p>No fim aparece um quadro verde <strong>INSTALADO</strong> com os endereços. <strong>Anote o
-endereço que começa com <code>http://192.168</code></strong> — é o que o tablet vai usar.</p>
+<p>No fim aparece um quadro verde <strong>INSTALADO</strong> com os endereços, agrupados pelo
+nome da placa de rede (<code>Wi-Fi</code>, <code>Ethernet</code>). <strong>Anote o endereço da placa que
+está na mesma rede do tablet</strong> — é esse que o tablet vai usar.</p>
+<div class="admonition warning">
+<p class="admonition-title">O endereço é deste computador, e não de qualquer um</p>
+<p>Um computador com cabo <strong>e</strong> Wi-Fi aparece com dois endereços, os dois
+começando com <code>http://192.168</code> — e só um deles está na rede do tablet. E
+se o sistema já estiver instalado em outra máquina, o endereço dela não
+abre nada aqui: são dois sistemas diferentes, cada um com o seu banco.
+Na dúvida, rode o <strong>diagnostico.cmd</strong> (ver
+<a href="#se-der-errado">Se der errado</a>): ele imprime o endereço certo deste
+computador.</p>
+</div>
 <div class="admonition tip">
 <p class="admonition-title">Se a janela parar com PAROU AQUI em vermelho</p>
 <p>Leia a frase: ela diz o motivo e o que fazer. Corrija e rode o
@@ -2008,9 +2019,9 @@ reiniciado (queda de luz, atualização do Windows à noite), o sistema volta
 sozinho.</p>
 <p>Na área de trabalho fica um atalho só, <strong>Painel de Emprestimos</strong>, que abre o
 painel neste computador (de outro computador da mesma rede, use o endereço
-<code>http://192.168…:3000/admin</code>). Os outros dois gestos do dia a dia são
-arquivos da pasta <code>C:\emprestimos\app\scripts\implantacao</code> — duplo clique
-neles, e eles pedem permissão de administrador sozinhos:</p>
+<code>http://192.168…:3000/admin</code>). Os outros gestos do dia a dia são arquivos da
+pasta <code>C:\emprestimos\app\scripts\implantacao</code> — duplo clique neles, e eles
+pedem permissão de administrador sozinhos:</p>
 <table>
 <thead>
 <tr>
@@ -2022,6 +2033,10 @@ neles, e eles pedem permissão de administrador sozinhos:</p>
 <tr>
 <td><strong>reiniciar.cmd</strong></td>
 <td>Se o tablet mostrar erro de conexão com o computador ligado. Leva uns 15 segundos</td>
+</tr>
+<tr>
+<td><strong>diagnostico.cmd</strong></td>
+<td>Descobre por que o tablet não abre a página. Não muda nada: só olha e escreve um relatório</td>
 </tr>
 <tr>
 <td><strong>atualizar-copia-para-consulta.cmd</strong></td>
@@ -2095,6 +2110,16 @@ administrador</strong>. Ele tira o serviço, a regra do firewall, o backup agend
 os atalhos. <strong>Não apaga o banco nem os backups</strong>: quem quiser apagar tudo,
 apaga a pasta <code>C:\emprestimos</code> depois.</p>
 <h2 id="se-der-errado">Se der errado</h2>
+<p><strong>Antes de procurar na tabela, rode o <code>diagnostico.cmd</code>.</strong> Ele está em
+<code>C:\emprestimos\app\scripts\implantacao</code>, pede permissão de administrador
+sozinho e não muda nada no computador: só confere, em nove passos, tudo que
+precisa estar certo para o tablet abrir a página — o serviço, a porta, o
+endereço de cada placa de rede, o firewall, o banco e os registros. No fim ele
+lista o que encontrou e diz o endereço certo deste computador.</p>
+<p>O relatório fica gravado em <code>C:\emprestimos\logs\diagnostico-&lt;data&gt;.txt</code>. <strong>É
+esse arquivo que se manda para quem mantém o sistema</strong> — e não os registros do
+npm que ficam na pasta <code>AppData</code>, que não sabem nada sobre serviço, rede ou
+firewall.</p>
 <table>
 <thead>
 <tr>
@@ -2121,7 +2146,7 @@ apaga a pasta <code>C:\emprestimos</code> depois.</p>
 </tr>
 <tr>
 <td>O tablet mostra <strong>Não é possível acessar esse site</strong></td>
-<td>Confira, nesta ordem: o computador está ligado? O tablet está no mesmo Wi-Fi? O endereço tem <code>:3000</code> no fim? Rode o <strong>reiniciar.cmd</strong> (em <code>C:\emprestimos\app\scripts\implantacao</code>). Se continuar, reinicie o computador</td>
+<td>Rode o <strong>diagnostico.cmd</strong> e leia o fim do relatório: ele diz se o problema é deste computador e qual é o endereço certo. Se ele não achar nada, o problema está entre os dois aparelhos — confira se o endereço digitado é o <strong>deste</strong> computador, se o tablet está no mesmo Wi-Fi, e se o endereço tem <code>http://</code> na frente e <code>:3000</code> no fim. Um celular no mesmo Wi-Fi é o teste mais rápido: se o celular também não abrir, é a rede, e não o sistema</td>
 </tr>
 <tr>
 <td>A página abre no tablet <strong>como texto puro</strong>, sem cores, e o teclado não responde</td>
@@ -2141,7 +2166,7 @@ apaga a pasta <code>C:\emprestimos</code> depois.</p>
 </tr>
 <tr>
 <td>Nada disso</td>
-<td>Mande a pasta <code>C:\emprestimos\logs</code> para quem mantém o sistema</td>
+<td>Rode o <strong>diagnostico.cmd</strong> e mande a pasta <code>C:\emprestimos\logs</code> inteira para quem mantém o sistema — ela tem o relatório do diagnóstico, o registro de cada instalação e os registros do servidor</td>
 </tr>
 </tbody>
 </table>
@@ -2186,7 +2211,11 @@ apaga a pasta <code>C:\emprestimos</code> depois.</p>
 </tr>
 <tr>
 <td>Gestos do dia a dia</td>
-<td><code>reiniciar.cmd</code> e <code>atualizar-copia-para-consulta.cmd</code>, em <code>scripts\implantacao</code>; só o atalho do painel vai à área de trabalho</td>
+<td><code>reiniciar.cmd</code>, <code>diagnostico.cmd</code> e <code>atualizar-copia-para-consulta.cmd</code>, em <code>scripts\implantacao</code>; só o atalho do painel vai à área de trabalho</td>
+</tr>
+<tr>
+<td>Diagnóstico</td>
+<td><code>diagnostico.cmd</code> não muda nada. Confere serviço, porta e endereço de escuta, resposta em <code>localhost</code> e em cada IPv4, regra de firewall e o perfil da rede ativa (uma política de domínio com <code>AllowLocalFirewallRules=False</code> anula a regra sem erro nenhum), <code>servico.err.log</code>, o último <code>instalacao-*.log</code> e a versão. Grava <code>diagnostico-&lt;data&gt;.txt</code> na pasta de logs</td>
 </tr>
 </tbody>
 </table>
